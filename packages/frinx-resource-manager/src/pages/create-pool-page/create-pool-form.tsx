@@ -322,7 +322,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
       <AdvancedOptions poolPropertiesErrors={errors} poolType={poolType} values={values} handleChange={handleChange} />
 
-      <HStack marginTop="20px">
+      <HStack mt={5}>
         <Spacer />
         <Button onClick={() => navigate(-1)} variant="solid">
           Cancel
