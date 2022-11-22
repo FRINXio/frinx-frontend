@@ -38,7 +38,7 @@ const SearchByTagInput: FC<Props> = ({
           marginBottom: 0,
         }}
         inputStyleProps={{
-          variant: 'filled',
+          variant: 'outline',
         }}
         placeholder="Start typing..."
         onCreateItem={handleOnCreate}
