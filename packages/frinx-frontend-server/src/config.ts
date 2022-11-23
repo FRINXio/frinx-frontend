@@ -59,7 +59,7 @@ const config = {
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
   MSALAuthority: envString('MSAL_AUTHORITY'),
-  isGammaEnabled: stringToBoolean(envString('GAMMA_ENABLED')),
+  isL3VPNEnabled: stringToBoolean(envString('L3VPN_ENABLED')),
   isDeviceTopologyEnabled: stringToBoolean(envString('DEVICE_TOPOLOGY_ENABLED')),
   commitHash: envString('COMMIT_HASH'),
 };

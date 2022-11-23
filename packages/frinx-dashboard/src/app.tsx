@@ -24,7 +24,7 @@ const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
       <Box paddingTop={10} overflow="hidden">
         <Routes>
           {enabledServices.get('isUniflowEnabled') && <Route path="/workflow-manager/*" element={<UniflowApp />} />}
-          {enabledServices.get('isGammaEnabled') && <Route path="/gamma/*" element={<GammaApp />} />}
+          {enabledServices.get('isL3VPNEnabled') && <Route path="/gamma/*" element={<GammaApp />} />}
           {enabledServices.get('isInventoryEnabled') && <Route path="/inventory/*" element={<InventoryApp />} />}
           {enabledServices.get('isResourceManagerEnabled') && (
             <Route path="/resource-manager/*" element={<ResourceManagerApp />} />
