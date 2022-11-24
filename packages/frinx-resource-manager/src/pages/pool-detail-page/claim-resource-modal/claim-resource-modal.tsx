@@ -116,6 +116,7 @@ const ClaimResourceModal: FC<Props> = ({
             value: ['active'],
           },
         ],
+        userInput: '',
       },
       onSubmit: (formValues) => {
         let userInput = {};
@@ -128,7 +129,7 @@ const ClaimResourceModal: FC<Props> = ({
 
         if (!shouldBeDesiredSize && formValues.userInput) {
           userInput = {
-            desiredValue: Number(formValues.userInput),
+            desiredValue: formValues.userInput,
           };
         }
 
