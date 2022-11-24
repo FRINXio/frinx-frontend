@@ -116,6 +116,7 @@ const ClaimResourceModal: FC<Props> = ({
             value: ['active'],
           },
         ],
+        userInput: '',
       },
       onSubmit: (formValues) => {
         let userInput = {};

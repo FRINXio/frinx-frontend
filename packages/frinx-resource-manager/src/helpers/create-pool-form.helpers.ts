@@ -41,7 +41,8 @@ export function deriveResourceTypesFromAvailableResourceTypes(
     (resourceType) =>
       resourceTypes.length !== availableResourceTypes.length &&
       ((availableResourceTypes.find((type) => type.Name === 'ipv4_prefix') && resourceType.Name === 'ipv4') ||
-        (availableResourceTypes.find((type) => type.Name === 'ipv6_prefix') && resourceType.Name === 'ipv6')),
+        (availableResourceTypes.find((type) => type.Name === 'ipv6_prefix') && resourceType.Name === 'ipv6') ||
+        (availableResourceTypes.find((type) => type.Name === 'vlan_range') && resourceType.Name === 'vlan')),
   );
 }
 
