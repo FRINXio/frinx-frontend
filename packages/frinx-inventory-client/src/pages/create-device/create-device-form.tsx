@@ -34,7 +34,7 @@ type Props = {
   blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
   onFormSubmit: (device: FormValues) => void;
   onLabelCreate: (labelName: string) => Promise<Label | null>;
-  isError: {error: boolean, message: string | null}
+  isError: { error: boolean; message: string | null };
 };
 
 type FormValues = {
@@ -129,8 +129,6 @@ const INITIAL_VALUES: FormValues = {
   port: 0,
 };
 
-
-
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   isError,
   onFormSubmit,
@@ -151,11 +149,8 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value), port: Number(data.port) };
       const { blueprintParams, ...rest } = updatedData;
       onFormSubmit(rest);
-      
     },
   });
-
-
 
   useEffect(() => {
     const blueprintParameters = parse(
