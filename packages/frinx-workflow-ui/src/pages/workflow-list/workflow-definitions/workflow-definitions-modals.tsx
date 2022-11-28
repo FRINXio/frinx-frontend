@@ -123,6 +123,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
         return null;
       });
   };
+
   return (
     <>
       <DefinitionModal workflow={activeWorkflow} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />

@@ -1,4 +1,5 @@
 import { Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -39,6 +40,7 @@ type ScriptState = {
 
 const StrategiesPage: VoidFunctionComponent = () => {
   const [scriptState, setScriptState] = useState<ScriptState | null>();
+  const { addToastNotification } = useNotifications();
   const context = useMemo(() => ({ additionalTypenames: ['AllocationStrategy'] }), []);
   const [{ data, fetching, error }] = useQuery<QueryAllocationStrategiesQuery>({
     query: STRATEGIES_QUERY,
@@ -55,9 +57,29 @@ const StrategiesPage: VoidFunctionComponent = () => {
           input: { allocationStrategyId: id },
         },
         { additionalTypenames: ['AllocationStrategy'] },
-      );
+      )
+        .then((response) => {
+          if (response.error) {
+            addToastNotification({
+              content: response.error.message,
+              type: 'error',
+            });
+          } else {
+            addToastNotification({
+              title: 'Success',
+              content: 'Strategy deleted',
+              type: 'success',
+            });
+          }
+        })
+        .catch((err) => {
+          addToastNotification({
+            content: err.message,
+            type: 'error',
+          });
+        });
     },
-    [deleteStrategy],
+    [deleteStrategy, addToastNotification],
   );
   const handleScriptBtnClick = (lang: string, script: string) => {
     setScriptState({ lang, script });

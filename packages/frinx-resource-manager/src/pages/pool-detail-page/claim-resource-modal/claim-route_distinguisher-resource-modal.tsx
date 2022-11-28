@@ -86,7 +86,11 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
     useFormik<FormValues>({
       initialValues: {
         description: '',
-        userInput: {},
+        userInput: {
+          assignedNumber: 0,
+          as: 0,
+          ipv4: '',
+        },
         alternativeIds: [
           {
             key: 'status',

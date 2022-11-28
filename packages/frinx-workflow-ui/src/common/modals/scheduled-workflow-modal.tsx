@@ -28,6 +28,7 @@ export type ScheduledWorkflowModal = {
   cronString?: string;
   workflowName: string;
   workflowVersion: string;
+  enabled?: boolean;
 };
 
 type Props = {
@@ -42,12 +43,13 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
 
   const { values, handleChange, handleSubmit, submitForm, setFieldValue } = useFormik({
     initialValues: {
+      enableReinitialize: true,
       workflowName: workflow.workflowName,
       workflowVersion: workflow.workflowVersion,
       workflowContext: {},
       name: `${workflow.workflowName}:${workflow.workflowVersion}`,
       cronString: workflow.cronString || DEFAULT_CRON_STRING,
-      enabled: false,
+      enabled: workflow.enabled ?? false,
     },
     onSubmit: (formValues) => {
       onSubmit(formValues);

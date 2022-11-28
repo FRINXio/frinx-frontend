@@ -18,7 +18,7 @@ declare interface Window {
     unistoreApiURL: string;
     isUniflowEnabled: boolean;
     isInventoryEnabled: boolean;
-    isGammaEnabled: boolean;
+    isL3VPNEnabled: boolean;
     isDeviceTopologyEnabled: boolean;
     URLBasename: string;
     inventoryApiURL: string;

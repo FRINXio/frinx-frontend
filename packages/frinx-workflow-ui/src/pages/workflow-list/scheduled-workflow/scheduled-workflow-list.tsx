@@ -31,13 +31,14 @@ import { useNotifications } from '@frinx/shared/src';
 
 function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<ScheduledWorkflow>();
-  const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow>();
+  const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
 
   const getData = useCallback(() => {
     const { getSchedules } = callbackUtils.getCallbacks;
 
+    setSelectedWorkflow(null);
     getSchedules()
       .then((schedules) => {
         setItemList(sortBy(schedules, ['name']));
@@ -141,7 +142,10 @@ function ScheduledWorkflowList() {
         <ScheduledWorkflowModal
           workflow={selectedWorkflow}
           isOpen={isOpen}
-          onClose={onClose}
+          onClose={() => {
+            onClose();
+            setSelectedWorkflow(null);
+          }}
           onSubmit={handleWorkflowUpdate}
         />
       )}
@@ -163,7 +167,7 @@ function ScheduledWorkflowList() {
                   <Td>
                     <FormControl display="flex" alignItems="center">
                       <Switch
-                        isChecked={item.enabled}
+                        isChecked={item.enabled ?? false}
                         onChange={() => {
                           const editedWorkflow = {
                             ...item,
@@ -171,6 +175,7 @@ function ScheduledWorkflowList() {
                           };
 
                           handleWorkflowUpdate(editedWorkflow);
+                          setSelectedWorkflow(null);
                         }}
                       />
                     </FormControl>

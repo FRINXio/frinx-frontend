@@ -41,7 +41,8 @@ export function deriveResourceTypesFromAvailableResourceTypes(
     (resourceType) =>
       resourceTypes.length !== availableResourceTypes.length &&
       ((availableResourceTypes.find((type) => type.Name === 'ipv4_prefix') && resourceType.Name === 'ipv4') ||
-        (availableResourceTypes.find((type) => type.Name === 'ipv6_prefix') && resourceType.Name === 'ipv6')),
+        (availableResourceTypes.find((type) => type.Name === 'ipv6_prefix') && resourceType.Name === 'ipv6') ||
+        (availableResourceTypes.find((type) => type.Name === 'vlan_range') && resourceType.Name === 'vlan')),
   );
 }
 
@@ -257,8 +258,8 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                       ...acc,
                       [key]: yup
                         .number()
-                        .min(1, 'Minimal required value is 1')
-                        .max(4094, 'Maximal allowed value is 4094')
+                        .min(0, 'Minimal required value is 0')
+                        .max(4095, 'Maximal allowed value is 4095')
                         .lessThan(poolProperties.to, 'FROM value must be less than TO value')
                         .typeError('Please enter a number')
                         .required(`Please enter a value`),
@@ -270,8 +271,8 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                       ...acc,
                       [key]: yup
                         .number()
-                        .min(1, 'Minimal required value is 1')
-                        .max(4094, 'Maximal allowed value is 4094')
+                        .min(0, 'Minimal required value is 0')
+                        .max(4095, 'Maximal allowed value is 4095')
                         .moreThan(poolProperties.from, 'TO value must be greater than FROM value')
                         .typeError('Please enter a number')
                         .required(`Please enter a value`),
