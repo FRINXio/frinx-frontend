@@ -34,7 +34,7 @@ type Props = {
   blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
   onFormSubmit: (device: FormValues) => void;
   onLabelCreate: (labelName: string) => Promise<Label | null>;
-  isError: { error: boolean; message: string | null };
+  deviceNameError: string | null;
 };
 
 type FormValues = {
@@ -130,7 +130,7 @@ const INITIAL_VALUES: FormValues = {
 };
 
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
-  isError,
+  deviceNameError,
   onFormSubmit,
   zones,
   labels,
@@ -175,10 +175,10 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="name" my={6} isRequired isInvalid={isError.error}>
+      <FormControl id="name" my={6} isRequired isInvalid={deviceNameError !== null}>
         <FormLabel>Name</FormLabel>
         <Input placeholder="R1" onChange={handleChange} name="name" value={values.name} />
-        <FormErrorMessage>{isError.message}</FormErrorMessage>
+        <FormErrorMessage>{deviceNameError}</FormErrorMessage>
       </FormControl>
 
       <FormControl id="zone" isRequired marginY={6} isInvalid={errors.zoneId !== undefined}>

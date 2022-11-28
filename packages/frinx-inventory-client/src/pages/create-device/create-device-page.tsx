@@ -106,13 +106,10 @@ type FormValues = {
 type Props = {
   onAddDeviceSuccess: () => void;
 };
-type Error = {
-  error: boolean;
-  message: string | null;
-};
+type Error = string | null;
 
 const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
-  const [isError, setIsError] = useState<Error>({ error: false, message: '' });
+  const [deviceNameError, setDeviceNameError] = useState<Error>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addToastNotification } = useNotifications();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
@@ -148,7 +145,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
           error?.message ===
           '[GraphQL] There is a unique constraint violation, a new device cannot be added with this name.'
         ) {
-          setIsError({ error: true, message: 'Device with this name alredy exists. Please select different name.' });
+          setDeviceNameError('Device with this name alredy exists. Please select different name.');
         }
         if (error != null) {
           throw new Error('Problem with device addition');
@@ -188,7 +185,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
 
       <Box background="white" boxShadow="base" px={4} py={2} position="relative">
         <CreateDeviceForm
-          isError={isError}
+          deviceNameError={deviceNameError}
           onFormSubmit={handleSubmit}
           zones={zones}
           blueprints={blueprints}
