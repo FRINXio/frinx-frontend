@@ -152,6 +152,13 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     {...(isInstalled ? { to: `../config/${device.id}` } : {})}
                   />
                   <IconButton
+                    aria-label="terminal"
+                    size="sm"
+                    icon={<Icon size={12} as={FeatherIcon} icon="terminal" />}
+                    as={Link}
+                    to={`../terminal/${device.id}`}
+                  />
+                  <IconButton
                     aria-label="edit"
                     size="sm"
                     isDisabled={isInstalled}

@@ -36,6 +36,8 @@
     "lodash": "4.17.21",
     "urql": "2.2.3",
     "uuid": "8.3.2",
+    "xterm": "^5.0.0",
+    "xterm-addon-fit": "^0.6.0",
     "yup": "0.32.11"
   },
   "devDependencies": {
@@ -55,6 +57,7 @@
     "@graphql-codegen/introspection": "2.1.1",
     "@graphql-codegen/typescript": "2.5.0",
     "@graphql-codegen/typescript-operations": "2.4.1",
+    "@types/xterm": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
     "@webpack-cli/serve": "1.7.0",

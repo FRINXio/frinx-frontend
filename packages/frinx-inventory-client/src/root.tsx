@@ -5,6 +5,7 @@ import CreateDevicePage from './pages/create-device/create-device-page';
 import DeviceBlueprints from './pages/device-blueprints/device-blueprints';
 import DeviceConfigPage from './pages/device-config/device-config-page';
 import DeviceList from './pages/device-list/device-list';
+import DeviceTerminal from './pages/device-terminal/device-terminal';
 import EditBlueprintPage from './pages/edit-blueprint/edit-blueprint-page';
 import EditDevicePage from './pages/edit-device/edit-device-page';
 import TransactionList from './pages/transaction-list/transaction-list';
@@ -36,6 +37,7 @@ const Root: VoidFunctionComponent = () => {
         element={<EditBlueprintPage onSuccess={handleBlueprintListRedirect} onCancel={handleBlueprintListRedirect} />}
       />
       <Route path="/transactions" element={<TransactionList />} />
+      <Route path="/terminal/:deviceId" element={<DeviceTerminal />} />
     </Routes>
   );
 };
