@@ -19,12 +19,12 @@ jobs:
         run: cp .yarnrc.ci.yml .yarnrc.yml
       - name: Copy yarn.lock file
         run: cp yarn.lock yarn.lock.orig
-      - name: Install dependencies
-        run: yarn install --immutable
+      # - name: Install dependencies
+      #   run: yarn install --immutable
       - name: Create directory
         run: mkdir build-client
-      - name: Install frontend
-        run: yarn install
+      # - name: Install frontend
+      #   run: yarn install
       - name: Prepare env variable
         run: cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
       - name: Cypress tests
