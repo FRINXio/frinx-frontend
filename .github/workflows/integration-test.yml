@@ -21,11 +21,14 @@ jobs:
         run: cp yarn.lock yarn.lock.orig
       - name: Install dependencies
         run: yarn install --immutable
-      - name: Install dependencies
+      - name: Create directory
         run: mkdir build_client
+      - name: Install frontend
+        run: yarn install
+      - name: Prepare env variable
+        run: cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          build: yarn install && cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
           start: yarn dev
           wait-on: 'http://localhost:3000'
