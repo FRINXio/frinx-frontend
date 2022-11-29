@@ -112,7 +112,8 @@ export type TaskType =
   | 'EXCLUSIVE_JOIN'
   | 'HTTP'
   | 'KAFKA_PUBLISH'
-  | 'JSON_JQ';
+  | 'JSON_JQ'
+  | 'SET_VARIABLE';
 
 type TaskValues = {
   name: string;
@@ -213,6 +214,9 @@ export type SimpleTask = BaseTask<Record<string, string>> & {
 export type ForkJoinDynamicTask = BaseTask<ForkJoinDynamicInputParams> & {
   type: 'FORK_JOIN_DYNAMIC';
 };
+export type SetVariableTask = BaseTask<Record<string, string>> & {
+  type: 'SET_VARIABLE';
+};
 
 export type Task =
   | DecisionTask
@@ -233,7 +237,8 @@ export type Task =
   | WhileEndTask
   | StartTask
   | EndTask
-  | SimpleTask;
+  | SimpleTask
+  | SetVariableTask;
 
 export type TaskLabel =
   | 'decision'
@@ -256,6 +261,7 @@ export type TaskLabel =
   | 'simple'
   | 'kafka publish'
   | 'json jq'
+  | 'set variable'
   | 'custom';
 
 export type ExtendedDecisionTask = DecisionTask & { id: string; label: TaskLabel };
@@ -277,6 +283,7 @@ export type ExtendedWhileEndTask = WhileEndTask & { id: string; label: TaskLabel
 export type ExtendedStartTask = StartTask & { id: string; label: TaskLabel };
 export type ExtendedEndTask = EndTask & { id: string; label: TaskLabel };
 export type ExtendedSimpleTask = SimpleTask & { id: string; label: TaskLabel };
+export type ExtendedSetVariableTask = SetVariableTask & { id: string; label: TaskLabel };
 
 export type ExtendedTask =
   | ExtendedDecisionTask
@@ -297,7 +304,8 @@ export type ExtendedTask =
   | ExtendedEndTask
   | ExtendedSimpleTask
   | ExtendedKafkaPublishTask
-  | ExtendedJsonJQTask;
+  | ExtendedJsonJQTask
+  | ExtendedSetVariableTask;
 
 export type Workflow<T extends Task = Task> = {
   name: string;
