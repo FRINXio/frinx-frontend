@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Create directory
-        run: mkdir build_client
+        run: mkdir build-client
       - name: Install frontend
         run: yarn install
       - name: Prepare env variable
