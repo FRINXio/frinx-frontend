@@ -398,6 +398,8 @@ export function createSystemTasks(): TaskLabel[] {
 }
 
 export function getTaskLabel(t: Task): TaskLabel {
+  // assigning a label to a task because in switch statement we can't use task.type - type of t param is never
+  const task = t;
   switch (t.type) {
     case 'DECISION':
       return 'decision';
@@ -446,6 +448,8 @@ export function getTaskLabel(t: Task): TaskLabel {
       // throw new Error('should never happen');
     }
     default:
+      // WARNING: we are returning custom when unexpected task type is found in workflow definition
+      console.warn(`Received unknown task type of ${task.type}, returning "custom"`);
       return 'custom';
   }
 }
