@@ -1,0 +1,19 @@
+name: Integration tests
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    # env:
+      # PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+      # PRIVATE_NPM_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+      # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      # TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
+      - name: Cypress tests
+        uses: cypress-io/github-action@v4
