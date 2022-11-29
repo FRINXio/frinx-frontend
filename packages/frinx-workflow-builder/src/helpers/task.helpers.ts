@@ -447,8 +447,11 @@ export function getTaskLabel(t: Task): TaskLabel {
       return 'simple';
       // throw new Error('should never happen');
     }
+    case 'SET_VARIABLE':
+      return 'set variable';
     default:
       // WARNING: we are returning custom when unexpected task type is found in workflow definition
+      // eslint-disable-next-line no-console
       console.warn(`Received unknown task type of ${task.type}, returning "custom"`);
       return 'custom';
   }
