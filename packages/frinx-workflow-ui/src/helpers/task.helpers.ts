@@ -447,7 +447,7 @@ export function getTaskLabel(t: Task): TaskLabel {
       // throw new Error('should never happen');
     }
     default:
-      throw new Error('should never happen');
+      return 'custom';
   }
 }
 
