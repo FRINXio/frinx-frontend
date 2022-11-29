@@ -10,8 +10,6 @@ jobs:
     env:
       PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
       PRIVATE_NPM_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v3
@@ -19,12 +17,8 @@ jobs:
         run: cp .yarnrc.ci.yml .yarnrc.yml
       - name: Copy yarn.lock file
         run: cp yarn.lock yarn.lock.orig
-      # - name: Install dependencies
-      #   run: yarn install --immutable
       - name: Create directory
         run: mkdir build-client
-      # - name: Install frontend
-      #   run: yarn install
       - name: Prepare env variable
         run: cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
       - name: Cypress tests
