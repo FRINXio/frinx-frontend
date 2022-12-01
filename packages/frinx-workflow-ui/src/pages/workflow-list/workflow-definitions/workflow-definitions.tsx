@@ -68,7 +68,7 @@ const WorkflowDefinitions = () => {
 
             return false;
           });
-    setItemList(results);
+    setItemList(results, 1);
   }, [workflows, labels, keywords, setItemList]);
 
   const updateFavourite = (workflow: Workflow) => {
@@ -111,7 +111,7 @@ const WorkflowDefinitions = () => {
             return a.name.localeCompare(b.name);
           }) || [];
         setWorkflows(dataset);
-        setItemList(dataset);
+        setItemList(dataset, 1);
         setAllLabels(getLabels(dataset));
       });
     });
