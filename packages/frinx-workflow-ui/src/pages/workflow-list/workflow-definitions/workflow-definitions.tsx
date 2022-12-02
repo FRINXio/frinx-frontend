@@ -111,7 +111,7 @@ const WorkflowDefinitions = () => {
             return a.name.localeCompare(b.name);
           }) || [];
         setWorkflows(dataset);
-        setItemList(dataset, 1);
+        setItemList(dataset);
         setAllLabels(getLabels(dataset));
       });
     });
