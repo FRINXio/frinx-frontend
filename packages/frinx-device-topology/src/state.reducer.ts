@@ -1,5 +1,6 @@
 import produce from 'immer';
 import {
+  BackupGraphNode,
   getDefaultPositionsMap,
   getInterfacesPositions,
   GraphEdge,
@@ -18,6 +19,9 @@ export type State = {
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
+  selectedVersion: string | null;
+  backupNodes: BackupGraphNode[];
+  backupEdges: GraphEdge[];
 };
 
 export const initialState: State = {
@@ -29,6 +33,9 @@ export const initialState: State = {
   selectedEdge: null,
   connectedNodeIds: [],
   selectedLabels: [],
+  selectedVersion: null,
+  backupNodes: [],
+  backupEdges: [],
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -71,6 +78,15 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_LABELS': {
         acc.selectedLabels = action.labels;
+        return acc;
+      }
+      case 'SET_SELECTED_VERSION': {
+        acc.selectedVersion = action.version;
+        return acc;
+      }
+      case 'SET_BACKUP_NODES_AND_EDGES': {
+        acc.backupNodes = action.payload.nodes;
+        acc.backupEdges = action.payload.edges;
         return acc;
       }
       default:

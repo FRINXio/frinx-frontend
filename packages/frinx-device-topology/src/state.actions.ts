@@ -1,7 +1,12 @@
-import { GraphEdge, GraphNode, Position } from './pages/topology/graph.helpers';
+import { BackupGraphNode, GraphEdge, GraphNode, Position } from './pages/topology/graph.helpers';
 
 export type NodesEdgesPayload = {
   nodes: GraphNode[];
+  edges: GraphEdge[];
+};
+
+export type BackupNodesEdgesPayload = {
+  nodes: BackupGraphNode[];
   edges: GraphEdge[];
 };
 
@@ -31,6 +36,14 @@ export type StateAction =
   | {
       type: 'SET_SELECTED_LABELS';
       labels: LabelItem[];
+    }
+  | {
+      type: 'SET_SELECTED_VERSION';
+      version: string | null;
+    }
+  | {
+      type: 'SET_BACKUP_NODES_AND_EDGES';
+      payload: BackupNodesEdgesPayload;
     };
 
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
@@ -69,4 +82,16 @@ export function setSelectedLabels(labels: LabelItem[]): StateAction {
   };
 }
 
-// export function
+export function setSelectedVersion(version: string | null): StateAction {
+  return {
+    type: 'SET_SELECTED_VERSION',
+    version,
+  };
+}
+
+export function setBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}

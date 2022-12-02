@@ -33,6 +33,12 @@ export type GraphEdge = {
   target: SourceTarget;
 };
 
+export type BackupGraphNode = {
+  id: string;
+  name: string;
+  interfaces: string[];
+};
+
 export const NODE_CIRCLE_RADIUS = 30;
 
 export type PositionsMap = {
