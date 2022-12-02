@@ -68,7 +68,7 @@ const WorkflowDefinitions = () => {
 
             return false;
           });
-    setItemList(results, 1);
+    setItemList(results);
   }, [workflows, labels, keywords, setItemList]);
 
   const updateFavourite = (workflow: Workflow) => {

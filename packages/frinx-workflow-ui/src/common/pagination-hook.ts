@@ -7,7 +7,7 @@ type PaginationParams<T> = {
 };
 
 export type UsePaginationReturn<T> = {
-  setItemList: (newItems: Array<T>, page: number) => void;
+  setItemList: (newItems: Array<T>, page?: number) => void;
   isPaginating: boolean;
   currentPage: number;
   setCurrentPage: Dispatch<SetStateAction<number>>;
@@ -61,7 +61,7 @@ export function usePagination<T>({
     return true;
   });
 
-  const setItemList = useCallback((newItems: Array<T>, page: number) => {
+  const setItemList = useCallback((newItems: Array<T>, page?: number) => {
     setItems(newItems);
     setCurrentPage(page || 1);
   }, []);
