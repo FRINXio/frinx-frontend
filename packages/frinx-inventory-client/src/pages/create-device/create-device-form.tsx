@@ -146,7 +146,12 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
-      const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value), port: Number(data.port) };
+      const updatedData = {
+        ...data,
+        labelIds: selectedLabels.map((label) => label.value),
+        port: Number(data.port),
+        mountParameters: JSON.parse(data.mountParameters),
+      };
       const { blueprintParams, ...rest } = updatedData;
       onFormSubmit(rest);
     },
