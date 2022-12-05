@@ -37,7 +37,7 @@ const Root: VoidFunctionComponent = () => {
         element={<EditBlueprintPage onSuccess={handleBlueprintListRedirect} onCancel={handleBlueprintListRedirect} />}
       />
       <Route path="/transactions" element={<TransactionList />} />
-      <Route path="/terminal/:deviceId" element={<DeviceTerminal />} />
+      <Route path=":deviceId/terminal" element={<DeviceTerminal />} />
     </Routes>
   );
 };

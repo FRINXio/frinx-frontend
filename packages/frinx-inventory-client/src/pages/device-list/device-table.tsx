@@ -156,7 +156,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     size="sm"
                     icon={<Icon size={12} as={FeatherIcon} icon="terminal" />}
                     as={Link}
-                    to={`../terminal/${device.id}`}
+                    to={`../${device.id}/terminal`}
+                    target="_blank"
                   />
                   <IconButton
                     aria-label="edit"

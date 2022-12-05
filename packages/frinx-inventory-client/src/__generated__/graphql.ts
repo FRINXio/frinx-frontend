@@ -669,6 +669,16 @@ export type SortDirection =
   | 'ASC'
   | 'DESC';
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  uniconfigShell: Maybe<Scalars['String']>;
+};
+
+
+export type SubscriptionUniconfigShellArgs = {
+  input?: InputMaybe<Scalars['String']>;
+};
+
 export type SyncFromNetworkPayload = {
   __typename?: 'SyncFromNetworkPayload';
   dataStore: Maybe<DataStore>;
@@ -964,6 +974,20 @@ export type DeleteDeviceMutationVariables = Exact<{
 
 
 export type DeleteDeviceMutation = { __typename?: 'Mutation', deleteDevice: { __typename?: 'DeleteDevicePayload', device: { __typename?: 'Device', id: string } | null } };
+
+export type DeviceDetailQueryVariables = Exact<{
+  deviceId: Scalars['ID'];
+}>;
+
+
+export type DeviceDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' } | null };
+
+export type TerminalSubscriptionVariables = Exact<{
+  command?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type TerminalSubscription = { __typename?: 'Subscription', uniconfigShell: string | null };
 
 export type BlueprintQueryVariables = Exact<{
   id: Scalars['ID'];
