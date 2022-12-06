@@ -8761,6 +8761,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cypress-recurse@npm:^1.24.0":
+  version: 1.24.0
+  resolution: "cypress-recurse@npm:1.24.0"
+  dependencies:
+    humanize-duration: ^3.27.3
+  checksum: 9176c659e3d1f2ecc1b09f3e41c96b2ec2e68dc161d234f3ef6391409c3fa376cfaa011b139205c5507d1b713cab64feb5fd11fd7cb1ca570d60fd4945e47083
+  languageName: node
+  linkType: hard
+
+"cypress-xpath@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "cypress-xpath@npm:2.0.1"
+  checksum: f2c4675db536fc26c9dc0ab650a31451bf96112438e68d7001c2c0259221035b5d1512d3c461f2a977fd92a7bb2a757070c054fb2127f70a3a72c807b02c391e
+  languageName: node
+  linkType: hard
+
 "cypress@npm:^11.0.1":
   version: 11.0.1
   resolution: "cypress@npm:11.0.1"
@@ -12743,6 +12759,13 @@ __metadata:
   version: 2.1.0
   resolution: "human-signals@npm:2.1.0"
   checksum: b87fd89fce72391625271454e70f67fe405277415b48bcc0117ca73d31fa23a4241787afdc8d67f5a116cf37258c052f59ea82daffa72364d61351423848e3b8
+  languageName: node
+  linkType: hard
+
+"humanize-duration@npm:^3.27.3":
+  version: 3.27.3
+  resolution: "humanize-duration@npm:3.27.3"
+  checksum: 17193537334676cbff156a5f60ea6349e4e981f33062fdae901ac10ed096d4f05e7b8839d362cbda7a06ade2a499f0a655e3c1bf9da6d4a234d99ed0498ba516
   languageName: node
   linkType: hard
 
@@ -17070,10 +17093,13 @@ __metadata:
   dependencies:
     "@testing-library/cypress": ^8.0.3
     cypress: ^11.0.1
+    cypress-recurse: ^1.24.0
+    cypress-xpath: ^2.0.1
     dedubcheck: 0.0.8
     npm-run-all: 4.1.5
     prettier: 2.6.2
     turbo: ^1.4.3
+    xpath: ^0.0.32
   languageName: unknown
   linkType: soft
 
@@ -19674,6 +19700,13 @@ __metadata:
   version: 2.0.4
   resolution: "xmlcreate@npm:2.0.4"
   checksum: b8dd52668b9aea77cd1408fa85538c14bb8dcc98b4e7bb51e76696c9c115d59eba7240298d0c4fd2caf8f1a8e283ab4e5c7b9a6bcfcf23a8b48f5068b677b748
+  languageName: node
+  linkType: hard
+
+"xpath@npm:^0.0.32":
+  version: 0.0.32
+  resolution: "xpath@npm:0.0.32"
+  checksum: 887e9747b960ea45fb47a9464744424512de0a49205e82c2ad6be662d7a2f1a75145662a143304340864c6da68fd8d767cce4065cc198ee07a3d4897e0a3d4bb
   languageName: node
   linkType: hard
 
