@@ -3677,6 +3677,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@frinx/e2e-test@workspace:cypress":
+  version: 0.0.0-use.local
+  resolution: "@frinx/e2e-test@workspace:cypress"
+  dependencies:
+    "@frinx/eslint-config-typescript": 19.0.4-build.1
+    "@testing-library/cypress": ^8.0.3
+    "@typescript-eslint/eslint-plugin": 5.27.1
+    "@typescript-eslint/parser": 5.27.1
+    cypress: ^11.0.1
+    eslint: 8.27.0
+    eslint-config-prettier: 7.2.0
+    eslint-import-resolver-typescript: 2.7.1
+    eslint-plugin-import: 2.26.0
+    eslint-plugin-jsx-a11y: 6.6.1
+    eslint-plugin-react: 7.31.10
+    eslint-plugin-react-hooks: 4.6.0
+    typescript: 4.8.4
+  languageName: unknown
+  linkType: soft
+
 "@frinx/eslint-config-typescript-base@npm:15.0.0-build.1":
   version: 15.0.0-build.1
   resolution: "@frinx/eslint-config-typescript-base@npm:15.0.0-build.1"
@@ -17068,8 +17088,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
-    "@testing-library/cypress": ^8.0.3
-    cypress: ^11.0.1
     dedubcheck: 0.0.8
     npm-run-all: 4.1.5
     prettier: 2.6.2
