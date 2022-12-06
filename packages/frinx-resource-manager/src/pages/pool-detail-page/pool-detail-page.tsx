@@ -1,4 +1,22 @@
-import { Box, Button, Center, Divider, Heading, HStack, Progress, Spacer, Table, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Divider,
+  Heading,
+  HStack,
+  Progress,
+  Spacer,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
+} from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
