@@ -1,7 +1,7 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { DeviceSize } from '../../__generated__/graphql';
 
-function getRandomInt(max: number): number {
+export function getRandomInt(max: number): number {
   return Math.floor(Math.random() * max);
 }
 
