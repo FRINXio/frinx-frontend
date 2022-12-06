@@ -89,7 +89,11 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       initialValues: INITIAL_VALUES,
       validationSchema: EditDeviceFormSchema,
       onSubmit: (data) => {
-        const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value) };
+        const updatedData = {
+          ...data,
+          labelIds: selectedLabels.map((label) => label.value),
+          mountParameters: JSON.parse(data.mountParameters),
+        };
         onUpdate(updatedData);
         setSubmitting(false);
       },
