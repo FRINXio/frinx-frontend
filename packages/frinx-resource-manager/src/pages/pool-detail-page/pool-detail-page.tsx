@@ -1,4 +1,4 @@
-import { Box, Button, Center, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Center, Divider, Heading, HStack, Progress, Spacer, Table, Tbody, Td, Text, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
@@ -131,6 +131,31 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
           {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity.toString()}
         </Text>
+      </Box>
+
+      <Box background="white" padding={5} marginTop={5}>
+        <Text fontSize="lg" marginBottom={5}>
+          Pool properties
+        </Text>
+        <Table background="white" size="sm">
+          <Thead bgColor="gray.200">
+            <Tr>
+              <Th>Property</Th>
+              <Th>Value</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {Object.keys(resourcePool.PoolProperties).map((entry) => {
+              return (
+                <Tr>
+                  <Td width="50%">{entry}</Td>
+                  <Td width="50%">{resourcePool.PoolProperties[entry].toString()}</Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+          <Tfoot />
+        </Table>
       </Box>
 
       <PoolDetailAllocatedResourceBox
