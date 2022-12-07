@@ -24,5 +24,6 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
