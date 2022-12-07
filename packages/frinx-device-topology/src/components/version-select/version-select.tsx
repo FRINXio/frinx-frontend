@@ -56,6 +56,7 @@ const VersionSelect: VoidFunctionComponent = () => {
         // @ts-ignore query is called only when pause is not null, based on `pause` option
         version: state.selectedVersion,
       },
+      requestPolicy: 'network-only',
     },
   );
 

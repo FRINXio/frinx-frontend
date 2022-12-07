@@ -3,12 +3,17 @@ import React, { VoidFunctionComponent } from 'react';
 import { useStateContext } from '../../state.provider';
 import { setSelectedEdge } from '../../state.actions';
 import { GraphEdge, isTargetingActiveNode, getrCurvePath, getLinePoints, getControlPoints } from './graph.helpers';
+import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 
 const EDGE_GAP = 75;
 
-const Edges: VoidFunctionComponent = () => {
+type Props = {
+  edgesWithDiff: GraphEdgeWithDiff[];
+};
+
+const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
   const { state, dispatch } = useStateContext();
-  const { edges, nodePositions, interfaceGroupPositions, connectedNodeIds, selectedNode, selectedEdge } = state;
+  const { nodePositions, interfaceGroupPositions, connectedNodeIds, selectedNode, selectedEdge } = state;
 
   const handleEdgeClick = (edge: GraphEdge | null) => {
     dispatch(setSelectedEdge(edge));
@@ -16,7 +21,7 @@ const Edges: VoidFunctionComponent = () => {
 
   return (
     <g>
-      {edges.map((edge) => {
+      {edgesWithDiff.map((edge) => {
         // dont show edges that are connected to active node
         if (isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions)) {
           return null;

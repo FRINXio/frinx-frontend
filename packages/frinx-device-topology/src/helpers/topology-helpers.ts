@@ -1,9 +1,13 @@
 import { v4 as uuid } from 'uuid';
-import { GraphNode, BackupGraphNode, getRandomInt } from '../pages/topology/graph.helpers';
+import { GraphNode, BackupGraphNode, GraphEdge, getRandomInt } from '../pages/topology/graph.helpers';
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
 export type GraphNodeWithDiff = GraphNode & {
+  change: Change;
+};
+
+export type GraphEdgeWithDiff = GraphEdge & {
   change: Change;
 };
 
@@ -42,4 +46,32 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
     });
 
   return [...currentNodesWithDiff, ...deletedBackupNodesWithDiff];
+}
+
+export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): GraphEdgeWithDiff[] {
+  const edgesMap = new Map(edges.map((e) => [e.id, e]));
+  const backupEdgesMap = new Map(edges.map((e) => [e.id, e]));
+  const currentEdgesWithDiff = edges.map((e) => {
+    if (backupEdgesMap.has(e.id)) {
+      return {
+        ...e,
+        change: 'NONE' as Change,
+      };
+    } else {
+      return {
+        ...e,
+        change: 'ADDED' as Change,
+      };
+    }
+  });
+
+  const deletedBackupEdgesWithDiff = backupEdges
+    .filter((e) => !edgesMap.has(e.id))
+    .map((e) => {
+      return {
+        ...e,
+        change: 'DELETED' as Change,
+      };
+    });
+  return [...currentEdgesWithDiff, ...deletedBackupEdgesWithDiff];
 }
