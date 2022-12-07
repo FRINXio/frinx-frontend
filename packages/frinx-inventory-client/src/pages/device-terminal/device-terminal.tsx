@@ -1,22 +1,9 @@
 import 'xterm/css/xterm.css';
-import React, { useEffect, useMemo, useRef, VoidFunctionComponent } from 'react';
-import { Terminal } from 'xterm';
-import { useParams } from 'react-router-dom';
-import { gql, useQuery, useSubscription } from 'urql';
+import React, { useCallback, useRef, VoidFunctionComponent } from 'react';
+import { gql, useSubscription } from 'urql';
 import { Progress } from '@chakra-ui/react';
 import { useTerm } from '../../hooks/use-term';
 import { TerminalSubscription, TerminalSubscriptionVariables } from '../../__generated__/graphql';
-
-const QUERY_DEVICE = gql`
-  query DeviceDetail($deviceId: ID!) {
-    node(id: $deviceId) {
-      ... on Device {
-        id
-        name
-      }
-    }
-  }
-`;
 
 const TERMINAL_SUBSCRIPTION = gql`
   subscription Terminal($command: String) {
@@ -25,40 +12,31 @@ const TERMINAL_SUBSCRIPTION = gql`
 `;
 
 const TerminalComponent: VoidFunctionComponent = () => {
-  const { deviceId } = useParams();
   const [command, setCommand] = React.useState('');
-  const [submittedCommand, setSubmittedCommand] = React.useState('');
+  const terminalRef = useRef<HTMLDivElement>(null);
 
-  const [{ data: device, fetching, error }] = useQuery({ query: QUERY_DEVICE, variables: { deviceId } });
-  const [{ data: terminalData, fetching: subFetching, error: subError }] = useSubscription<
-    TerminalSubscription,
-    TerminalSubscriptionVariables
+  const [{ data: terminalData, fetching, error }] = useSubscription<
+    TerminalSubscriptionVariables,
+    TerminalSubscription
   >({
     query: TERMINAL_SUBSCRIPTION,
     variables: {
-      command: submittedCommand,
+      command,
     },
   });
 
-  console.log(terminalData);
-
-  const terminalRef = useRef<HTMLDivElement | null>(null);
-  const { writeToBuffer } = useTerm({
-    promptName: `frinx@${device?.node?.name ?? 'unknown'}:~$`,
+  useTerm({
     terminalRef,
-    onPromptSubmit: () => {
-      if (terminalData?.uniconfigShell != null) {
-        writeToBuffer(terminalData.uniconfigShell);
-      }
-    },
+    uniconfigShell: terminalData?.uniconfigShell,
+    onCommandChange: useCallback((cmd) => setCommand(cmd), []),
   });
 
   if (fetching) {
     return <Progress isIndeterminate size="sm" marginTop={-10} />;
   }
 
-  if (error != null || device == null) {
-    return <div>Couldn&apos;t load device</div>;
+  if (error != null || terminalData == null) {
+    return <div>Couldn&apos;t load uniconfig shell</div>;
   }
 
   return (
