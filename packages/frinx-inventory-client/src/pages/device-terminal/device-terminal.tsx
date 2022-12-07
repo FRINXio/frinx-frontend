@@ -1,16 +1,11 @@
 import 'xterm/css/xterm.css';
-import React, { useEffect, useRef, VoidFunctionComponent } from 'react';
+import React, { useEffect, useMemo, useRef, VoidFunctionComponent } from 'react';
 import { Terminal } from 'xterm';
 import { useParams } from 'react-router-dom';
-import { gql, SubscriptionHandler, useQuery, useSubscription } from 'urql';
-import { Button, HStack, Input, Progress } from '@chakra-ui/react';
+import { gql, useQuery, useSubscription } from 'urql';
+import { Progress } from '@chakra-ui/react';
 import { useTerm } from '../../hooks/use-term';
-import {
-  Subscription,
-  SubscriptionUniconfigShellArgs,
-  TerminalSubscription,
-  TerminalSubscriptionVariables,
-} from '../../__generated__/graphql';
+import { TerminalSubscription, TerminalSubscriptionVariables } from '../../__generated__/graphql';
 
 const QUERY_DEVICE = gql`
   query DeviceDetail($deviceId: ID!) {
@@ -32,36 +27,31 @@ const TERMINAL_SUBSCRIPTION = gql`
 const TerminalComponent: VoidFunctionComponent = () => {
   const { deviceId } = useParams();
   const [command, setCommand] = React.useState('');
-  const [jozko, setJozko] = React.useState('');
+  const [submittedCommand, setSubmittedCommand] = React.useState('');
 
   const [{ data: device, fetching, error }] = useQuery({ query: QUERY_DEVICE, variables: { deviceId } });
-  const [{ data: terminalData, fetching: subFetching, error: subError }] = useSubscription({
+  const [{ data: terminalData, fetching: subFetching, error: subError }] = useSubscription<
+    TerminalSubscription,
+    TerminalSubscriptionVariables
+  >({
     query: TERMINAL_SUBSCRIPTION,
     variables: {
-      command: jozko,
+      command: submittedCommand,
     },
   });
 
   console.log(terminalData);
 
   const terminalRef = useRef<HTMLDivElement | null>(null);
-  const { clearPrompt, newPrompt, initTerminal, handleCommands } = useTerm({
+  const { writeToBuffer } = useTerm({
     promptName: `frinx@${device?.node?.name ?? 'unknown'}:~$`,
+    terminalRef,
+    onPromptSubmit: () => {
+      if (terminalData?.uniconfigShell != null) {
+        writeToBuffer(terminalData.uniconfigShell);
+      }
+    },
   });
-
-  useEffect(() => {
-    const terminal = new Terminal();
-    if (terminalRef.current) {
-      terminal.open(terminalRef.current);
-
-      initTerminal(terminal);
-      handleCommands(terminal);
-    }
-
-    return () => {
-      terminal.dispose();
-    };
-  }, [initTerminal, handleCommands]);
 
   if (fetching) {
     return <Progress isIndeterminate size="sm" marginTop={-10} />;
@@ -72,22 +62,14 @@ const TerminalComponent: VoidFunctionComponent = () => {
   }
 
   return (
-    <>
-      <HStack>
-        <Input value={command} onChange={(e) => setCommand(e.target.value)} />
-        <Button onClick={() => setJozko(command)}>Send</Button>
-      </HStack>
-      <div
-        ref={terminalRef}
-        style={{
-          width: '100%',
-          height: '100vh',
-          textAlign: 'left',
-          fontSize: '20px',
-          // marginTop: '-40px',
-        }}
-      />
-    </>
+    <div
+      ref={terminalRef}
+      style={{
+        width: '100%',
+        height: '100vh',
+        textAlign: 'left',
+      }}
+    />
   );
 };
 

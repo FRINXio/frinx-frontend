@@ -1,94 +1,125 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
 
 type Options = {
   promptName: string;
-  onPromptSubmit: (cmd: string) => void;
+  terminalRef: React.RefObject<HTMLDivElement>;
+  onPromptSubmit: () => void;
   onClear: () => void;
 };
 
 type HookReturnHandlers = {
-  newPrompt: (terminal: Terminal) => void;
-  clearPrompt: (terminal: Terminal) => void;
-  initTerminal: (terminal: Terminal) => void;
-  handleCommands: (terminal: Terminal) => void;
+  newPrompt: () => void;
+  clearPrompt: () => void;
+  initTerminal: () => void;
+  handleCommands: () => void;
+  writeToBuffer: (cmd: string) => void;
 };
 
 export const useTerm = (options: Partial<Options> = {}): HookReturnHandlers => {
-  const { promptName, onClear, onPromptSubmit } = options;
+  const { promptName, terminalRef, onClear, onPromptSubmit } = options;
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
+  const [handlerFuncs, setHandlerFuncs] = useState<HookReturnHandlers>({} as HookReturnHandlers);
 
-  const handlers = useMemo(
-    () => ({
-      newPrompt: (terminal: Terminal) => {
-        terminal.write(`\n${promptName}`);
-      },
+  const handlers = useCallback(
+    (terminal: Terminal) => {
+      const terminalClosure = terminal;
+      return {
+        newPrompt: () => {
+          terminalClosure?.write(`\n${promptName} `);
+        },
 
-      clearPrompt: (terminal: Terminal) => {
-        terminal.clear();
-        handlers.newPrompt(terminal);
-      },
+        writeToBuffer: (cmd: string) => {
+          setCmdHistory((prev) => [...prev, cmd]);
+          terminalClosure?.write(`\r ${cmd} `);
+        },
 
-      initTerminal: (terminal: Terminal) => {
-        terminal.write(`${promptName} `);
-        // eslint-disable-next-line no-param-reassign
-        terminal.options = {
-          convertEol: true,
-          cursorBlink: true,
-          fontSize: 20,
-          fontWeight: 800,
-          allowProposedApi: true,
-        };
-      },
+        clearPrompt: () => {
+          terminalClosure?.clear();
+          handlers(terminalClosure).newPrompt();
+          onClear?.();
+        },
 
-      handleCommands: (terminal: Terminal) => {
-        terminal.onKey(({ key, domEvent }) => {
-          if (domEvent.code === 'Backspace' && terminal.buffer.normal.cursorX >= 13) {
-            terminal.write('\b \b');
-            return;
-          }
+        initTerminal: () => {
+          terminalClosure?.write(`${promptName} `);
+          // eslint-disable-next-line no-param-reassign, @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          terminalClosure.options = {
+            convertEol: true,
+            cursorBlink: true,
+            fontSize: 20,
+            fontWeight: 800,
+            allowProposedApi: true,
+          };
+        },
 
-          console.log('cmd', terminal.buffer.active.getLine(terminal.buffer.active.baseY)?.translateToString());
+        handleCommands: () => {
+          terminalClosure?.onKey(({ key, domEvent }) => {
+            if (domEvent.code === 'Backspace' && terminalClosure?.buffer.normal.cursorX >= 13) {
+              terminalClosure?.write('\b \b');
+              return;
+            }
 
-          switch (domEvent.code) {
-            case 'Enter':
-              handlers.newPrompt(terminal);
-              break;
-            case 'Backslash':
-              terminal.write('\x1B[3C');
-              break;
-            case 'ArrowUp':
-              terminal.write('[1A');
-              break;
-            case 'ArrowDown':
-              terminal.write('[1B');
-              break;
-            case 'ArrowLeft':
-              terminal.write('[1D');
-              break;
-            case 'ArrowRight':
-              terminal.write('[1C');
-              break;
-            case 'Delete':
-              terminal.write('[3C');
-              break;
-            case 'Home':
-            case 'End':
-            case 'Escape':
-              terminal.write('[1G');
-              break;
-            case 'Tab':
-              terminal.write('\t');
-              break;
-            default:
-              terminal.write(key);
-              break;
-          }
-        });
-      },
-    }),
-    [promptName],
+            switch (domEvent.code) {
+              case 'Enter':
+                handlers(terminalClosure).newPrompt();
+                onPromptSubmit?.();
+                break;
+              case 'Backslash':
+                terminalClosure?.write('\x1B[3C');
+                break;
+              case 'ArrowUp':
+                terminalClosure?.write('[1A');
+                break;
+              case 'ArrowDown':
+                terminalClosure?.write('[1B');
+                break;
+              case 'ArrowLeft':
+                terminalClosure?.write('[1D');
+                break;
+              case 'ArrowRight':
+                terminalClosure?.write('[1C');
+                break;
+              case 'Delete':
+                terminalClosure?.write('[3C');
+                break;
+              case 'Home':
+              case 'End':
+              case 'Escape':
+                terminalClosure?.write('[1G');
+                break;
+              case 'Tab':
+                terminalClosure?.write('\t');
+                break;
+              default:
+                terminalClosure?.write(key);
+                break;
+            }
+          });
+        },
+      };
+    },
+    [onClear, onPromptSubmit],
   );
 
-  return { ...handlers };
+  useEffect(() => {
+    const terminal = new Terminal();
+    console.log('initializing terminal');
+    if (terminalRef?.current) {
+      terminal?.open(terminalRef.current);
+
+      handlers(terminal).initTerminal();
+      handlers(terminal).handleCommands();
+      setHandlerFuncs(handlers(terminal));
+    }
+
+    return () => {
+      console.log('disposing terminal');
+      terminal?.dispose();
+    };
+  }, [handlers, terminalRef]);
+
+  return {
+    ...handlerFuncs,
+  };
 };

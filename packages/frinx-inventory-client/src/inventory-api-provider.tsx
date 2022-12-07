@@ -17,7 +17,7 @@ export type Props = {
 };
 
 export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
-  const wsClient = createWSClient({ url: 'ws://localhost:8001/graphql' });
+  const wsClient = createWSClient({ url: 'wss://localhost:8001/graphql' });
 
   const { current: urqlClient } = useRef(
     createClient({
