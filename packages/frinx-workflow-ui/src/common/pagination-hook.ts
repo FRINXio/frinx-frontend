@@ -61,9 +61,9 @@ export function usePagination<T>({
     return true;
   });
 
-  const setItemList = useCallback((newItems: Array<T>, page?: number) => {
+  const setItemList = useCallback((newItems: Array<T>, page = 1) => {
     setItems(newItems);
-    setCurrentPage(page || 1);
+    setCurrentPage(page);
   }, []);
 
   return {
