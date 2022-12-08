@@ -45,7 +45,7 @@ const LabelsFilter: VoidFunctionComponent = () => {
     <SelectedLabels
       items={labels}
       selectedLabels={selectedLabels}
-      labelText="Filter nodes:"
+      labelText="Filter by labels:"
       onSelectionChange={handleSelectedLabelsChange}
     />
   );

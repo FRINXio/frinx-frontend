@@ -41,12 +41,14 @@ const Topology: VoidFunctionComponent = () => {
             Device topology
           </Heading>
         </Flex>
-        <Box>
-          <VersionSelect />
-        </Box>
-        <Box>
-          <LabelsFilter />
-        </Box>
+        <Flex gridGap={4}>
+          <Box flex={1}>
+            <VersionSelect />
+          </Box>
+          <Box flex={1}>
+            <LabelsFilter />
+          </Box>
+        </Flex>
         <Box>
           <TopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />
         </Box>

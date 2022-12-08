@@ -1,15 +1,30 @@
-import { Box } from '@chakra-ui/react';
+import { Box, chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useStateContext } from '../../state.provider';
 import { setSelectedEdge } from '../../state.actions';
 import { GraphEdge, isTargetingActiveNode, getrCurvePath, getLinePoints, getControlPoints } from './graph.helpers';
-import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
+import { Change, GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 
 const EDGE_GAP = 75;
 
 type Props = {
   edgesWithDiff: GraphEdgeWithDiff[];
 };
+
+const Path = chakra('path');
+
+function getEdgeColor(change: Change) {
+  if (change === 'DELETED') {
+    return 'red.400';
+  }
+  if (change === 'ADDED') {
+    return 'green.400';
+  }
+  if (change === 'UPDATED') {
+    return 'yellow.400';
+  }
+  return 'gray.800';
+}
 
 const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
   const { state, dispatch } = useStateContext();
@@ -41,9 +56,9 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
           <React.Fragment key={edge.id}>
             {isActive ? (
               <g>
-                <path
+                <Path
                   strokeWidth={1}
-                  stroke="black"
+                  stroke={edge.change === 'DELETED' ? 'red.400' : 'black'}
                   strokeLinejoin="round"
                   fill="none"
                   d={getrCurvePath(start, end, controlPoints)}
@@ -56,7 +71,10 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
                   fill="none"
                   d={getrCurvePath(start, end, controlPoints)}
                   cursor="pointer"
-                  onClick={() => handleEdgeClick(edge)}
+                  pointerEvents={edge.change === 'DELETED' ? 'none' : 'all'}
+                  onClick={() => {
+                    handleEdgeClick(edge);
+                  }}
                 />
               </g>
             ) : (
@@ -66,7 +84,7 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
                 y1={start.y}
                 x2={end.x}
                 y2={end.y}
-                stroke="gray.800"
+                stroke={getEdgeColor(edge.change)}
                 strokeWidth={isActive ? 3 : 1}
                 strokeLinecap="round"
                 borderWidth={3}

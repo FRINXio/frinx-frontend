@@ -18,12 +18,12 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
     if (backupNodesMap.has(n.id)) {
       return {
         ...n,
-        change: 'NONE' as Change,
+        change: 'NONE' as const,
       };
     } else {
       return {
         ...n,
-        change: 'ADDED' as Change,
+        change: 'ADDED' as const,
       };
     }
   });
@@ -41,7 +41,7 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
           position: { x: getRandomInt(1000), y: getRandomInt(600) },
         },
         interfaces,
-        change: 'DELETED' as Change,
+        change: 'DELETED' as const,
       };
     });
 
@@ -55,12 +55,12 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
     if (backupEdgesMap.has(e.id)) {
       return {
         ...e,
-        change: 'NONE' as Change,
+        change: 'NONE' as const,
       };
     } else {
       return {
         ...e,
-        change: 'ADDED' as Change,
+        change: 'ADDED' as const,
       };
     }
   });
@@ -70,7 +70,7 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
     .map((e) => {
       return {
         ...e,
-        change: 'DELETED' as Change,
+        change: 'DELETED' as const,
       };
     });
   return [...currentEdgesWithDiff, ...deletedBackupEdgesWithDiff];

@@ -1,13 +1,14 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
+import { Change, GraphNodeWithDiff } from '../../helpers/topology-helpers';
+import { PositionGroupsMap, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 import { getDeviceNodeTransformProperties } from './node-icon.helpers';
-import { GraphNode, PositionGroupsMap, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 
 type Props = {
   positions: PositionsWithGroupsMap;
   isSelected: boolean;
   isFocused: boolean;
-  node: GraphNode;
+  node: GraphNodeWithDiff;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
@@ -23,6 +24,43 @@ const getNodeInterfaceGroups = (nodeId: string, interfaceGroupPositions: Positio
   });
 };
 
+const getNodeBackgroundColor = ({ isSelected, change }: { isSelected: boolean; change: Change }) => {
+  if (change === 'DELETED') {
+    return 'red.200';
+  }
+  if (change === 'ADDED') {
+    return 'green.200';
+  }
+  if (change === 'UPDATED') {
+    return 'yellow.200';
+  }
+  return isSelected ? 'blue.500' : 'gray.400';
+};
+const getNodeTextColor = (change: Change) => {
+  if (change === 'DELETED') {
+    return 'red.400';
+  }
+  if (change === 'ADDED') {
+    return 'green.400';
+  }
+  if (change === 'UPDATED') {
+    return 'yellow.400';
+  }
+  return 'black';
+};
+const getNodeIconColor = ({ isSelected, change }: { isSelected: boolean; change: Change }) => {
+  if (change === 'DELETED') {
+    return 'red.400';
+  }
+  if (change === 'ADDED') {
+    return 'green.400';
+  }
+  if (change === 'UPDATED') {
+    return 'yellow.400';
+  }
+  return isSelected ? 'whiteAlpha.800' : 'gray.600';
+};
+
 const NodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
@@ -32,7 +70,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   onPointerMove,
   onPointerUp,
 }) => {
-  const { device } = node;
+  const { device, change } = node;
   const { x, y } = positions.nodes[node.device.name];
   const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device.deviceSize);
@@ -45,6 +83,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
+      pointerEvents={change === 'DELETED' ? 'none' : 'all'}
     >
       <Circle
         r={isFocused ? `${circleDiameter}px` : 0}
@@ -71,17 +110,23 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         </G>
         <Circle
           r={`${circleDiameter / 2}px`}
-          fill={isSelected ? 'blue.500' : 'gray.400'}
+          fill={getNodeBackgroundColor({ isSelected, change })}
           strokeWidth={1}
-          stroke={isSelected ? 'blue.600' : 'gray.400'}
+          stroke={getNodeBackgroundColor({ isSelected, change })}
         />
       </G>
-      <Text height={`${circleDiameter / 2}px`} transform="translate3d(35px, 5px, 0)" fontWeight="600" userSelect="none">
+      <Text
+        height={`${circleDiameter / 2}px`}
+        transform="translate3d(35px, 5px, 0)"
+        fontWeight="600"
+        userSelect="none"
+        fill={getNodeTextColor(change)}
+      >
         {device.name}
       </Text>
       <G
         fill="none"
-        stroke={isSelected ? 'whiteAlpha.800' : 'gray.600'}
+        stroke={getNodeIconColor({ isSelected, change })}
         strokeWidth="2px"
         strokeLinecap="round"
         strokeLinejoin="round"
