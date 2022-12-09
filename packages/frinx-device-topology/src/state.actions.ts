@@ -1,3 +1,4 @@
+import { GraphEdgeWithDiff } from './helpers/topology-helpers';
 import { BackupGraphNode, GraphEdge, GraphNode, Position } from './pages/topology/graph.helpers';
 
 export type NodesEdgesPayload = {
@@ -68,7 +69,7 @@ export function setSelectedNode(node: GraphNode | null): StateAction {
   };
 }
 
-export function setSelectedEdge(edge: GraphEdge | null): StateAction {
+export function setSelectedEdge(edge: GraphEdgeWithDiff | null): StateAction {
   return {
     type: 'SET_SELECTED_EDGE',
     edge,

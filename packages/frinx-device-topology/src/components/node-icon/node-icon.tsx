@@ -1,8 +1,14 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { Change, GraphNodeWithDiff } from '../../helpers/topology-helpers';
-import { PositionGroupsMap, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
-import { getDeviceNodeTransformProperties } from './node-icon.helpers';
+import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
+import { PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import {
+  getDeviceNodeTransformProperties,
+  getNodeBackgroundColor,
+  getNodeIconColor,
+  getNodeInterfaceGroups,
+  getNodeTextColor,
+} from './node-icon.helpers';
 
 type Props = {
   positions: PositionsWithGroupsMap;
@@ -17,49 +23,6 @@ type Props = {
 const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
-
-const getNodeInterfaceGroups = (nodeId: string, interfaceGroupPositions: PositionGroupsMap) => {
-  return Object.entries(interfaceGroupPositions).filter(([groupId]) => {
-    return groupId.startsWith(nodeId);
-  });
-};
-
-const getNodeBackgroundColor = ({ isSelected, change }: { isSelected: boolean; change: Change }) => {
-  if (change === 'DELETED') {
-    return 'red.200';
-  }
-  if (change === 'ADDED') {
-    return 'green.200';
-  }
-  if (change === 'UPDATED') {
-    return 'yellow.200';
-  }
-  return isSelected ? 'blue.500' : 'gray.400';
-};
-const getNodeTextColor = (change: Change) => {
-  if (change === 'DELETED') {
-    return 'red.400';
-  }
-  if (change === 'ADDED') {
-    return 'green.400';
-  }
-  if (change === 'UPDATED') {
-    return 'yellow.400';
-  }
-  return 'black';
-};
-const getNodeIconColor = ({ isSelected, change }: { isSelected: boolean; change: Change }) => {
-  if (change === 'DELETED') {
-    return 'red.400';
-  }
-  if (change === 'ADDED') {
-    return 'green.400';
-  }
-  if (change === 'UPDATED') {
-    return 'yellow.400';
-  }
-  return isSelected ? 'whiteAlpha.800' : 'gray.600';
-};
 
 const NodeIcon: VoidFunctionComponent<Props> = ({
   positions,

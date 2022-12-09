@@ -1,9 +1,9 @@
-import { Box, chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { useStateContext } from '../../state.provider';
+import Edge from '../../components/edge/edge';
+import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import { setSelectedEdge } from '../../state.actions';
-import { GraphEdge, isTargetingActiveNode, getrCurvePath, getLinePoints, getControlPoints } from './graph.helpers';
-import { Change, GraphEdgeWithDiff } from '../../helpers/topology-helpers';
+import { useStateContext } from '../../state.provider';
+import { getControlPoints, getLinePoints, isTargetingActiveNode } from './graph.helpers';
 
 const EDGE_GAP = 75;
 
@@ -11,26 +11,11 @@ type Props = {
   edgesWithDiff: GraphEdgeWithDiff[];
 };
 
-const Path = chakra('path');
-
-function getEdgeColor(change: Change) {
-  if (change === 'DELETED') {
-    return 'red.400';
-  }
-  if (change === 'ADDED') {
-    return 'green.400';
-  }
-  if (change === 'UPDATED') {
-    return 'yellow.400';
-  }
-  return 'gray.800';
-}
-
 const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
   const { state, dispatch } = useStateContext();
   const { nodePositions, interfaceGroupPositions, connectedNodeIds, selectedNode, selectedEdge } = state;
 
-  const handleEdgeClick = (edge: GraphEdge | null) => {
+  const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
     dispatch(setSelectedEdge(edge));
   };
 
@@ -45,69 +30,31 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
         const isActive = selectedNode?.interfaces.includes(edge.source.interface);
         const isSelected = edge.id === selectedEdge?.id;
 
-        const linePoints = getLinePoints(edge, connectedNodeIds, nodePositions, interfaceGroupPositions);
+        const linePoints = getLinePoints({ edge, connectedNodeIds, nodePositions, interfaceGroupPositions });
         if (!linePoints) {
           return null;
         }
         const { start, end } = linePoints;
-        const controlPoints = isActive ? getControlPoints(edge, interfaceGroupPositions, start, end, EDGE_GAP) : [];
+        const controlPoints = isActive
+          ? getControlPoints({
+              edge,
+              interfaceGroupPositions,
+              sourcePosition: start,
+              targetPosition: end,
+              edgeGap: EDGE_GAP,
+            })
+          : [];
 
         return (
-          <React.Fragment key={edge.id}>
-            {isActive ? (
-              <g>
-                <Path
-                  strokeWidth={1}
-                  stroke={edge.change === 'DELETED' ? 'red.400' : 'black'}
-                  strokeLinejoin="round"
-                  fill="none"
-                  d={getrCurvePath(start, end, controlPoints)}
-                  cursor="pointer"
-                />
-                <path
-                  strokeWidth={5}
-                  stroke="transparent"
-                  strokeLinejoin="round"
-                  fill="none"
-                  d={getrCurvePath(start, end, controlPoints)}
-                  cursor="pointer"
-                  pointerEvents={edge.change === 'DELETED' ? 'none' : 'all'}
-                  onClick={() => {
-                    handleEdgeClick(edge);
-                  }}
-                />
-              </g>
-            ) : (
-              <Box
-                as="line"
-                x1={start.x}
-                y1={start.y}
-                x2={end.x}
-                y2={end.y}
-                stroke={getEdgeColor(edge.change)}
-                strokeWidth={isActive ? 3 : 1}
-                strokeLinecap="round"
-                borderWidth={3}
-                transition="all .2s ease-in-out"
-              />
-            )}
-
-            {isSelected && (
-              <>
-                <defs>
-                  <path id="sourcePath" d={getrCurvePath(start, end, controlPoints)} />
-                </defs>
-                <text dx={30} dy={20} fontSize={14}>
-                  <textPath href="#sourcePath">{edge.source.interface}</textPath>
-                </text>
-                <text dx={-30} dy={-10} fontSize={14}>
-                  <textPath href="#sourcePath" startOffset="100%" textAnchor="end">
-                    {edge.target.interface}
-                  </textPath>
-                </text>
-              </>
-            )}
-          </React.Fragment>
+          <Edge
+            controlPoints={controlPoints}
+            edge={edge}
+            isActive={isActive ?? false}
+            isSelected={isSelected}
+            linePoints={linePoints}
+            onClick={handleEdgeClick}
+            key={edge.id}
+          />
         );
       })}
     </g>
