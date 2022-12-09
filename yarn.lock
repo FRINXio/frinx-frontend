@@ -3925,7 +3925,6 @@ __metadata:
     react-dom: 18.2.0
     typescript: 4.8.4
     uuid: ^8.3.2
-    vitest: 0.25.3
   peerDependencies:
     "@chakra-ui/react": ^1.6.7
     "@emotion/react": ^11.1.4
