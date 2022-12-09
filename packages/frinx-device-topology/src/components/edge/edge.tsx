@@ -2,7 +2,7 @@ import { Box, Theme, useTheme } from '@chakra-ui/react';
 import get from 'lodash/get';
 import React, { VoidFunctionComponent } from 'react';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
-import { getrCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
+import { getCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
 import { getEdgeColor } from './edge.helpers';
 
 type Props = {
@@ -27,7 +27,7 @@ const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, contro
             stroke={get(colors, getEdgeColor(edge.change))}
             strokeLinejoin="round"
             fill="none"
-            d={getrCurvePath(start, end, controlPoints)}
+            d={getCurvePath(start, end, controlPoints)}
             cursor="pointer"
           />
           <path
@@ -35,7 +35,7 @@ const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, contro
             stroke="transparent"
             strokeLinejoin="round"
             fill="none"
-            d={getrCurvePath(start, end, controlPoints)}
+            d={getCurvePath(start, end, controlPoints)}
             cursor="pointer"
             pointerEvents={edge.change === 'DELETED' ? 'none' : 'all'}
             onClick={() => {
@@ -61,7 +61,7 @@ const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, contro
       {isSelected && (
         <>
           <defs>
-            <path id="sourcePath" d={getrCurvePath(start, end, controlPoints)} />
+            <path id="sourcePath" d={getCurvePath(start, end, controlPoints)} />
           </defs>
           <text dx={30} dy={20} fontSize={14}>
             <textPath href="#sourcePath">{edge.source.interface}</textPath>

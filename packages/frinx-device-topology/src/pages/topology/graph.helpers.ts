@@ -274,7 +274,7 @@ export function getControlPoints({
   return [bezierCurveHandlePosition];
 }
 
-export function getrCurvePath(source: Position, target: Position, controlPoints: Position[]): string {
+export function getCurvePath(source: Position, target: Position, controlPoints: Position[]): string {
   return `M ${source.x},${source.y} Q${controlPoints.map((p) => `${p.x},${p.y}`)} ${target.x},${target.y}`;
 }
 
