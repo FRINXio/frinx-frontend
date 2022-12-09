@@ -62,6 +62,7 @@
     "feather-icons-react": "0.6.2",
     "graphql": "15.8.0",
     "immer": "^9.0.15",
+    "lodash": "4.17.21",
     "urql": "2.2.3",
     "uuid": "^9.0.0"
   },

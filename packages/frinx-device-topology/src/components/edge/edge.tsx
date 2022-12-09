@@ -1,4 +1,5 @@
-import { Box, chakra } from '@chakra-ui/react';
+import { Box, Theme, useTheme } from '@chakra-ui/react';
+import get from 'lodash/get';
 import React, { VoidFunctionComponent } from 'react';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import { getrCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
@@ -13,18 +14,17 @@ type Props = {
   onClick: (edge: GraphEdgeWithDiff | null) => void;
 };
 
-const Path = chakra('path');
-
 const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, controlPoints, linePoints, onClick }) => {
   const { start, end } = linePoints;
+  const { colors } = useTheme<Theme>();
 
   return (
     <>
       {isActive ? (
         <g>
-          <Path
+          <path
             strokeWidth={1}
-            stroke={edge.change === 'DELETED' ? 'red.400' : 'black'}
+            stroke={get(colors, getEdgeColor(edge.change))}
             strokeLinejoin="round"
             fill="none"
             d={getrCurvePath(start, end, controlPoints)}
