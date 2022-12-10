@@ -13,7 +13,6 @@ export const useTerm = (options: Partial<Options> = {}) => {
 
   useEffect(() => {
     if (ref.current) {
-      // ref.current?.clear();
       ref.current?.write(`\n${uniconfigShell} `);
     }
   }, [uniconfigShell]);
@@ -26,36 +25,11 @@ export const useTerm = (options: Partial<Options> = {}) => {
             ref.current?.write('\b \b');
             return;
           }
-
           switch (domEvent.code) {
             case 'Enter':
               onCommandChange?.('\n');
               break;
-            case 'Backslash':
-              ref.current?.write('\x1B[3C');
-              break;
-            case 'ArrowUp':
-              ref.current?.write('[1A');
-              break;
-            case 'ArrowDown':
-              ref.current?.write('[1B');
-              break;
-            case 'ArrowLeft':
-              ref.current?.write('[1D');
-              break;
-            case 'ArrowRight':
-              ref.current?.write('[1C');
-              break;
-            case 'Delete':
-              ref.current?.write('[3C');
-              break;
-            case 'Home':
-            case 'End':
-            case 'Escape':
-              ref.current?.write('[1G');
-              break;
             case 'Tab':
-              ref.current?.write('\t');
               onCommandChange?.('\t');
               break;
             default:

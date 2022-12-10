@@ -1,7 +1,6 @@
 import 'xterm/css/xterm.css';
 import React, { useCallback, useRef, VoidFunctionComponent } from 'react';
 import { gql, useSubscription } from 'urql';
-import { Progress } from '@chakra-ui/react';
 import { useTerm } from '../../hooks/use-term';
 import { TerminalSubscription, TerminalSubscriptionVariables } from '../../__generated__/graphql';
 
@@ -15,29 +14,26 @@ const TerminalComponent: VoidFunctionComponent = () => {
   const [command, setCommand] = React.useState('');
   const terminalRef = useRef<HTMLDivElement>(null);
 
-  const [{ data: terminalData, fetching, error }] = useSubscription<
-    TerminalSubscriptionVariables,
-    TerminalSubscription
-  >({
+  const [{ data: terminalData }] = useSubscription<TerminalSubscriptionVariables, TerminalSubscription>({
     query: TERMINAL_SUBSCRIPTION,
     variables: {
       command,
     },
   });
 
+  console.log(command);
+
   useTerm({
     terminalRef,
     uniconfigShell: terminalData?.uniconfigShell,
-    onCommandChange: useCallback((cmd) => setCommand(cmd), []),
+    onCommandChange: useCallback((cmd) => {
+      if (cmd === '\n') {
+        setCommand((prev) => `${prev}\r\n`);
+      } else {
+        setCommand((prev) => prev + cmd);
+      }
+    }, []),
   });
-
-  if (fetching) {
-    return <Progress isIndeterminate size="sm" marginTop={-10} />;
-  }
-
-  if (error != null || terminalData == null) {
-    return <div>Couldn&apos;t load uniconfig shell</div>;
-  }
 
   return (
     <div
