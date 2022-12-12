@@ -1,5 +1,5 @@
 import { assert, describe, expect, test } from 'vitest';
-import { getDistanceBetweenPoints, getPointOnCircle, getPointOnSlope } from './topology/graph.helpers';
+import { getDistanceBetweenPoints, getPointOnCircle, getPointOnSlope } from './graph.helpers';
 
 describe('graph helpers', () => {
   test('test edge curve position 0 degrees', () => {
@@ -25,28 +25,28 @@ describe('graph helpers', () => {
   test('test point on slope 0 degrees (length 1)', () => {
     const source = { x: 0, y: 0 };
     const target = { x: 0, y: 0 };
-    const { x, y } = getPointOnSlope(source, target, 1);
+    const { x, y } = getPointOnSlope({ source, target, radius: 1 });
     expect(x).toBeCloseTo(1);
     expect(y).toBeCloseTo(1);
   });
   test('test point on slope 90 degrees (length 1)', () => {
     const source = { x: 0, y: 0 };
     const target = { x: 0, y: 1 };
-    const { x, y } = getPointOnSlope(source, target, 1);
+    const { x, y } = getPointOnSlope({ source, target, radius: 1 });
     expect(x).toBeCloseTo(-1);
     expect(y).toBeCloseTo(1);
   });
   test('test point on slope 180 degrees (length 1)', () => {
     const source = { x: 0, y: 0 };
     const target = { x: -1, y: 0 };
-    const { x, y } = getPointOnSlope(source, target, 1);
+    const { x, y } = getPointOnSlope({ source, target, radius: 1 });
     expect(x).toBeCloseTo(-1);
     expect(y).toBeCloseTo(-1);
   });
   test('test point on slope 270 degrees (length 1)', () => {
     const source = { x: 0, y: 0 };
     const target = { x: 0, y: -1 };
-    const { x, y } = getPointOnSlope(source, target, 1);
+    const { x, y } = getPointOnSlope({ source, target, radius: 1 });
     expect(x).toBeCloseTo(1);
     expect(y).toBeCloseTo(-1);
   });

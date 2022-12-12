@@ -1,4 +1,22 @@
-import { Box, Button, Center, Divider, Heading, HStack, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Divider,
+  Heading,
+  HStack,
+  Progress,
+  Spacer,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
+} from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-pool-modal';
@@ -81,6 +99,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const canClaimResources = resourcePool.Capacity != null && freeCapacity > 0n && freeCapacity <= totalCapacity;
   const isAllocating = resourcePool.PoolType === 'allocating';
   const canDeletePool = resourcePool.Resources.length === 0;
+  const progressValue =
+    totalCapacity === 0n ? 100 : Number((BigInt(resourcePool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity);
 
   return (
     <PageContainer>
@@ -124,13 +144,35 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
       <Box background="white" padding={5}>
         <Text fontSize="lg">Utilized capacity</Text>
-        <Progress
-          size="xs"
-          value={Number((BigInt(resourcePool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity)}
-        />
+        <Progress size="xs" value={progressValue} />
         <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
           {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity.toString()}
         </Text>
+      </Box>
+
+      <Box background="white" padding={5} marginTop={5}>
+        <Text fontSize="lg" marginBottom={5}>
+          Pool properties
+        </Text>
+        <Table background="white" size="sm">
+          <Thead bgColor="gray.200">
+            <Tr>
+              <Th>Property</Th>
+              <Th>Value</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {Object.keys(resourcePool.PoolProperties).map((entry) => {
+              return (
+                <Tr>
+                  <Td width="50%">{entry}</Td>
+                  <Td width="50%">{resourcePool.PoolProperties[entry].toString()}</Td>
+                </Tr>
+              );
+            })}
+          </Tbody>
+          <Tfoot />
+        </Table>
       </Box>
 
       <PoolDetailAllocatedResourceBox

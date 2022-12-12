@@ -34,6 +34,7 @@ type Props = {
   blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
   onFormSubmit: (device: FormValues) => void;
   onLabelCreate: (labelName: string) => Promise<Label | null>;
+  deviceNameError: string | null;
 };
 
 type FormValues = {
@@ -129,6 +130,7 @@ const INITIAL_VALUES: FormValues = {
 };
 
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
+  deviceNameError,
   onFormSubmit,
   zones,
   labels,
@@ -144,7 +146,12 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
-      const updatedData = { ...data, labelIds: selectedLabels.map((label) => label.value), port: Number(data.port) };
+      const updatedData = {
+        ...data,
+        labelIds: selectedLabels.map((label) => label.value),
+        port: Number(data.port),
+        mountParameters: JSON.parse(data.mountParameters),
+      };
       const { blueprintParams, ...rest } = updatedData;
       onFormSubmit(rest);
     },
@@ -173,10 +180,10 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <FormControl id="name" my={6} isRequired isInvalid={errors.name !== undefined}>
+      <FormControl id="name" my={6} isRequired isInvalid={deviceNameError !== null}>
         <FormLabel>Name</FormLabel>
         <Input placeholder="R1" onChange={handleChange} name="name" value={values.name} />
-        <FormErrorMessage>{errors.name}</FormErrorMessage>
+        <FormErrorMessage>{deviceNameError}</FormErrorMessage>
       </FormControl>
 
       <FormControl id="zone" isRequired marginY={6} isInvalid={errors.zoneId !== undefined}>

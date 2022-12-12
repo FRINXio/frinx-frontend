@@ -324,6 +324,20 @@ export type GraphNode = {
   interfaces: Array<Scalars['String']>;
 };
 
+export type GraphVersionEdge = {
+  __typename?: 'GraphVersionEdge';
+  id: Scalars['ID'];
+  source: EdgeSourceTarget;
+  target: EdgeSourceTarget;
+};
+
+export type GraphVersionNode = {
+  __typename?: 'GraphVersionNode';
+  id: Scalars['ID'];
+  interfaces: Array<Scalars['String']>;
+  name: Scalars['String'];
+};
+
 export type InstallDevicePayload = {
   __typename?: 'InstallDevicePayload';
   device: Device;
@@ -569,6 +583,8 @@ export type Query = {
   locations: LocationConnection;
   node: Maybe<Node>;
   topology: Topology;
+  topologyVersionData: TopologyVersionData;
+  topologyVersions: Maybe<Array<Scalars['String']>>;
   transactions: Array<Transaction>;
   zones: ZonesConnection;
 };
@@ -638,6 +654,11 @@ export type QueryTopologyArgs = {
 };
 
 
+export type QueryTopologyVersionDataArgs = {
+  version: Scalars['String'];
+};
+
+
 export type QueryZonesArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -678,6 +699,12 @@ export type Topology = {
   __typename?: 'Topology';
   edges: Array<GraphEdge>;
   nodes: Array<GraphNode>;
+};
+
+export type TopologyVersionData = {
+  __typename?: 'TopologyVersionData';
+  edges: Array<GraphVersionEdge>;
+  nodes: Array<GraphVersionNode>;
 };
 
 export type Transaction = {
@@ -783,6 +810,18 @@ export type DeviceLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type DeviceLabelsQuery = { __typename?: 'Query', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } };
+
+export type VersionsQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type VersionsQueryQuery = { __typename?: 'Query', topologyVersions: Array<string> | null };
+
+export type TopologyVersionDataQueryQueryVariables = Exact<{
+  version: Scalars['String'];
+}>;
+
+
+export type TopologyVersionDataQueryQuery = { __typename?: 'Query', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<string> }> } };
 
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<PositionInput> | PositionInput;

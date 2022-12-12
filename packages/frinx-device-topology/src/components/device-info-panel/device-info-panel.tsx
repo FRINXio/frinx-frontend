@@ -1,15 +1,11 @@
 import { Badge, Box, Button, Flex, Heading, HStack, Icon, Spinner, Text } from '@chakra-ui/react';
 import { format } from 'date-fns';
-import { utcToZonedTime } from 'date-fns-tz';
+import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useQuery } from 'urql';
-import FeatherIcon from 'feather-icons-react';
+import { getLocalDateFromUTC } from '../../helpers/datetime-helpers';
 import { DeviceQuery, DeviceQueryVariables } from '../../__generated__/graphql';
-
-export function getLocalDateFromUTC(date: string): Date {
-  return utcToZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
-}
 
 const DEVICE_QUERY = gql`
   query Device($id: ID!) {
