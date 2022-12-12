@@ -13,6 +13,7 @@ type Props = {
   resourceTypeName: string;
 };
 
+
 function getPlaceholder(name: string): Record<string, string> {
   switch (name) {
     case 'ipv6_prefix':
@@ -32,22 +33,27 @@ function getPlaceholder(name: string): Record<string, string> {
   }
 }
 
+
+
 const PoolPropertyInput = ({
   placeholder,
   onChange,
   value,
   pKey,
   shouldBeNumber,
+  shouldBeDisabled,
 }: {
   pKey: string;
   placeholder: string;
   value: string | number;
   shouldBeNumber: boolean;
+  shouldBeDisabled: boolean;
   onChange: (e: string | number) => void;
 }) => {
   if (pKey === 'subnet') {
     return (
       <Switch
+        disabled={shouldBeDisabled}
         name={pKey}
         onChange={(e) => {
           onChange(String(e.target.checked));
@@ -73,6 +79,9 @@ const PoolPropertyInput = ({
   );
 };
 
+ 
+
+
 const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
   onChange,
   poolProperties,
@@ -89,6 +98,8 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
         const pType = poolPropertyTypes[pKey];
         const placeholder = getPlaceholder(resourceTypeName)[pKey];
         const shouldBeNumber = pType === 'int';
+        const shouldBeDisabled = poolProperties.prefix === 128;        
+
 
         return (
           pKey !== 'idFormat' && (
@@ -113,6 +124,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
               </HStack>
               <PoolPropertyInput
                 shouldBeNumber={shouldBeNumber}
+                shouldBeDisabled={shouldBeDisabled}
                 pKey={pKey}
                 onChange={(e) => onChange({ key: pKey, type: pType, value: e })}
                 placeholder={placeholder}
