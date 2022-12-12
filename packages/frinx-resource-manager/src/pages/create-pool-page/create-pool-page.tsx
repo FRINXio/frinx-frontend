@@ -283,8 +283,6 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
     RequiredPoolPropertiesQueryVariables
   >({ query: GET_POOL_PROPERTIES_BY_ALLOC_STRATEGY, variables: { allocationStrategyName: customResourceTypeName } });
 
-  
-
   const handleFormSubmit = (values: FormValues) => {
     createPool(client.mutation.bind(client), values)
       .toPromise()
@@ -293,7 +291,7 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           throw response.error;
         }
         onCreateSuccess();
-          console.log(poolsData);
+        console.log(poolsData);
 
         addToastNotification({
           type: 'success',
@@ -306,7 +304,6 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           content: error.message || 'There was a problem with creating of resource pool',
         });
       });
-
   };
 
   if (fetching || poolsFetching || allocStratFetching) {

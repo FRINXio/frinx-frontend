@@ -132,8 +132,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       },
     });
 
-    
-
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
 
   useEffect(() => {

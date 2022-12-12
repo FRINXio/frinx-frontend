@@ -13,7 +13,6 @@ type Props = {
   resourceTypeName: string;
 };
 
-
 function getPlaceholder(name: string): Record<string, string> {
   switch (name) {
     case 'ipv6_prefix':
@@ -32,8 +31,6 @@ function getPlaceholder(name: string): Record<string, string> {
       return {};
   }
 }
-
-
 
 const PoolPropertyInput = ({
   placeholder,
@@ -79,9 +76,6 @@ const PoolPropertyInput = ({
   );
 };
 
- 
-
-
 const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
   onChange,
   poolProperties,
@@ -98,8 +92,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
         const pType = poolPropertyTypes[pKey];
         const placeholder = getPlaceholder(resourceTypeName)[pKey];
         const shouldBeNumber = pType === 'int';
-        const shouldBeDisabled = poolProperties.prefix === 128;        
-
+        const shouldBeDisabled = poolProperties.prefix === 128;
 
         return (
           pKey !== 'idFormat' && (
