@@ -2,6 +2,7 @@ import { Box } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared/src';
 import React, { FunctionComponent, useRef } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
+import { Change, getEdgesWithDiff, getNodesWithDiff } from '../../helpers/topology-helpers';
 import { setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
@@ -28,13 +29,23 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { nodes, selectedNode } = state;
+  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion } = state;
+
+  const nodesWithDiff =
+    selectedVersion && backupNodes
+      ? getNodesWithDiff(nodes, backupNodes)
+      : nodes.map((n) => ({ ...n, change: 'NONE' as Change }));
+
+  const edgesWithDiff =
+    selectedVersion && backupEdges
+      ? getEdgesWithDiff(edges, backupEdges)
+      : edges.map((e) => ({ ...e, change: 'NONE' as Change }));
 
   const handleNodePositionUpdate = (nodeId: string, position: Position) => {
     if (timeoutRef.current != null) {
       clearTimeout(timeoutRef.current);
     }
-    const node = unwrap(nodes.find((n) => n.device.name === nodeId));
+    const node = unwrap(nodesWithDiff.find((n) => n.device.name === nodeId));
     lastPositionRef.current = { deviceId: node.device.id, position };
     dispatch(updateNodePosition(nodeId, position));
   };
@@ -61,8 +72,9 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Edges />
+        <Edges edgesWithDiff={edgesWithDiff} />
         <Nodes
+          nodesWithDiff={nodesWithDiff}
           onNodePositionUpdate={handleNodePositionUpdate}
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />

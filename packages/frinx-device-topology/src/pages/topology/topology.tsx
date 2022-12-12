@@ -2,6 +2,7 @@ import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { gql, useMutation } from 'urql';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
+import VersionSelect from '../../components/version-select/version-select';
 import StateProvider from '../../state.provider';
 import { UpdatePositionMutation, UpdatePositionMutationVariables } from '../../__generated__/graphql';
 import { Position } from './graph.helpers';
@@ -40,9 +41,14 @@ const Topology: VoidFunctionComponent = () => {
             Device topology
           </Heading>
         </Flex>
-        <Box>
-          <LabelsFilter />
-        </Box>
+        <Flex gridGap={4}>
+          <Box flex={1} paddingBottom="24px">
+            <VersionSelect />
+          </Box>
+          <Box flex={1}>
+            <LabelsFilter />
+          </Box>
+        </Flex>
         <Box>
           <TopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />
         </Box>

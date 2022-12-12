@@ -55,6 +55,10 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
               const totalCapacity = getTotalCapacity(pool.Capacity);
               const nestedPoolsCount = pool.Resources.filter((resource) => resource.NestedPool != null).length;
               const hasNestedPools = nestedPoolsCount > 0;
+              const progressValue =
+                totalCapacity === 0n
+                  ? 100
+                  : Number((BigInt(pool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity);
 
               return (
                 <Tr key={pool.id} opacity={isLoading ? 0.5 : 1} pointerEvents={isLoading ? 'none' : 'all'}>
@@ -99,10 +103,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     </Text>
                   </Td>
                   <Td isNumeric>
-                    <Progress
-                      size="xs"
-                      value={Number((BigInt(Number(pool.Capacity?.utilizedCapacity)) * 100n) / totalCapacity)}
-                    />
+                    <Progress size="xs" value={progressValue} />
                   </Td>
                   <Td>
                     <HStack spacing={2}>

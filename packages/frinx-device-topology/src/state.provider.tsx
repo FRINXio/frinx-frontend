@@ -55,17 +55,19 @@ const StateProvider: FC = ({ children }) => {
     () => initialState,
   );
 
+  const { selectedLabels, selectedVersion } = state;
+
   useEffect(() => {
     client
       .query<TopologyQuery, TopologyQueryVariables>(TOPOLOGY_QUERY, {
-        labels: state.selectedLabels.map((l) => l.label),
+        labels: selectedVersion ? [] : selectedLabels.map((l) => l.label),
       })
       .toPromise()
       .then((data) => {
         const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
         dispatch(setNodesAndEdges({ nodes, edges }));
       });
-  }, [client, state.selectedLabels]);
+  }, [client, selectedLabels, selectedVersion]);
 
   return (
     <StateContext.Provider
