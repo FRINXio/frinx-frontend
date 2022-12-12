@@ -7,6 +7,9 @@
     "type-check": {
       "dependsOn": ["typegen"]
     },
+    "test": {
+      "dependsOn": ["type-check"]
+    },
     "typegen": {}
   }
 }

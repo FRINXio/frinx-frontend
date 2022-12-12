@@ -1,6 +1,7 @@
 import { unwrap } from '@frinx/shared/src';
 import React, { useRef, useState, VoidFunctionComponent } from 'react';
 import NodeIcon from '../../components/node-icon/node-icon';
+import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { setSelectedNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { GraphNode, Position } from './graph.helpers';
@@ -11,13 +12,14 @@ type StatePosition = {
   offset: Position;
 };
 type Props = {
+  nodesWithDiff: GraphNodeWithDiff[];
   onNodePositionUpdate: (nodeId: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
 };
 
-const Nodes: VoidFunctionComponent<Props> = ({ onNodePositionUpdate, onNodePositionUpdateFinish }) => {
+const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpdate, onNodePositionUpdateFinish }) => {
   const { state, dispatch } = useStateContext();
-  const { nodes, nodePositions, connectedNodeIds, selectedNode, interfaceGroupPositions } = state;
+  const { nodePositions, connectedNodeIds, selectedNode, interfaceGroupPositions } = state;
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
     isActive: false,
@@ -70,7 +72,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ onNodePositionUpdate, onNodePosit
 
   return (
     <g>
-      {nodes.map((node) => (
+      {nodesWithDiff.map((node) => (
         <NodeIcon
           key={node.id}
           onPointerDown={(event) => {
