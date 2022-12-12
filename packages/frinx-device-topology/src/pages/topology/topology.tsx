@@ -42,7 +42,7 @@ const Topology: VoidFunctionComponent = () => {
           </Heading>
         </Flex>
         <Flex gridGap={4}>
-          <Box flex={1}>
+          <Box flex={1} paddingBottom="24px">
             <VersionSelect />
           </Box>
           <Box flex={1}>

@@ -84,6 +84,9 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_VERSION': {
         acc.selectedVersion = action.version;
+        if (action.version === null) {
+          acc.selectedLabels = [];
+        }
         return acc;
       }
       case 'SET_BACKUP_NODES_AND_EDGES': {

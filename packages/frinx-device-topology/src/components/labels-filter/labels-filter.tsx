@@ -24,7 +24,7 @@ const LabelsFilter: VoidFunctionComponent = () => {
   const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<DeviceLabelsQuery, DeviceLabelsQueryVariables>({
     query: DEVICE_LABELS_QUERY,
   });
-  const { selectedLabels } = state;
+  const { selectedLabels, selectedVersion } = state;
 
   const handleSelectedLabelsChange = (selectedItems: LabelItem[]) => {
     if (selectedItems) {
@@ -40,6 +40,10 @@ const LabelsFilter: VoidFunctionComponent = () => {
     label: e.node.name,
     value: e.node.id,
   }));
+
+  if (selectedVersion) {
+    return null;
+  }
 
   return (
     <SelectedLabels
