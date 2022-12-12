@@ -1,4 +1,5 @@
-import { getDeviceSizeDiameter } from '../../pages/topology/graph.helpers';
+import { Change } from '../../helpers/topology-helpers';
+import { getDeviceSizeDiameter, GroupData, PositionGroupsMap } from '../../pages/topology/graph.helpers';
 import { DeviceSize as DeviceSizeEnum } from '../../pages/topology/topology-graph';
 import { DeviceSize } from '../../__generated__/graphql';
 
@@ -27,4 +28,50 @@ export function getDeviceNodeTransformProperties(deviceSize: DeviceSize): Device
         sizeTransform: 'translate3d(-10px, -10px, 0) scale(.8)',
       };
   }
+}
+
+export function getNodeInterfaceGroups(
+  nodeId: string,
+  interfaceGroupPositions: PositionGroupsMap,
+): [string, GroupData][] {
+  return Object.entries(interfaceGroupPositions).filter(([groupId]) => {
+    return groupId.startsWith(nodeId);
+  });
+}
+
+export function getNodeBackgroundColor({ isSelected, change }: { isSelected: boolean; change: Change }): string {
+  if (change === 'DELETED') {
+    return 'red.200';
+  }
+  if (change === 'ADDED') {
+    return 'green.200';
+  }
+  if (change === 'UPDATED') {
+    return 'yellow.200';
+  }
+  return isSelected ? 'blue.500' : 'gray.400';
+}
+export function getNodeTextColor(change: Change): string {
+  if (change === 'DELETED') {
+    return 'red.400';
+  }
+  if (change === 'ADDED') {
+    return 'green.400';
+  }
+  if (change === 'UPDATED') {
+    return 'yellow.400';
+  }
+  return 'black';
+}
+export function getNodeIconColor({ isSelected, change }: { isSelected: boolean; change: Change }): string {
+  if (change === 'DELETED') {
+    return 'red.400';
+  }
+  if (change === 'ADDED') {
+    return 'green.400';
+  }
+  if (change === 'UPDATED') {
+    return 'yellow.400';
+  }
+  return isSelected ? 'whiteAlpha.800' : 'gray.600';
 }

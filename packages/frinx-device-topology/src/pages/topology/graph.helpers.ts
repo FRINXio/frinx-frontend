@@ -1,7 +1,7 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { DeviceSize } from '../../__generated__/graphql';
 
-function getRandomInt(max: number): number {
+export function getRandomInt(max: number): number {
   return Math.floor(Math.random() * max);
 }
 
@@ -33,6 +33,12 @@ export type GraphEdge = {
   target: SourceTarget;
 };
 
+export type BackupGraphNode = {
+  id: string;
+  name: string;
+  interfaces: string[];
+};
+
 export const NODE_CIRCLE_RADIUS = 30;
 
 export type PositionsMap = {
@@ -44,7 +50,7 @@ export type PositionsWithGroupsMap = {
   interfaceGroups: PositionGroupsMap;
 };
 type GroupName = string;
-type GroupData = {
+export type GroupData = {
   position: Position;
   interfaces: string[];
 };
@@ -178,7 +184,9 @@ export function getPointOnCircle(source: Position, target: Position, radius = 1)
   };
 }
 
-export function getPointOnSlope(source: Position, target: Position, radius: number, length = 1): Position {
+export type GetPointsOnSlopeParams = { source: Position; target: Position; radius: number; length?: number };
+
+export function getPointOnSlope({ source, target, radius, length = 1 }: GetPointsOnSlopeParams): Position {
   const angle = getAngleBetweenPoints(source, target);
   const perpendicularAngle = angle + Math.PI / 2;
   const circlePoint = getPointOnCircle(source, target, radius);
@@ -199,17 +207,24 @@ export function getInterfaceGroupName(sourceId: string, targetId: string) {
   return `${sourceId},${targetId}`;
 }
 
+export type GetLinePointsParams = {
+  edge: GraphEdge;
+  connectedNodeIds: string[];
+  nodePositions: Record<string, Position>;
+  interfaceGroupPositions: PositionGroupsMap;
+};
+
 export type Line = {
   start: Position;
   end: Position;
 };
 
-export function getLinePoints(
-  edge: GraphEdge,
-  connectedNodeIds: string[],
-  nodePositions: Record<string, Position>,
-  interfaceGroupPositions: PositionGroupsMap,
-): Line | null {
+export function getLinePoints({
+  edge,
+  connectedNodeIds,
+  nodePositions,
+  interfaceGroupPositions,
+}: GetLinePointsParams): Line | null {
   const sourcePosition = connectedNodeIds.includes(edge.source.nodeId)
     ? interfaceGroupPositions[getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId)]?.position
     : nodePositions[edge.source.nodeId];
@@ -227,14 +242,22 @@ export function getLinePoints(
   };
 }
 
+export type GetControlPointsParams = {
+  edge: GraphEdge;
+  interfaceGroupPositions: PositionGroupsMap;
+  sourcePosition: Position;
+  targetPosition: Position;
+  edgeGap: number;
+};
+
 // control points for curved line
-export function getControlPoints(
-  edge: GraphEdge,
-  interfaceGroupPositions: PositionGroupsMap,
-  sourcePosition: Position,
-  targetPosition: Position,
-  edgeGap: number,
-): Position[] {
+export function getControlPoints({
+  edge,
+  interfaceGroupPositions,
+  sourcePosition,
+  targetPosition,
+  edgeGap,
+}: GetControlPointsParams): Position[] {
   const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
   const groupData = interfaceGroupPositions[groupName];
   const distanceFromLineList = getDistanceFromLineList(groupData.interfaces);
@@ -242,11 +265,16 @@ export function getControlPoints(
   const length = edgeGap * distanceFromLineList[index];
 
   const nodesDistance = getDistanceBetweenPoints(sourcePosition, targetPosition);
-  const bezierCurveHandlePosition = getPointOnSlope(sourcePosition, targetPosition, nodesDistance / 2, length);
+  const bezierCurveHandlePosition = getPointOnSlope({
+    source: sourcePosition,
+    target: targetPosition,
+    radius: nodesDistance / 2,
+    length,
+  });
   return [bezierCurveHandlePosition];
 }
 
-export function getrCurvePath(source: Position, target: Position, controlPoints: Position[]): string {
+export function getCurvePath(source: Position, target: Position, controlPoints: Position[]): string {
   return `M ${source.x},${source.y} Q${controlPoints.map((p) => `${p.x},${p.y}`)} ${target.x},${target.y}`;
 }
 
