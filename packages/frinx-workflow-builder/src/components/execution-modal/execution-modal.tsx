@@ -18,6 +18,7 @@ import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getInitialValuesFromParsedInputParameters, InputParameter } from '../../helpers/workflow.helpers';
+import { parseDescription } from '../left-menu/left-menu.helpers';
 import { ExecutionModalFormInput } from './execution-modal-form-input';
 
 type Props = {
@@ -71,7 +72,7 @@ const ExecuteWorkflowModal: FC<Props> = ({
           <Heading fontSize="md">{workflowName}</Heading>
           {workflowDescription != null && (
             <Text fontSize="sm" textColor="gray.400">
-              {JSON.parse(workflowDescription).description}
+              {parseDescription(workflowDescription)}
             </Text>
           )}
         </ModalHeader>
