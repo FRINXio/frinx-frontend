@@ -99,6 +99,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const canClaimResources = resourcePool.Capacity != null && freeCapacity > 0n && freeCapacity <= totalCapacity;
   const isAllocating = resourcePool.PoolType === 'allocating';
   const canDeletePool = resourcePool.Resources.length === 0;
+  const progressValue =
+    totalCapacity === 0n ? 100 : Number((BigInt(resourcePool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity);
 
   return (
     <PageContainer>
@@ -142,10 +144,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
       <Box background="white" padding={5}>
         <Text fontSize="lg">Utilized capacity</Text>
-        <Progress
-          size="xs"
-          value={Number((BigInt(resourcePool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity)}
-        />
+        <Progress size="xs" value={progressValue} />
         <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
           {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity.toString()}
         </Text>
