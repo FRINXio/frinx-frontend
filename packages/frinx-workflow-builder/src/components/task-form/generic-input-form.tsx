@@ -40,10 +40,7 @@ const GenericInputForm: FC<Props> = ({ params, onChange, tasks, task }) => {
                 value={value}
                 onChange={(event) => {
                   event.persist();
-                  onChange({
-                    ...params,
-                    [key]: event.target.value,
-                  });
+                  handleOnInputFieldChange(key, event.target.value);
                 }}
               />
             ) : (

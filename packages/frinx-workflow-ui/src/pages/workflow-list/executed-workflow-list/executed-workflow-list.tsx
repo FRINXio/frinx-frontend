@@ -96,7 +96,7 @@ const ExecutedWorkflowList = () => {
       isFlat: state.isFlat,
     }).then((exWfs) => {
       setExecutedWorkflows(exWfs.result.hits);
-      setItemList(exWfs.result.hits);
+      setItemList(exWfs.result.hits, currentPage);
       setTotalItemsAmount(exWfs.result.totalHits);
     });
   }, [
