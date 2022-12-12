@@ -102,8 +102,6 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const progressValue =
     totalCapacity === 0n ? 100 : Number((BigInt(resourcePool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity);
 
-  console.log(resourcePool.Capacity);
-
   return (
     <PageContainer>
       <ClaimCustomResourceModal

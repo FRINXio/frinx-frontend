@@ -291,7 +291,6 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           throw response.error;
         }
         onCreateSuccess();
-        console.log(poolsData);
 
         addToastNotification({
           type: 'success',
