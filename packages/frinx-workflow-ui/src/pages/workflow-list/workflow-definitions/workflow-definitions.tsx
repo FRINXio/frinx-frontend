@@ -57,10 +57,7 @@ const WorkflowDefinitions = () => {
             const labelsArr = jsonParse(e.description)?.labels;
 
             // if labels are used and wf does not contain selected labels => filter out
-            if (labels.length === 1) {
-              return labelsArr?.some((label: string) => labels.includes(label));
-            }
-            if (labels.length > 1) {
+            if (labels.length) {
               return labels?.every((label: string) => labelsArr?.includes(label));
             }
 
