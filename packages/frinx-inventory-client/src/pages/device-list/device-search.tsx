@@ -21,6 +21,7 @@ const DeviceSearch: VoidFunctionComponent<Props> = ({ text, onChange, onSubmit }
       </FormLabel>
       <Flex>
         <Input
+          data-cy="searchByName"
           id="device-search"
           type="text"
           value={text || ''}
@@ -28,7 +29,7 @@ const DeviceSearch: VoidFunctionComponent<Props> = ({ text, onChange, onSubmit }
           background="white"
           placeholder="Search device"
         />
-        <Button onClick={handleSubmit} colorScheme="blue" px="6" marginLeft="2">
+        <Button data-cy="searchBtn" onClick={handleSubmit} colorScheme="blue" px="6" marginLeft="2">
           Search
         </Button>
       </Flex>

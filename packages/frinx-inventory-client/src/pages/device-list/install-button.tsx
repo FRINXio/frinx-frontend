@@ -7,17 +7,20 @@ type Props = {
   isLoading: boolean;
   onInstalClick: () => void;
   onUninstallClick: () => void;
+  deviceName: string;
 };
 
 type ButtonIconProps = {
   icon: string;
   color: string;
   isLoading: boolean;
+  deviceName: string;
 };
 
-const ButtonIcon: VoidFunctionComponent<ButtonIconProps> = ({ icon, color, isLoading }) => {
+const ButtonIcon: VoidFunctionComponent<ButtonIconProps> = ({ icon, color, isLoading, deviceName }) => {
   return (
     <Flex
+      data-cy={`deviceInstall-${deviceName}`}
       justifyContent="center"
       alignItems="center"
       borderRadius="50%"
@@ -34,7 +37,13 @@ const ButtonIcon: VoidFunctionComponent<ButtonIconProps> = ({ icon, color, isLoa
   );
 };
 
-const InstallButton: VoidFunctionComponent<Props> = ({ isInstalled, isLoading, onInstalClick, onUninstallClick }) => {
+const InstallButton: VoidFunctionComponent<Props> = ({
+  isInstalled,
+  isLoading,
+  onInstalClick,
+  onUninstallClick,
+  deviceName,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const baseStyles = {
     alignItems: 'center',
@@ -69,14 +78,14 @@ const InstallButton: VoidFunctionComponent<Props> = ({ isInstalled, isLoading, o
       >
         {isHovered ? (
           <>
-            <ButtonIcon icon="arrow-down" color="yellow.500" isLoading={isLoading} />
+            <ButtonIcon deviceName={deviceName} icon="arrow-down" color="yellow.500" isLoading={isLoading} />
             <Text size="sm" fontWeight={600} as="span" marginLeft={4}>
               Uninstall
             </Text>
           </>
         ) : (
           <>
-            <ButtonIcon icon="check" color="green.500" isLoading={isLoading} />
+            <ButtonIcon deviceName={deviceName} icon="check" color="green.500" isLoading={isLoading} />
             <Text size="sm" fontWeight={600} as="span" marginLeft={4}>
               Installed
             </Text>
@@ -95,7 +104,7 @@ const InstallButton: VoidFunctionComponent<Props> = ({ isInstalled, isLoading, o
       }}
       disabled={isLoading}
     >
-      <ButtonIcon icon="arrow-up" color="blue.400" isLoading={isLoading} />
+      <ButtonIcon deviceName={deviceName} icon="arrow-up" color="blue.400" isLoading={isLoading} />
       <Text size="sm" fontWeight={600} as="span" flex={1}>
         {isLoading ? '...' : 'Install'}
       </Text>

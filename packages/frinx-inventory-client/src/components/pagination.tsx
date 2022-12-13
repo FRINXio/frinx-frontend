@@ -14,14 +14,14 @@ const Pagination: VoidFunctionComponent<Props> = (props) => {
     <Box padding={1}>
       <HStack spacing="2" divider={<StackDivider borderColor="gray" />}>
         {hasPreviousPage ? (
-          <Button color="blue.600" onClick={onPrevious} variant="link" outline="none">
+          <Button data-cy="deviceListPrev" color="blue.600" onClick={onPrevious} variant="link" outline="none">
             Previous
           </Button>
         ) : (
           <Text>Previous</Text>
         )}
         {hasNextPage ? (
-          <Button color="blue.600" onClick={onNext} variant="link">
+          <Button data-cy="deviceListNext" color="blue.600" onClick={onNext} variant="link">
             Next
           </Button>
         ) : (

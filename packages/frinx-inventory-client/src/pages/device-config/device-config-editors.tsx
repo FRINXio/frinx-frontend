@@ -71,6 +71,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
           <Flex justifyContent="flex-end" marginBottom={4} paddingY={2}>
             <ButtonGroup size="sm" isAttached>
               <Button
+                data-cy="deviceConfigRefresh"
                 leftIcon={<Icon size={20} as={FeatherIcon} icon="refresh-cw" />}
                 onClick={onRefreshBtnClick}
                 isLoading={isRefreshLoading}
@@ -88,6 +89,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
                 </Portal>
               </Menu>
               <Button
+                data-cy="deviceConfigSave"
                 colorScheme="blue"
                 isLoading={isUpdateStoreLoading}
                 leftIcon={<Icon size={20} as={FeatherIcon} icon="save" />}
@@ -115,11 +117,16 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
           </Box>
           <Flex justifyContent="flex-end" marginBottom={4} paddingY={2}>
             <ButtonGroup isAttached size="sm" marginRight="auto">
-              <Button onClick={onCreateSnapshotBtnClick} leftIcon={<Icon size={30} as={FeatherIcon} icon="plus" />}>
+              <Button
+                data-cy="deviceConfigCreateSnapshot"
+                onClick={onCreateSnapshotBtnClick}
+                leftIcon={<Icon size={30} as={FeatherIcon} icon="plus" />}
+              >
                 Create snapshot
               </Button>
               <Menu>
                 <MenuButton
+                  data-cy="deviceConfigLoadSnapshot"
                   as={Button}
                   rightIcon={<Icon size={20} as={FeatherIcon} icon="chevron-down" />}
                   isDisabled={snapshots.length === 0}
@@ -128,7 +135,12 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
                 </MenuButton>
                 <MenuList>
                   {snapshots.map((snapshot) => (
-                    <MenuItem key={snapshot.name} position="relative" as="div">
+                    <MenuItem
+                      data-cy={`deviceConfigSnapshot-${snapshot.name}`}
+                      key={snapshot.name}
+                      position="relative"
+                      as="div"
+                    >
                       <Box
                         as="button"
                         textAlign="left"
@@ -152,6 +164,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
                       </Box>
                       <Box position="absolute" right={2} top="50%" transform="translateY(-50%)">
                         <IconButton
+                          data-cy={`deviceConfigDeleteSnapshot-${snapshot.name}`}
                           aria-label="Delete snapshot"
                           icon={<Icon size={18} as={FeatherIcon} icon="trash-2" />}
                           colorScheme="red"
@@ -168,6 +181,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
               </Menu>
             </ButtonGroup>
             <Button
+              data-cy="deviceConfigSync"
               size="sm"
               colorScheme="blue"
               isLoading={isSyncLoading}
