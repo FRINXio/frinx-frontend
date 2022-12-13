@@ -3556,10 +3556,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/noto-sans@npm:^4.5.11":
-  version: 4.5.11
-  resolution: "@fontsource/noto-sans@npm:4.5.11"
-  checksum: d11ec102ac9b22e3584ad77e9d0069ef8b18cf2f4dfc12f9968456be0f7da5aa95585e853988289c29746e7e04bbaaadf253646d1c9449130ac9f37211b8af15
+"@fontsource/roboto@npm:^4.5.8":
+  version: 4.5.8
+  resolution: "@fontsource/roboto@npm:4.5.8"
+  checksum: 460b6de2c9f7a172192c3f5bdd3aa11f78f0b6660dca9dc2b9d8207272b50c55b5a8f2da68e11e7fbaf44c7d3cf4191030eecce9def79fab75d4cc1de39754e2
   languageName: node
   linkType: hard
 
@@ -3624,7 +3624,7 @@ __metadata:
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
-    "@fontsource/noto-sans": ^4.5.11
+    "@fontsource/roboto": ^4.5.8
     "@formspree/react": ^2.4.0
     "@frinx/api": 0.0.14
     "@frinx/eslint-config-typescript": 19.0.4-build.1
