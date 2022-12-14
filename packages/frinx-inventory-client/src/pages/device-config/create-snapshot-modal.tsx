@@ -58,7 +58,13 @@ const CreateSnapshotModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, on
           </ModalBody>
 
           <ModalFooter>
-            <Button data-cy="device-snapshot-modal-create" colorScheme="blue" mr={3} type="submit" isLoading={isLoading}>
+            <Button
+              data-cy="device-snapshot-modal-create"
+              colorScheme="blue"
+              mr={3}
+              type="submit"
+              isLoading={isLoading}
+            >
               Create
             </Button>
             <Button
