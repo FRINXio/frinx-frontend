@@ -438,11 +438,11 @@ const DeviceList: VoidFunctionComponent = () => {
             Devices
           </Heading>
           <HStack spacing={2} marginLeft="auto">
-            <Button data-cy="addDevice" as={Link} colorScheme="blue" to="../new">
+            <Button data-cy="add-device" as={Link} colorScheme="blue" to="../new">
               Add device
             </Button>
             <Button
-              data-cy="importCsv"
+              data-cy="import-csv"
               onClick={() => {
                 setIsImportModalOpen(true);
               }}
@@ -472,7 +472,7 @@ const DeviceList: VoidFunctionComponent = () => {
               <Spacer />
               <HStack>
                 <Button
-                  data-cy="installDevices"
+                  data-cy="install-devices"
                   isDisabled={selectedDevices.size === 0}
                   onClick={handleInstallSelectedDevices}
                   variant="outline"
@@ -482,7 +482,7 @@ const DeviceList: VoidFunctionComponent = () => {
                   Install selected
                 </Button>
                 <Button
-                  data-cy="deleteDevices"
+                  data-cy="delete-devices"
                   isDisabled={selectedDevices.size === 0}
                   onClick={deleteSelectedDevicesModal.onOpen}
                   variant="outline"
@@ -495,7 +495,7 @@ const DeviceList: VoidFunctionComponent = () => {
             </Flex>
           </Box>
           <DeviceTable
-            data-cy="deviceTable"
+            data-cy="device-table"
             sorting={sorting}
             devices={deviceData?.devices.edges ?? []}
             areSelectedAll={areSelectedAll}

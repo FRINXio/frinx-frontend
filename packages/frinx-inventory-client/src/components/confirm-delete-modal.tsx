@@ -27,10 +27,10 @@ const ConfirmDeleteModal: FC<Props> = ({ isOpen, onClose, title, onConfirmBtnCli
           </AlertDialogHeader>
           <AlertDialogBody>{children}</AlertDialogBody>
           <AlertDialogFooter>
-            <Button data-cy="deviceCancelDelete" onClick={onClose}>
+            <Button data-cy="device-cancel-delete" onClick={onClose}>
               Cancel
             </Button>
-            <Button data-cy="deviceConfirmDelete" colorScheme="red" onClick={onConfirmBtnClick} marginLeft={4}>
+            <Button data-cy="device-confirm-delete" colorScheme="red" onClick={onConfirmBtnClick} marginLeft={4}>
               Delete
             </Button>
           </AlertDialogFooter>

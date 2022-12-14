@@ -30,13 +30,13 @@ const CreateBlueprintForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => 
     <form onSubmit={handleSubmit}>
       <FormControl id="name" my={6} isInvalid={errors.name != null}>
         <FormLabel>Name</FormLabel>
-        <Input data-cy="deviceBlueprintAddName" type="text" value={values.name} onChange={handleChange} />
+        <Input data-cy="device-blueprint-add-name" type="text" value={values.name} onChange={handleChange} />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
       <FormControl id="template" my={6} isInvalid={errors.template != null}>
         <FormLabel>Template</FormLabel>
         <Textarea
-          data-cy="deviceBlueprintAddTemplate"
+          data-cy="device-blueprint-add-template"
           value={values.template}
           minHeight="calc(100vh - 550px)"
           onChange={handleChange}
@@ -45,7 +45,7 @@ const CreateBlueprintForm: VoidFunctionComponent<Props> = ({ onFormSubmit }) => 
       </FormControl>
       <Divider my={6} />
       <FormControl>
-        <Button data-cy="deviceBlueprintAddSubmit" type="submit" colorScheme="blue" isLoading={isSubmitting}>
+        <Button data-cy="device-blueprint-add-submit" type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Add blueprint
         </Button>
       </FormControl>

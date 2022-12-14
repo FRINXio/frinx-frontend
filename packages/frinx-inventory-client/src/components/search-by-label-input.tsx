@@ -37,7 +37,7 @@ const SearchByLabelInput: FC<Props> = ({
           marginBottom: 0,
         }}
         renderCustomInput={(inputProps) => (
-          <Input data-cy="searchByLabel" {...inputProps} variant="outline" backgroundColor="white" />
+          <Input data-cy="search-by-label" {...inputProps} variant="outline" backgroundColor="white" />
         )}
         placeholder="Start typing..."
         onCreateItem={onLabelCreate}

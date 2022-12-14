@@ -83,7 +83,7 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
         <Heading as="h1" size="xl">
           Device blueprints
         </Heading>
-        <Button data-cy="deviceBlueprintAdd" colorScheme="blue" as={Link} to="new">
+        <Button data-cy="device-blueprint-add" colorScheme="blue" as={Link} to="new">
           Add blueprint
         </Button>
       </Flex>
@@ -123,7 +123,7 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
                 <Td>
                   <HStack spacing={2}>
                     <IconButton
-                      data-cy={`deviceBlueprintEdit-${blueprint.name}`}
+                      data-cy={`device-blueprint-edit-${blueprint.name}`}
                       aria-label="edit"
                       size="sm"
                       variant="unstyled"
@@ -132,7 +132,7 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
                       to={`${blueprint.id}/edit`}
                     />
                     <IconButton
-                      data-cy={`deviceBlueprintDelete-${blueprint.name}`}
+                      data-cy={`device-blueprint-delete-${blueprint.name}`}
                       colorScheme="red"
                       size="sm"
                       aria-label="Delete blueprint"

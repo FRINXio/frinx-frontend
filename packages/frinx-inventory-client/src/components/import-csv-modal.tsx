@@ -127,7 +127,7 @@ const ImportCSVModal: VoidFunctionComponent<Props> = ({ onClose }) => {
                 onChange={handleOnFileInputChange}
               />
               <Input
-                data-cy="importCsvModalFile"
+                data-cy="import-csv-modal-file"
                 placeholder="Your file ..."
                 onClick={() => {
                   inputRef.current?.click();
@@ -139,7 +139,7 @@ const ImportCSVModal: VoidFunctionComponent<Props> = ({ onClose }) => {
           <FormControl id="zoneId" my={6}>
             <FormLabel>UniConfig zone</FormLabel>
             <Select
-              data-cy="importCsvModalZone"
+              data-cy="import-csv-modal-zone"
               placeholder="Select zone for devices"
               onChange={handleOnZoneIdInputChange}
             >
@@ -153,10 +153,10 @@ const ImportCSVModal: VoidFunctionComponent<Props> = ({ onClose }) => {
         </ModalBody>
         <ModalFooter>
           <HStack>
-            <Button data-cy="importCsvModalClose" onClick={onClose}>
+            <Button data-cy="import-csv-modal-close" onClick={onClose}>
               Close
             </Button>
-            <Button data-cy="importCsvModalImport" type="submit" colorScheme="blue">
+            <Button data-cy="import-csv-modal-import" type="submit" colorScheme="blue">
               Import
             </Button>
           </HStack>

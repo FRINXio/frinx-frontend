@@ -20,7 +20,7 @@ type ButtonIconProps = {
 const ButtonIcon: VoidFunctionComponent<ButtonIconProps> = ({ icon, color, isLoading, deviceName }) => {
   return (
     <Flex
-      data-cy={`deviceInstall-${deviceName}`}
+      data-cy={`device-install-${deviceName}`}
       justifyContent="center"
       alignItems="center"
       borderRadius="50%"

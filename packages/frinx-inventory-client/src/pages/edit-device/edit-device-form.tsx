@@ -118,7 +118,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       <FormControl my={6} isRequired isInvalid={errors.serviceState != null}>
         <FormLabel>Service state</FormLabel>
         <Select
-          data-cy="deviceEditState"
+          data-cy="device-edit-state"
           onChange={(event) => {
             event.persist();
             setFieldValue('serviceState', event.target.value);
@@ -140,7 +140,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         <FormControl>
           <FormLabel>Vendor</FormLabel>
           <Input
-            data-cy="deviceEditVendor"
+            data-cy="device-edit-vendor"
             name="vendor"
             onChange={handleChange}
             placeholder="Enter vendor of the device"
@@ -151,7 +151,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         <FormControl>
           <FormLabel>Model</FormLabel>
           <Input
-            data-cy="deviceEditModel"
+            data-cy="device-edit-model"
             name="model"
             onChange={handleChange}
             placeholder="Enter model of the device"
@@ -162,7 +162,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         <FormControl isInvalid={errors.deviceSize != null}>
           <FormLabel>Device size</FormLabel>
           <Select
-            data-cy="deviceEditSize"
+            data-cy="device-edit-size"
             name="deviceSize"
             onChange={handleChange}
             placeholder="Select size of the device"
@@ -181,7 +181,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       <FormControl>
         <FormLabel>Address</FormLabel>
         <Input
-          data-cy="deviceEditAddress"
+          data-cy="device-edit-address"
           name="address"
           onChange={handleChange}
           placeholder="Enter address of the device"
@@ -191,7 +191,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
 
       <FormControl my={6}>
         <SearchByLabelInput
-          data-cy="deviceEditLabels"
+          data-cy="device-edit-labels"
           items={labels}
           selectedLabels={selectedLabels}
           onLabelCreate={handleLabelCreation}
@@ -202,7 +202,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       <FormControl my={6}>
         <FormLabel>Mount parameters</FormLabel>
         <Editor
-          data-cy="deviceEditEditor"
+          data-cy="device-edit-editor"
           height="450px"
           width="100%"
           mode="json"
@@ -227,10 +227,10 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       <FormControl mb={6}>
         <HStack>
           <Spacer />
-          <Button data-cy="deviceEditCancel" onClick={onCancel} colorScheme="gray" ml={3}>
+          <Button data-cy="device-edit-cancel" onClick={onCancel} colorScheme="gray" ml={3}>
             Cancel
           </Button>
-          <Button data-cy="deviceEditSave" type="submit" colorScheme="blue" isLoading={isSubmitting}>
+          <Button data-cy="device-edit-save" type="submit" colorScheme="blue" isLoading={isSubmitting}>
             Save changes
           </Button>
         </HStack>
