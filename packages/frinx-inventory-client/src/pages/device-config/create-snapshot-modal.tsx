@@ -47,16 +47,28 @@ const CreateSnapshotModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, on
           <ModalBody pb={6}>
             <FormControl isInvalid={isSnapshotNameInvalid}>
               <FormLabel>Snapshot name</FormLabel>
-              <Input value={snapshotName} placeholder="Snapshot name" onChange={handleChangeSnapshotName} />
+              <Input
+                data-cy="devices-snapshot-modal-input"
+                value={snapshotName}
+                placeholder="Snapshot name"
+                onChange={handleChangeSnapshotName}
+              />
               <FormErrorMessage>Please enter snapshot name</FormErrorMessage>
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} type="submit" isLoading={isLoading}>
+            <Button
+              data-cy="device-snapshot-modal-create"
+              colorScheme="blue"
+              mr={3}
+              type="submit"
+              isLoading={isLoading}
+            >
               Create
             </Button>
             <Button
+              data-cy="device-snapshot-modal-cancel"
               onClick={() => {
                 setIsDirty(false);
                 setSnapshotName('');

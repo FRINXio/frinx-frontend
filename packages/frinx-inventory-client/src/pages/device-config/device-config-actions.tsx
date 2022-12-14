@@ -22,8 +22,11 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
   return (
     <Flex background="gray.300" paddingX={4} paddingY={2}>
       <ButtonGroup isAttached>
-        <Button onClick={onCalculateDiffBtnClick}>Calculate diff</Button>
+        <Button data-cy="deviceConfigCalculate" onClick={onCalculateDiffBtnClick}>
+          Calculate diff
+        </Button>
         <Button
+          data-cy="device-config-run"
           onClick={onDryRunBtnClick}
           leftIcon={<Icon size={20} as={FeatherIcon} icon="play" />}
           isLoading={isCommitLoading}
@@ -33,6 +36,7 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
       </ButtonGroup>
       <ButtonGroup isAttached marginLeft="auto">
         <Button
+          data-cy="device-config-discard"
           onClick={onTransactionCloseBtnClick}
           colorScheme="red"
           leftIcon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
@@ -41,6 +45,7 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
           Discard changes
         </Button>
         <Button
+          data-cy="device-config-commit"
           onClick={onCommitBtnClick}
           isLoading={isCommitLoading}
           colorScheme="blue"
