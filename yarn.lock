@@ -3635,7 +3635,7 @@ __metadata:
     "@frinx/workflow-ui": ^2.0.0
     "@frinxio/device-topology": ^0.0.1
     "@frinxio/gamma": 0.0.19
-    "@types/node": 16.11.38
+    "@types/node": 16.18.10
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
     "@types/url-join": 4.0.1
@@ -5659,10 +5659,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:16.11.38":
-  version: 16.11.38
-  resolution: "@types/node@npm:16.11.38"
-  checksum: 471df020162098602fd77014c458e84f01f7faff3cddcc2b7739312a8b4f103bc0fab3dfc03641233d9f627c47fd82dfabc9b86413ef680e193c36b9aed322e6
+"@types/node@npm:16.18.10":
+  version: 16.18.10
+  resolution: "@types/node@npm:16.18.10"
+  checksum: 1b138616923e9a1c6d3806edf75714b605d2ec689357cdc675bc73816c508ff11b3c68df054b02a496c76654d8ed53add2e90816af39423431c73aa6eec06f29
   languageName: node
   linkType: hard
 
