@@ -16,19 +16,6 @@ describe('check devices inventory table', () => {
     });
   });
 
-  it('Filter by name', () => {
-    cy.intercept('POST', '/api/inventory', (req) => {
-      if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
-        req.reply({ fixture: 'device-inventory/device-list/filter-by-name-R9.json' });
-      }
-      if (req.body.hasOwnProperty('query') && req.body.query.includes('FilterLabels')) {
-        req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
-      }
-    })
-    cy.wait(10000).get('[data-cy="search-by-name"]').type('R9').get('[data-cy="search-button"]').click().wait(2000);
-    cy.contains('R9');
-  });
-
   it('Search by label', () => {
     cy.intercept('POST', '/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
@@ -38,6 +25,19 @@ describe('check devices inventory table', () => {
     cy.get('[data-cy="search-by-label"]').click();
     cy.get('#downshift-0-item-3').click();
     cy.wait(2000).contains('RX2');
+  });
+
+  it('Filter by name', () => {
+    cy.intercept('POST', '/api/inventory', (req) => {
+      if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
+        req.reply({ fixture: 'device-inventory/device-list/filter-by-name-R9.json' });
+      }
+      if (req.body.hasOwnProperty('query') && req.body.query.includes('FilterLabels')) {
+        req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
+      }
+    });
+    cy.wait(10000).get('[data-cy="search-by-name"]').type('R9').get('[data-cy="search-button"]').click().wait(2000);
+    cy.contains('R9');
   });
 
   it('Install device', () => {
