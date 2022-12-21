@@ -13,7 +13,7 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
-    }).as('getDevices');
+    });
   });
 
   it('Filter by name', () => {
