@@ -25,7 +25,11 @@ describe('check devices inventory table', () => {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
     }).as('getDevice');
-    cy.get('[data-cy="search-by-name"]').type('R9').get('[data-cy="search-button"]').click().wait(2000);
+    cy.get('input[placeholder="Search device"]')
+      .type('R9')
+      .get('[data-cy="search-button"]')
+      .click()
+      .wait(2000);
     cy.contains('R9');
   });
 
