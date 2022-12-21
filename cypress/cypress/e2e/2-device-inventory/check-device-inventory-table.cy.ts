@@ -5,9 +5,7 @@
 
 describe('check devices inventory table', () => {
   beforeEach(() => {
-    cy.visit(Cypress.env('device-inventory-host'))
-      .location('pathname', { timeout: 10000 })
-      .should('eq', '/inventory/devices');
+    cy.visit(Cypress.env('device-inventory-host'));
     cy.intercept('POST', '/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/device-list.json' });
@@ -19,7 +17,8 @@ describe('check devices inventory table', () => {
   });
 
   it('Search by label', () => {
-    cy.wait('@getDevices');
+    cy.wait('@getDevices').location('pathname', { timeout: 10000 }).should('eq', '/inventory/devices');
+
     cy.intercept('POST', '/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
