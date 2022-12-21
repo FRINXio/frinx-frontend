@@ -24,12 +24,8 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
-    }).as('getDevice');
-    cy.get('input[placeholder="Search device"]')
-      .type('R9')
-      .get('[data-cy="search-button"]')
-      .click()
-      .wait(2000);
+    })
+    cy.wait(6000).get('[data-cy="search-by-name"]').type('R9').get('[data-cy="search-button"]').click().wait(2000);
     cy.contains('R9');
   });
 
