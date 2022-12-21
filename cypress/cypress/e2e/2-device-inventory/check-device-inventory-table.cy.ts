@@ -17,8 +17,6 @@ describe('check devices inventory table', () => {
   });
 
   it('Search by label', () => {
-    cy.wait('@getDevices').location('pathname', { timeout: 10000 }).should('eq', '/inventory/devices');
-
     cy.intercept('POST', '/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
