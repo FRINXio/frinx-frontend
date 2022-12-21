@@ -21,7 +21,8 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
       }
-    });
+    })
+    cy.wait(60000)
     cy.get('[data-cy="search-by-label"]').click();
     cy.get('#downshift-0-item-3').click();
     cy.wait(2000).contains('RX2');
