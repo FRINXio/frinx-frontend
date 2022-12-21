@@ -6,7 +6,7 @@
 describe('check devices inventory table', () => {
   beforeEach(() => {
     cy.visit(Cypress.env('device-inventory-host'));
-    cy.intercept('POST', '/api/inventory', (req) => {
+    cy.intercept('POST', 'https://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/device-list.json' });
       }
@@ -17,19 +17,18 @@ describe('check devices inventory table', () => {
   });
 
   it('Search by label', () => {
-    cy.intercept('POST', '/api/inventory', (req) => {
+    cy.intercept('POST', 'https://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
       }
-    })
-    cy.wait(60000)
+    });
     cy.get('[data-cy="search-by-label"]').click();
     cy.get('#downshift-0-item-3').click();
     cy.wait(2000).contains('RX2');
   });
 
   it('Filter by name', () => {
-    cy.intercept('POST', '/api/inventory', (req) => {
+    cy.intercept('POST', 'https://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/filter-by-name-R9.json' });
       }
@@ -42,7 +41,7 @@ describe('check devices inventory table', () => {
   });
 
   it('Install device', () => {
-    cy.intercept('POST', '/api/inventory', (req) => {
+    cy.intercept('POST', 'https://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('InstallDevice')) {
         req.reply({ fixture: 'device-inventory/device-list/install-device-R9.json' });
       }
@@ -55,7 +54,7 @@ describe('check devices inventory table', () => {
   });
 
   it('Install selected', () => {
-    cy.intercept('POST', '/api/inventory', (req) => {
+    cy.intercept('POST', 'https://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('InstallDevice')) {
         req.reply({ fixture: 'device-inventory/device-list/install-device-R6.json' });
       }
@@ -70,7 +69,7 @@ describe('check devices inventory table', () => {
   });
 
   it('Delete selected', () => {
-    cy.intercept('POST', '/api/inventory', (req) => {
+    cy.intercept('POST', 'https://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('DeleteDevice')) {
         req.reply({ fixture: 'device-inventory/device-list/delete-device-R9.json' });
       }
