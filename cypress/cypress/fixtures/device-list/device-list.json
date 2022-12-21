@@ -1,0 +1,144 @@
+{
+  "data": {
+    "devices": {
+      "edges": [
+        {
+          "node": {
+            "id": "RGV2aWNlOjBiYWEwZGY1LTRkYzktNDI3OC04MmY5LTQ0ZWNiYjFjMTdmNA",
+            "name": "R9",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        },
+        {
+          "node": {
+            "id": "RGV2aWNlOjE0OGI0MjQxLThhMjItNDI4My05ZTQyLWFmOTg0YWQ3ZDNkYg",
+            "name": "RX2",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        },
+        {
+          "node": {
+            "id": "RGV2aWNlOjJkMjBiMGEwLWI0OTMtNDAyMi1hNjNmLTkzYjg2MGU4ZTQ4OA",
+            "name": "R6",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        },
+        {
+          "node": {
+            "id": "RGV2aWNlOjUyZWZjYjBmLTdjYmEtNDhhNS1iYWEzLWEyMWM0OGM4M2IyOA",
+            "name": "R3",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        },
+        {
+          "node": {
+            "id": "RGV2aWNlOjU1ODU3YjQ0LTAyOTEtNGU5NC1hNmJmLTk2ZWI0MjA0MjE0MA",
+            "name": "R7",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        },
+        {
+          "node": {
+            "id": "RGV2aWNlOjU2YWQ1ZjUxLTlkMjAtNDViNS04MDVhLTJhMTVkNjA4MDM1Nw",
+            "name": "R4",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        },
+        {
+          "node": {
+            "id": "RGV2aWNlOjgzZGI2OWFhLTk1MzAtNDgyNS04ZDU4LTUwMmI3ZDJmODdhMQ",
+            "name": "R1",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        },
+        {
+          "node": {
+            "id": "RGV2aWNlOjg4YzU3NjI4LTJmMDEtNDJiNy1hZGY2LTYwOTVmYzAzOTc5Zg",
+            "name": "R5",
+            "createdAt": "2022-12-06T13:02:55.046Z",
+            "isInstalled": false,
+            "serviceState": "PLANNING",
+            "zone": {
+              "id": "Wm9uZTo3Njk5ZjhjMC05YzIzLTRjYjMtOWE3NC1lZDk0MDkyZGNjY2I",
+              "name": "localhost",
+              "__typename": "Zone"
+            },
+            "__typename": "Device"
+          },
+          "__typename": "DeviceEdge"
+        }
+      ],
+      "pageInfo": {
+        "startCursor": "0baa0df5-4dc9-4278-82f9-44ecbb1c17f4",
+        "endCursor": "88c57628-2f01-42b7-adf6-6095fc03979f",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "__typename": "PageInfo"
+      },
+      "__typename": "DeviceConnection"
+    }
+  }
+}

@@ -36,21 +36,26 @@ const EditBlueprintForm: FC<Props> = ({ initialValues, onSubmit, onCancel }) => 
     <form onSubmit={handleSubmit}>
       <FormControl id="name" my={6} isInvalid={errors.name != null}>
         <FormLabel>Name</FormLabel>
-        <Input type="text" value={values.name} onChange={handleChange} />
+        <Input data-cy="blueprint-edit-name" type="text" value={values.name} onChange={handleChange} />
         <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
       <FormControl id="template" my={6} isInvalid={errors.template != null}>
         <FormLabel>Template</FormLabel>
-        <Textarea value={values.template} minHeight="calc(100vh - 550px)" onChange={handleChange} />
+        <Textarea
+          data-cy="blueprint-edit-template"
+          value={values.template}
+          minHeight="calc(100vh - 550px)"
+          onChange={handleChange}
+        />
         <FormErrorMessage>{errors.template}</FormErrorMessage>
       </FormControl>
       <Divider my={6} />
       <FormControl>
         <HStack>
-          <Button colorScheme="gray" isLoading={isSubmitting} onClick={onCancel}>
+          <Button data-cy="blueprint-edit-cancel" colorScheme="gray" isLoading={isSubmitting} onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+          <Button data-cy="blueprint-edit-confirm" type="submit" colorScheme="blue" isLoading={isSubmitting}>
             Save changes
           </Button>
         </HStack>

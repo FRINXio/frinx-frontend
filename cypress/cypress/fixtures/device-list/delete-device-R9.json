@@ -1,0 +1,8 @@
+{
+  "data": {
+    "deleteDevice": {
+      "device": { "id": "RGV2aWNlOjBiYWEwZGY1LTRkYzktNDI3OC04MmY5LTQ0ZWNiYjFjMTdmNA", "__typename": "Device" },
+      "__typename": "DeleteDevicePayload"
+    }
+  }
+}
