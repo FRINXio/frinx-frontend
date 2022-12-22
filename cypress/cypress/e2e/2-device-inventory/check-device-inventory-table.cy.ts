@@ -1,18 +1,26 @@
 /* eslint-disable no-prototype-builtins */
-/* global cy,it,describe,Cypress */
+/* global cy,it,describe,Cypress,beforeEach */
 
 /// <reference types="cypress" />
 
 import { hasOperationName } from '../../helpers/utils';
 
 describe('check devices inventory table', () => {
-  it('Search by label', () => {
+  beforeEach(() => {
+    cy.visit(Cypress.env('device-inventory-host'));
+    cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
+      if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
+        req.reply({ fixture: 'device-inventory/device-list/device-list.json' });
+      }
+    });
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
     }).as('filterLabels');
+  });
 
+  it('Search by label', () => {
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
