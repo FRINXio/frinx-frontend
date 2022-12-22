@@ -13,19 +13,30 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
-    }).as('getDevices');
+    });
   });
 
   it('Search by label', () => {
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
+      if (req.body.hasOwnProperty('query') && req.body.query.includes('FilterLabels')) {
+        req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
+      }
+    }).as('filterLabels');
+
+    cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
       }
-    }).then(() => {
-      cy.get('[data-cy="search-by-label"]').click();
-      cy.get('#downshift-0-item-3').click();
-      cy.wait(2000).contains('RX2');
-    });
+    }).as('searchDevices');
+
+    cy.visit(Cypress.env('device-inventory-host'));
+
+    cy.wait('@filterLabels');
+    cy.get('[data-cy="search-by-label"]').click();
+    cy.get('#downshift-0-item-3').click();
+
+    cy.wait('@searchDevices');
+    cy.contains('RX2');
   });
 
   it('Filter by name', () => {
