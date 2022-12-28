@@ -18,4 +18,5 @@ module.exports = {
     },
   },
   extends: ['@frinx/eslint-config-typescript'],
+  ignorePatterns: ['.eslintrc.js'],
 };

@@ -1,0 +1,14 @@
+{
+  "data": {
+    "installDevice": {
+      "device": {
+        "id": "RGV2aWNlOjU1ODU3YjQ0LTAyOTEtNGU5NC1hNmJmLTk2ZWI0MjA0MjE0MA",
+        "createdAt": "2022-12-06T13:02:55.046Z",
+        "isInstalled": true,
+        "serviceState": "PLANNING",
+        "__typename": "Device"
+      },
+      "__typename": "InstallDevicePayload"
+    }
+  }
+}
