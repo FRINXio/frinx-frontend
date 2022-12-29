@@ -95,24 +95,7 @@ export type InputParameters =
   | EventInputParams
   | DynamicForkInputParams;
 
-export type TaskType =
-  | 'DECISION'
-  | 'EVENT'
-  | 'SIMPLE'
-  | 'FORK_JOIN'
-  | 'JOIN'
-  | 'WAIT'
-  | 'LAMBDA'
-  | 'TERMINATE'
-  | 'DO_WHILE'
-  | 'WHILE_END'
-  | 'SUB_WORKFLOW'
-  | 'CUSTOM'
-  | 'FORK_JOIN_DYNAMIC'
-  | 'EXCLUSIVE_JOIN'
-  | 'HTTP'
-  | 'KAFKA_PUBLISH'
-  | 'JSON_JQ';
+export type TaskType = Task['type'];
 
 type TaskValues = {
   name: string;
@@ -140,7 +123,8 @@ type BaseTask<T = undefined> = T extends undefined
 
 export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
-  caseValueParam: string;
+  caseValueParam?: string;
+  caseExpression?: string;
   decisionCases: Record<string, Task[]>;
   defaultCase: Task[];
 };
@@ -306,11 +290,11 @@ export type ExtendedTask =
   | ExtendedJsonJQTask
   | ExtendedSetVariableTask;
 
-export type Workflow<T extends WorkflowTask = WorkflowTask> = {
+export type Workflow<T = Task> = {
   name: string;
   hasSchedule: boolean;
   description?: string;
-  version: string;
+  version: number;
   inputParameters?: string[];
   outputParameters: Record<string, string>;
   failureWorkflow?: boolean;
@@ -339,7 +323,7 @@ export type TaskDefinition = {
   description?: string;
   retryCount: number;
   timeoutSeconds: number;
-  pollTimeoutSeconds: number;
+  pollTimeoutSeconds?: number;
   inputKeys?: string[];
   outputKeys?: string[];
   inputTemplate?: Record<string, string>;
@@ -355,7 +339,7 @@ export type TaskDefinition = {
 
 export type ExecutedWorkflowTask = {
   taskType: string;
-  status: string;
+  status: TaskStatus;
   reasonForIncompletion: string;
   referenceTaskName: string;
   callbackAfterSeconds: number;
@@ -446,7 +430,8 @@ export type ExecutedWorkflows = {
   };
 };
 
-export type Status = 'RUNNING' | 'FAILED' | 'TERMINATED' | 'PAUSED' | 'COMPLETED';
+export type Status = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT' | 'PAUSED';
+export type WorkflowStatus = Status;
 
 export type ExecutedWorkflowDetailResult = {
   status: Status;
@@ -516,39 +501,39 @@ enum TimeoutPolicy {
   ALERT_ONLY,
 }
 
-export type WorkflowTask = {
-  name: string;
-  description: string;
-  taskReferenceName: string;
-  inputParameters: Record<string, string>;
-  type: TaskType;
-  dynamicTaskParam: string;
-  caseValueParam: string;
-  caseExpression: string;
-  scriptExpression: string;
-  decisionCases: Record<string, Task[]>;
-  dynamicForkTasksParam: string;
-  dynamicForkTasksInputParamName: string;
-  defaultCase: Task[];
-  forkTasks: Task[][];
-  startDelay: number;
-  subWorkflowParam: SubWorkflowParam;
-  joinOn: string[];
-  sink: string;
-  optional: boolean;
-  taskDefinition: TaskDefinition;
-  rateLimited: boolean;
-  defaultExclusiveJoinTask: string[];
-  asyncComplete: boolean;
-  loopCondition: string;
-  loopOver: Record<string, string>[];
-  retryCount: number;
-  workflowTaskType: WorkflowTask;
-};
+// export type WorkflowTask = {
+//   name: string;
+//   description: string;
+//   taskReferenceName: string;
+//   inputParameters: Record<string, string>;
+//   type: TaskType;
+//   dynamicTaskParam: string;
+//   caseValueParam: string;
+//   caseExpression: string;
+//   scriptExpression: string;
+//   decisionCases: Record<string, Task[]>;
+//   dynamicForkTasksParam: string;
+//   dynamicForkTasksInputParamName: string;
+//   defaultCase: Task[];
+//   forkTasks: Task[][];
+//   startDelay: number;
+//   subWorkflowParam: SubWorkflowParam;
+//   joinOn: string[];
+//   sink: string;
+//   optional: boolean;
+//   taskDefinition: TaskDefinition;
+//   rateLimited: boolean;
+//   defaultExclusiveJoinTask: string[];
+//   asyncComplete: boolean;
+//   loopCondition: string;
+//   loopOver: Record<string, string>[];
+//   retryCount: number;
+//   workflowTaskType: WorkflowTask;
+// };
 
 export type SubWorkflowParam = {
   name: string;
-  version: string;
+  version: number;
   taskToDomain: Record<string, string>;
   workflowDefinition: WorkflowDefinition;
 };
@@ -575,5 +560,70 @@ export type WorkflowDefinition<T extends Task = Task> = {
   variables: Record<string, string>;
 };
 
-export type ExecutedWorkflowSortBy = 'workflowId' | 'startTime' | 'endTime';
+export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 export type ExecutedWorkflowSortOrder = 'ASC' | 'DESC';
+
+export type WorkflowExecutionPayload = {
+  workflowId: string;
+  label: string;
+  start?: number;
+  size?: string;
+  sortBy?: ExecutedWorkflowSortBy;
+  sortOrder?: ExecutedWorkflowSortOrder;
+};
+
+export type WorkflowExecutionResult = {
+  result: {
+    hits: ExecutedWorkflow[];
+    totalHits: number;
+  };
+};
+
+export type WorkflowPayload = {
+  input: Record<string, string>;
+  name: string;
+  version: number;
+};
+
+export type TaskStatus = 'COMPLETED' | 'FAILED' | 'SCHEDULED' | 'IN_PROGRESS';
+// export type WorkflowStatus = 'COMPLETED' | 'FAILED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT' | 'PAUSED';
+
+export type ExecutedWorkflowResponse = {
+  result: WorkflowInstanceDetail;
+  meta: Workflow;
+  subworkflows: WorkflowInstanceDetail[];
+};
+
+export type ActionTypes = 'complete_task' | 'fail_task';
+
+export type ActionTargetTask = {
+  workflowId: string;
+  taskRefName: string;
+  output?: unknown;
+};
+
+export type ActionTargetWorkflow = {
+  workflowId: string;
+  taskRefName: string;
+  output?: unknown;
+};
+
+export type Action = {
+  action: string;
+  expandInLineJson: boolean;
+} & ({ [key in ActionTypes]: ActionTargetTask } | { start_workflow: ActionTargetWorkflow });
+
+export type EListener = {
+  name: string;
+  event: string;
+  actions: Action[];
+  active?: boolean;
+  state: boolean;
+};
+
+export type Queue = {
+  lastPollTime: number;
+  qsize: number;
+  queueName: string;
+  workerId: string;
+};

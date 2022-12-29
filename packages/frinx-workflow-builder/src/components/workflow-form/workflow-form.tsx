@@ -17,10 +17,9 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { omit, omitBy } from 'lodash';
-import { LabelsInput } from '@frinx/shared/src';
+import { LabelsInput, Workflow } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { Workflow } from '../../helpers/types';
 import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
 
 type PartialWorkflow = Pick<

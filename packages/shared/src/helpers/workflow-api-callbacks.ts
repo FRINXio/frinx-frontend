@@ -1,13 +1,14 @@
-import { ExecutedWorkflowResponse } from '../pages/executed-workflow-detail/executed-workflow-detail-status.helpers';
-import { ScheduledWorkflow, Workflow } from '../helpers/types';
 import {
-  EventListener,
+  EListener,
+  ExecutedWorkflowResponse,
   Queue,
+  ScheduledWorkflow,
   TaskDefinition,
+  Workflow,
   WorkflowExecutionPayload,
   WorkflowExecutionResult,
   WorkflowPayload,
-} from '../helpers/uniflow-types';
+} from './workflow-api.types';
 
 export type Callbacks = {
   getWorkflows: () => Promise<Workflow[]>;
@@ -22,9 +23,9 @@ export type Callbacks = {
   getWorkflow: (name: string, version: string) => Promise<Workflow>;
   deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
   putWorkflow: (workflows: Workflow[]) => Promise<Workflow[]>;
-  getEventListeners: () => Promise<EventListener[]>;
-  registerEventListener: (eventListener: EventListener) => Promise<EventListener>;
-  deleteEventListener: (name: string) => Promise<EventListener>;
+  getEventListeners: () => Promise<EListener[]>;
+  registerEventListener: (eventListener: EListener) => Promise<EListener>;
+  deleteEventListener: (name: string) => Promise<EListener>;
   getQueues: () => Promise<Queue[]>;
   getWorkflowExecutions: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;
   getWorkflowExecutionsHierarchical: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;

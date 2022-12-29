@@ -1,7 +1,7 @@
-import { Box, Button, Container, Flex, Heading, HStack, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, HStack, Progress, useDisclosure } from '@chakra-ui/react';
 import { unwrap, useNotifications } from '@frinx/shared/src';
 import { Item } from 'chakra-ui-autocomplete';
-import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
@@ -19,6 +19,8 @@ import {
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
 } from '../../__generated__/graphql';
+import BulkActions from './bulk-actions';
+import DeleteSelectedDevicesModal from './delete-selected-modal';
 import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
@@ -114,20 +116,6 @@ type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortedBy: SortedBy;
   direction: Direction;
-};
-
-type DeleteModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: () => void;
-};
-
-const DeleteSelectedDevicesModal: FC<DeleteModalProps> = ({ onSubmit, isOpen, onClose }) => {
-  return (
-    <ConfirmDeleteModal isOpen={isOpen} onClose={onClose} onConfirmBtnClick={onSubmit} title="Delete selected devices">
-      Are you sure? You can&apos;t undo this action afterwards.
-    </ConfirmDeleteModal>
-  );
 };
 
 function getSorting(sorting: Sorting | null, sortedBy: SortedBy): Sorting | null {
@@ -420,7 +408,7 @@ const DeviceList: VoidFunctionComponent = () => {
         />
       )}
       <DeleteSelectedDevicesModal
-        onSubmit={handleSelectedDeviceDelete}
+        onConfirm={handleSelectedDeviceDelete}
         isOpen={deleteSelectedDevicesModal.isOpen}
         onClose={deleteSelectedDevicesModal.onClose}
       />
@@ -460,7 +448,7 @@ const DeviceList: VoidFunctionComponent = () => {
 
           <Box>
             <Flex>
-              <Flex gridGap="4">
+              <Flex gridGap="4" marginRight="auto">
                 <DeviceFilter
                   labels={labels}
                   selectedLabels={selectedLabels}
@@ -469,29 +457,11 @@ const DeviceList: VoidFunctionComponent = () => {
                 />
                 <DeviceSearch text={searchText || ''} onChange={setSearchText} onSubmit={handleSearchSubmit} />
               </Flex>
-              <Spacer />
-              <HStack>
-                <Button
-                  data-cy="install-devices"
-                  isDisabled={selectedDevices.size === 0}
-                  onClick={handleInstallSelectedDevices}
-                  variant="outline"
-                  colorScheme="blue"
-                  size="sm"
-                >
-                  Install selected
-                </Button>
-                <Button
-                  data-cy="delete-devices"
-                  isDisabled={selectedDevices.size === 0}
-                  onClick={deleteSelectedDevicesModal.onOpen}
-                  variant="outline"
-                  colorScheme="red"
-                  size="sm"
-                >
-                  Delete selected
-                </Button>
-              </HStack>
+              <BulkActions
+                onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
+                onInstallButtonClick={handleInstallSelectedDevices}
+                areButtonsDisabled={selectedDevices.size === 0}
+              />
             </Flex>
           </Box>
           <DeviceTable

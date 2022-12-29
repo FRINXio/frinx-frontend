@@ -1,6 +1,5 @@
-import { CustomToastProvider } from '@frinx/shared/src';
 import React, { createContext, FC } from 'react';
-import callbackUtils, { Callbacks } from './utils/callback-utils';
+import { callbackUtils, Callbacks, CustomToastProvider } from '@frinx/shared/src';
 
 export const UniflowApiContext = createContext(false);
 const UniflowApiProvider: FC = ({ children }) => (

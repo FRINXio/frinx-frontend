@@ -1,4 +1,4 @@
-import { Workflow } from '../helpers/types';
+import { Workflow } from '@frinx/shared/src';
 
 export type InputParameter = Record<
   string,

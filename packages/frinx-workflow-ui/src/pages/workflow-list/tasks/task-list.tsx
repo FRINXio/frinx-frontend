@@ -2,15 +2,27 @@ import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import throttle from 'lodash/throttle';
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
+import { callbackUtils, TaskDefinition } from '@frinx/shared/src';
 import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
-import { taskDefinition } from '@frinx/workflow-ui/src/constants';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
-import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import FeatherIcon from 'feather-icons-react';
 import TaskTable from './task-table';
 import TaskConfigModal from './task-modal';
 import AddTaskModal from './add-task-modal';
+
+const taskDefinition: TaskDefinition = {
+  name: '',
+  description: '',
+  retryCount: 0,
+  retryLogic: 'FIXED',
+  retryDelaySeconds: 0,
+  timeoutPolicy: 'TIME_OUT_WF',
+  timeoutSeconds: 60,
+  responseTimeoutSeconds: 10,
+  ownerEmail: '',
+  inputKeys: [],
+  outputKeys: [],
+};
 
 function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {
   const resultIds = searchResult.map((r) => r.id);

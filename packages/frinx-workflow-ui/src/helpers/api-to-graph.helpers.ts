@@ -1,6 +1,5 @@
 import { Edge, Node } from 'react-flow-renderer';
 import { v4 as uuid } from 'uuid';
-import { getTaskLabel } from './task.helpers';
 import {
   DecisionTask,
   ExtendedDecisionTask,
@@ -14,7 +13,8 @@ import {
   NodeData,
   Task,
   TaskType,
-} from './types';
+} from '@frinx/shared/src';
+import { getTaskLabel } from './task.helpers';
 
 type NodeType = 'decision' | 'fork_join' | 'join' | 'base';
 

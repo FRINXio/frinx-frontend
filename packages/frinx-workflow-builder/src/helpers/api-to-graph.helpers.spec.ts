@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { assert, describe, test } from 'vitest';
+import { ExtendedTask, Workflow } from '@frinx/shared/src';
 import { getElementsFromWorkflow } from './api-to-graph.helpers';
-import { ExtendedTask, Workflow } from './types';
 
 function loadWorkflow(fileName: string): Workflow<ExtendedTask> {
   return JSON.parse(readFileSync(`./src/helpers/workflows/${fileName}`).toString());

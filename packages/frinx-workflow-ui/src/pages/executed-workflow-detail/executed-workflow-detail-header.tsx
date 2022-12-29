@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Box, Grid } from '@chakra-ui/react';
-import { Status } from '@frinx/workflow-ui/src/helpers/types';
+import { Status } from '@frinx/shared/src';
 import { isEmpty } from 'lodash';
 import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-action-button';
 

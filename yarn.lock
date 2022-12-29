@@ -3573,11 +3573,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@frinx/api@0.0.14, @frinx/api@workspace:packages/frinx-api":
+"@frinx/api@workspace:^, @frinx/api@workspace:packages/frinx-api":
   version: 0.0.0-use.local
   resolution: "@frinx/api@workspace:packages/frinx-api"
   dependencies:
     "@frinx/eslint-config-typescript": 19.0.4-build.1
+    "@frinx/shared": "workspace:^"
     "@rollup/plugin-commonjs": ^22.0.0
     "@rollup/plugin-json": ^4.1.0
     "@rollup/plugin-node-resolve": ^13.3.0
@@ -3626,7 +3627,7 @@ __metadata:
     "@emotion/styled": 11.9.3
     "@fontsource/roboto": ^4.5.8
     "@formspree/react": ^2.4.0
-    "@frinx/api": 0.0.14
+    "@frinx/api": "workspace:^"
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/inventory-client": ^0.0.1
     "@frinx/resource-manager": ^0.0.1
@@ -4020,6 +4021,7 @@ __metadata:
     "@frinx/shared": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
     "@types/react-redux": ^7.1.19
+    "@types/unescape-js": ^1.0.0
     ace-builds: ^1.4.12
     babel-loader: 8.3.0
     babel-polyfill: ^6.26.0
@@ -5839,6 +5841,13 @@ __metadata:
   version: 0.0.30
   resolution: "@types/strip-json-comments@npm:0.0.30"
   checksum: 829ddd389645073f347c5b1924a8c34b8813af29756576e511c46f40e218193cf93ccbade62661d47fc70f707e98f410331729b8c20edfcb2e807d51df1ad4b7
+  languageName: node
+  linkType: hard
+
+"@types/unescape-js@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/unescape-js@npm:1.0.0"
+  checksum: 75bf4a93e9bd08dd1e21b8b43369dc6bb1159e21fd1185456903ad3cb98942fe8420bc45bd7e6be95ce5b5f0e9598a76bf907c0424772fb64bfe4619239ead47
   languageName: node
   linkType: hard
 

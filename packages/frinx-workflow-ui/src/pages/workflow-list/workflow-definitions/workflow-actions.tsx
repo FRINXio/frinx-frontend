@@ -3,7 +3,7 @@ import { Box, Button, ButtonGroup, Menu, MenuButton, MenuItem, MenuList, Stack }
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
-import { Workflow } from '../../../helpers/types';
+import { Workflow } from '@frinx/shared/src';
 
 type Props = {
   workflow: Workflow;

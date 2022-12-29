@@ -1,8 +1,4 @@
-import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import { ExecutedWorkflow } from '../../../helpers/types';
-
-type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
-type SortOrder = 'ASC' | 'DESC';
+import { callbackUtils, ExecutedWorkflow, ExecutedWorkflowSortBy, ExecutedWorkflowSortOrder } from '@frinx/shared/src';
 
 const getApiLabels = (labels: string[]): string => labels.join('&');
 
@@ -52,7 +48,11 @@ export const getSubWorkflowIds = (workflow: ExecutedWorkflow): string[] => {
   return Array.from(result).map((r) => r[1]);
 };
 
-export const getSortOrder = (sortBy: SortBy, previousSortBy: SortBy, previousSortOrder: SortOrder): SortOrder => {
+export const getSortOrder = (
+  sortBy: ExecutedWorkflowSortBy,
+  previousSortBy: ExecutedWorkflowSortBy,
+  previousSortOrder: ExecutedWorkflowSortOrder,
+): ExecutedWorkflowSortOrder => {
   if (sortBy !== previousSortBy) {
     return 'ASC';
   }
@@ -73,8 +73,8 @@ export const getWorkflows = ({
   labels: string[];
   start: number;
   size: number;
-  sortBy: SortBy;
-  sortOrder: SortOrder;
+  sortBy: ExecutedWorkflowSortBy;
+  sortOrder: ExecutedWorkflowSortOrder;
   isFlat: boolean;
 }) => {
   const { getWorkflowExecutions, getWorkflowExecutionsHierarchical } = callbackUtils.getCallbacks;

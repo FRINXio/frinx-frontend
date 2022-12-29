@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Container, useDisclosure } from '@chakra-ui/react';
-import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
-import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
-import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { callbackUtils, Workflow } from '@frinx/shared/src';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
+import { jsonParse } from '../../../utils/helpers.utils';
+import { usePagination } from '../../../common/pagination-hook';
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr: string[] = dataset.flatMap(({ description }) => {

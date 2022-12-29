@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
+import { ExtendedDecisionTask } from '@frinx/shared';
 import React, { memo, useEffect, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position, useUpdateNodeInternals } from 'react-flow-renderer';
-import { ExtendedDecisionTask } from '../../helpers/types';
 import { useTaskActions } from '../../task-actions-context';
 import NodeButtons from '../nodes/node-buttons';
 import { truncateFromMiddle } from './node.helpers';

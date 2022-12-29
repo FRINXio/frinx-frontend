@@ -16,8 +16,8 @@ import {
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
-import { getInitialValuesFromParsedInputParameters, InputParameter } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import { Link } from 'react-router-dom';
+import { getInitialValuesFromParsedInputParameters, InputParameter } from '../../../utils/helpers.utils';
 import { ExecuteWorkflowModalFormInput } from './execute-workflow-modal-form-input';
 
 type Props = {

@@ -1,7 +1,5 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
-import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
-import { ScheduledWorkflow, Workflow } from '@frinx/workflow-ui/src/helpers/types';
+import { useNotifications, callbackUtils, Workflow, ScheduledWorkflow } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
@@ -70,7 +68,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     const { deleteWorkflow } = callbackUtils.getCallbacks;
 
     if (activeWorkflow != null) {
-      deleteWorkflow(activeWorkflow.name, activeWorkflow.version)
+      deleteWorkflow(activeWorkflow.name, String(activeWorkflow.version))
         .then(() => {
           addToastNotification({
             type: 'success',
@@ -140,7 +138,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
         <ScheduledWorkflowModal
           workflow={{
             workflowName: activeWorkflow.name,
-            workflowVersion: activeWorkflow.version,
+            workflowVersion: String(activeWorkflow.version),
           }}
           onClose={scheduledWorkflowModal.onClose}
           isOpen={scheduledWorkflowModal.isOpen}

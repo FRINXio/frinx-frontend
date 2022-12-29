@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
+import { ExtendedTask, Workflow } from '@frinx/shared/src';
 import { getTaskLabel } from './task.helpers';
-import { ExtendedTask, Workflow } from './types';
 
 export type InputParameter = Record<
   string,

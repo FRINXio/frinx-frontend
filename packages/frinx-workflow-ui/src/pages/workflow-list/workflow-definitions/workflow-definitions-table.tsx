@@ -20,10 +20,11 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
-import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
-import WorkflowLabels from '@frinx/workflow-ui/src/common/workflow-labels';
+
+import { Workflow } from '@frinx/shared/src';
 import WorkflowActions from './workflow-actions';
+import WorkflowLabels from '../../../common/workflow-labels';
+import { jsonParse } from '../../../utils/helpers.utils';
 
 type Props = {
   workflows: Workflow[];
