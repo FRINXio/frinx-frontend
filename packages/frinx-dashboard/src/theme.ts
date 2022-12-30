@@ -4,13 +4,13 @@ import { extendTheme } from '@chakra-ui/react';
 const theme = extendTheme({
   fonts: {
     heading:
-      '"Noto Sans", -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
-    body: '"Noto Sans", -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
+      '"Roboto", -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
+    body: '"Roboto", -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji',
   },
   styles: {
     global: {
       'html, body': {
-        background: 'gray.50',
+        background: '#F8FBFF',
         overflowX: 'hidden',
       },
       '.chakra-link.active': {

@@ -2714,10 +2714,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/noto-sans@npm:^4.5.11":
-  version: 4.5.11
-  resolution: "@fontsource/noto-sans@npm:4.5.11"
-  checksum: d11ec102ac9b22e3584ad77e9d0069ef8b18cf2f4dfc12f9968456be0f7da5aa95585e853988289c29746e7e04bbaaadf253646d1c9449130ac9f37211b8af15
+"@fontsource/roboto@npm:^4.5.8":
+  version: 4.5.8
+  resolution: "@fontsource/roboto@npm:4.5.8"
+  checksum: 460b6de2c9f7a172192c3f5bdd3aa11f78f0b6660dca9dc2b9d8207272b50c55b5a8f2da68e11e7fbaf44c7d3cf4191030eecce9def79fab75d4cc1de39754e2
   languageName: node
   linkType: hard
 
@@ -2782,7 +2782,7 @@ __metadata:
     "@chakra-ui/system": 1.12.1
     "@emotion/react": 11.9.3
     "@emotion/styled": 11.9.3
-    "@fontsource/noto-sans": ^4.5.11
+    "@fontsource/roboto": ^4.5.8
     "@formspree/react": ^2.4.0
     "@frinx/api": 0.0.14
     "@frinx/eslint-config-typescript": 19.0.4-build.1
@@ -2792,7 +2792,7 @@ __metadata:
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
     "@frinxio/device-topology": ^0.0.1
-    "@frinxio/gamma": 0.0.17
+    "@frinxio/gamma": 0.0.19
     "@types/node": 16.11.38
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -3302,9 +3302,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@frinxio/gamma@npm:0.0.17":
-  version: 0.0.17
-  resolution: "@frinxio/gamma@npm:0.0.17::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40FRINXio%2Fgamma%2F0.0.17%2F5647501d3a03b4b55f1f9499a6d3842f9bfd00ee"
+"@frinxio/gamma@npm:0.0.19":
+  version: 0.0.19
+  resolution: "@frinxio/gamma@npm:0.0.19::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40FRINXio%2Fgamma%2F0.0.19%2F7cdf8c00ba4bffa3ebf35ca7277bb5d0791b594e"
   dependencies:
     "@types/lodash": 4.14.181
     "@types/url-join": 4.0.1
@@ -3329,7 +3329,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.0.0
-  checksum: 9cc5d1c3ee612cd1cec9c9906ad5819754413d05c0d39eec68a7938ee1e813a4efd544e1e341b5cb7d9bd8e46cc92ba1e7c41b8585090268e7e7d07fbe675616
+  checksum: 6a66b80e57d40001549c8c85fe3366be36f4006c9e277ffb3da5717ea63e3d7735805742273eeabfa18c18e1dc5b3b405baa6bfc347ff78e0cbd0cd5757abf49
   languageName: node
   linkType: hard
 

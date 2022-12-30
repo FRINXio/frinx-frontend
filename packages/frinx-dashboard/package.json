@@ -1,6 +1,6 @@
 {
   "name": "@frinx/dashboard",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "2.31.0",
@@ -10,7 +10,7 @@
     "@chakra-ui/system": "1.12.1",
     "@emotion/react": "11.9.3",
     "@emotion/styled": "11.9.3",
-    "@fontsource/noto-sans": "^4.5.11",
+    "@fontsource/roboto": "^4.5.8",
     "@formspree/react": "^2.4.0",
     "@frinx/api": "0.0.14",
     "@frinx/inventory-client": "^0.0.1",
@@ -19,7 +19,7 @@
     "@frinx/workflow-builder": "^1.0.0",
     "@frinx/workflow-ui": "^2.0.0",
     "@frinxio/device-topology": "^0.0.1",
-    "@frinxio/gamma": "0.0.17",
+    "@frinxio/gamma": "0.0.19",
     "@types/node": "16.11.38",
     "@types/react": "17.0.42",
     "@types/react-dom": "17.0.14",

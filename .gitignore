@@ -103,3 +103,5 @@ build
 build-client
 build-server
 .turbo
+cypress/cypress/screenshots
+cypress/cypress/videos

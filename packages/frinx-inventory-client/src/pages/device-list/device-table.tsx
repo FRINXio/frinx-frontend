@@ -108,29 +108,31 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
             <Tr key={device.id}>
               <Td>
                 <Checkbox
+                  data-cy={`device-check-box-${device.name}`}
                   isDisabled={device.isInstalled}
                   isChecked={selectedDevices.has(device.id)}
                   onChange={(e) => onDeviceSelection(device.id, e.target.checked)}
                 />
               </Td>
               <Td>
-                <Text as="span" fontWeight={600}>
+                <Text data-cy={`device-name-${device.name}`} as="span" fontWeight={600}>
                   {device.name}
                 </Text>
               </Td>
               <Td>
                 <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
-                  <Text as="span" fontSize="sm" color="blackAlpha.700">
+                  <Text data-cy={`device-created-at-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
                     {formatDistanceToNow(localDate)} ago
                   </Text>
                 </Tooltip>
               </Td>
-              <Td>{device.zone?.name}</Td>
+              <Td data-cy={`device-zone-${device.name}`}>{device.zone?.name}</Td>
               <Td minWidth={200}>
-                <Badge>{device.serviceState}</Badge>
+                <Badge data-cy={`device-state-${device.name}`}>{device.serviceState}</Badge>
               </Td>
               <Td minWidth={200}>
                 <InstallButton
+                  deviceName={device.name}
                   isInstalled={isInstalled}
                   isLoading={isLoading}
                   onInstalClick={() => {
@@ -144,6 +146,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               <Td minWidth={200}>
                 <HStack spacing={2}>
                   <IconButton
+                    data-cy={`device-settings-${device.name}`}
                     aria-label="config"
                     size="sm"
                     isDisabled={!isInstalled}
@@ -152,14 +155,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     {...(isInstalled ? { to: `../config/${device.id}` } : {})}
                   />
                   <IconButton
-                    aria-label="terminal"
-                    size="sm"
-                    icon={<Icon size={12} as={FeatherIcon} icon="terminal" />}
-                    as={Link}
-                    to={`../${device.id}/terminal`}
-                    target="_blank"
-                  />
-                  <IconButton
+                    data-cy={`device-edit-${device.name}`}
                     aria-label="edit"
                     size="sm"
                     isDisabled={isInstalled}
@@ -168,6 +164,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     to={`../${device.id}/edit`}
                   />
                   <IconButton
+                    data-cy={`device-delete-${device.name}`}
                     aria-label="Delete device"
                     size="sm"
                     isDisabled={isInstalled}
