@@ -4,12 +4,14 @@ import React, { VoidFunctionComponent } from 'react';
 type Props = {
   onInstallButtonClick: () => void;
   onDeleteButtonClick: () => void;
+  onWorkflowButtonClick: () => void;
   areButtonsDisabled: boolean;
 };
 
 const BulkActions: VoidFunctionComponent<Props> = ({
   onInstallButtonClick,
   onDeleteButtonClick,
+  onWorkflowButtonClick,
   areButtonsDisabled,
 }) => {
   return (
@@ -20,6 +22,7 @@ const BulkActions: VoidFunctionComponent<Props> = ({
         variant="outline"
         colorScheme="blue"
         size="sm"
+        onClick={onWorkflowButtonClick}
       >
         Send to workflow
       </Button>

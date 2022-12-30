@@ -20,13 +20,12 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { ExecutedWorkflowTask } from '@frinx/shared/src';
-import ExternalStorageModal from '@frinx/workflow-ui/src/pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
-import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { ExecutedWorkflowTask, jsonParse } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import unescapeJs from 'unescape-js';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
+import ExternalStorageModal from '../../pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
 
 type Props = {
   task: ExecutedWorkflowTask;
@@ -36,8 +35,8 @@ type Props = {
 
 function renderTaskDescription(task: ExecutedWorkflowTask) {
   return (
-    jsonParse(task?.workflowTask?.description)?.description ||
-    jsonParse(task?.workflowTask?.taskDefinition?.description)?.description
+    jsonParse<{ description: string }>(task?.workflowTask?.description)?.description ||
+    jsonParse<{ description: string }>(task?.workflowTask?.taskDefinition?.description)?.description
   );
 }
 

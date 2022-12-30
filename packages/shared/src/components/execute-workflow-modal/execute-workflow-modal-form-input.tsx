@@ -13,7 +13,7 @@ import {
   NumberDecrementStepper,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { InputParameter } from '../../../utils/helpers.utils';
+import { InputParameter } from '../../helpers/workflow.helpers';
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,7 +23,7 @@ type Props = {
   onChange: (key: string, value: string | boolean | number) => void;
 };
 
-export const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
+const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
   inputParameterKey,
   onChange,
   values,
@@ -100,3 +100,5 @@ export const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
     </FormControl>
   );
 };
+
+export default ExecuteWorkflowModalFormInput;

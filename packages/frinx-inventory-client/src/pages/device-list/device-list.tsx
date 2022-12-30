@@ -24,6 +24,7 @@ import DeleteSelectedDevicesModal from './delete-selected-modal';
 import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
+import WorkflowListModal from './workflow-list-modal';
 
 const DEVICES_QUERY = gql`
   query Devices(
@@ -178,6 +179,7 @@ const DeviceList: VoidFunctionComponent = () => {
     UNINSTALL_DEVICE_MUTATION,
   );
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
+  const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
@@ -420,6 +422,14 @@ const DeviceList: VoidFunctionComponent = () => {
       >
         Are you sure? You can&apos;t undo this action afterwards.
       </ConfirmDeleteModal>
+      {isSendingToWorkflows && (
+        <WorkflowListModal
+          onClose={() => {
+            setIsSendingToWorkflows(false);
+          }}
+          deviceIds={[...selectedDevices]}
+        />
+      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
@@ -461,6 +471,9 @@ const DeviceList: VoidFunctionComponent = () => {
                 onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
                 onInstallButtonClick={handleInstallSelectedDevices}
                 areButtonsDisabled={selectedDevices.size === 0}
+                onWorkflowButtonClick={() => {
+                  setIsSendingToWorkflows(true);
+                }}
               />
             </Flex>
           </Box>

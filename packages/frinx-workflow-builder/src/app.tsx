@@ -1,5 +1,13 @@
-import { Box, Button, Flex, Grid, Heading, HStack, useDisclosure, Text } from '@chakra-ui/react';
-import { callbackUtils, ExtendedTask, NodeData, TaskDefinition, useNotifications, Workflow } from '@frinx/shared/src';
+import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import {
+  callbackUtils,
+  ExecuteWorkflowModal,
+  ExtendedTask,
+  NodeData,
+  TaskDefinition,
+  useNotifications,
+  Workflow,
+} from '@frinx/shared/src';
 import produce from 'immer';
 import { zip } from 'lodash';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -18,7 +26,6 @@ import ReactFlow, {
 } from 'react-flow-renderer';
 import ActionsMenu from './components/actions-menu/actions-menu';
 import ButtonEdge from './components/edges/button-edge';
-import ExecuteWorkflowModal from './components/execution-modal/execution-modal';
 import ExpandedWorkflowModal from './components/expanded-workflow-modal/expanded-workflow-modal';
 import LeftMenu from './components/left-menu/left-menu';
 import NewWorkflowModal from './components/new-workflow-modal/new-workflow-modal';
@@ -34,7 +41,6 @@ import { EdgeRemoveContext } from './edge-remove-context';
 import { getElementsFromWorkflow, getNodeType } from './helpers/api-to-graph.helpers';
 import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
-import { getDynamicInputParametersFromWorkflow, parseInputParameters } from './helpers/workflow.helpers';
 import { useTaskActions } from './task-actions-context';
 
 type WorkflowParam = Pick<
@@ -450,12 +456,9 @@ const App: VoidFunctionComponent<Props> = ({
       )}
       <NewWorkflowModal isOpen={workflowModalDisclosure.isOpen} onClose={workflowModalDisclosure.onClose} />
       <ExecuteWorkflowModal
-        parsedInputParameters={parseInputParameters(workflowToExecute.inputParameters)}
-        dynamicInputParameters={getDynamicInputParametersFromWorkflow(workflowToExecute)}
+        workflow={workflowToExecute}
         onClose={executeWorkflowModal.onClose}
         isOpen={executeWorkflowModal.isOpen}
-        workflowName={workflow.name}
-        workflowDescription={workflow.description}
         onSubmit={handleOnExecuteWorkflow}
       />
       {workflowEditorDisclosure.isOpen && (

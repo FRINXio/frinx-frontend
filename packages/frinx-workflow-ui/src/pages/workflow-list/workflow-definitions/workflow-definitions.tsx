@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Container, useDisclosure } from '@chakra-ui/react';
-import { callbackUtils, Workflow } from '@frinx/shared/src';
+import { callbackUtils, jsonParse, omitNullValue, Workflow } from '@frinx/shared/src';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
-import { jsonParse } from '../../../utils/helpers.utils';
 import { usePagination } from '../../../common/pagination-hook';
 
+type DescriptionJSON = { labels: string[]; description: string };
+
 const getLabels = (dataset: Workflow[]) => {
-  const labelsArr: string[] = dataset.flatMap(({ description }) => {
-    return jsonParse(description)?.labels;
-  });
+  const labelsArr = dataset
+    .flatMap(({ description }) => {
+      return jsonParse<DescriptionJSON>(description)?.labels;
+    })
+    .filter(omitNullValue);
   const allLabels = [...new Set(labelsArr)];
   return allLabels
     .filter((e) => {
@@ -53,7 +56,7 @@ const WorkflowDefinitions = () => {
         : workflows.filter((e) => {
             const queryWords = keywords.toUpperCase();
             const wfName = e.name.toUpperCase();
-            const labelsArr = jsonParse(e.description)?.labels;
+            const labelsArr = jsonParse<DescriptionJSON>(e.description)?.labels;
 
             // if labels are used and wf does not contain selected labels => filter out
             if (labels.length) {
@@ -71,7 +74,7 @@ const WorkflowDefinitions = () => {
   }, [workflows, labels, keywords, setItemList]);
 
   const updateFavourite = (workflow: Workflow) => {
-    let wfDescription = jsonParse(workflow.description);
+    let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
 
     // if workflow doesn't contain description attr. at all
     if (!wfDescription) {

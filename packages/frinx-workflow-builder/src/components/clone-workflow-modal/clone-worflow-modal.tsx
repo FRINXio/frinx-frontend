@@ -11,10 +11,9 @@ import {
   Input,
   useToast,
 } from '@chakra-ui/react';
-import { Workflow } from '@frinx/shared/src';
+import { isWorkflowNameAvailable, Workflow } from '@frinx/shared/src';
 import { isEmpty } from 'lodash';
 import React, { FC, FormEvent, useRef, useState } from 'react';
-import { isWorkflowNameAvailable } from '../../helpers/workflow.helpers';
 
 type Props = {
   onWorkflowClone: (name: string) => void;

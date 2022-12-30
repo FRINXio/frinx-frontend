@@ -17,29 +17,27 @@ import {
 import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getInitialValuesFromParsedInputParameters, InputParameter } from '../../../utils/helpers.utils';
-import { ExecuteWorkflowModalFormInput } from './execute-workflow-modal-form-input';
+import { Workflow } from '../../helpers/workflow-api.types';
+import {
+  getDynamicInputParametersFromWorkflow,
+  getInitialValuesFromParsedInputParameters,
+  jsonParse,
+  parseInputParameters,
+} from '../../helpers/workflow.helpers';
+import ExecuteWorkflowModalFormInput from './execute-workflow-modal-form-input';
 
 type Props = {
-  workflowName: string;
-  workflowDescription?: string;
-  parsedInputParameters?: InputParameter | null;
-  dynamicInputParameters?: string[] | null;
+  workflow: Workflow;
   isOpen: boolean;
   onClose: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (inputParameters: Record<string, any>) => Promise<string | null> | null;
 };
 
-const ExecuteWorkflowModal: FC<Props> = ({
-  isOpen,
-  onClose,
-  workflowName,
-  onSubmit,
-  workflowDescription,
-  parsedInputParameters,
-  dynamicInputParameters,
-}) => {
+const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
+  const { name, description } = workflow;
+  const parsedInputParameters = parseInputParameters(workflow.inputParameters);
+  const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
   const { values, handleSubmit, submitForm, isSubmitting, setSubmitting, setFieldValue } = useFormik<
@@ -68,14 +66,14 @@ const ExecuteWorkflowModal: FC<Props> = ({
       <ModalContent>
         <ModalCloseButton />
         <ModalHeader>
-          <Heading fontSize="md">{workflowName}</Heading>
-          {workflowDescription != null && (
-            <Text fontSize="sm" textColor="gray.400">
-              {JSON.parse(workflowDescription).description}
-            </Text>
-          )}
+          <Heading as="h2" fontSize="xl" marginBottom={2}>
+            {name}
+          </Heading>
+          <Text fontSize="md" fontWeight={400}>
+            {jsonParse<{ description: string }>(description)?.description}
+          </Text>
         </ModalHeader>
-        <ModalBody maxHeight="3xl" overflow="scroll">
+        <ModalBody maxHeight="3xl" overflowY="auto">
           {inputParametersKeys == null || inputParametersKeys.length === 0 ? (
             <Text>To successfully execute this workflow there are not provided any input parameters</Text>
           ) : (

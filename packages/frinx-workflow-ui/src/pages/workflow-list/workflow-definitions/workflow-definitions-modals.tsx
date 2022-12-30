@@ -1,18 +1,13 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications, callbackUtils, Workflow, ScheduledWorkflow } from '@frinx/shared/src';
+import { useNotifications, callbackUtils, Workflow, ScheduledWorkflow, ExecuteWorkflowModal } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
   DiagramModal,
   DependencyModal,
   ScheduledWorkflowModal,
-  ExecuteWorkflowModal,
   ConfirmDeleteModal,
-} from '@frinx/workflow-ui/src/common/modals';
-import {
-  parseInputParameters,
-  getDynamicInputParametersFromWorkflow,
-} from '@frinx/workflow-ui/src/utils/helpers.utils';
+} from '../../../common/modals';
 
 type Props = {
   workflows: Workflow[];
@@ -147,12 +142,9 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       )}
       {activeWorkflow != null && (
         <ExecuteWorkflowModal
-          parsedInputParameters={parseInputParameters(activeWorkflow?.inputParameters)}
-          dynamicInputParameters={getDynamicInputParametersFromWorkflow(activeWorkflow)}
+          workflow={activeWorkflow}
           onClose={executeWorkflowModal.onClose}
           isOpen={executeWorkflowModal.isOpen}
-          workflowName={activeWorkflow.name}
-          workflowDescription={activeWorkflow.description}
           onSubmit={handleOnExecuteWorkflow}
         />
       )}
