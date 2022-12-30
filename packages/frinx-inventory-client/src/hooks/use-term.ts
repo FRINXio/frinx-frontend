@@ -1,41 +1,29 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Terminal } from 'xterm';
 
+type CommandObject = {
+  command: string;
+  timestamp: string;
+};
 type Options = {
   terminalRef: React.RefObject<HTMLDivElement>;
-  uniconfigShell?: string | null;
+  commandObject: CommandObject;
   onCommandChange: (key: string) => void;
 };
 
-export const useTerm = (options: Partial<Options> = {}) => {
-  const ref = useRef<Terminal | null>(null);
-  const { terminalRef, onCommandChange, uniconfigShell } = options;
+export const useTerm = (options: Options) => {
+  const { terminalRef, onCommandChange, commandObject } = options;
+  const ref = useRef<Terminal>(new Terminal());
 
   useEffect(() => {
-    if (ref.current) {
-      ref.current?.write(`\n${uniconfigShell} `);
-    }
-  }, [uniconfigShell]);
+    ref.current.write(commandObject.command);
+  }, [commandObject]);
 
   const handlers = useMemo(
     () => ({
       handleCommands: () => {
-        ref.current?.onKey(({ key, domEvent }) => {
-          if (domEvent.code === 'Backspace' && (ref.current?.buffer.normal.cursorX || 0) >= 13) {
-            ref.current?.write('\b \b');
-            return;
-          }
-          switch (domEvent.code) {
-            case 'Enter':
-              onCommandChange?.('\n');
-              break;
-            case 'Tab':
-              onCommandChange?.('\t');
-              break;
-            default:
-              onCommandChange?.(key);
-              break;
-          }
+        ref.current.onKey(({ key }) => {
+          onCommandChange(key);
         });
       },
     }),
@@ -43,15 +31,15 @@ export const useTerm = (options: Partial<Options> = {}) => {
   );
 
   useEffect(() => {
-    ref.current = new Terminal();
-    if (terminalRef?.current != null) {
-      ref.current?.open(terminalRef.current);
+    const currentRef = ref.current;
+    if (terminalRef.current != null) {
+      ref.current.open(terminalRef.current);
 
       handlers.handleCommands();
     }
 
     return () => {
-      ref.current?.dispose();
+      currentRef.dispose();
     };
   }, [handlers, terminalRef]);
 };

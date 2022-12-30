@@ -677,6 +677,7 @@ export type Subscription = {
 
 export type SubscriptionUniconfigShellArgs = {
   input?: InputMaybe<Scalars['String']>;
+  timestamp?: InputMaybe<Scalars['String']>;
 };
 
 export type SyncFromNetworkPayload = {
@@ -975,15 +976,9 @@ export type DeleteDeviceMutationVariables = Exact<{
 
 export type DeleteDeviceMutation = { __typename?: 'Mutation', deleteDevice: { __typename?: 'DeleteDevicePayload', device: { __typename?: 'Device', id: string } | null } };
 
-export type DeviceDetailQueryVariables = Exact<{
-  deviceId: Scalars['ID'];
-}>;
-
-
-export type DeviceDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Zone' } | null };
-
 export type TerminalSubscriptionVariables = Exact<{
   command?: InputMaybe<Scalars['String']>;
+  timestamp: Scalars['String'];
 }>;
 
 

@@ -1,37 +1,43 @@
 import 'xterm/css/xterm.css';
-import React, { useCallback, useRef, VoidFunctionComponent } from 'react';
+import React, { useCallback, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
 import { gql, useSubscription } from 'urql';
 import { useTerm } from '../../hooks/use-term';
 import { TerminalSubscription, TerminalSubscriptionVariables } from '../../__generated__/graphql';
 
 const TERMINAL_SUBSCRIPTION = gql`
-  subscription Terminal($command: String) {
-    uniconfigShell(input: $command)
+  subscription Terminal($command: String, $timestamp: String!) {
+    uniconfigShell(input: $command, timestamp: $timestamp)
   }
 `;
 
 const TerminalComponent: VoidFunctionComponent = () => {
   const [command, setCommand] = React.useState('');
+  const [timestamp, setTimestamp] = useState<string>('1');
   const terminalRef = useRef<HTMLDivElement>(null);
 
   const [{ data: terminalData }] = useSubscription<TerminalSubscriptionVariables, TerminalSubscription>({
     query: TERMINAL_SUBSCRIPTION,
     variables: {
       command,
+      timestamp,
     },
   });
 
-  console.log(command);
+  const commandObject = useMemo(
+    () => ({ command: terminalData?.uniconfigShell ?? '', timestamp }),
+    [terminalData?.uniconfigShell, timestamp],
+  );
 
   useTerm({
     terminalRef,
-    uniconfigShell: terminalData?.uniconfigShell,
+    commandObject,
     onCommandChange: useCallback((cmd) => {
-      if (cmd === '\n') {
-        setCommand((prev) => `${prev}\r\n`);
-      } else {
-        setCommand((prev) => prev + cmd);
-      }
+      setCommand((prevC) => {
+        if (prevC === cmd) {
+          setTimestamp((prev) => String(Number(prev) + 1));
+        }
+        return cmd;
+      });
     }, []),
   });
 
