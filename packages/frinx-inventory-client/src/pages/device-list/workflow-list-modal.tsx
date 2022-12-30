@@ -11,27 +11,15 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
-import { callbackUtils, Workflow } from '@frinx/shared/src';
+import { callbackUtils, jsonParse, Workflow } from '@frinx/shared/src';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 
-const jsonParse = (json?: string | null) => {
-  if (json == null) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(json);
-  } catch (e) {
-    return null;
-  }
-};
-
 type Props = {
-  deviceIds: string[];
   onClose: () => void;
+  onWorkflowSelect: (workflow: Workflow) => void;
 };
 
-const WorkflowListModal: VoidFunctionComponent<Props> = ({ deviceIds, onClose }) => {
+const WorkflowListModal: VoidFunctionComponent<Props> = ({ onClose, onWorkflowSelect }) => {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
   useEffect(() => {
@@ -42,14 +30,9 @@ const WorkflowListModal: VoidFunctionComponent<Props> = ({ deviceIds, onClose })
   }, []);
 
   const labeledWorkflows = workflows.filter((wf) => {
-    const labels: string[] = jsonParse(wf.description)?.labels ?? [];
+    const labels: string[] = jsonParse<{ labels: string[] }>(wf.description)?.labels ?? [];
     return labels.includes('INVENTORY');
   });
-
-  const handleWorkflowClick = () => {
-    // eslint-disable-next-line
-    console.log(deviceIds);
-  };
 
   return (
     <Modal isOpen onClose={onClose} size="2xl">
@@ -79,7 +62,9 @@ const WorkflowListModal: VoidFunctionComponent<Props> = ({ deviceIds, onClose })
                 _hover={{
                   background: 'blackAlpha.200',
                 }}
-                onClick={handleWorkflowClick}
+                onClick={() => {
+                  onWorkflowSelect(workflow);
+                }}
               >
                 <Heading as="h4" fontWeight={600} fontSize="md" marginBottom={2}>
                   {workflow.name}

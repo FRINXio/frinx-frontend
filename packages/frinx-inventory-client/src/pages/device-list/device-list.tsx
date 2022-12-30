@@ -1,5 +1,6 @@
 import { Box, Button, Container, Flex, Heading, HStack, Progress, useDisclosure } from '@chakra-ui/react';
-import { unwrap, useNotifications } from '@frinx/shared/src';
+import { Workflow } from '@frinx/shared';
+import { callbackUtils, ExecuteWorkflowModal, unwrap, useNotifications } from '@frinx/shared/src';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
@@ -180,6 +181,7 @@ const DeviceList: VoidFunctionComponent = () => {
   );
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
@@ -396,6 +398,38 @@ const DeviceList: VoidFunctionComponent = () => {
     setDeviceNameFilter(searchText);
   };
 
+  const handleWorkflowSelect = (wf: Workflow) => {
+    setIsSendingToWorkflows(false);
+    setSelectedWorkflow(wf);
+  };
+
+  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+    if (selectedWorkflow == null) {
+      addToastNotification({
+        content: 'We cannot execute undefined workflow',
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    const { executeWorkflow } = callbackUtils.getCallbacks;
+
+    return executeWorkflow({
+      input: values,
+      name: selectedWorkflow.name,
+      version: selectedWorkflow.version,
+    })
+      .then((res) => {
+        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+        return res.text;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
+        return null;
+      });
+  };
+
   const labels = labelsData?.labels?.edges ?? [];
   const areSelectedAll =
     deviceData?.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
@@ -427,7 +461,17 @@ const DeviceList: VoidFunctionComponent = () => {
           onClose={() => {
             setIsSendingToWorkflows(false);
           }}
-          deviceIds={[...selectedDevices]}
+          onWorkflowSelect={handleWorkflowSelect}
+        />
+      )}
+      {selectedWorkflow != null && (
+        <ExecuteWorkflowModal
+          isOpen
+          onClose={() => {
+            setSelectedWorkflow(null);
+          }}
+          workflow={selectedWorkflow}
+          onSubmit={handleOnExecuteWorkflow}
         />
       )}
       <Container maxWidth={1280}>
