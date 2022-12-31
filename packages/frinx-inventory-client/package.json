@@ -15,7 +15,7 @@
     "build": "NODE_ENV=production webpack --mode production",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen": "cp ../../../frinx-inventory-server/src/schema/api.graphql ./ && graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts src/index.ts"
   },
@@ -38,7 +38,7 @@
     "urql": "2.2.3",
     "uuid": "8.3.2",
     "xterm": "^5.0.0",
-    "xterm-addon-fit": "^0.6.0",
+    "xterm-addon-fit": "^0.7.0",
     "yup": "0.32.11"
   },
   "devDependencies": {

@@ -2971,7 +2971,7 @@ __metadata:
     webpack: 5.75.0
     webpack-cli: 4.10.0
     xterm: ^5.0.0
-    xterm-addon-fit: ^0.6.0
+    xterm-addon-fit: ^0.7.0
     yup: 0.32.11
   peerDependencies:
     "@chakra-ui/react": ^1.6.7
@@ -18904,12 +18904,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"xterm-addon-fit@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "xterm-addon-fit@npm:0.6.0"
+"xterm-addon-fit@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "xterm-addon-fit@npm:0.7.0"
   peerDependencies:
     xterm: ^5.0.0
-  checksum: 6115e130a58a5ec3d17b424bd0420f3d871e9a6bb455ca62e67c10724534eafbdd205dd35c4707d8037efe8107c09486b48cb4369ba2e3ac97ab78f805195319
+  checksum: 512d41f80d6f9427ba02dab4e6fd642e94775a9cf7ef72ae4b55eab2a36856b5c67069bfc66b4af412fdce29a0842f9c6382af3672f0b514c4352dfd47defe8f
   languageName: node
   linkType: hard
 
