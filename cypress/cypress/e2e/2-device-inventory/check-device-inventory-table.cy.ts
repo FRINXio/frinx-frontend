@@ -76,7 +76,7 @@ describe('check devices inventory table', () => {
     cy.get('[data-cy="device-check-box-R6"]').click();
     cy.get('[data-cy="install-devices"]').click();
     cy.contains('Device was installed successfully');
-  })
+  });
 
   it('Delete selected', () => {
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
