@@ -1,0 +1,57 @@
+{
+  "data": {
+    "labels": {
+      "edges": [
+        {
+          "node": {
+            "id": "TGFiZWw6ZDFjNjc0ODAtMTZjNC00MGFiLTgzNTEtMzA0MDJjMjQwZjNm",
+            "name": "CLI",
+            "__typename": "Label"
+          },
+          "__typename": "LabelEdge"
+        },
+        {
+          "node": {
+            "id": "TGFiZWw6Yjg4MzMwYTgtODAyOS00NTNiLWIzZmQtMzFlNGJhMWM4MWU0",
+            "name": "IOS",
+            "__typename": "Label"
+          },
+          "__typename": "LabelEdge"
+        },
+        {
+          "node": {
+            "id": "TGFiZWw6OGQ2MTRiYjYtNzFiZi00MTQ4LWE1NTUtYzllMjBiMzYwYjg0",
+            "name": "CREATE_LOOPBACK_DEMO",
+            "__typename": "Label"
+          },
+          "__typename": "LabelEdge"
+        },
+        {
+          "node": {
+            "id": "TGFiZWw6NzQ2YmViYzYtODZhOS00ZmYyLWE4ZGYtYmVjZTBlNjljNWQ2",
+            "name": "XR",
+            "__typename": "Label"
+          },
+          "__typename": "LabelEdge"
+        },
+        {
+          "node": {
+            "id": "TGFiZWw6OTYzYWFiMjItZDg4ZC00MjVjLWIxNDQtMWVjODYwMWYxZGYw",
+            "name": "VRP",
+            "__typename": "Label"
+          },
+          "__typename": "LabelEdge"
+        },
+        {
+          "node": {
+            "id": "TGFiZWw6MDE2MWQ2YWQtYmU2Ni00NmU0LTlhYWQtNjAwYjQwZTE4OGIx",
+            "name": "SAOS",
+            "__typename": "Label"
+          },
+          "__typename": "LabelEdge"
+        }
+      ],
+      "__typename": "LabelConnection"
+    }
+  }
+}

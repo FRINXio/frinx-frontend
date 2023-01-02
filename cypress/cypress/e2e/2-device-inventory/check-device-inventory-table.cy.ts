@@ -17,7 +17,7 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
-    }).as('filterLabels');
+    }).as('getDevices');
   });
 
   it('Search by label', () => {
@@ -25,15 +25,15 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
       }
-    }).as('searchDevices');
+    }).as('searchDevicesByLabel');
 
     cy.visit(Cypress.env('device-inventory-host'));
 
-    cy.wait('@filterLabels');
+    cy.wait('@getDevices');
     cy.get('[data-cy="search-by-label"]').click();
     cy.get('#downshift-0-item-3').click();
 
-    cy.wait('@searchDevices');
+    cy.wait('@searchDevicesByLabel');
     cy.contains('RX2');
   });
 
@@ -45,7 +45,7 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
-    });
+    }).as('searchDevicesByName');
     cy.get('[data-cy="search-by-name"]').type('R9').get('[data-cy="search-button"]').click().wait(2000);
     cy.contains('R9');
   });
@@ -58,7 +58,7 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/single-device-list-installed.json' });
       }
-    });
+    }).as('installDevice');
     cy.get('[data-cy="device-install-R9"]').click();
     cy.contains('Device was installed successfully');
   });
@@ -72,11 +72,11 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/install-selected-device.json' });
       }
-    });
+    }).as('installSelectedDevice');
     cy.get('[data-cy="device-check-box-R6"]').click();
     cy.get('[data-cy="install-devices"]').click();
     cy.contains('Device was installed successfully');
-  });
+  })
 
   it('Delete selected', () => {
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
@@ -87,7 +87,7 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/deleted-device-list.json' });
       }
-    });
+    }).as('deleteSelectedDevice');
     cy.get('[data-cy="device-check-box-R9"]').click();
     cy.get('[data-cy="delete-devices"]').click();
     cy.get('[data-cy="device-confirm-delete"]').click();
