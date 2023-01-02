@@ -12,12 +12,13 @@ describe('check devices inventory table', () => {
       if (req.body.hasOwnProperty('query') && req.body.query.includes('Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/device-list.json' });
       }
-    });
+    }).as('getDevices');
+
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
-    }).as('getDevices');
+    }).as('getFilterLabels');
   });
 
   it('Search by label', () => {
@@ -29,7 +30,7 @@ describe('check devices inventory table', () => {
 
     cy.visit(Cypress.env('device-inventory-host'));
 
-    cy.wait('@getDevices');
+    cy.wait('@getFilterLabels');
     cy.get('[data-cy="search-by-label"]').click();
     cy.get('#downshift-0-item-3').click();
 
