@@ -1,0 +1,33 @@
+{
+  "data": {
+    "device": {
+      "id": "RGV2aWNlOjBiYWEwZGY1LTRkYzktNDI3OC04MmY5LTQ0ZWNiYjFjMTdmNA",
+      "name": "R9",
+      "serviceState": "PLANNING",
+      "model": "Test",
+      "vendor": "Test",
+      "address": "Test",
+      "deviceSize": "MEDIUM",
+      "mountParameters": "{\"cli\":{\"cli-topology:host\":\"sample-topology\",\"cli-topology:port\":\"10013\",\"cli-topology:password\":\"cisco\",\"cli-topology:username\":\"cisco\",\"cli-topology:device-type\":\"ios\",\"cli-topology:journal-size\":500,\"cli-topology:device-version\":\"15.4\",\"cli-topology:parsing-engine\":\"tree-parser\",\"cli-topology:transport-type\":\"ssh\",\"cli-topology:dry-run-journal-size\":180}}",
+      "zone": {
+        "id": "Wm9uZTpiMmRkMTYxYi1jNWNmLTQ2ODUtOWQxMC1kYjdjOTVkZWZiNjM",
+        "name": "uniconfig",
+        "__typename": "Zone"
+      },
+      "labels": {
+        "edges": [
+          {
+            "node": {
+              "id": "TGFiZWw6NzQ3YjlkNGYtYmZhZC00ZmZmLWE2YjItZTY0YjkyNzViZDI4",
+              "name": "CREATE_LOOPBACK_DEMO",
+              "__typename": "Label"
+            },
+            "__typename": "LabelEdge"
+          }
+        ],
+        "__typename": "LabelConnection"
+      },
+      "__typename": "Device"
+    }
+  }
+}
