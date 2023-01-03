@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Heading, HStack, Progress, useDisclosure } from '@chakra-ui/react';
-import { Workflow } from '@frinx/shared';
+import { Workflow } from '@frinx/shared/src';
 import { callbackUtils, ExecuteWorkflowModal, unwrap, useNotifications } from '@frinx/shared/src';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
