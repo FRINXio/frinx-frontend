@@ -19,7 +19,6 @@ describe('check edit device form', () => {
       }
     }).as('filterLabels');
     cy.visit(Cypress.env('device-inventory-host'));
-    
   });
 
   it('Edit device and submit changes', () => {
