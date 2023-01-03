@@ -7,16 +7,19 @@ import { hasOperationName } from '../../helpers/utils';
 
 describe('check edit device form', () => {
   beforeEach(() => {
-    cy.visit(Cypress.env('device-inventory-host'));
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Devices')) {
         req.reply({ fixture: 'device-inventory/device-list/device-list.json' });
       }
+    });
 
+    cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'FilterLabels')) {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
     }).as('filterLabels');
+    cy.visit(Cypress.env('device-inventory-host'));
+    
   });
 
   it('Edit device and submit changes', () => {
