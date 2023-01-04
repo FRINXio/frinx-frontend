@@ -68,7 +68,7 @@ const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClo
 
   useEffect(() => {
     const { getWorkflow } = callbackUtils.getCallbacks;
-    getWorkflow(workflowName, workflowVersion).then((wf) => {
+    getWorkflow(workflowName, String(workflowVersion)).then((wf) => {
       setWorkflowState(wf);
     });
 

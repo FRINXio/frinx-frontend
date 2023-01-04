@@ -9,7 +9,7 @@ import {
 export type Callbacks = {
   getWorkflows: () => Promise<Workflow[]>;
   getTaskDefinitions: () => Promise<TaskDefinition[]>;
-  getWorkflow: (name: string, version: number) => Promise<Workflow>;
+  getWorkflow: (name: string, version: string) => Promise<Workflow>;
   deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
   putWorkflow: (workflows: Workflow[]) => Promise<Workflow[]>;
   getWorkflowExecutions: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;

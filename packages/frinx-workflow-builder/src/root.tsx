@@ -25,7 +25,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   useEffect(() => {
     if (name != null && version != null) {
       const { getWorkflow } = callbackUtils.getCallbacks;
-      getWorkflow(name, Number(version)).then((wf) => {
+      getWorkflow(name, version).then((wf) => {
         setWorkflow(convertWorkflow(wf));
       });
     } else {
