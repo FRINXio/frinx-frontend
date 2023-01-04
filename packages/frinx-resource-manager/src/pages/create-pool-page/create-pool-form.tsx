@@ -117,6 +117,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       validateOnChange: false,
       validateOnBlur: false,
       onSubmit: (data) => {
+        console.log(data);
+        return;
         const resourceTypeName = resourceTypes.find((resourceType) => resourceType.id === data.resourceTypeId)?.Name;
         const allocationStrategyId = allocStrategies.find(
           (allocationStrategy) => allocationStrategy.name === resourceTypeName,
@@ -152,6 +154,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     setFieldValue('poolPropertyTypes', { ...poolPropertyTypes });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceTypes, resourceTypeId, setFieldValue]);
+
+  // disable subnet and set it to false value, because of when prefix is 32, subnet is not allowed and there would be problem when calculating capacity on the backend
+  useEffect(() => {
+    if (values.poolProperties?.subnet === 'true' && values.poolProperties?.prefix === 32) {
+      setFieldValue('poolProperties', { ...values.poolProperties, subnet: 'false' });
+    }
+  }, [values.poolProperties, setFieldValue]);
 
   const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
