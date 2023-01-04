@@ -92,7 +92,7 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
         const pType = poolPropertyTypes[pKey];
         const placeholder = getPlaceholder(resourceTypeName)[pKey];
         const shouldBeNumber = pType === 'int';
-        const shouldBeDisabled = poolProperties.prefix === 128;
+        const shouldBeDisabled = poolProperties.prefix === 128 || poolProperties.prefix === 32;
 
         return (
           pKey !== 'idFormat' && (
