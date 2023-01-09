@@ -12,8 +12,8 @@ import {
   ButtonGroup,
   Text,
 } from '@chakra-ui/react';
-import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
 import FeatherIcon from 'feather-icons-react';
+import { Workflow } from '@frinx/shared/src';
 
 type Props = {
   activeWorkflow: Workflow;

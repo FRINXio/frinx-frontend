@@ -26,17 +26,15 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { Editor, useNotifications } from '@frinx/shared/src';
+import { Editor, useNotifications, callbackUtils, EListener } from '@frinx/shared/src';
 import Paginator from '../../../common/pagination';
-import callbackUtils from '../../../utils/callback-utils';
 import { usePagination } from '../../../common/pagination-hook';
-import { EventListener } from '../../../helpers/uniflow-types';
 
 const EventListeners = () => {
-  const [eventListeners, setEventListeners] = useState<EventListener[]>([]);
+  const [eventListeners, setEventListeners] = useState<EListener[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState<EventListener | null>(null);
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<EventListener>();
+  const [selectedEvent, setSelectedEvent] = useState<EListener | null>(null);
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<EListener>();
   const { addToastNotification } = useNotifications();
   const toast = useToast();
 
@@ -57,8 +55,8 @@ const EventListeners = () => {
   useEffect(() => {
     const results = !searchTerm
       ? eventListeners
-      : eventListeners.filter((e: EventListener) => {
-          const searchedKeys: Array<keyof EventListener> = ['name', 'event'];
+      : eventListeners.filter((e: EListener) => {
+          const searchedKeys: Array<keyof EListener> = ['name', 'event'];
           for (let i = 0; i < searchedKeys.length; i += 1) {
             if (e[searchedKeys[i]]?.toString().toLowerCase().includes(searchTerm.toLocaleLowerCase())) {
               return true;
@@ -69,7 +67,7 @@ const EventListeners = () => {
     setItemList(results);
   }, [searchTerm, eventListeners, setItemList]);
 
-  const editEvent = (state: boolean | null, event: EventListener | null) => {
+  const editEvent = (state: boolean | null, event: EListener | null) => {
     if (!event) {
       return;
     }
@@ -180,7 +178,7 @@ const EventListeners = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e: EventListener) => {
+          {pageItems.map((e) => {
             return (
               <Tr key={e.event}>
                 <Td textAlign="center">

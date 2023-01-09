@@ -1,8 +1,8 @@
 import React from 'react';
 import { Table, Thead, Tr, Th, Tbody, Tfoot, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
 import FeatherIcon from 'feather-icons-react';
+import { TaskDefinition } from '@frinx/shared/src';
 
 type Pagination = {
   currentPage: number;
@@ -12,7 +12,7 @@ type Pagination = {
 
 type TaskTableProps = {
   pagination: Pagination;
-  tasks: Array<TaskDefinition>;
+  tasks: TaskDefinition[];
   sortArray: (fieldName: string) => void;
   onTaskDelete: (taskName: string) => void;
   onTaskConfigClick: (task: TaskDefinition) => void;

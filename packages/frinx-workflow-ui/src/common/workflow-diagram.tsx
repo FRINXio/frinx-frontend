@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import ReactFlow, { Edge, Node } from 'react-flow-renderer';
 import { Box } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { getElementsFromWorkflow } from '../helpers/api-to-graph.helpers';
-import { getLayoutedElements } from '../helpers/layout.helpers';
 import {
   WorkflowInstanceDetail,
   Workflow,
-  WorkflowTask,
   WorkflowDefinition,
   ExtendedTask,
   ExecutedWorkflowTask,
-} from '../helpers/types';
+} from '@frinx/shared/src';
+import { getElementsFromWorkflow } from '../helpers/api-to-graph.helpers';
+import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './components';
 import { convertWorkflowTaskToExtendedTask } from '../helpers/task.helpers';
 
@@ -23,7 +22,7 @@ const nodeTypes = {
 };
 
 type Props = {
-  meta: Workflow<WorkflowTask>;
+  meta: Workflow;
   result: WorkflowInstanceDetail;
 };
 

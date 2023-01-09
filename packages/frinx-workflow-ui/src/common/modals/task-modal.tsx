@@ -1,32 +1,31 @@
-import React, { useState, VoidFunctionComponent } from 'react';
 import {
   Box,
+  Button,
+  Divider,
+  Icon,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  SimpleGrid,
+  Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  SimpleGrid,
   Text,
   Textarea,
-  Stack,
-  IconButton,
-  Divider,
-  Button,
-  Icon,
 } from '@chakra-ui/react';
-import type { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
-import unescapeJs from 'unescape-js';
-import ExternalStorageModal from '@frinx/workflow-ui/src/pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
+import { ExecutedWorkflowTask, jsonParse } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
-import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import React, { useState, VoidFunctionComponent } from 'react';
+import unescapeJs from 'unescape-js';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
+import ExternalStorageModal from '../../pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
 
 type Props = {
   task: ExecutedWorkflowTask;
@@ -36,8 +35,8 @@ type Props = {
 
 function renderTaskDescription(task: ExecutedWorkflowTask) {
   return (
-    jsonParse(task?.workflowTask?.description)?.description ||
-    jsonParse(task?.workflowTask?.taskDefinition?.description)?.description
+    jsonParse<{ description: string }>(task?.workflowTask?.description)?.description ||
+    jsonParse<{ description: string }>(task?.workflowTask?.taskDefinition?.description)?.description
   );
 }
 
@@ -50,7 +49,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ task, isOpen, onClose }) => {
     const jsonString = JSON.stringify(data, null, 2);
 
     if (jsonString == null) {
-      return null;
+      return undefined;
     }
 
     return isEscaped

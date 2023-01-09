@@ -1,13 +1,11 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
-import { unwrap } from '@frinx/shared/src';
+import { callbackUtils, ExtendedTask, TaskDefinition, unwrap, Workflow } from '@frinx/shared/src';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import App from './app';
-import callbackUtils from './callback-utils';
 import WorkflowForm from './components/workflow-form/workflow-form';
-import { ExtendedTask, TaskDefinition, Workflow } from './helpers/types';
 import { convertWorkflow, createEmptyWorkflow } from './helpers/workflow.helpers';
 import { TaskActionsProvider } from './task-actions-context';
 
@@ -25,7 +23,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   useEffect(() => {
     if (name != null && version != null) {
       const { getWorkflow } = callbackUtils.getCallbacks;
-      getWorkflow(name, Number(version)).then((wf) => {
+      getWorkflow(name, version).then((wf) => {
         setWorkflow(convertWorkflow(wf));
       });
     } else {
@@ -118,11 +116,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
             workflows={workflows}
             onSubmit={(wf) => {
               setWorkflow({
-                ...wf,
                 ownerEmail: '',
                 schemaVersion: 2,
                 tasks: [],
                 updateTime: 0,
+                hasSchedule: false,
+                correlationId: '',
+                ...wf,
               });
               setShouldCreateWorkflow(false);
             }}

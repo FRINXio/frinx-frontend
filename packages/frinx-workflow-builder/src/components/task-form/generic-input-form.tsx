@@ -1,7 +1,7 @@
-import React, { FC, useState } from 'react';
 import { FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react';
+import { ExtendedTask } from '@frinx/shared/src';
+import React, { FC, useState } from 'react';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
-import { ExtendedTask } from '../../helpers/types';
 
 type Props = {
   params: Record<string, string>;
