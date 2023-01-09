@@ -1,0 +1,18 @@
+{
+  "data": {
+    "addDevice": {
+      "device": {
+        "id": "RGV2aWNlOmQ3YzFkNDI2LTkyNmUtNGM5OC04OWFmLWIwMWQ4NTQzM2ZiNg",
+        "name": "Test",
+        "isInstalled": false,
+        "zone": {
+          "id": "Wm9uZTpiMmRkMTYxYi1jNWNmLTQ2ODUtOWQxMC1kYjdjOTVkZWZiNjM",
+          "name": "uniconfig",
+          "__typename": "Zone"
+        },
+        "__typename": "Device"
+      },
+      "__typename": "AddDevicePayload"
+    }
+  }
+}
