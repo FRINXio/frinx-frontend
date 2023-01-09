@@ -1,0 +1,5 @@
+{
+  "data": {
+    "addSnapshot": { "snapshot": { "name": "Test", "__typename": "Snapshot" }, "__typename": "AddSnapshotPayload" }
+  }
+}
