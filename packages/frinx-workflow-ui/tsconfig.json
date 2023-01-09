@@ -18,9 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
-    "noEmit": false,
-    "typeRoots": ["src/types", "./node_modules/@types"]
+    "noEmit": false
   },
-  "include": ["src", "*.ts", "*.js", "types"],
-  "exclude": ["**/node_modules"]
+  "include": ["src", "*.ts", "*.js"],
+  "exclude": ["node_modules"]
 }

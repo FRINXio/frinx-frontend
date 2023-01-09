@@ -1,7 +1,7 @@
+import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared/src';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
-import { createClient as createWSClient } from 'graphql-ws';
 import { retryExchange } from '@urql/exchange-retry';
-import { CustomToastProvider } from '@frinx/shared/src';
+import { createClient as createWSClient } from 'graphql-ws';
 import React, { createContext, FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider, subscriptionExchange } from 'urql';
 
@@ -16,9 +16,8 @@ export type Props = {
   client: InventoryApiClient;
 };
 
-export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
+const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
   const wsClient = createWSClient({ url: 'wss://localhost:8001/graphql' });
-
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
@@ -50,3 +49,8 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
     </Provider>
   );
 };
+
+export function getInventoryApiProvider(callbacks: Callbacks): FC<Props> {
+  callbackUtils.setCallbacks(callbacks);
+  return InventoryAPIProvider;
+}

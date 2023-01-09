@@ -1,6 +1,19 @@
 import React, { ReactNode } from 'react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
+import {
+  ExtendedTask,
+  InputParameters,
+  DecisionInputParams,
+  LambdaInputParams,
+  HTTPInputParams,
+  GraphQLInputParams,
+  KafkaPublishInputParams,
+  JsonJQInputParams,
+  WhileInputParams,
+  TerminateInputParams,
+  EventInputParams,
+} from '@frinx/shared/src';
 import DecisionInputForm, { DecisionInputParamsSchema } from './decision-input-form';
 import EventInputForm, { EventInputParamsSchema } from './event-input-form';
 import GraphQLInputsForm, { GraphQLInputParamsSchema } from './graphql-input-form';
@@ -11,21 +24,8 @@ import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
 import TerminateInputForm, { TerminateInputParamsSchema } from './terminate-input-form';
 import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
 import GenericInputForm from './generic-input-form';
-import {
-  DecisionInputParams,
-  EventInputParams,
-  ExtendedTask,
-  GraphExtendedTask,
-  GraphQLInputParams,
-  HTTPInputParams,
-  InputParameters,
-  JsonJQInputParams,
-  KafkaPublishInputParams,
-  LambdaInputParams,
-  TerminateInputParams,
-  WhileInputParams,
-} from '../../helpers/types';
 import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
+import { GraphExtendedTask } from '../../helpers/types';
 
 const SettingsSchema = yup.object().shape({
   taskReferenceName: yup.string().required('Please enter task reference name'),

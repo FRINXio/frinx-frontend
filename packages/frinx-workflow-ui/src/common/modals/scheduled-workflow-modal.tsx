@@ -16,11 +16,8 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { Editor } from '@frinx/shared/src';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ScheduledWorkflow } from '@frinx/workflow-ui/src/helpers/types';
+import { Editor, callbackUtils, ScheduledWorkflow } from '@frinx/shared/src';
 import { useFormik } from 'formik';
-import callbackUtils from '../../utils/callback-utils';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 

@@ -1,9 +1,8 @@
-import React, { FC, useState } from 'react';
 import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
+import { Editor, ExtendedTask, HTTPInputParams, HTTPMethod } from '@frinx/shared/src';
 import { FormikErrors } from 'formik';
+import React, { FC, useState } from 'react';
 import * as yup from 'yup';
-import { Editor } from '@frinx/shared/src';
-import { ExtendedTask, HTTPInputParams, HTTPMethod } from '../../helpers/types';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 export const HttpInputParamsSchema = yup.object({

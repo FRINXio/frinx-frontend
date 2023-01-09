@@ -9,8 +9,7 @@ import {
   ModalOverlay,
   Button,
 } from '@chakra-ui/react';
-import { Editor } from '@frinx/shared/src';
-import { ExtendedTask, Workflow } from '../../helpers/types';
+import { Editor, ExtendedTask, Workflow } from '@frinx/shared/src';
 
 type Props = {
   isOpen: boolean;

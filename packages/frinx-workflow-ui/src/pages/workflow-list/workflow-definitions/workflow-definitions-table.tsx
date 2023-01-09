@@ -19,11 +19,10 @@ import {
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
-import { jsonParse } from '@frinx/workflow-ui/src/utils/helpers.utils';
-import WorkflowLabels from '@frinx/workflow-ui/src/common/workflow-labels';
+import { jsonParse, Workflow } from '@frinx/shared/src';
 import WorkflowActions from './workflow-actions';
+import WorkflowLabels from '../../../common/workflow-labels';
+import Paginator from '../../../common/pagination';
 
 type Props = {
   workflows: Workflow[];
@@ -44,24 +43,36 @@ type Props = {
   setActiveWorkflow: (wf: Workflow) => void;
 };
 
-const Labels = ({ wf, labels, onClick }: { wf: Workflow; labels: string[]; onClick: (label: string) => void }) => {
+function getLabelsFromJSON(description?: string) {
+  return jsonParse<{ labels: string[] }>(description)?.labels || [];
+}
+
+const Labels: VoidFunctionComponent<{ wf: Workflow; labels: string[]; onClick: (label: string) => void }> = ({
+  wf,
+  labels,
+  onClick,
+}) => {
   const { description } = wf;
-  const labelsDef = jsonParse(description)?.labels || [];
+  const labelsDef = getLabelsFromJSON(description);
 
-  return labelsDef.map((label: string) => {
-    const index = labels.findIndex((lab) => lab === label);
+  return (
+    <>
+      {labelsDef.map((label: string) => {
+        const index = labels.findIndex((lab) => lab === label);
 
-    return (
-      <WorkflowLabels
-        key={label}
-        label={label}
-        index={index}
-        onClick={() => {
-          onClick(label);
-        }}
-      />
-    );
-  });
+        return (
+          <WorkflowLabels
+            key={label}
+            label={label}
+            index={index}
+            onClick={() => {
+              onClick(label);
+            }}
+          />
+        );
+      })}
+    </>
+  );
 };
 
 const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({

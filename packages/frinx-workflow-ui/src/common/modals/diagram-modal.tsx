@@ -1,4 +1,3 @@
-import React, { VoidFunctionComponent } from 'react';
 import {
   Button,
   Center,
@@ -10,10 +9,11 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { Workflow } from '@frinx/workflow-ui/src/helpers/types';
+import { Workflow } from '@frinx/shared/src';
+import React, { VoidFunctionComponent } from 'react';
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
-import { getLayoutedElements } from '../../helpers/layout.helpers';
 import { getElementsFromWorkflow } from '../../helpers/api-to-graph.helpers';
+import { getLayoutedElements } from '../../helpers/layout.helpers';
 import { convertWorkflowTaskToExtendedTask } from '../../helpers/task.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from '../components';
 

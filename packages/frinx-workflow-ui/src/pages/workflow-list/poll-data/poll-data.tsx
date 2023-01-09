@@ -16,9 +16,8 @@ import {
 } from '@chakra-ui/react';
 import { sortDescBy, sortAscBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
 import FeatherIcon from 'feather-icons-react';
+import { callbackUtils, Queue } from '@frinx/shared/src';
 import { usePagination } from '../../../common/pagination-hook';
-import { Queue } from '../../../helpers/uniflow-types';
-import callbackUtils from '../../../utils/callback-utils';
 import Paginator from '../../../common/pagination';
 
 function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
