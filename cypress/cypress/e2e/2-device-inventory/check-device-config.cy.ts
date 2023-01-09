@@ -9,7 +9,7 @@ Cypress.on('uncaught:exception', () => {
   return false;
 });
 
-describe.only('check device config', () => {
+describe('check device config', () => {
   beforeEach(() => {
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Devices')) {
@@ -45,7 +45,7 @@ describe.only('check device config', () => {
     cy.get('[data-cy="device-settings-R9"]').click();
   });
 
-  it('Calculate diff', () => {
+  it.only('Calculate diff', () => {
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'calculatedDiff')) {
         req.reply({ fixture: 'device-inventory/device-config/calculate-diff.json' });
