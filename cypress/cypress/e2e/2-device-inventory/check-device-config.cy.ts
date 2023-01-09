@@ -30,19 +30,21 @@ describe('check device config', () => {
     }).as('deviceName');
 
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'createTransaction')) {
-        req.reply({ fixture: 'device-inventory/device-config/create-transaction.json' });
-      }
-    }).as('createTransaction');
-
-    cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'dataStore')) {
         req.reply({ fixture: 'device-inventory/device-config/data-store.json' });
       }
     }).as('dataStore');
 
+    cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'createTransaction')) {
+        req.reply({ fixture: 'device-inventory/device-config/create-transaction.json' });
+      }
+    }).as('createTransaction');
+
     cy.visit(Cypress.env('device-inventory-host'));
     cy.get('[data-cy="device-settings-R9"]').click();
+    cy.wait('@deviceName');
+    cy.wait('@dataStore');
   });
 
   it('Calculate diff', () => {
