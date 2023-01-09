@@ -22,8 +22,9 @@ jobs:
       - name: Prepare env variable
         run: cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
       - name: Cypress tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         with:
+          command: cypress run --headed
           project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
