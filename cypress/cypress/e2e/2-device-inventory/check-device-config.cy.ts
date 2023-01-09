@@ -45,7 +45,7 @@ describe('check device config', () => {
     cy.get('[data-cy="device-settings-R9"]').click();
   });
 
-  it.only('Calculate diff', () => {
+  it('Calculate diff', () => {
     cy.intercept('POST', 'http://localhost:3000/api/inventory', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'calculatedDiff')) {
         req.reply({ fixture: 'device-inventory/device-config/calculate-diff.json' });
