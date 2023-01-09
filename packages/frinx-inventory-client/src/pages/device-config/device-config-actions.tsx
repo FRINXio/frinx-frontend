@@ -22,7 +22,7 @@ const DeviceConfigActions: VoidFunctionComponent<Props> = ({
   return (
     <Flex background="gray.300" paddingX={4} paddingY={2}>
       <ButtonGroup isAttached>
-        <Button data-cy="deviceConfigCalculate" onClick={onCalculateDiffBtnClick}>
+        <Button data-cy="device-config-calculate" onClick={onCalculateDiffBtnClick}>
           Calculate diff
         </Button>
         <Button

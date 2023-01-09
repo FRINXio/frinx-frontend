@@ -1,0 +1,8 @@
+{
+  "data": {
+    "calculatedDiff": {
+      "result": { "createdData": [], "deletedData": [], "updatedData": [], "__typename": "CalculatedDiffResult" },
+      "__typename": "CalculatedDiffPayload"
+    }
+  }
+}
