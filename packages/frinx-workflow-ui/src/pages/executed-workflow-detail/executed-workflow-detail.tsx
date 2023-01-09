@@ -15,10 +15,8 @@ import {
   Tabs,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNotifications, unwrap } from '@frinx/shared/src';
-import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
+import { useNotifications, unwrap, callbackUtils, ExecutedWorkflowTask } from '@frinx/shared/src';
 import { Link, useParams } from 'react-router-dom';
-import callbackUtils from '../../utils/callback-utils';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';

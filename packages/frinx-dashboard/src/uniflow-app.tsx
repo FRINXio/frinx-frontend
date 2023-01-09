@@ -2,7 +2,7 @@ import { UniflowApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
-type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
+type UniflowComponents = Omit<typeof import('@frinx/workflow-ui/src'), 'getUniflowApiProvider'> & {
   UniflowApiProvider: FC;
 };
 type BuilderComponents = {
@@ -13,14 +13,13 @@ const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
 
   useEffect(() => {
-    Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder/src')]).then(
+    Promise.all([import('@frinx/workflow-ui/src'), import('@frinx/workflow-builder/src')]).then(
       ([uniflowImport, builderImport]) => {
-        const { UniflowApp: App, getUniflowApiProvider, ReduxProvider } = uniflowImport;
+        const { UniflowApp: App, getUniflowApiProvider } = uniflowImport;
         const { getBuilderApiProvider } = builderImport;
 
         setComponents({
           UniflowApp: App,
-          ReduxProvider,
           UniflowApiProvider: getUniflowApiProvider(
             UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
           ),
@@ -36,14 +35,12 @@ const UniflowApp: FC = () => {
     return null;
   }
 
-  const { UniflowApiProvider, UniflowApp: App, ReduxProvider, BuilderApiProvider } = components;
+  const { UniflowApiProvider, UniflowApp: App, BuilderApiProvider } = components;
 
   return (
     <UniflowApiProvider>
       <BuilderApiProvider>
-        <ReduxProvider>
-          <App />
-        </ReduxProvider>
+        <App />
       </BuilderApiProvider>
     </UniflowApiProvider>
   );

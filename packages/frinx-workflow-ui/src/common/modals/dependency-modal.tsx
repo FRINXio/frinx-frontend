@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { Tree, TreeNode } from 'react-organizational-chart';
 import { Link } from 'react-router-dom';
-import { Workflow } from '../../helpers/types';
+import { Workflow } from '@frinx/shared/src';
 
 type ModalProps = {
   isOpen: boolean;

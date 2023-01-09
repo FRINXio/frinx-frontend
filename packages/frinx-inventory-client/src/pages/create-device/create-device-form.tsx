@@ -182,13 +182,13 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     <form onSubmit={handleSubmit}>
       <FormControl id="name" my={6} isRequired isInvalid={deviceNameError !== null}>
         <FormLabel>Name</FormLabel>
-        <Input placeholder="R1" onChange={handleChange} name="name" value={values.name} />
+        <Input data-cy="add-device-name" placeholder="R1" onChange={handleChange} name="name" value={values.name} />
         <FormErrorMessage>{deviceNameError}</FormErrorMessage>
       </FormControl>
 
       <FormControl id="zone" isRequired marginY={6} isInvalid={errors.zoneId !== undefined}>
         <FormLabel>Zone</FormLabel>
-        <Select onChange={handleChange} name="zoneId" placeholder="Select zone of device">
+        <Select onChange={handleChange} data-cy="add-device-zone" name="zoneId" placeholder="Select zone of device">
           {zones.map(({ node: zone }) => (
             <option key={zone.id} value={zone.id}>
               {zone.name}
@@ -202,6 +202,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         <FormLabel>Service state</FormLabel>
         <Select
           onChange={handleChange}
+          data-cy="add-device-state"
           name="serviceState"
           placeholder="Select service state"
           defaultValue={ServiceState.PLANNING}
@@ -217,17 +218,34 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <HStack my={6} alignItems="flex-start">
         <FormControl>
           <FormLabel>Vendor</FormLabel>
-          <Input name="vendor" onChange={handleChange} placeholder="Enter vendor of the device" value={values.vendor} />
+          <Input
+            data-cy="add-device-vendor"
+            name="vendor"
+            onChange={handleChange}
+            placeholder="Enter vendor of the device"
+            value={values.vendor}
+          />
         </FormControl>
 
         <FormControl>
           <FormLabel>Model</FormLabel>
-          <Input name="model" onChange={handleChange} placeholder="Enter model of the device" value={values.model} />
+          <Input
+            name="model"
+            data-cy="add-device-model"
+            onChange={handleChange}
+            placeholder="Enter model of the device"
+            value={values.model}
+          />
         </FormControl>
 
         <FormControl id="deviceSize" my={6} isInvalid={errors.deviceSize !== undefined}>
           <FormLabel>Device size</FormLabel>
-          <Select name="deviceSize" onChange={handleChange} placeholder="Select size of the device">
+          <Select
+            data-cy="add-device-size"
+            name="deviceSize"
+            onChange={handleChange}
+            placeholder="Select size of the device"
+          >
             {deviceSizeOptions.map(({ label, value }) => (
               <option key={value} value={value}>
                 {label}
@@ -241,13 +259,25 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <HStack my={6} alignItems="start">
         <FormControl isRequired={values.blueprintParams?.includes('device_type')}>
           <FormLabel>Device type</FormLabel>
-          <Input name="deviceType" onChange={handleChange} placeholder="ios xr" value={values.deviceType} />
+          <Input
+            data-cy="add-device-type"
+            name="deviceType"
+            onChange={handleChange}
+            placeholder="ios xr"
+            value={values.deviceType}
+          />
           <FormErrorMessage>{errors.deviceType}</FormErrorMessage>
         </FormControl>
 
         <FormControl isRequired={values.blueprintParams?.includes('version')}>
           <FormLabel>Version</FormLabel>
-          <Input name="version" onChange={handleChange} placeholder="5.3.*" value={values.version} />
+          <Input
+            data-cy="add-device-version"
+            name="version"
+            onChange={handleChange}
+            placeholder="5.3.*"
+            value={values.version}
+          />
           <FormErrorMessage>{errors.version}</FormErrorMessage>
         </FormControl>
       </HStack>
@@ -255,13 +285,25 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <HStack my={6} alignItems="flex-start">
         <FormControl isRequired={values.blueprintParams?.includes('user')}>
           <FormLabel>Username</FormLabel>
-          <Input name="username" onChange={handleChange} placeholder="cisco" value={values.username} />
+          <Input
+            data-cy="add-device-username"
+            name="username"
+            onChange={handleChange}
+            placeholder="cisco"
+            value={values.username}
+          />
           <FormErrorMessage>{errors.username}</FormErrorMessage>
         </FormControl>
 
         <FormControl isRequired={values.blueprintParams?.includes('password')}>
           <FormLabel>Password</FormLabel>
-          <Input name="password" onChange={handleChange} placeholder="cisco" value={values.password} />
+          <Input
+            data-cy="add-device-password"
+            name="password"
+            onChange={handleChange}
+            placeholder="cisco"
+            value={values.password}
+          />
           <FormErrorMessage>{errors.password}</FormErrorMessage>
         </FormControl>
       </HStack>
@@ -269,12 +311,18 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <HStack my={6} alignItems="flex-start">
         <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.address != null}>
           <FormLabel>Address / DNS</FormLabel>
-          <Input name="address" onChange={handleChange} placeholder="192.168.0.1" value={values.address} />
+          <Input
+            data-cy="add-device-address"
+            name="address"
+            onChange={handleChange}
+            placeholder="192.168.0.1"
+            value={values.address}
+          />
           <FormErrorMessage>{errors.address}</FormErrorMessage>
         </FormControl>
         <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.port != null}>
           <FormLabel>Port</FormLabel>
-          <Input name="port" onChange={handleChange} placeholder="22" value={values.port} />
+          <Input data-cy="add-device-port" name="port" onChange={handleChange} placeholder="22" value={values.port} />
           <FormErrorMessage>{errors.port}</FormErrorMessage>
         </FormControl>
       </HStack>
@@ -290,6 +338,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <FormControl>
         <FormLabel>Use blueprint?</FormLabel>
         <Switch
+          data-cy="add-device-switch"
           size="lg"
           id="isUsingBlueprints"
           isChecked={isUsingBlueprints}
@@ -306,6 +355,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       {isUsingBlueprints ? (
         <FormControl marginY={6}>
           <Select
+            data-cy="add-device-blueprint"
             name="blueprintId"
             id="blueprintId"
             placeholder="Select blueprint"
@@ -325,7 +375,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </FormControl>
       ) : (
         <FormControl my={6}>
-          <FormLabel>Mount parameters</FormLabel>
+          <FormLabel data-cy="ace-editor">Mount parameters</FormLabel>
           <Editor
             height="450px"
             width="100%"
@@ -351,7 +401,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <Divider my={6} />
       <HStack mb={6}>
         <Spacer />
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+        <Button data-cy="add-device-button" type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Add device
         </Button>
       </HStack>

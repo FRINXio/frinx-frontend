@@ -1,4 +1,3 @@
-import React, { FC, useRef, useState } from 'react';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -9,6 +8,7 @@ import {
   Box,
   Button,
   Divider,
+  Icon,
   Menu,
   MenuButton,
   MenuGroup,
@@ -16,11 +16,11 @@ import {
   MenuList,
   Portal,
   useDisclosure,
-  Icon,
 } from '@chakra-ui/react';
+import { Workflow } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
+import React, { FC, useRef, useState } from 'react';
 import CloneWorkflowModal from '../clone-workflow-modal/clone-worflow-modal';
-import { Workflow } from '../../helpers/types';
 
 type Props = {
   onShowDefinitionBtnClick: () => void;

@@ -1,33 +1,33 @@
 import {
   Workflow,
+  ScheduledWorkflow,
   TaskDefinition,
   Queue,
-  WorkflowPayload,
-  EventListener,
-  ExecutedWorkflowResponse,
-  ScheduledWorkflow,
   WorkflowExecutionPayload,
   WorkflowExecutionResult,
-} from './types';
+  ExecutedWorkflowResponse,
+  WorkflowPayload,
+  EListener,
+} from '@frinx/shared/src/helpers/workflow-api.types';
 import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow } from './type-guards';
 import { ApiHelpers } from '../api-helpers';
 
 export type UniflowApiClient = {
   getWorkflows: () => Promise<Workflow[]>;
   getSchedules: () => Promise<ScheduledWorkflow[]>;
-  getSchedule: (name: string, version: number) => Promise<ScheduledWorkflow>;
-  registerSchedule: (name: string, version: number, schedule: unknown) => Promise<unknown>;
-  deleteSchedule: (name: string, version: number) => Promise<unknown>;
+  getSchedule: (name: string, version: string) => Promise<ScheduledWorkflow>;
+  registerSchedule: (name: string, version: string, schedule: unknown) => Promise<unknown>;
+  deleteSchedule: (name: string, version: string) => Promise<unknown>;
   registerTaskDefinition: (taskDefinitions: TaskDefinition[]) => Promise<TaskDefinition[]>;
   getTaskDefinitions: () => Promise<TaskDefinition[]>;
   getTaskDefinition: (name: string) => Promise<TaskDefinition>;
   deleteTaskDefinition: (name: string) => Promise<TaskDefinition>;
-  getWorkflow: (name: string, version: number) => Promise<Workflow>;
+  getWorkflow: (name: string, version: string) => Promise<Workflow>;
   deleteWorkflow: (name: string, version: string) => Promise<Workflow>;
   putWorkflow: (workflows: Workflow[]) => Promise<Workflow[]>;
-  getEventListeners: () => Promise<EventListener[]>;
-  registerEventListener: (eventListener: EventListener) => Promise<EventListener>;
-  deleteEventListener: (name: string) => Promise<EventListener>;
+  getEventListeners: () => Promise<EListener[]>;
+  registerEventListener: (eventListener: EListener) => Promise<EListener>;
+  deleteEventListener: (name: string) => Promise<EListener>;
   getQueues: () => Promise<Queue[]>;
   getWorkflowExecutions: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;
   getWorkflowExecutionsHierarchical: (payload: WorkflowExecutionPayload) => Promise<WorkflowExecutionResult>;
@@ -67,7 +67,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
 
   // TODO: types, guards
   // Get workflow schedule
-  async function getSchedule(name: string, version: number): Promise<ScheduledWorkflow> {
+  async function getSchedule(name: string, version: string): Promise<ScheduledWorkflow> {
     const scheduled = await sendGetRequest(`/schedule/${name}:${version}`);
 
     return scheduled as ScheduledWorkflow;
@@ -75,13 +75,13 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
 
   // TODO: types, guards
   // Register workflow schedule
-  async function registerSchedule(name: string, version: number, schedule: unknown): Promise<unknown> {
+  async function registerSchedule(name: string, version: string, schedule: unknown): Promise<unknown> {
     return sendPutRequest(`/schedule/${name}:${version}`, schedule);
   }
 
   // TODO: types, guards
   // Delete workflow schedule
-  async function deleteSchedule(name: string, version: number): Promise<unknown> {
+  async function deleteSchedule(name: string, version: string): Promise<unknown> {
     const scheduled = await sendDeleteRequest(`/schedule/${name}:${version}`);
 
     return scheduled;
@@ -128,7 +128,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
   }
 
   // Returns single workflow based on name and version
-  async function getWorkflow(name: string, version: number): Promise<Workflow> {
+  async function getWorkflow(name: string, version: string): Promise<Workflow> {
     const response = await sendGetRequest(`/metadata/workflow/${name}?version=${version}`);
     // TODO: backend should return just 'Workflow' not '{result: Workflow}`
     const workflow = (response as { result: unknown }).result;
@@ -155,10 +155,10 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
   }
 
   // Get all event listeners
-  async function getEventListeners(): Promise<EventListener[]> {
+  async function getEventListeners(): Promise<EListener[]> {
     const eventListeners = await sendGetRequest('/event');
 
-    if (isArrayTypeOf<EventListener>(eventListeners, isEventListener)) {
+    if (isArrayTypeOf<EListener>(eventListeners, isEventListener)) {
       return eventListeners;
     }
 
@@ -166,18 +166,18 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
   }
 
   // Register new event listener
-  async function registerEventListener(eventListener: EventListener): Promise<EventListener> {
+  async function registerEventListener(eventListener: EListener): Promise<EListener> {
     const eventListenerRes = await sendPostRequest('/event', eventListener);
 
-    return eventListenerRes as EventListener;
+    return eventListenerRes as EListener;
   }
 
   // Delete event listener
-  async function deleteEventListener(name: string): Promise<EventListener> {
+  async function deleteEventListener(name: string): Promise<EListener> {
     const query = '?archiveWorfklow=false';
     const eventListenerRes = await sendDeleteRequest(`/event/${name}${query}`);
 
-    return eventListenerRes as EventListener;
+    return eventListenerRes as EListener;
   }
 
   // Get all queues

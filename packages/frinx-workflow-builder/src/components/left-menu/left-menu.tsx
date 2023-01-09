@@ -1,7 +1,7 @@
-import React, { FC, memo } from 'react';
-import { Box, Flex, Heading, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Icon } from '@chakra-ui/react';
+import { Box, Flex, Heading, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
+import { ExtendedTask, TaskDefinition, Workflow } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
-import { ExtendedTask, TaskDefinition, Workflow } from '../../helpers/types';
+import React, { FC, memo } from 'react';
 import { createSystemTasks, createTask } from '../../helpers/task.helpers';
 import TaskList from './task-list';
 import WorkflowList from './workflow-list';

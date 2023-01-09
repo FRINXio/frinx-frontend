@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
 import {
   Badge,
   Box,
   Flex,
   Heading,
+  Icon,
   IconButton,
   Input,
   InputGroup,
@@ -12,13 +12,13 @@ import {
   Tooltip,
   Wrap,
   WrapItem,
-  Icon,
 } from '@chakra-ui/react';
+import { ExtendedTask, Workflow } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
-import MiniSearch from 'minisearch';
 import throttle from 'lodash/throttle';
+import MiniSearch from 'minisearch';
+import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
 import { createSubWorkflowTask } from '../../helpers/task.helpers';
-import { ExtendedTask, Workflow } from '../../helpers/types';
 import { getFilteredResults, parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {

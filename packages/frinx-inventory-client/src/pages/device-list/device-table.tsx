@@ -115,7 +115,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 />
               </Td>
               <Td>
-                <Text data-cy="device-name" as="span" fontWeight={600}>
+                <Text data-cy={`device-name-${device.name}`} as="span" fontWeight={600}>
                   {device.name}
                 </Text>
               </Td>

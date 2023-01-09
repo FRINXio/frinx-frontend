@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Text, ListItem, Box, List } from '@chakra-ui/react';
-import { ExtendedTask } from '../../helpers/types';
+import { ExtendedTask } from '@frinx/shared/src';
 
 type Props = {
   tasks: ExtendedTask[];

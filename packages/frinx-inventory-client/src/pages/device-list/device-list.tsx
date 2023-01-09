@@ -1,7 +1,7 @@
-import { Box, Button, Container, Flex, Heading, HStack, Progress, Spacer, useDisclosure } from '@chakra-ui/react';
-import { unwrap, useNotifications } from '@frinx/shared/src';
+import { Box, Button, Container, Flex, Heading, HStack, Progress, useDisclosure } from '@chakra-ui/react';
+import { callbackUtils, ExecuteWorkflowModal, unwrap, useNotifications, Workflow } from '@frinx/shared/src';
 import { Item } from 'chakra-ui-autocomplete';
-import React, { FC, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import ConfirmDeleteModal from '../../components/confirm-delete-modal';
@@ -19,9 +19,12 @@ import {
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
 } from '../../__generated__/graphql';
+import BulkActions from './bulk-actions';
+import DeleteSelectedDevicesModal from './delete-selected-modal';
 import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
+import WorkflowListModal from './workflow-list-modal';
 
 const DEVICES_QUERY = gql`
   query Devices(
@@ -116,20 +119,6 @@ type Sorting = {
   direction: Direction;
 };
 
-type DeleteModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: () => void;
-};
-
-const DeleteSelectedDevicesModal: FC<DeleteModalProps> = ({ onSubmit, isOpen, onClose }) => {
-  return (
-    <ConfirmDeleteModal isOpen={isOpen} onClose={onClose} onConfirmBtnClick={onSubmit} title="Delete selected devices">
-      Are you sure? You can&apos;t undo this action afterwards.
-    </ConfirmDeleteModal>
-  );
-};
-
 function getSorting(sorting: Sorting | null, sortedBy: SortedBy): Sorting | null {
   if (!sorting) {
     return {
@@ -190,6 +179,8 @@ const DeviceList: VoidFunctionComponent = () => {
     UNINSTALL_DEVICE_MUTATION,
   );
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
+  const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
@@ -406,6 +397,38 @@ const DeviceList: VoidFunctionComponent = () => {
     setDeviceNameFilter(searchText);
   };
 
+  const handleWorkflowSelect = (wf: Workflow) => {
+    setIsSendingToWorkflows(false);
+    setSelectedWorkflow(wf);
+  };
+
+  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+    if (selectedWorkflow == null) {
+      addToastNotification({
+        content: 'We cannot execute undefined workflow',
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    const { executeWorkflow } = callbackUtils.getCallbacks;
+
+    return executeWorkflow({
+      input: values,
+      name: selectedWorkflow.name,
+      version: selectedWorkflow.version,
+    })
+      .then((res) => {
+        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+        return res.text;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
+        return null;
+      });
+  };
+
   const labels = labelsData?.labels?.edges ?? [];
   const areSelectedAll =
     deviceData?.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
@@ -420,7 +443,7 @@ const DeviceList: VoidFunctionComponent = () => {
         />
       )}
       <DeleteSelectedDevicesModal
-        onSubmit={handleSelectedDeviceDelete}
+        onConfirm={handleSelectedDeviceDelete}
         isOpen={deleteSelectedDevicesModal.isOpen}
         onClose={deleteSelectedDevicesModal.onClose}
       />
@@ -432,6 +455,24 @@ const DeviceList: VoidFunctionComponent = () => {
       >
         Are you sure? You can&apos;t undo this action afterwards.
       </ConfirmDeleteModal>
+      {isSendingToWorkflows && (
+        <WorkflowListModal
+          onClose={() => {
+            setIsSendingToWorkflows(false);
+          }}
+          onWorkflowSelect={handleWorkflowSelect}
+        />
+      )}
+      {selectedWorkflow != null && (
+        <ExecuteWorkflowModal
+          isOpen
+          onClose={() => {
+            setSelectedWorkflow(null);
+          }}
+          workflow={selectedWorkflow}
+          onSubmit={handleOnExecuteWorkflow}
+        />
+      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
@@ -460,7 +501,7 @@ const DeviceList: VoidFunctionComponent = () => {
 
           <Box>
             <Flex>
-              <Flex gridGap="4">
+              <Flex gridGap="4" marginRight="auto">
                 <DeviceFilter
                   labels={labels}
                   selectedLabels={selectedLabels}
@@ -469,29 +510,14 @@ const DeviceList: VoidFunctionComponent = () => {
                 />
                 <DeviceSearch text={searchText || ''} onChange={setSearchText} onSubmit={handleSearchSubmit} />
               </Flex>
-              <Spacer />
-              <HStack>
-                <Button
-                  data-cy="install-devices"
-                  isDisabled={selectedDevices.size === 0}
-                  onClick={handleInstallSelectedDevices}
-                  variant="outline"
-                  colorScheme="blue"
-                  size="sm"
-                >
-                  Install selected
-                </Button>
-                <Button
-                  data-cy="delete-devices"
-                  isDisabled={selectedDevices.size === 0}
-                  onClick={deleteSelectedDevicesModal.onOpen}
-                  variant="outline"
-                  colorScheme="red"
-                  size="sm"
-                >
-                  Delete selected
-                </Button>
-              </HStack>
+              <BulkActions
+                onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
+                onInstallButtonClick={handleInstallSelectedDevices}
+                areButtonsDisabled={selectedDevices.size === 0}
+                onWorkflowButtonClick={() => {
+                  setIsSendingToWorkflows(true);
+                }}
+              />
             </Flex>
           </Box>
           <DeviceTable
