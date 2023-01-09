@@ -200,7 +200,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       </FormControl>
 
       <FormControl my={6}>
-        <FormLabel>Mount parameters</FormLabel>
+        <FormLabel data-cy="ace-editor">Mount parameters</FormLabel>
         <Editor
           data-cy="device-edit-editor"
           height="450px"
