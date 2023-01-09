@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
-import { ExtendedTask, JsonJQInputParams } from '../../helpers/types';
+import { ExtendedTask, JsonJQInputParams } from '@frinx/shared/src';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 export const JsonJQNInputParamsSchema = yup.object({

@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
-import { Editor } from '@frinx/shared/src';
+import { Editor, Workflow } from '@frinx/shared/src';
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
-import { Workflow } from '../../helpers/types';
 
 type Props = {
   isOpen: boolean;

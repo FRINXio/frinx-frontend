@@ -1,6 +1,6 @@
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
-import { CustomToastProvider } from '@frinx/shared/src';
+import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared/src';
 import React, { createContext, FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
 
@@ -15,7 +15,7 @@ export type Props = {
   client: InventoryApiClient;
 };
 
-export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
+const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
@@ -40,3 +40,8 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
     </Provider>
   );
 };
+
+export function getInventoryApiProvider(callbacks: Callbacks): FC<Props> {
+  callbackUtils.setCallbacks(callbacks);
+  return InventoryAPIProvider;
+}

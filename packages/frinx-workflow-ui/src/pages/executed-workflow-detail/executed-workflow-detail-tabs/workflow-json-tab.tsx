@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Stack, IconButton, Button, Text, Textarea, Icon } from '@chakra-ui/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ExecutedWorkflowDetailResult } from '@frinx/workflow-ui/src/helpers/types';
+import { ExecutedWorkflowDetailResult } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 
 type Props = {

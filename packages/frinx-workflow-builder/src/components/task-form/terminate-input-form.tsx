@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
-import { TerminateInputParams } from '../../helpers/types';
+import { TerminateInputParams } from '@frinx/shared/src';
 
 export const TerminateInputParamsSchema = yup.object({
   inputParameters: yup.object({

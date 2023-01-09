@@ -1,14 +1,22 @@
-import { InventoryApi } from '@frinx/api';
+import { InventoryApi, UniflowApi } from '@frinx/api';
+import { InventoryApiClient } from '@frinx/inventory-client/src';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
-type InventoryComponents = typeof import('@frinx/inventory-client/src');
+type InventoryComponents = Omit<typeof import('@frinx/inventory-client/src'), 'getInventoryApiProvider'> & {
+  InventoryAPIProvider: FC<{ client: InventoryApiClient }>;
+};
 const InventoryApp: FC = () => {
   const [components, setComponents] = useState<InventoryComponents | null>(null);
 
   useEffect(() => {
     import('@frinx/inventory-client/src').then((mod) => {
-      setComponents(mod);
+      setComponents({
+        InventoryApp: mod.InventoryApp,
+        InventoryAPIProvider: mod.getInventoryApiProvider(
+          UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
+        ),
+      });
     });
   }, []);
 

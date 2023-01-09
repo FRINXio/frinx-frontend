@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { Text, Tr, Td } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
+import { ExecutedWorkflowTask } from '@frinx/shared/src';
 
 type ExecutedSubworkflowTask = ExecutedWorkflowTask & { inputData: Record<string, string> };
 type Props = {

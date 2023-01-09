@@ -31,7 +31,7 @@ import {
   ExtendedSimpleTask,
   ExtendedExclusiveJoinTask,
   SerializerEnum,
-} from './types';
+} from '@frinx/shared/src';
 
 const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
   startDelay: 0,
