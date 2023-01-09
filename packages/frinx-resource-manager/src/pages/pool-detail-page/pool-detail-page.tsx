@@ -95,7 +95,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
 
   const { QueryResourcePool: resourcePool } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity) - BigInt(resourcePool.PoolProperties.subnet ? 0 : 2);
-  const freeCapacity = BigInt(Number(resourcePool.Capacity?.freeCapacity)) - BigInt(resourcePool.PoolProperties.subnet ? 0 : 2);
+  const freeCapacity =
+    BigInt(Number(resourcePool.Capacity?.freeCapacity)) - BigInt(resourcePool.PoolProperties.subnet ? 0 : 2);
   const canClaimResources =
     (resourcePool.Capacity != null && freeCapacity > 0n && freeCapacity <= totalCapacity) || totalCapacity < 2;
   const isAllocating = resourcePool.PoolType === 'allocating';
