@@ -1,0 +1,17 @@
+{
+  "data": {
+    "zones": {
+      "edges": [
+        {
+          "node": {
+            "id": "Wm9uZTpiMmRkMTYxYi1jNWNmLTQ2ODUtOWQxMC1kYjdjOTVkZWZiNjM",
+            "name": "uniconfig",
+            "__typename": "Zone"
+          },
+          "__typename": "ZoneEdge"
+        }
+      ],
+      "__typename": "ZonesConnection"
+    }
+  }
+}
