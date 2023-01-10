@@ -270,7 +270,12 @@ const ClaimResourceModal: FC<Props> = ({
           </form>
         </ModalBody>
         <ModalFooter>
-          <Button data-cy="resource-pool-claim-confirm" colorScheme="blue" onClick={submitForm} isLoading={isSubmitting}>
+          <Button
+            data-cy="resource-pool-claim-confirm"
+            colorScheme="blue"
+            onClick={submitForm}
+            isLoading={isSubmitting}
+          >
             Claim resource
           </Button>
         </ModalFooter>
