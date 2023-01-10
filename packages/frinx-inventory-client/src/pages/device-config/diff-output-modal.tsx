@@ -205,6 +205,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
 
         <ModalFooter>
           <Button
+            data-cy="device-calculate-close"
             onClick={() => {
               onClose();
             }}

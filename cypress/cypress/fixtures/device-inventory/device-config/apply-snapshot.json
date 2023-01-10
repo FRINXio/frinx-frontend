@@ -1,0 +1,9 @@
+{
+  "data": {
+    "applySnapshot": {
+      "isOk": true,
+      "output": "{\"node-results\":{\"node-result\":[{\"node-id\":\"SAOS6_1\",\"status\":\"complete\"}]},\"overall-status\":\"complete\"}",
+      "__typename": "ApplySnapshotPayload"
+    }
+  }
+}
