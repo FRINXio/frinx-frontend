@@ -26,6 +26,7 @@ const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDel
             <Td>
               <HStack>
                 <IconButton
+                  data-cy={`delete-type-${resourceType.Name}`}
                   size="xs"
                   variant="outline"
                   colorScheme="red"

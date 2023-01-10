@@ -57,6 +57,7 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick,
               <Td>
                 There are no aggregates to be shown yet{' '}
                 <Button
+                  data-cy="create-aggregate"
                   variant="solid"
                   colorScheme="blue"
                   as={Link}
@@ -92,7 +93,13 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick,
                   )}
                   <Td>
                     {tags.map(({ tag, id: tagId }) => (
-                      <Tag key={tagId} ml={1} onClick={() => onTagClick(tag)} cursor="pointer">
+                      <Tag
+                        data-cy={`${aggregate}-${tag}-tag`}
+                        key={tagId}
+                        ml={1}
+                        onClick={() => onTagClick(tag)}
+                        cursor="pointer"
+                      >
                         {tag}
                       </Tag>
                     ))}
@@ -106,6 +113,7 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick,
                   <Td>
                     <ButtonGroup size="xs">
                       <IconButton
+                        data-cy={`aggregate-${aggregate}-config`}
                         aria-label="config"
                         size="xs"
                         variant="outline"
@@ -114,6 +122,7 @@ const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick,
                         to={`../pools/${id}`}
                       />
                       <IconButton
+                        data-cy={`aggregate-${aggregate}-delete`}
                         variant="outline"
                         size="xs"
                         colorScheme="red"

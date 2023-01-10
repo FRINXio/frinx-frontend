@@ -104,6 +104,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
           Strategies
         </Heading>
         <Button
+          data-cy="new-strategy-btn"
           marginLeft="auto"
           leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
           colorScheme="blue"
@@ -119,6 +120,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
         onScriptBtnClick={handleScriptBtnClick}
       />
       <StrategyScriptModal
+      
         isOpen={scriptState != null}
         onClose={() => {
           setScriptState(null);

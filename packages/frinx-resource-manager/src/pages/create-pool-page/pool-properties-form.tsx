@@ -50,6 +50,7 @@ const PoolPropertyInput = ({
   if (pKey === 'subnet') {
     return (
       <Switch
+        data-cy='device-state-subnet'
         disabled={shouldBeDisabled}
         name={pKey}
         onChange={(e) => {
@@ -62,6 +63,7 @@ const PoolPropertyInput = ({
 
   return (
     <Input
+      data-cy={`device-state-${pKey}`}
       placeholder={placeholder}
       name={pKey}
       onChange={(e) => {

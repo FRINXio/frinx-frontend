@@ -50,8 +50,10 @@ const DeletePoolModal: FC<Props> = ({ onDelete, canDeletePool, children, poolNam
 
           <ModalFooter>
             <ButtonGroup spacing={1}>
-              <Button onClick={onClose}>Cancel</Button>
-              <Button colorScheme="red" onClick={onDelete} isDisabled={!canDeletePool}>
+              <Button data-cy="delete-pool-cancel" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button data-cy="delete-pool-confirm" colorScheme="red" onClick={onDelete} isDisabled={!canDeletePool}>
                 Delete
               </Button>
             </ButtonGroup>
