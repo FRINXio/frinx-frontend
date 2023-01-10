@@ -55,7 +55,7 @@ const StrategyScriptModal: VoidFunctionComponent<Props> = ({ strategyName, scrip
           )}
         </ModalBody>
         <ModalFooter>
-          <Button data-cy="strategy-code-close" colorScheme="blue" onClick={onClose}>
+          <Button data-cy='strategy-code-close' colorScheme="blue" onClick={onClose}>
             Close
           </Button>
         </ModalFooter>
