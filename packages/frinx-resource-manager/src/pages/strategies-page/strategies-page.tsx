@@ -120,7 +120,6 @@ const StrategiesPage: VoidFunctionComponent = () => {
         onScriptBtnClick={handleScriptBtnClick}
       />
       <StrategyScriptModal
-      
         isOpen={scriptState != null}
         onClose={() => {
           setScriptState(null);
