@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Progress } from '@chakra-ui/react';
-import { ExecutedWorkflow, ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/workflow-ui/src/helpers/types';
-import useQueryParams from '@frinx/workflow-ui/src/hooks/use-query-params';
-import Paginator from '@frinx/workflow-ui/src/common/pagination';
+import { ExecutedWorkflow, ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/shared/src';
 import { useNavigate } from 'react-router-dom';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import { getSortOrder, getWorkflows } from './search-execs';
 import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-table';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import { usePagination } from '../../../common/pagination-hook';
+import useQueryParams from '../../../hooks/use-query-params';
+import Paginator from '../../../common/pagination';
 
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';

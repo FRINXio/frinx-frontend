@@ -1,6 +1,6 @@
 import dagre from 'dagre';
 import { Edge, Node, Position } from 'react-flow-renderer';
-import { NodeData } from './types';
+import { NodeData } from '@frinx/shared/src';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));

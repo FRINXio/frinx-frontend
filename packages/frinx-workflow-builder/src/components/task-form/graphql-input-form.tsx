@@ -2,8 +2,7 @@ import React, { FC, useState } from 'react';
 import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
-import { Editor } from '@frinx/shared/src';
-import { ExtendedTask, GraphQLInputParams } from '../../helpers/types';
+import { Editor, ExtendedTask, GraphQLInputParams } from '@frinx/shared/src';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 export const GraphQLInputParamsSchema = yup.object({

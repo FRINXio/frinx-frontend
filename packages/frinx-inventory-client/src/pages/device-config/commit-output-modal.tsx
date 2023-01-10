@@ -31,6 +31,7 @@ const CommitOutputModal: VoidFunctionComponent<Props> = ({ onClose, configuratio
 
         <ModalFooter>
           <Button
+            data-cy="device-config-run-close"
             onClick={() => {
               onClose();
             }}

@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
 import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
-import { TaskDefinition } from '@frinx/workflow-ui/src/helpers/uniflow-types';
+import { TaskDefinition } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
-import { taskDefinition } from '../../../../constants';
 
-type Key = keyof typeof taskDefinition;
+type Key = keyof TaskDefinition;
 
 type FormInputProps = {
   label: string;

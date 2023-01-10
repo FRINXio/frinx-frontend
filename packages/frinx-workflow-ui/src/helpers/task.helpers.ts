@@ -1,38 +1,37 @@
 /* eslint-disable no-template-curly-in-string */
-import { v4 as uuid } from 'uuid';
 import {
-  Task,
-  HTTPTask,
-  GraphQLTask,
-  JSPythonTask,
-  StartTask,
   EndTask,
-  ExtendedLambdaTask,
-  ExtendedForkTask,
-  ExtendedJoinTask,
-  ExtendedWhileTask,
-  ExtendedWhileEndTask,
   ExtendedDecisionTask,
-  ExtendedTerminateTask,
   ExtendedEventTask,
-  ExtendedWaitTask,
-  ExtendedSubworkflowTask,
-  ExtendedHTTPTask,
-  ExtendedGraphQLTask,
-  ExtendedKafkaPublishTask,
-  ExtendedJsonJQTask,
-  InputParameters,
-  HTTPInputParams,
-  GraphQLInputParams,
-  LambdaInputParams,
-  TaskLabel,
-  ExtendedTask,
-  TaskDefinition,
-  ExtendedSimpleTask,
   ExtendedExclusiveJoinTask,
+  ExtendedForkTask,
+  ExtendedGraphQLTask,
+  ExtendedHTTPTask,
+  ExtendedJoinTask,
+  ExtendedJsonJQTask,
+  ExtendedKafkaPublishTask,
+  ExtendedLambdaTask,
+  ExtendedSimpleTask,
+  ExtendedSubworkflowTask,
+  ExtendedTask,
+  ExtendedTerminateTask,
+  ExtendedWaitTask,
+  ExtendedWhileEndTask,
+  ExtendedWhileTask,
+  GraphQLInputParams,
+  GraphQLTask,
+  HTTPInputParams,
+  HTTPTask,
+  InputParameters,
+  JSPythonTask,
+  LambdaInputParams,
   SerializerEnum,
-  WorkflowTask,
-} from './types';
+  StartTask,
+  Task,
+  TaskDefinition,
+  TaskLabel,
+} from '@frinx/shared/src';
+import { v4 as uuid } from 'uuid';
 
 const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
   startDelay: 0,
@@ -507,35 +506,10 @@ export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedS
   };
 }
 
-export function convertWorkflowTaskToExtendedTask(workflowTask: WorkflowTask): ExtendedTask {
-  const { name, taskReferenceName, optional, startDelay, inputParameters, type } = workflowTask;
-  switch (type) {
-    case 'DECISION': {
-      return {
-        id: uuid(),
-        label: getTaskLabel(workflowTask as Task),
-        name,
-        taskReferenceName,
-        optional,
-        startDelay,
-        inputParameters,
-        decisionCases: workflowTask.decisionCases,
-        defaultCase: workflowTask.defaultCase,
-        caseValueParam: workflowTask.caseValueParam,
-        type: 'DECISION',
-      };
-    }
-    default: {
-      return {
-        id: uuid(),
-        label: getTaskLabel(workflowTask as Task),
-        name,
-        taskReferenceName,
-        optional,
-        startDelay,
-        inputParameters,
-        type: 'SIMPLE',
-      };
-    }
-  }
+export function convertWorkflowTaskToExtendedTask(workflowTask: Task): ExtendedTask {
+  return {
+    id: uuid(),
+    label: getTaskLabel(workflowTask),
+    ...workflowTask,
+  };
 }

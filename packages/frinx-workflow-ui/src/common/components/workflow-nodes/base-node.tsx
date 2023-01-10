@@ -1,7 +1,7 @@
 import { Box, Heading, Text } from '@chakra-ui/react';
+import { ExtendedTask } from '@frinx/shared/src';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position } from 'react-flow-renderer';
-import { ExtendedTask } from '../../../helpers/types';
 import { ExecutionState, getBackgroundColor } from './node.helpers';
 
 type Props = NodeProps<{

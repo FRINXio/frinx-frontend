@@ -118,7 +118,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
           <Flex justifyContent="flex-end" marginBottom={4} paddingY={2}>
             <ButtonGroup isAttached size="sm" marginRight="auto">
               <Button
-                data-cy="device-configC-create-snapshot"
+                data-cy="device-config-create-snapshot"
                 onClick={onCreateSnapshotBtnClick}
                 leftIcon={<Icon size={30} as={FeatherIcon} icon="plus" />}
               >

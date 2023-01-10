@@ -1,7 +1,7 @@
 import { Box, Flex, Text, Theme, useTheme } from '@chakra-ui/react';
+import { EndTask, StartTask } from '@frinx/shared/src';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Position, Handle, NodeProps } from 'react-flow-renderer';
-import { StartTask, EndTask } from '../../helpers/types';
 
 type Props = NodeProps<{
   type: string;

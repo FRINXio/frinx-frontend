@@ -1,6 +1,6 @@
 import React from 'react';
 import { Spinner, Td, Tr, Text } from '@chakra-ui/react';
-import { ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
+import { ExecutedWorkflowTask } from '@frinx/shared/src';
 import { ExecutedWorkflowItem } from '../executed-workflow-item';
 
 type ExecutedSubworkflowTask = ExecutedWorkflowTask & { inputData: Record<string, string> };

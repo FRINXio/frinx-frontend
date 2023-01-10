@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
 import {
   Box,
   Button,
+  Container,
   Flex,
   Heading,
   HStack,
+  Icon,
   IconButton,
   Input,
   Menu,
@@ -12,16 +13,14 @@ import {
   MenuItem,
   MenuList,
   VisuallyHidden,
-  Icon,
-  Container,
 } from '@chakra-ui/react';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
+import { callbackUtils, useNotifications } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
-import { Link } from 'react-router-dom';
-import { useNotifications } from '@frinx/shared/src';
+import { saveAs } from 'file-saver';
+import JSZip from 'jszip';
 import { compact } from 'lodash';
-import callbackUtils from '../../utils/callback-utils';
+import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 type Props = {
   onImportSuccess: () => void;

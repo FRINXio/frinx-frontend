@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
-import { WhileInputParams } from '../../helpers/types';
+import { WhileInputParams } from '@frinx/shared/src';
 
 export const WhileInputParamsSchema = yup.object({
   inputParameters: yup.object({

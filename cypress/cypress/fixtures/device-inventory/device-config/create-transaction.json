@@ -1,0 +1,8 @@
+{
+  "data": {
+    "createTransaction": {
+      "transactionId": "e835da8f-3055-4f4e-ae6a-5d28adf6218a",
+      "__typename": "CreateTransactionPayload"
+    }
+  }
+}

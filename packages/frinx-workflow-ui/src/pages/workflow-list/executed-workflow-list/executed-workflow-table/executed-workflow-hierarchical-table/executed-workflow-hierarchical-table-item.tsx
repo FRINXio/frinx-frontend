@@ -1,9 +1,8 @@
 import moment from 'moment';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { Tr, Td, Checkbox, Icon } from '@chakra-ui/react';
-import { ExecutedWorkflow, ExecutedWorkflows, ExecutedWorkflowTask } from '@frinx/workflow-ui/src/helpers/types';
 import { Link } from 'react-router-dom';
-import callbackUtils from '@frinx/workflow-ui/src/utils/callback-utils';
+import { callbackUtils, ExecutedWorkflow, ExecutedWorkflows, ExecutedWorkflowTask } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 

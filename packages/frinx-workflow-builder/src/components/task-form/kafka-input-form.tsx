@@ -2,8 +2,7 @@ import React, { FC } from 'react';
 import { FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
-import { Editor } from '@frinx/shared/src';
-import { ExtendedTask, KafkaPublishInputParams, SerializerEnum } from '../../helpers/types';
+import { Editor, ExtendedTask, KafkaPublishInputParams, SerializerEnum } from '@frinx/shared/src';
 
 export const KafkaPublishInputParamsSchema = yup.object({
   inputParameters: yup.object({

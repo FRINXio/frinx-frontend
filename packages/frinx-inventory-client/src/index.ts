@@ -1,2 +1,3 @@
 export { default as InventoryApp } from './root';
-export { InventoryAPIProvider } from './inventory-api-provider';
+export { getInventoryApiProvider } from './inventory-api-provider';
+export type { InventoryApiClient } from './inventory-api-provider';

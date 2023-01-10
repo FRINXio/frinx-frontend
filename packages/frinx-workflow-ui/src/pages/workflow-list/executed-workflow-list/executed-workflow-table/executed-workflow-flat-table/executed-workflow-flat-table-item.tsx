@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { FC } from 'react';
 import { Tr, Td, Checkbox } from '@chakra-ui/react';
-import { ExecutedWorkflows } from '@frinx/workflow-ui/src/helpers/types';
+import { ExecutedWorkflows } from '@frinx/shared/src';
 import { Link } from 'react-router-dom';
 
 type Props = {
