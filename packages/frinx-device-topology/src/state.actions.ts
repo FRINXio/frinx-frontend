@@ -16,6 +16,8 @@ export type LabelItem = {
   value: string;
 };
 
+export type TopologyMode = 'NORMAL' | 'COMMON_NODES';
+
 export type StateAction =
   | {
       type: 'SET_NODES_AND_EDGES';
@@ -45,6 +47,17 @@ export type StateAction =
   | {
       type: 'SET_BACKUP_NODES_AND_EDGES';
       payload: BackupNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_MODE';
+      mode: TopologyMode;
+    }
+  | {
+      type: 'SET_NODE_IDS_TO_FIND_COMMON';
+      nodeIds: string[];
+    }
+  | {
+      type: 'CLEAR_COMMON_SEARCH';
     };
 
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
@@ -94,5 +107,25 @@ export function setBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateA
   return {
     type: 'SET_BACKUP_NODES_AND_EDGES',
     payload,
+  };
+}
+
+export function setSelectedNodeIdsToFindCommonNode(nodeIds: string[]): StateAction {
+  return {
+    type: 'SET_NODE_IDS_TO_FIND_COMMON',
+    nodeIds,
+  };
+}
+
+export function setMode(mode: TopologyMode): StateAction {
+  return {
+    type: 'SET_MODE',
+    mode,
+  };
+}
+
+export function clearCommonSearch(): StateAction {
+  return {
+    type: 'CLEAR_COMMON_SEARCH',
   };
 }

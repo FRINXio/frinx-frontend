@@ -2,7 +2,7 @@ import { unwrap } from '@frinx/shared/src';
 import React, { useRef, useState, VoidFunctionComponent } from 'react';
 import NodeIcon from '../../components/node-icon/node-icon';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
-import { setSelectedNode } from '../../state.actions';
+import { setSelectedNode, setSelectedNodeIdsToFindCommonNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { GraphNode, Position } from './graph.helpers';
 
@@ -19,7 +19,7 @@ type Props = {
 
 const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpdate, onNodePositionUpdateFinish }) => {
   const { state, dispatch } = useStateContext();
-  const { nodePositions, connectedNodeIds, selectedNode, interfaceGroupPositions } = state;
+  const { nodePositions, connectedNodeIds, selectedNode, interfaceGroupPositions, selectedNodeIds, mode } = state;
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
     isActive: false,
@@ -28,24 +28,31 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
   const timeoutRef = useRef<number | null>(null);
 
   const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
-    timeoutRef.current = Number(
-      setTimeout(() => {
-        dispatch(setSelectedNode(node));
-      }, 250),
-    );
-    const element = event.currentTarget;
-    const bbox = element.getBoundingClientRect();
-    const x = event.clientX - bbox.left;
-    const y = event.clientY - bbox.top;
-    element.setPointerCapture(event.pointerId);
-    setPosition({
-      nodeId: node.device.name,
-      isActive: true,
-      offset: {
-        x,
-        y,
-      },
-    });
+    if (mode === 'COMMON_NODES') {
+      const newSelectedNodeIds = selectedNodeIds.includes(node.device.name)
+        ? selectedNodeIds.filter((id) => id !== node.device.name)
+        : [...selectedNodeIds, node.device.name];
+      dispatch(setSelectedNodeIdsToFindCommonNode(newSelectedNodeIds));
+    } else {
+      timeoutRef.current = Number(
+        setTimeout(() => {
+          dispatch(setSelectedNode(node));
+        }, 250),
+      );
+      const element = event.currentTarget;
+      const bbox = element.getBoundingClientRect();
+      const x = event.clientX - bbox.left;
+      const y = event.clientY - bbox.top;
+      element.setPointerCapture(event.pointerId);
+      setPosition({
+        nodeId: node.device.name,
+        isActive: true,
+        offset: {
+          x,
+          y,
+        },
+      });
+    }
   };
   const handlePointerMove = (event: React.PointerEvent<SVGRectElement>) => {
     if (position.isActive) {
@@ -83,6 +90,8 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
           positions={{ nodes: nodePositions, interfaceGroups: interfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.device.name)}
           isSelected={selectedNode?.device.id === node.device.id}
+          isSelectedForCommonSearch={selectedNodeIds.includes(node.device.name)}
+          topologyMode={mode}
           node={node}
         />
       ))}

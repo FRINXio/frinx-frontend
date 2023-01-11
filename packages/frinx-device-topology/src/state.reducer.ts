@@ -9,9 +9,10 @@ import {
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
-import { LabelItem, StateAction } from './state.actions';
+import { LabelItem, StateAction, TopologyMode } from './state.actions';
 
 export type State = {
+  mode: TopologyMode;
   nodes: GraphNode[];
   edges: GraphEdge[];
   nodePositions: Record<string, Position>;
@@ -23,9 +24,12 @@ export type State = {
   selectedVersion: string | null;
   backupNodes: BackupGraphNode[];
   backupEdges: GraphEdge[];
+  selectedNodeIds: string[];
+  commonNodeIds: string[];
 };
 
 export const initialState: State = {
+  mode: 'NORMAL',
   nodes: [],
   edges: [],
   nodePositions: {},
@@ -37,6 +41,8 @@ export const initialState: State = {
   selectedVersion: null,
   backupNodes: [],
   backupEdges: [],
+  selectedNodeIds: [],
+  commonNodeIds: [],
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -96,6 +102,19 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.backupEdges = action.payload.edges;
         acc.nodePositions = positionsMap.nodes;
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_NODE_IDS_TO_FIND_COMMON': {
+        acc.selectedNodeIds = [...action.nodeIds];
+        return acc;
+      }
+      case 'SET_MODE': {
+        acc.mode = action.mode;
+        return acc;
+      }
+      case 'CLEAR_COMMON_SEARCH': {
+        acc.selectedNodeIds = [];
+        acc.commonNodeIds = [];
         return acc;
       }
       default:

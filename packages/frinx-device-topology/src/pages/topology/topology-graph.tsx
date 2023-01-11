@@ -1,9 +1,9 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared/src';
 import React, { FunctionComponent, useRef } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { Change, getEdgesWithDiff, getNodesWithDiff } from '../../helpers/topology-helpers';
-import { setSelectedNode, updateNodePosition } from '../../state.actions';
+import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
 import { Position } from './graph.helpers';
@@ -29,7 +29,7 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion } = state;
+  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion, selectedNodeIds } = state;
 
   const nodesWithDiff =
     selectedVersion && backupNodes
@@ -69,6 +69,10 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
     dispatch(setSelectedNode(null));
   };
 
+  const handleClearCommonSearch = () => {
+    dispatch(clearCommonSearch());
+  };
+
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
@@ -92,6 +96,11 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
           boxShadow="md"
         >
           <DeviceInfoPanel deviceId={selectedNode.device.id} onClose={handleInfoPanelClose} />
+        </Box>
+      )}
+      {selectedNodeIds.length && (
+        <Box position="absolute" top={2} left="2" background="transparent">
+          <Button onClick={handleClearCommonSearch}>Clear common search</Button>
         </Box>
       )}
     </Box>
