@@ -1,0 +1,36 @@
+{
+  "data": {
+    "blueprints": {
+      "edges": [
+        {
+          "node": {
+            "id": "Qmx1ZXByaW50OjYwOTkzOGUzLTE0ODUtNGExZi1iNTkwLWJiNTBkNDYxMWMwZQ",
+            "createdAt": "2022-11-04T08:58:28.790Z",
+            "name": "cli_saos_device",
+            "__typename": "Blueprint"
+          },
+          "__typename": "BlueprintEdge"
+        },
+        {
+          "node": {
+            "id": "Qmx1ZXByaW50OjdiNWZkNzBlLTJjMzctNDcxNy04ZTU3LWNmMWY1ZDdlMDk3MQ",
+            "createdAt": "2022-11-04T08:58:29.202Z",
+            "name": "netconf_device",
+            "__typename": "Blueprint"
+          },
+          "__typename": "BlueprintEdge"
+        },
+        {
+          "node": {
+            "id": "Qmx1ZXByaW50OjQwYWY0YmY3LTg2MjItNGIyZC1hNjcyLWFiMzM0ZWJhYjgzOQ",
+            "createdAt": "2023-01-09T12:17:15.936Z",
+            "name": "Test-blueprint",
+            "__typename": "Blueprint"
+          },
+          "__typename": "BlueprintEdge"
+        }
+      ],
+      "__typename": "BlueprintConnection"
+    }
+  }
+}
