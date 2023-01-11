@@ -1,0 +1,13 @@
+{
+  "data": {
+    "addBlueprint": {
+      "blueprint": {
+        "id": "Qmx1ZXByaW50OjQwYWY0YmY3LTg2MjItNGIyZC1hNjcyLWFiMzM0ZWJhYjgzOQ",
+        "createdAt": "2023-01-09T12:17:15.936Z",
+        "name": "Peter",
+        "__typename": "Blueprint"
+      },
+      "__typename": "AddBlueprintPayload"
+    }
+  }
+}
