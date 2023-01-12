@@ -1,0 +1,10 @@
+{
+  "data": {
+    "blueprint": {
+      "id": "Qmx1ZXByaW50OjdiNWZkNzBlLTJjMzctNDcxNy04ZTU3LWNmMWY1ZDdlMDk3MQ",
+      "name": "netconf_device",
+      "template": "{\n      \"netconf\": {\n        \"netconf-node-topology:host\": \"sample-topology\",\n        \"netconf-node-topology:port\": \"{{port}}\",\n        \"netconf-node-topology:keepalive-delay\": \"10\",\n        \"netconf-node-topology:max-connection-attempts\": 1,\n        \"netconf-node-topology:connection-timeout-millis\": \"30000\",\n        \"netconf-node-topology:default-request-timeout-millis\": 60000,\n        \"netconf-node-topology:tcp-only\": \"false\",\n        \"netconf-node-topology:username\": \"{{username}}\",\n        \"netconf-node-topology:password\": \"{{password}}\",\n        \"netconf-node-topology:sleep-factor\": \"1\",\n        \"uniconfig-config:uniconfig-native-enabled\": \"true\",\n        \"netconf-node-topology:edit-config-test-option\": \"set\",\n        \"uniconfig-config:blacklist\": {\n          \"uniconfig-config:path\": []\n        },\n        \"node-extension:reconcile\": \"false\",\n        \"netconf-node-topology:schema-cache-directory\": \"{{schema}}\",\n        \"netconf-node-topology:between-attempts-timeout-millis\": \"10000\",\n        \"netconf-node-topology:dry-run-journal-size\": 150,\n        \"netconf-node-topology:enabled-notifications\": false\n      }\n}",
+      "__typename": "Blueprint"
+    }
+  }
+}
