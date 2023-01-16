@@ -153,6 +153,13 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceTypes, resourceTypeId, setFieldValue]);
 
+  const handleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(e)
+    setFieldValue('poolProperties.address', '');
+        setFieldValue('poolProperties.prefix', '');
+
+  }
+
   const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
   const parentResourceTypeName = pools.find((pool) => pool.id === parentPoolId)?.ResourceType.Name ?? null;
@@ -188,7 +195,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     <form onSubmit={handleSubmit}>
       <FormControl id="isNested">
         <FormLabel>Nested</FormLabel>
-        <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
+        <Switch onChange={handleSwitch} name="isNested" isChecked={isNested} />
       </FormControl>
       {isNested && (
         <NestedFormPart
@@ -281,44 +288,44 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           />
         </>
       )}
-      {resourceTypeName !== 'route_distinguisher' && values.poolType === 'allocating' && resourceTypeName != null && (
-        <>
-          <Divider mb={6} orientation="horizontal" color="gray.200" />
-          <Heading as="h4" size="md">
-            Set pool properties
-          </Heading>
-          {isNested && (
-            <>
-              <Text color="gray">available resources (allocated in selected parent):</Text>
-              <List>
-                {formattedSuggestedProperties.map((property) => (
-                  <ListItem ml={2} color="gray" fontSize="sm" key={property}>
-                    {property}
-                  </ListItem>
-                ))}
-              </List>
-            </>
-          )}
+      {!isNested &&
+        resourceTypeName !== 'route_distinguisher' &&
+        values.poolType === 'allocating' &&
+        resourceTypeName != null && (
+          <>
+            <Divider mb={6} orientation="horizontal" color="gray.200" />
+            <Heading as="h4" size="md">
+              Set pool properties
+            </Heading>
 
-          {isCustomResourceType(values.resourceTypeName) ? (
-            <CustomPoolPropertiesForm
-              isLoadingPoolProperties={isLoadingRequiredPoolProperties}
-              customPoolProperties={requiredPoolProperties}
-              formValues={values}
-              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
-              poolPropertyErrors={errors.poolProperties}
-            />
-          ) : (
-            <PoolPropertiesForm
-              poolProperties={poolProperties}
-              poolPropertyTypes={poolPropertyTypes}
-              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
-              poolPropertyErrors={errors.poolProperties}
-              resourceTypeName={resourceTypeName}
-            />
-          )}
-        </>
-      )}
+            <Text color="gray">available resources (allocated in selected parent):</Text>
+            <List>
+              {formattedSuggestedProperties.map((property) => (
+                <ListItem ml={2} color="gray" fontSize="sm" key={property}>
+                  {property}
+                </ListItem>
+              ))}
+            </List>
+
+            {isCustomResourceType(values.resourceTypeName) ? (
+              <CustomPoolPropertiesForm
+                isLoadingPoolProperties={isLoadingRequiredPoolProperties}
+                customPoolProperties={requiredPoolProperties}
+                formValues={values}
+                onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
+                poolPropertyErrors={errors.poolProperties}
+              />
+            ) : (
+              <PoolPropertiesForm
+                poolProperties={poolProperties}
+                poolPropertyTypes={poolPropertyTypes}
+                onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
+                poolPropertyErrors={errors.poolProperties}
+                resourceTypeName={resourceTypeName}
+              />
+            )}
+          </>
+        )}
 
       <AdvancedOptions poolPropertiesErrors={errors} poolType={poolType} values={values} handleChange={handleChange} />
 

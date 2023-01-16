@@ -65,14 +65,14 @@ const PoolDetailAllocatingTable: FC<Props> = ({
         </Thead>
         <Tbody>
           {allocatedResources != null && allocatedResources.edges != null && allocatedResources.edges.length > 0 ? (
-            allocatedResources.edges.map((node) => {
+            allocatedResources.edges.filter(edge => edge !== null).map((node) => {
               const resource = node?.node;
               const canDeallocateResource = node?.node.NestedPool != null;
 
-              return resource != null ? (
+              return resource != null && (
                 <Tr key={resource.id}>
                   {allocatedResourcesKeys.map((key) =>
-                    key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
+                    key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key].toString()}</Td> : null,
                   )}
                   <Td>{resource.Description}</Td>
                   <Td>
@@ -104,11 +104,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
                     </HStack>
                   </Td>
                 </Tr>
-              ) : (
-                <Tr>
-                  <Td>There is no record</Td>
-                </Tr>
-              );
+              )
             })
           ) : (
             <Tr>

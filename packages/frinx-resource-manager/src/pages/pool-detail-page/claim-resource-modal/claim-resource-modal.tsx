@@ -44,7 +44,8 @@ type AlternativeId = {
 
 type FormValues = {
   description: string;
-  userInput?: string | number;
+  desiredSize: string | number;
+  desiredValue: string | number;
   alternativeIds: AlternativeId[];
 };
 
@@ -52,15 +53,21 @@ const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$
 const IPV6_REGEX =
   /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
 
-function getHint(name: string, poolProperties: Record<string, string>, totalCapacity: bigint): string {
+function getHint(name: string, poolProperties: Record<string, string>, totalCapacity: bigint): string | string[] {
   switch (name) {
     case 'ipv6':
       return `Your address should be between ${ipaddr.IPv6.networkAddressFromCIDR(
         `${poolProperties.address}/${poolProperties.prefix}`,
       )} and ${ipaddr.IPv6.broadcastAddressFromCIDR(`${poolProperties.address}/${poolProperties.prefix}`)}.`;
     case 'ipv6_prefix':
-    case 'ipv4_prefix':
       return `Max number of allocated addresses can be ${totalCapacity}`;
+    case 'ipv4_prefix':
+      return [
+        `Max number of allocated addresses can be ${totalCapacity}`,
+        `Your address should be between ${ipaddr.IPv4.networkAddressFromCIDR(
+          `${poolProperties.address}/${poolProperties.prefix}`,
+        )} and ${ipaddr.IPv4.broadcastAddressFromCIDR(`${poolProperties.address}/${poolProperties.prefix}`)}.`,
+      ];
     case 'vlan_range':
       return `Max vlan range can be ${totalCapacity}`;
     case 'ipv4':
@@ -76,21 +83,29 @@ function getHint(name: string, poolProperties: Record<string, string>, totalCapa
 }
 
 const validationSchema = (resourceTypeName: string) => {
-  let userInputSchema;
-  if (resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
-    userInputSchema = yup.number().typeError('Please enter a number').required('This field is required');
+  let desiredSizeSchema;
+  let desiredValueSchema;
+
+  if (resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
+    desiredSizeSchema = yup.number().typeError('Please enter a number').required('This field is required');
+  }
+
+  if (resourceTypeName === 'ipv4_prefix') {
+    desiredSizeSchema = yup.number().typeError('Please enter a number').required('This field is required');
+    desiredValueSchema = yup.string().matches(IPV4_REGEX, 'Please enter a valid IPv4 address').notRequired();
   }
 
   if (resourceTypeName === 'ipv4') {
-    userInputSchema = yup.string().matches(IPV4_REGEX, 'Please enter a valid IPv4 address').notRequired();
+    desiredValueSchema = yup.string().matches(IPV4_REGEX, 'Please enter a valid IPv4 address').notRequired();
   }
 
   if (resourceTypeName === 'ipv6') {
-    userInputSchema = yup.string().matches(IPV6_REGEX, 'Please enter a valid IPv6 address').notRequired();
+    desiredValueSchema = yup.string().matches(IPV6_REGEX, 'Please enter a valid IPv6 address').notRequired();
   }
   return yup.object().shape({
     description: yup.string().notRequired(),
-    userInput: userInputSchema || yup.number().typeError('Please enter a number').notRequired(),
+    desiredSize: desiredSizeSchema || yup.number().typeError('Please enter a number').notRequired(),
+    desiredValue: desiredValueSchema || yup.number().typeError('Please enter an address').notRequired(),
     alternativeIds: AlternativeIdSchema,
   });
 };
@@ -106,6 +121,13 @@ const ClaimResourceModal: FC<Props> = ({
 }) => {
   const shouldBeDesiredSize =
     resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
+
+  const canShowDesiredValueInput =
+    resourceTypeName === 'vlan' ||
+    resourceTypeName === 'ipv4' ||
+    resourceTypeName === 'ipv6' ||
+    resourceTypeName === 'ipv4_prefix';
+
   const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue, resetForm } =
     useFormik<FormValues>({
       initialValues: {
@@ -116,20 +138,28 @@ const ClaimResourceModal: FC<Props> = ({
             value: ['active'],
           },
         ],
-        userInput: '',
+        desiredSize: '',
+        desiredValue: '',
       },
       onSubmit: (formValues) => {
         let userInput = {};
 
-        if (shouldBeDesiredSize) {
+        if (shouldBeDesiredSize && formValues.desiredValue) {
           userInput = {
-            desiredSize: Number(formValues.userInput),
+            desiredSize: Number(formValues.desiredSize),
+            desiredValue: formValues.desiredValue,
           };
         }
 
-        if (!shouldBeDesiredSize && formValues.userInput) {
+        if (shouldBeDesiredSize && !formValues.desiredValue) {
           userInput = {
-            desiredValue: formValues.userInput,
+            desiredSize: Number(formValues.desiredSize),
+          };
+        }
+
+        if (!shouldBeDesiredSize && formValues.desiredValue) {
+          userInput = {
+            desiredValue: formValues.desiredValue,
           };
         }
 
@@ -155,9 +185,6 @@ const ClaimResourceModal: FC<Props> = ({
     setFieldValue('alternativeIds', changedAlternativeIds);
   };
 
-  const canShowDesiredValueInput =
-    shouldBeDesiredSize || (resourceTypeName !== 'unique_id' && resourceTypeName !== 'random_signed_int32');
-
   type FormErrors = typeof errors & FormikErrors<{ duplicateAlternativeIds?: string }>;
   const formErrors: FormErrors = errors;
 
@@ -178,38 +205,42 @@ const ClaimResourceModal: FC<Props> = ({
         <ModalBody>
           <form onSubmit={handleSubmit}>
             <fieldset disabled={isSubmitting}>
-              {shouldBeDesiredSize ? (
-                <FormControl isRequired isInvalid={errors.userInput != null} mb={5}>
+              {shouldBeDesiredSize && (
+                <FormControl isRequired isInvalid={errors.desiredSize != null} mb={5}>
                   <FormLabel htmlFor="desiredSize">Desired size (number of allocated addresses)</FormLabel>
                   <Input
                     id="desiredSize"
-                    name="userInput"
+                    name="desiredSize"
                     placeholder="Enter a number"
-                    value={values.userInput}
+                    value={values.desiredSize}
                     onChange={handleChange}
                   />
                   <Text textColor="gray.400" fontSize="sm">
-                    {getHint(resourceTypeName, poolProperties, totalCapacity)}
+                    {resourceTypeName === 'ipv4_prefix'
+                      ? getHint(resourceTypeName, poolProperties, totalCapacity)[0]
+                      : getHint(resourceTypeName, poolProperties, totalCapacity)}
                   </Text>
-                  <FormErrorMessage>{errors.userInput}</FormErrorMessage>
+                  <FormErrorMessage>{errors.desiredSize}</FormErrorMessage>
                 </FormControl>
-              ) : (
-                canShowDesiredValueInput && (
-                  <FormControl isInvalid={errors.userInput != null} mb={5}>
-                    <FormLabel htmlFor="desiredValue">Desired value (optional input)</FormLabel>
-                    <Input
-                      placeholder={`Set specific value that you want to allocate from ${poolName}`}
-                      name="userInput"
-                      id="desiredValue"
-                      value={values.userInput}
-                      onChange={handleChange}
-                    />
-                    <Text textColor="gray.400" fontSize="sm">
-                      {getHint(resourceTypeName, poolProperties, totalCapacity)}
-                    </Text>
-                    <FormErrorMessage>{errors.userInput}</FormErrorMessage>
-                  </FormControl>
-                )
+              )}
+
+              {canShowDesiredValueInput && (
+                <FormControl isInvalid={errors.desiredValue != null} mb={5}>
+                  <FormLabel htmlFor="desiredValue">Desired value (optional input)</FormLabel>
+                  <Input
+                    placeholder={`Set specific value that you want to allocate from ${poolName}`}
+                    name="desiredValue"
+                    id="desiredValue"
+                    value={values.desiredValue}
+                    onChange={handleChange}
+                  />
+                  <Text textColor="gray.400" fontSize="sm">
+                    {resourceTypeName === 'ipv4_prefix'
+                      ? getHint(resourceTypeName, poolProperties, totalCapacity)[1]
+                      : getHint(resourceTypeName, poolProperties, totalCapacity)}
+                  </Text>
+                  <FormErrorMessage>{errors.desiredValue}</FormErrorMessage>
+                </FormControl>
               )}
 
               <FormControl isInvalid={errors.description != null}>

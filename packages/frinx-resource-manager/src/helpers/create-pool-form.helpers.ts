@@ -287,7 +287,12 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                         .min(1, 'Minimal required value is 1')
                         .max(32, 'Maximal allowed value is 32')
                         .typeError('Please enter a number')
-                        .required(`Please enter a value`),
+                        .when('isNested', {
+                          is: 'false',
+                          then: yup.number().required(`Please enter a value`),
+                          otherwise: yup.number().notRequired()
+                        })
+                        
                     };
                   }
 
@@ -297,7 +302,12 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                       [key]: yup
                         .string()
                         .matches(IPV4_REGEX, `Please enter a valid IPv4 address`)
-                        .required(`Please enter an IPv4 address`),
+                        .when('isNested', {
+                          is: 'false',
+                          then: yup.string().required(`Please enter an IPv4 address`),
+                          otherwise: yup.string().notRequired(),
+                        })
+                      
                     };
                   }
 
@@ -318,7 +328,11 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                       [key]: yup
                         .string()
                         .matches(IPV6_REGEX, `Please enter a valid IPv6 address`)
-                        .required(`Please enter an IPv6 address`),
+                        .when('isNested', {
+                          is: 'false',
+                          then: yup.string().required(`Please enter an IPv6 address`),
+                          otherwise: yup.string().notRequired(),
+                        }),
                     };
                   }
 
@@ -330,7 +344,11 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                         .min(1, 'Minimal required value is 1')
                         .max(128, 'Maximal allowed value is 128')
                         .typeError('Please enter a number')
-                        .required(`Please enter a value`),
+                        .when('isNested', {
+                          is: 'false',
+                          then: yup.number().required(`Please enter a value`),
+                          otherwise: yup.number().notRequired(),
+                        }),
                     };
                   }
 

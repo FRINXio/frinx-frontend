@@ -20,7 +20,7 @@ function getPlaceholder(name: string): Record<string, string> {
       return { address: '2001:db8:1::', prefix: '64', subnet: 'false' };
     case 'ipv4_prefix':
     case 'ipv4':
-      return { address: '192.168.0.1', prefix: '24', subnet: 'false' };
+      return { address: '192.168.1.0', prefix: '24', subnet: 'false' };
     case 'random_signed_int32':
       return { from: '-2147483648', to: '2147483647' };
     case 'unique_id':
