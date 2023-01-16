@@ -154,11 +154,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   }, [resourceTypes, resourceTypeId, setFieldValue]);
 
   const handleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleChange(e)
+    handleChange(e);
     setFieldValue('poolProperties.address', '');
-        setFieldValue('poolProperties.prefix', '');
-
-  }
+    setFieldValue('poolProperties.prefix', '');
+  };
 
   const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;

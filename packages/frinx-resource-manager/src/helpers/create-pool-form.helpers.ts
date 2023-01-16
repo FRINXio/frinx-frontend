@@ -290,9 +290,8 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                         .when('isNested', {
                           is: 'false',
                           then: yup.number().required(`Please enter a value`),
-                          otherwise: yup.number().notRequired()
-                        })
-                        
+                          otherwise: yup.number().notRequired(),
+                        }),
                     };
                   }
 
@@ -306,8 +305,7 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                           is: 'false',
                           then: yup.string().required(`Please enter an IPv4 address`),
                           otherwise: yup.string().notRequired(),
-                        })
-                      
+                        }),
                     };
                   }
 
