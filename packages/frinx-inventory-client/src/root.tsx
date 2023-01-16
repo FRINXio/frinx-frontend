@@ -8,6 +8,7 @@ import DeviceList from './pages/device-list/device-list';
 import EditBlueprintPage from './pages/edit-blueprint/edit-blueprint-page';
 import EditDevicePage from './pages/edit-device/edit-device-page';
 import TransactionList from './pages/transaction-list/transaction-list';
+import UniconfigShellPage from './pages/uniconfig-shell/uniconfig-shell-page';
 
 const Root: VoidFunctionComponent = () => {
   const navigate = useNavigate();
@@ -36,6 +37,7 @@ const Root: VoidFunctionComponent = () => {
         element={<EditBlueprintPage onSuccess={handleBlueprintListRedirect} onCancel={handleBlueprintListRedirect} />}
       />
       <Route path="/transactions" element={<TransactionList />} />
+      <Route path="/shell" element={<UniconfigShellPage />} />
     </Routes>
   );
 };
