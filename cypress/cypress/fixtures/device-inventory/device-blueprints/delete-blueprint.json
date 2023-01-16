@@ -1,0 +1,11 @@
+{
+  "data": {
+    "deleteBlueprint": {
+      "blueprint": {
+        "id": "Qmx1ZXByaW50OjNkMjkxZjg1LTk5MGEtNGRkMC04OWU4LTEzYzVkZDc2MjEyOA",
+        "__typename": "Blueprint"
+      },
+      "__typename": "DeleteBlueprintPayload"
+    }
+  }
+}

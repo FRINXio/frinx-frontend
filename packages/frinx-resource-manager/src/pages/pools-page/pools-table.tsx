@@ -65,6 +65,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   {isNestedShown && (
                     <Td>
                       <Button
+                        data-cy={`pool-${pool.Name}-children`}
                         isDisabled={!hasNestedPools}
                         as={Link}
                         to={`/resource-manager/pools/nested/${pool.id}`}
@@ -83,6 +84,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   <Td>
                     {pool.Tags?.map((t: Omit<TagType, 'Pools'>) => (
                       <Tag
+                        data-cy={`pool-${pool.Name}-${t.Tag}`}
                         key={t.id}
                         marginRight={1}
                         cursor="pointer"
@@ -108,6 +110,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   <Td>
                     <HStack spacing={2}>
                       <IconButton
+                        data-cy={`config-pool-${pool.Name}`}
                         aria-label="config"
                         size="xs"
                         variant="outline"
@@ -121,6 +124,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         poolName={pool.Name}
                       >
                         <IconButton
+                          data-cy={`delete-pool-${pool.Name}`}
                           variant="outline"
                           size="xs"
                           colorScheme="red"

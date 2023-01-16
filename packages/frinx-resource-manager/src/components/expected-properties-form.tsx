@@ -96,7 +96,7 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
       <HStack my={3} align="flex-start">
         <Text fontWeight="semibold">{label}</Text>
         <Spacer />
-        <Button size="sm" onClick={handleOnPoolPropertyAdd}>
+        <Button data-cy="add-expected-property" size="sm" onClick={handleOnPoolPropertyAdd}>
           Add new expected property
         </Button>
       </HStack>
@@ -114,6 +114,7 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
               <FormControl isInvalid={getExpectedFieldError(index, formErrors)?.key != null}>
                 {index === 0 && <FormLabel>Key</FormLabel>}
                 <Input
+                  data-cy={`property-key-${index}`}
                   value={poolProperty.key}
                   onChange={(e) => handleOnPoolPropertyChange(e.target.value, poolProperty.type, index)}
                   placeholder="Enter name of expected property"
@@ -124,11 +125,13 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
                 {index === 0 && <FormLabel>Type</FormLabel>}
                 <HStack>
                   <Input
+                    data-cy={`property-type-${index}`}
                     value={poolProperty.type}
                     onChange={(e) => handleOnPoolPropertyChange(poolProperty.key, e.target.value, index)}
                     placeholder="Enter type of expected property"
                   />
                   <IconButton
+                    data-cy={`property-delete-${index}`}
                     icon={<FeatherIcon icon="trash-2" size={20} />}
                     colorScheme="red"
                     aria-label="Delete property"

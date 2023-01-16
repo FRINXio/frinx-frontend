@@ -62,6 +62,7 @@ const CustomPoolPropertiesForm: VoidFunctionComponent<Props> = ({
           <FormControl key={Name} id={Name} isInvalid={errors[Name] !== undefined} isRequired>
             <FormLabel htmlFor={Name}>{Name}</FormLabel>
             <Input
+              data-cy={`create-pool-${Name}`}
               name={Name}
               onChange={(e) =>
                 onChange({

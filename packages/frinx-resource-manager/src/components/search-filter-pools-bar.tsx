@@ -31,9 +31,10 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
   return (
     <>
       <HStack mb={5}>
-        <Searchbar value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+        <Searchbar data-cy="search-by-name" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
         {canFilterByResourceType && resourceTypes != null && (
           <Select
+            data-cy="select-resource-type"
             value={selectedResourceType}
             onChange={(e) => setSelectedResourceType && setSelectedResourceType(e.target.value)}
             variant="outline"
@@ -53,7 +54,12 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
       <HStack mb={5}>
         <SearchByTag selectedTags={selectedTags} onTagClick={onTagClick} clearAllTags={clearAllTags} />
         <Spacer />
-        <Button variant="outline" colorScheme="red" onClick={() => onClearSearch && onClearSearch()}>
+        <Button
+          data-cy="clear-all-btn"
+          variant="outline"
+          colorScheme="red"
+          onClick={() => onClearSearch && onClearSearch()}
+        >
           Clear all
         </Button>
       </HStack>

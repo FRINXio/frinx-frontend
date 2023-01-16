@@ -209,6 +209,7 @@ const ClaimResourceModal: FC<Props> = ({
                 <FormControl isRequired isInvalid={errors.desiredSize != null} mb={5}>
                   <FormLabel htmlFor="desiredSize">Desired size (number of allocated addresses)</FormLabel>
                   <Input
+                    data-cy="resource-pool-claim-value"
                     id="desiredSize"
                     name="desiredSize"
                     placeholder="Enter a number"
@@ -246,6 +247,7 @@ const ClaimResourceModal: FC<Props> = ({
               <FormControl isInvalid={errors.description != null}>
                 <FormLabel>Description</FormLabel>
                 <Textarea
+                  data-cy="resource-pool-claim-description"
                   value={values.description}
                   onChange={handleChange}
                   name="description"
@@ -268,7 +270,12 @@ const ClaimResourceModal: FC<Props> = ({
           </form>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" onClick={submitForm} isLoading={isSubmitting}>
+          <Button
+            data-cy="resource-pool-claim-confirm"
+            colorScheme="blue"
+            onClick={submitForm}
+            isLoading={isSubmitting}
+          >
             Claim resource
           </Button>
         </ModalFooter>

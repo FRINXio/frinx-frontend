@@ -36,7 +36,9 @@ const CreatePoolFormAdvancedOptions: VoidFunctionComponent<Props> = ({
       <HStack my={3}>
         <Divider />
         <HStack cursor="pointer" textColor="gray.500" onClick={onToggle}>
-          <Text width="max-content">Advanced options</Text>
+          <Text data-cy="device-state-advanced-options" width="max-content">
+            Advanced options
+          </Text>
           {isOpen ? <FeatherIcon icon="chevron-up" size={20} /> : <FeatherIcon icon="chevron-down" size={20} />}
         </HStack>
         <Divider />
@@ -46,7 +48,13 @@ const CreatePoolFormAdvancedOptions: VoidFunctionComponent<Props> = ({
           <HStack>
             <FormControl id="poolType">
               <FormLabel htmlFor="poolTypeName">Pool type</FormLabel>
-              <Select id="poolTypeName" name="poolType" value={poolType} onChange={handleChange}>
+              <Select
+                data-cy="device-state-pool-type"
+                id="poolTypeName"
+                name="poolType"
+                value={poolType}
+                onChange={handleChange}
+              >
                 {['set', 'allocating', 'singleton'].map((o) => (
                   <option value={o} key={o}>
                     {o}
@@ -61,6 +69,7 @@ const CreatePoolFormAdvancedOptions: VoidFunctionComponent<Props> = ({
               >
                 <FormLabel htmlFor="dealocationPeriod">Dealocation safety period</FormLabel>
                 <Input
+                  data-cy="device-state-dealocation-period"
                   id="dealocationPeriod"
                   type="text"
                   onChange={handleChange}

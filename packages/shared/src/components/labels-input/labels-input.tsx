@@ -41,7 +41,7 @@ const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChan
           <HStack spacing={2}>
             {labels.map((l) => {
               return (
-                <Tag key={`label-${l}`} size="sm" onClick={() => handleRemove(l)}>
+                <Tag data-cy={`resource-pool-tag-${l}`} key={`label-${l}`} size="sm" onClick={() => handleRemove(l)}>
                   <Text>{l}</Text>
                   <TagCloseButton />
                 </Tag>
@@ -51,6 +51,7 @@ const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChan
         </InputLeftAddon>
       )}
       <Input
+        data-cy="resource-pool-label-value"
         type="text"
         placeholder={placeholder}
         value={inputValue}
