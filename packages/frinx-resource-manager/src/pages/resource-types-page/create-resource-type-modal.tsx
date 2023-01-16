@@ -87,7 +87,12 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
         <ModalBody>
           <FormControl isRequired isInvalid={errors.resourceTypeName != null}>
             <FormLabel>Resource Type name</FormLabel>
-            <Input name="resourceTypeName" onChange={handleChange} value={values.resourceTypeName} />
+            <Input
+              data-cy="new-type-name"
+              name="resourceTypeName"
+              onChange={handleChange}
+              value={values.resourceTypeName}
+            />
             <FormErrorMessage>{errors.resourceTypeName}</FormErrorMessage>
           </FormControl>
 
@@ -105,8 +110,16 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
         </ModalBody>
         <ModalFooter>
           <ButtonGroup spacing={2}>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button isLoading={isSubmitting || isValidating} colorScheme="blue" onClick={submitForm} type="submit">
+            <Button data-cy="new-type-cancel" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              data-cy="new-type-create"
+              isLoading={isSubmitting || isValidating}
+              colorScheme="blue"
+              onClick={submitForm}
+              type="submit"
+            >
               Create
             </Button>
           </ButtonGroup>

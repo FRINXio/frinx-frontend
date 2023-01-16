@@ -116,6 +116,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
         </Heading>
         <Box marginLeft="auto">
           <Button
+            data-cy="create-pool-btn"
             mr={2}
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"

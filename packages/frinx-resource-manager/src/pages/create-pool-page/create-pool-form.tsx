@@ -188,7 +188,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     <form onSubmit={handleSubmit}>
       <FormControl id="isNested">
         <FormLabel>Nested</FormLabel>
-        <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
+        <Switch data-cy="create-pool-nested" onChange={handleChange} name="isNested" isChecked={isNested} />
       </FormControl>
       {isNested && (
         <NestedFormPart
@@ -204,6 +204,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         <FormControl id="resourceTypeId" isInvalid={errors.resourceTypeId !== undefined} isRequired>
           <FormLabel htmlFor="resourceType">Resource type</FormLabel>
           <Select
+            data-cy="create-pool-type"
             id="resourceType"
             name="resourceTypeId"
             value={resourceTypeId}
@@ -225,6 +226,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         <FormControl id="name" marginY={5} isInvalid={errors.name !== undefined} isRequired>
           <FormLabel htmlFor="poolName">Name</FormLabel>
           <Input
+            data-cy="create-pool-name"
             id="poolName"
             type="text"
             onChange={handleChange}
@@ -239,6 +241,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       <FormControl id="description">
         <FormLabel htmlFor="descriptionField">Description</FormLabel>
         <Textarea
+          data-cy="create-pool-description"
           id="descriptionField"
           onChange={handleChange}
           name="description"
@@ -249,6 +252,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
       <FormControl mt={4}>
         <SearchByTagInput
+          data-cy="create-pool-tags"
           selectedTags={tagsInput.selectedTags}
           onTagCreate={tagsInput.handleTagCreation}
           onSelectionChange={tagsInput.handleOnSelectionChange}
@@ -324,10 +328,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
       <HStack mt={5}>
         <Spacer />
-        <Button onClick={() => navigate(-1)} variant="solid">
+        <Button data-cy="create-pool-cancel" onClick={() => navigate(-1)} variant="solid">
           Cancel
         </Button>
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+        <Button data-cy="create-pool-submit" type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create pool
         </Button>
       </HStack>

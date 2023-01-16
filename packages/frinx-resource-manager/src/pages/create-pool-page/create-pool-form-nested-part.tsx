@@ -27,6 +27,7 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
       <FormControl id="parentPoolId" isInvalid={errors.parentPoolId !== undefined} isRequired>
         <FormLabel htmlFor="parentPool">Parent pool</FormLabel>
         <Select
+          data-cy="create-pool-parent"
           id="parentPool"
           name="parentPoolId"
           onChange={handleChange}
@@ -56,6 +57,7 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
       <FormControl id="parentResourceId" isInvalid={errors.parentResourceId !== undefined} isRequired>
         <FormLabel htmlFor="parentResource">Parent allocated resources</FormLabel>
         <Select
+          data-cy="create-pool-allocated-resources"
           id="parentResource"
           name="parentResourceId"
           onChange={handleChange}
