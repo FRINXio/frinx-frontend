@@ -1,8 +1,9 @@
+import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared/src';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
-import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared/src';
+import { createClient as createWSClient } from 'graphql-ws';
 import React, { createContext, FC, useRef } from 'react';
-import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
+import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider, subscriptionExchange } from 'urql';
 
 export const InventoryAPIContext = createContext(false);
 
@@ -16,6 +17,7 @@ export type Props = {
 };
 
 const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
+  const wsClient = createWSClient({ url: 'wss://localhost:8001/graphql' });
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
@@ -31,6 +33,13 @@ const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
           },
         }),
         multipartFetchExchange,
+        subscriptionExchange({
+          forwardSubscription: (operation) => ({
+            subscribe: (sink) => ({
+              unsubscribe: wsClient.subscribe(operation, sink),
+            }),
+          }),
+        }),
       ],
     }),
   );
