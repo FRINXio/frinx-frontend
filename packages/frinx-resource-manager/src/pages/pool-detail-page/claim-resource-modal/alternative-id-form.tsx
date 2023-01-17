@@ -102,18 +102,25 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
               <HStack spacing="2" paddingTop="2" align="flex-start">
                 <FormControl maxW={150} isInvalid={keyError != null}>
                   {i === 0 && <FormLabel margin="0">Key:</FormLabel>}
-                  <Input value={key} placeholder="Key" onChange={(v) => handleKeyChange(v, i)} />
+                  <Input
+                    data-cy={`resource-pool-claim-key-${i}`}
+                    value={key}
+                    placeholder="Key"
+                    onChange={(v) => handleKeyChange(v, i)}
+                  />
                   <FormErrorMessage>{keyError}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={valueError != null}>
                   {i === 0 && <FormLabel margin="0">Value:</FormLabel>}
                   <HStack>
                     <LabelsInput
+                      data-cy={`resource-pool-claim-labels-${i}`}
                       labels={value}
                       placeholder="Value (press Enter to add value)"
                       onChange={(values) => handleValueChange(values, i)}
                     />
                     <IconButton
+                      data-cy={`alternative-id-${i}`}
                       icon={<Icon size="sm" as={FeatherIcon} icon="trash-2" />}
                       aria-label="Delete Alternative Id"
                       onClick={() => handleDelete(i)}
@@ -127,7 +134,7 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
         })}
       <HStack mt={3}>
         <Spacer />
-        <Button size="xs" onClick={handleAdd}>
+        <Button data-cy="resource-pool-alternative-id" size="xs" onClick={handleAdd}>
           Add alternative id
         </Button>
       </HStack>

@@ -98,7 +98,14 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
     <form onSubmit={handleSubmit}>
       <FormControl marginY={5} id="name" isRequired>
         <FormLabel>Name</FormLabel>
-        <Input name="name" id="name" value={values.name} onChange={handleChange} placeholder="Enter name" />
+        <Input
+          data-cy="new-strategy-name"
+          name="name"
+          id="name"
+          value={values.name}
+          onChange={handleChange}
+          placeholder="Enter name"
+        />
       </FormControl>
 
       <ExpectedProperties
@@ -116,6 +123,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       <FormControl id="lang" marginY={5}>
         <FormLabel>Strategy script language</FormLabel>
         <Select
+          data-cy="new-strategy-lang"
           id="lang"
           name="lang"
           value={values.lang}
@@ -129,7 +137,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       </FormControl>
 
       <FormControl marginY={5}>
-        <FormLabel>Strategy script</FormLabel>
+        <FormLabel data-cy="new-strategy-editor">Strategy script</FormLabel>
         <Editor
           height="450px"
           width="100%"
@@ -165,8 +173,10 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
 
       <HStack spacing={2}>
         <Spacer />
-        <Button onClick={onFormCancel}>Cancel</Button>
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+        <Button data-cy="new-strategy-cancel" onClick={onFormCancel}>
+          Cancel
+        </Button>
+        <Button data-cy="new-strategy-create" type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create strategy
         </Button>
       </HStack>

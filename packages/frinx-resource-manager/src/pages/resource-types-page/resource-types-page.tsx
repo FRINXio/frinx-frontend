@@ -110,7 +110,7 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
           Resource Types
         </Heading>
         <Spacer />
-        <Button colorScheme="blue" onClick={onOpen}>
+        <Button data-cy="create-resource-type" colorScheme="blue" onClick={onOpen}>
           Create resource type
         </Button>
       </Flex>

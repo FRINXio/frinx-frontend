@@ -133,6 +133,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Spacer />
         {isAllocating && (
           <Button
+            data-cy="resource-pool-claim-resource"
             onClick={handleOnOpenClaimResourceModal}
             colorScheme="blue"
             variant="solid"
@@ -209,7 +210,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
           canDeletePool={canDeletePool}
           poolName={resourcePool.Name}
         >
-          <Button mt={5} variant="outline" colorScheme="red" isDisabled={!canDeletePool}>
+          <Button data-cy="delete-resource-pool" mt={5} variant="outline" colorScheme="red" isDisabled={!canDeletePool}>
             Delete resource pool
           </Button>
         </DeletePoolPopover>
