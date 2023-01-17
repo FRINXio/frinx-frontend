@@ -53,6 +53,7 @@ const config = {
   isUniflowEnabled: stringToBoolean(envString('WORKFLOW_MANAGER_ENABLED')),
   URLBasename: envString('URL_BASENAME'),
   inventoryApiURL: envString('INVENTORY_API_URL'),
+  inventoryWsURL: envString('INVENTORY_WS_URL'),
   unistoreApiURL: envString('UNISTORE_API_URL'),
   uniresourceApiURL: envString('RESOURCE_MANAGER_API_URL'),
   isInventoryEnabled: stringToBoolean(envString('INVENTORY_ENABLED')),
