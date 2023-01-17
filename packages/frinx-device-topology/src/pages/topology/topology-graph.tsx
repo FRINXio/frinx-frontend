@@ -21,15 +21,21 @@ export enum DeviceSize {
 }
 
 type Props = {
+  isCommonNodesFetching: boolean;
   onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
+  onCommonNodesSearch: (nodeIds: string[]) => void;
 };
 
-const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
+const TopologyGraph: FunctionComponent<Props> = ({
+  isCommonNodesFetching,
+  onNodePositionUpdate,
+  onCommonNodesSearch,
+}) => {
   const { state, dispatch } = useStateContext();
   const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion, selectedNodeIds } = state;
+  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion, unconfirmedSelectedNodeIds } = state;
 
   const nodesWithDiff =
     selectedVersion && backupNodes
@@ -73,6 +79,10 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
     dispatch(clearCommonSearch());
   };
 
+  const handleSearchClick = () => {
+    onCommonNodesSearch(unconfirmedSelectedNodeIds);
+  };
+
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
@@ -98,9 +108,12 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
           <DeviceInfoPanel deviceId={selectedNode.device.id} onClose={handleInfoPanelClose} />
         </Box>
       )}
-      {selectedNodeIds.length && (
+      {unconfirmedSelectedNodeIds.length && (
         <Box position="absolute" top={2} left="2" background="transparent">
           <Button onClick={handleClearCommonSearch}>Clear common search</Button>
+          <Button onClick={handleSearchClick} isDisabled={isCommonNodesFetching}>
+            Find common nodes
+          </Button>
         </Box>
       )}
     </Box>

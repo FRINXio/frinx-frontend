@@ -53,11 +53,18 @@ export type StateAction =
       mode: TopologyMode;
     }
   | {
-      type: 'SET_NODE_IDS_TO_FIND_COMMON';
+      type: 'SET_UNCONFIRMED_NODE_IDS_TO_FIND_COMMON';
       nodeIds: string[];
     }
   | {
+      type: 'SET_NODE_IDS_TO_FIND_COMMON';
+    }
+  | {
       type: 'CLEAR_COMMON_SEARCH';
+    }
+  | {
+      type: 'SET_COMMON_NODE_IDS';
+      nodeIds: string[];
     };
 
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
@@ -110,10 +117,16 @@ export function setBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateA
   };
 }
 
-export function setSelectedNodeIdsToFindCommonNode(nodeIds: string[]): StateAction {
+export function setUnconfirmedSelectedNodeIdsToFindCommonNode(nodeIds: string[]): StateAction {
+  return {
+    type: 'SET_UNCONFIRMED_NODE_IDS_TO_FIND_COMMON',
+    nodeIds,
+  };
+}
+
+export function setSelectedNodeIdsToFindCommonNode(): StateAction {
   return {
     type: 'SET_NODE_IDS_TO_FIND_COMMON',
-    nodeIds,
   };
 }
 
@@ -127,5 +140,12 @@ export function setMode(mode: TopologyMode): StateAction {
 export function clearCommonSearch(): StateAction {
   return {
     type: 'CLEAR_COMMON_SEARCH',
+  };
+}
+
+export function setCommonNodeIds(nodeIds: string[]): StateAction {
+  return {
+    type: 'SET_COMMON_NODE_IDS',
+    nodeIds,
   };
 }

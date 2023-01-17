@@ -14,6 +14,7 @@ import {
 type Props = {
   positions: PositionsWithGroupsMap;
   isSelected: boolean;
+  isCommon: boolean;
   isFocused: boolean;
   isSelectedForCommonSearch: boolean;
   node: GraphNodeWithDiff;
@@ -31,6 +32,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
   isSelected,
+  isCommon,
   isSelectedForCommonSearch,
   node,
   topologyMode,
@@ -113,6 +115,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       {isSelectedForCommonSearch && (
         <Circle r={`${circleDiameter / 2}px`} fill="transparent" strokeWidth={6} stroke="red.300" />
       )}
+      {isCommon && <Circle r={`${circleDiameter / 2}px`} fill="transparent" strokeWidth={6} stroke="green.300" />}
     </G>
   );
 };

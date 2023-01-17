@@ -24,6 +24,7 @@ export type State = {
   selectedVersion: string | null;
   backupNodes: BackupGraphNode[];
   backupEdges: GraphEdge[];
+  unconfirmedSelectedNodeIds: string[];
   selectedNodeIds: string[];
   commonNodeIds: string[];
 };
@@ -41,6 +42,7 @@ export const initialState: State = {
   selectedVersion: null,
   backupNodes: [],
   backupEdges: [],
+  unconfirmedSelectedNodeIds: [],
   selectedNodeIds: [],
   commonNodeIds: [],
 };
@@ -104,8 +106,12 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
+      case 'SET_UNCONFIRMED_NODE_IDS_TO_FIND_COMMON': {
+        acc.unconfirmedSelectedNodeIds = [...action.nodeIds];
+        return acc;
+      }
       case 'SET_NODE_IDS_TO_FIND_COMMON': {
-        acc.selectedNodeIds = [...action.nodeIds];
+        acc.selectedNodeIds = [...state.unconfirmedSelectedNodeIds];
         return acc;
       }
       case 'SET_MODE': {
@@ -113,8 +119,13 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'CLEAR_COMMON_SEARCH': {
+        acc.unconfirmedSelectedNodeIds = [];
         acc.selectedNodeIds = [];
         acc.commonNodeIds = [];
+        return acc;
+      }
+      case 'SET_COMMON_NODE_IDS': {
+        acc.commonNodeIds = action.nodeIds;
         return acc;
       }
       default:
