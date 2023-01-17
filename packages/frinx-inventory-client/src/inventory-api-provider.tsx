@@ -18,7 +18,6 @@ export type Props = {
 };
 
 const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
-  console.log('InventoryAPIProvider', client, wsUrl)
   const wsClient = createWSClient({ url: wsUrl });
   const { current: urqlClient } = useRef(
     createClient({
