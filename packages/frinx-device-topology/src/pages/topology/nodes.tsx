@@ -47,6 +47,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
   };
   const handlePointerMove = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
     if (position.isActive && isPointerDown) {
+      setIsMoved(true);
       const bbox = event.currentTarget.getBoundingClientRect();
       const x = event.clientX - bbox.left;
       const y = event.clientY - bbox.top;
@@ -58,7 +59,6 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
   };
   const handlePointerUp = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
     setIsPointerDown(false);
-
     if (isMoved) {
       setPosition({
         offset: { x: 0, y: 0 },
