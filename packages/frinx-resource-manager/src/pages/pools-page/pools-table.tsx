@@ -24,6 +24,7 @@ type Props = {
   pools: GetPoolsQuery['QueryRootResourcePools'];
   isLoading: boolean;
   isNestedShown?: boolean;
+  onStrategyClick: (name?: string) => void;
   onDeleteBtnClick: (id: string) => void;
   onTagClick?: (tag: string) => void;
 };
@@ -31,6 +32,7 @@ type Props = {
 const PoolsTable: VoidFunctionComponent<Props> = ({
   pools,
   onDeleteBtnClick,
+  onStrategyClick,
   isLoading,
   isNestedShown = true,
   onTagClick,
@@ -100,7 +102,13 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   </Td>
                   <Td>{pool.PoolType}</Td>
                   <Td>
-                    <Text as="span" fontFamily="monospace" color="red">
+                    <Text
+                      as="span"
+                      fontFamily="monospace"
+                      color="red"
+                      cursor="pointer"
+                      onClick={() => onStrategyClick(pool.ResourceType?.id)}
+                    >
                       {pool.ResourceType?.Name}
                     </Text>
                   </Td>

@@ -133,7 +133,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
     onSubmit: (data) => {
       const updatedData = {
         ...data,
-        script: data.capacityScript.concat(data.invokeScript),
+        script: data.capacityScript.concat('\n\n'.concat(data.invokeScript)),
       };
 
       onFormSubmit({
