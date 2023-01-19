@@ -1,6 +1,6 @@
 {
   "name": "@frinx/dashboard",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "2.31.0",
