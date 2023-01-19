@@ -1,17 +1,13 @@
-import { Button, Flex, Heading, Progress, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { Flex, Heading, Progress, Text } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
 import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useMutation, useQuery } from 'urql';
 import {
-  CreateResourceTypeInput,
-  CreateResourceTypeMutation,
-  CreateResourceTypeMutationVariables,
   DeleteResourceTypeMutation,
   DeleteResourceTypeMutationVariables,
   ResourceTypesQuery,
 } from '../../__generated__/graphql';
-import CreateResourceTypeModal from './create-resource-type-modal';
 import ResourceTypesTable from './resource-types-table';
 
 const RESOURCE_TYPES_QUERY = gql`
@@ -19,16 +15,6 @@ const RESOURCE_TYPES_QUERY = gql`
     QueryResourceTypes {
       id
       Name
-    }
-  }
-`;
-
-const CREATE_RESOURCE_TYPE_MUTATION = gql`
-  mutation CreateResourceType($input: CreateResourceTypeInput!) {
-    CreateResourceType(input: $input) {
-      resourceType {
-        Name
-      }
     }
   }
 `;
@@ -48,7 +34,6 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
     }),
     [],
   );
-  const { isOpen, onClose, onOpen } = useDisclosure();
   const notification = useNotifications();
 
   const [{ data, fetching, error }] = useQuery<ResourceTypesQuery>({
@@ -59,29 +44,6 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
   const [, deleteResourceType] = useMutation<DeleteResourceTypeMutation, DeleteResourceTypeMutationVariables>(
     DELETE_RESOURCE_TYPE_MUTATION,
   );
-  const [, createResourceType] = useMutation<CreateResourceTypeMutation, CreateResourceTypeMutationVariables>(
-    CREATE_RESOURCE_TYPE_MUTATION,
-  );
-
-  const handleOnCreate = ({ resourceName, resourceProperties }: CreateResourceTypeInput) => {
-    createResourceType(
-      {
-        input: {
-          resourceName,
-          resourceProperties,
-        },
-      },
-      ctx,
-    )
-      .then(({ error: createResourceTypeError }) => {
-        if (createResourceTypeError != null) {
-          throw Error();
-        }
-
-        notification.addToastNotification({ content: 'Resource type created successfully', type: 'success' });
-      })
-      .catch(() => notification.addToastNotification({ content: 'Resource type creation failed', type: 'error' }));
-  };
 
   const handleOnDelete = (resourceTypeId: string) => {
     deleteResourceType({ input: { resourceTypeId } }, ctx)
@@ -105,15 +67,10 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
 
   return (
     <>
-      <CreateResourceTypeModal isOpen={isOpen} onClose={onClose} onCreate={handleOnCreate} />
       <Flex marginBottom={5} alignItems="center">
         <Heading as="h1" size="xl">
           Resource Types
         </Heading>
-        <Spacer />
-        <Button data-cy="create-resource-type" colorScheme="blue" onClick={onOpen}>
-          Create resource type
-        </Button>
       </Flex>
       <ResourceTypesTable resourceTypes={data.QueryResourceTypes} onDelete={handleOnDelete} />
     </>
