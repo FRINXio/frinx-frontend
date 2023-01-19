@@ -1,5 +1,6 @@
-import React, { VoidFunctionComponent } from 'react';
-import { Button, FormControl, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
+import React, { useEffect, VoidFunctionComponent } from 'react';
+import { Button, Code, FormControl, FormLabel, HStack, Input, Select, Spacer, Tooltip } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { Editor, unwrap } from '@frinx/shared/src';
 import * as yup from 'yup';
@@ -11,17 +12,40 @@ import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
-function getDefaultScriptValue(): string {
-  return `function invoke() {
+function getDefaultScriptValue(lang: 'js' | 'py'): string {
+  if (lang === 'js') {
+    return `function capacity() {
+  // here will be your code, that will calculate capacity of the resource pool
+
+  // this function needs to return free and utilized capacity of the resource pool
+  // e.g. next example returns 0 for both free and utilized capacity
+  return { free: 0, utilized: 0 };
+}
+
+function invoke() {
   log(JSON.stringify({ respool: resourcePool.ResourcePoolName, currentRes: currentResources }));
   return { vlan: userInput.desiredVlan };
-}`;
+}
+    `;
+  } else {
+    return `def capacity():
+  # here will be your code
+
+  # this function needs to return free and utilized capacity of the resource pool
+  # e.g. next example returns 0 for both free and utilized capacity
+  return { 'free': 0, 'utilized': 0 }
+
+def invoke():
+  log(JSON.stringify({ 'respool': resourcePool.ResourcePoolName, 'currentRes': currentResources }))
+  return { 'vlan': userInput.desiredVlan }
+    `;
+  }
 }
 
 const INITIAL_VALUES: FormValues = {
   name: '',
   lang: 'js',
-  script: getDefaultScriptValue(),
+  script: getDefaultScriptValue('js'),
   expectedPoolPropertyTypes: [{ key: 'address', type: 'string' }],
   resourceTypeProperties: [{ key: 'address', type: 'string' }],
 };
@@ -79,7 +103,17 @@ type Props = {
 };
 
 const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onFormCancel }) => {
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, setSubmitting } = useFormik({
+  const {
+    handleChange,
+    handleSubmit,
+    values,
+    isSubmitting,
+    setFieldValue,
+    errors,
+    setSubmitting,
+    touched,
+    setFieldTouched,
+  } = useFormik({
     initialValues: INITIAL_VALUES,
     validateOnBlur: false,
     validateOnChange: false,
@@ -89,6 +123,14 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       setSubmitting(false);
     },
   });
+
+  useEffect(() => {
+    if (!touched.script) {
+      setFieldValue('script', getDefaultScriptValue(values.lang));
+    }
+    // because we do not want to execute this effect when script's touched state changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.lang, setFieldValue, getDefaultScriptValue]);
 
   type FormErrors = typeof errors &
     FormikErrors<{ expectedPoolPropertyTypesDuplicatedKeys?: string; resourceTypePropertiesDuplicatedKeys?: string }>;
@@ -137,8 +179,15 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       </FormControl>
 
       <FormControl marginY={5}>
-        <FormLabel data-cy="new-strategy-editor">Strategy script</FormLabel>
+        <FormLabel data-cy="new-strategy-editor">Invoke function that will allocate resources</FormLabel>
+        <HStack>
+          <Code colorScheme="blue">{values.lang === 'js' ? 'function invoke() {' : 'def invoke():'}</Code>
+          <Tooltip label="In the editor below you can write your own allocation strategy script.">
+            <FeatherIcon size={20} icon="info" />
+          </Tooltip>
+        </HStack>
         <Editor
+          name="script"
           height="450px"
           width="100%"
           mode={values.lang === 'js' ? 'javascript' : 'python'}
@@ -148,6 +197,11 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
           fontSize={16}
           onChange={(value) => {
             setFieldValue('script', value);
+            if (INITIAL_VALUES.script === value) {
+              setFieldTouched('script', false);
+            } else {
+              setFieldTouched('script', true);
+            }
           }}
           setOptions={{
             enableBasicAutocompletion: true,
@@ -157,6 +211,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
             tabSize: 2,
           }}
         />
+        <Code colorScheme="blue">{values.lang === 'js' ? '}' : ''}</Code>
       </FormControl>
 
       <ExpectedProperties
