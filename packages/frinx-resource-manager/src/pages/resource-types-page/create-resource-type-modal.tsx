@@ -18,11 +18,12 @@ import * as yup from 'yup';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { unwrap } from '@frinx/shared/src';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
+import { CreateResourceTypeInput } from '../../__generated__/graphql';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (resourceTypeName: string) => void;
+  onCreate: (resourceType: CreateResourceTypeInput) => void;
 };
 
 type FormValues = {
@@ -70,7 +71,17 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
       validateOnChange: false,
       validationSchema,
       onSubmit: (data) => {
-        onCreate(data.resourceTypeName);
+        onCreate({
+          resourceName: data.resourceTypeName,
+          resourceProperties:
+            data.resourceTypeProperties?.reduce(
+              (acc, curr) => ({
+                ...acc,
+                [curr.key]: curr.type,
+              }),
+              {},
+            ) ?? {},
+        });
         onClose();
       },
     },

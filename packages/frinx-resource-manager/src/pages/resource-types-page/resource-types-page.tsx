@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useMutation, useQuery } from 'urql';
 import {
+  CreateResourceTypeInput,
   CreateResourceTypeMutation,
   CreateResourceTypeMutationVariables,
   DeleteResourceTypeMutation,
@@ -62,12 +63,12 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
     CREATE_RESOURCE_TYPE_MUTATION,
   );
 
-  const handleOnCreate = (resourceTypeName: string) => {
+  const handleOnCreate = ({ resourceName, resourceProperties }: CreateResourceTypeInput) => {
     createResourceType(
       {
         input: {
-          resourceName: resourceTypeName,
-          resourceProperties: {},
+          resourceName,
+          resourceProperties,
         },
       },
       ctx,
