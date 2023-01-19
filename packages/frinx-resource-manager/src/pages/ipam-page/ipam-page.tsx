@@ -115,6 +115,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
 
   const handleOnClearSearch = () => {
     setSearchText('');
+    setSelectedResourceType('');
     clearAllTags();
   };
 
@@ -170,6 +171,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
           onTagClick={handleOnTagClick}
+          onStrategyClick={handleOnStrategyClick}
         />
       </Box>
     </>
