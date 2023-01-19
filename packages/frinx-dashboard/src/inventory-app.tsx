@@ -14,8 +14,6 @@ const InventoryApp: FC = () => {
       setComponents({
         InventoryApp: mod.InventoryApp,
         InventoryAPIProvider: mod.getInventoryApiProvider(
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
         ),
       });
