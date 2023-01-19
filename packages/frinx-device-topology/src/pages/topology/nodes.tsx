@@ -45,7 +45,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
       },
     });
   };
-  const handlePointerMove = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
+  const handlePointerMove = (event: React.PointerEvent<SVGRectElement>) => {
     if (position.isActive && isPointerDown) {
       setIsMoved(true);
       const bbox = event.currentTarget.getBoundingClientRect();
@@ -57,7 +57,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
       onNodePositionUpdate(nodeId, { x: newX, y: newY });
     }
   };
-  const handlePointerUp = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
+  const handlePointerUp = (node: GraphNode) => {
     setIsPointerDown(false);
     if (isMoved) {
       setPosition({
@@ -79,11 +79,9 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
           onPointerDown={(event) => {
             handlePointerDown(event, node);
           }}
-          onPointerMove={(event) => {
-            handlePointerMove(event, node);
-          }}
-          onPointerUp={(event) => {
-            handlePointerUp(event, node);
+          onPointerMove={handlePointerMove}
+          onPointerUp={() => {
+            handlePointerUp(node);
           }}
           positions={{ nodes: nodePositions, interfaceGroups: interfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.device.name)}
