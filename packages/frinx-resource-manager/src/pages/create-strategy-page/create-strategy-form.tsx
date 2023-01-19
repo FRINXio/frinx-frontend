@@ -187,6 +187,11 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       </FormControl>
 
       <ExpectedProperties
+        tooltipLabel={`
+          A resource pool is an entity that allocates and deallocates resources for a single specific resource type.
+          When you are creating a new resource pool, you need to define what properties it will have.
+          So, that we can use them when we will allocate resources for you.
+        `}
         label="Expected pool properties"
         formErrors={{
           duplicatePropertyKey: formErrors.expectedPoolPropertyTypesDuplicatedKeys,
@@ -275,6 +280,11 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       </FormControl>
 
       <ExpectedProperties
+        tooltipLabel={`
+          Resource type is a blueprint for how to represent a resource instance. 
+          A resource type is essentially a set of property types, where each property type defines as object of
+          "Name" of the property and "Type" such as int, string, float etc.
+        `}
         label="Expected resource type structure"
         formErrors={{
           duplicatePropertyKey: formErrors.resourceTypePropertiesDuplicatedKeys,
