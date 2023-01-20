@@ -23,23 +23,23 @@ describe('Check pools', () => {
 
   it('Check', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
   });
 
   it('Search by name', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
-    cy.get('[data-cy="search-by-name"]').type('ga ');  // Search by name
+    cy.get('[data-cy="search-by-name"]').type('ga '); // Search by name
     cy.contains('table tr td', 'ga');
-    cy.get('table').find('tr').should('have.length', 2)
+    cy.get('table').find('tr').should('have.length', 2);
   });
 
   it('Search by name (workaround)', () => {
     // Note: after clicking of  detail of some pool -> searching fixed (workaround)
 
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
     // click config button
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -59,85 +59,111 @@ describe('Check pools', () => {
     }).as('AllocatedResources');
     cy.get('[data-cy="config-pool-ga"]').click();
 
-    cy.contains('a', 'Pools').click();  // menu item Pools
-    cy.get('[data-cy="search-by-name"]').type('ga ');  // Search by name
+    cy.contains('a', 'Pools').click(); // menu item Pools
+    cy.get('[data-cy="search-by-name"]').type('ga '); // Search by name
     cy.contains('table tr td', 'ga');
-    cy.get('table').find('tr').should('have.length', 2)
+    cy.get('table').find('tr').should('have.length', 2);
 
-    cy.get('[data-cy="search-by-name"]').clear();  // Search by name
-    cy.get('[data-cy="search-by-name"]').type('roma');  // Search by name
-    cy.get('table').find('tr').should('have.length', 4)
+    cy.get('[data-cy="search-by-name"]').clear(); // Search by name
+    cy.get('[data-cy="search-by-name"]').type('roma'); // Search by name
+    cy.get('table').find('tr').should('have.length', 4);
 
     // Note: not clear search by name input - add more chars to search
-    cy.get('[data-cy="search-by-name"]').type(' ga');  // Search by name
-    cy.get('table').find('tr').should('have.length', 4 + 1)
+    cy.get('[data-cy="search-by-name"]').type(' ga'); // Search by name
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 4 + 1);
 
-    cy.get('[data-cy="clear-all-btn"]').click();  // Clear all
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('[data-cy="clear-all-btn"]').click(); // Clear all
+    cy.get('table').find('tr').should('have.length', 21);
   });
 
   it('Select resource type to filter', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
-    cy.get('[data-cy="select-resource-type"]').select('vlan');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 3)
+    cy.get('[data-cy="select-resource-type"]').select('vlan'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 3);
 
-    cy.get('[data-cy="select-resource-type"]').select('ipv6_prefix');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 2)
+    cy.get('[data-cy="select-resource-type"]').select('ipv6_prefix'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 2);
 
-    cy.get('[data-cy="select-resource-type"]').select('vlan_range');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 3)
+    cy.get('[data-cy="select-resource-type"]').select('vlan_range'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 3);
 
-    cy.get('[data-cy="select-resource-type"]').select('ipv4');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 4)
+    cy.get('[data-cy="select-resource-type"]').select('ipv4'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 4);
 
-    cy.get('[data-cy="select-resource-type"]').select('ipv4_prefix');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 3)
+    cy.get('[data-cy="select-resource-type"]').select('ipv4_prefix'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 3);
 
-    cy.get('[data-cy="select-resource-type"]').select('unique_id');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 1)
+    cy.get('[data-cy="select-resource-type"]').select('unique_id'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
 
-    cy.get('[data-cy="select-resource-type"]').select('random_signed_int32');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 2)
+    cy.get('[data-cy="select-resource-type"]').select('random_signed_int32'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 2);
 
-    cy.get('[data-cy="select-resource-type"]').select('ipv6');  // Select resource type to filter
+    cy.get('[data-cy="select-resource-type"]').select('ipv6'); // Select resource type to filter
     cy.contains('tr', 'There are no resource pools');
-    cy.get('table').find('tr').should('have.length', 1 + 1)
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
 
-    cy.get('[data-cy="select-resource-type"]').select('route_distinguisher');  // Select resource type to filter
-    cy.get('table').find('tr').should('have.length', 1 + 2)
+    cy.get('[data-cy="select-resource-type"]').select('route_distinguisher'); // Select resource type to filter
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 2);
 
-    cy.get('[data-cy="clear-all-btn"]').click();  // Clear all
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('[data-cy="clear-all-btn"]').click(); // Clear all
+    cy.get('table').find('tr').should('have.length', 21);
   });
 
   it('Click tag to filter', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
     //click tag
-    cy.get('[data-cy="pool-ga-ga"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 1 + 1)
-    cy.get('[data-cy="clear-all-btn"]').click();  // Clear all
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('[data-cy="pool-ga-ga"]').click(); // in column TAGS click a tag
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
+    cy.get('[data-cy="clear-all-btn"]').click(); // Clear all
+    cy.get('table').find('tr').should('have.length', 21);
 
     //click tag
-    cy.get('[data-cy="pool-tt-tt"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 1 + 1)
+    cy.get('[data-cy="pool-tt-tt"]').click(); // in column TAGS click a tag
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
     cy.contains('button', 'Clear tags').click(); // Clear tags
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
     //click tag
-    cy.get('[data-cy="pool-tt-tt"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 1 + 1)
-    cy.get('[data-cy="pool-tt-tt"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('[data-cy="pool-tt-tt"]').click(); // in column TAGS click a tag
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
+    cy.get('[data-cy="pool-tt-tt"]').click(); // in column TAGS click a tag
+    cy.get('table').find('tr').should('have.length', 21);
   });
 
   it('Display children', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
     cy.contains('table tr td', 'ga');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -145,25 +171,24 @@ describe('Check pools', () => {
         req.reply({ fixture: 'resource-manager/pools/ga/GetNestedPoolsDetail.json' });
       }
     }).as('GetNestedPoolsDetail');
-    cy.get('[data-cy="pool-ga-children"]').click();  // click CHILDREN for ga pool
+    cy.get('[data-cy="pool-ga-children"]').click(); // click CHILDREN for ga pool
     cy.contains('h2', 'Nested pools');
     cy.get('table').eq(0).contains('tr td', 'ga');
-    cy.get('table').eq(0).find('tr').should('have.length', 2)
+    cy.get('table').eq(0).find('tr').should('have.length', 2);
     cy.get('table').eq(1).contains('tr td', 'mik');
     cy.get('table').eq(1).contains('tr td', 'alex');
-    cy.get('table').eq(1).find('tr').should('have.length', 3)
+    cy.get('table').eq(1).find('tr').should('have.length', 3);
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetNestedPoolsDetail')) {
         req.reply({ fixture: 'resource-manager/pools/ga/GetNestedPoolsDetail2.json' });
       }
     }).as('GetNestedPoolsDetail');
-    cy.get('[data-cy="pool-alex-children"]').click();  // click CHILDREN for alex child pool
+    cy.get('[data-cy="pool-alex-children"]').click(); // click CHILDREN for alex child pool
     cy.contains('h2', 'Nested pools');
     cy.get('table').eq(0).contains('tr td', 'alex');
-    cy.get('table').eq(0).find('tr').should('have.length', 2)
+    cy.get('table').eq(0).find('tr').should('have.length', 2);
     cy.get('table').eq(1).contains('tr td', 'alex 4');
-    cy.get('table').eq(1).find('tr').should('have.length', 2)
-
+    cy.get('table').eq(1).find('tr').should('have.length', 2);
   });
 
   it('Pool detail page - Search by alternative id', () => {
@@ -196,40 +221,57 @@ describe('Check pools', () => {
     cy.contains('h1', 'ga');
 
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids').parent().parent().parent().parent().find('tr').should('have.length', 1 + 3)
+    cy.contains('button', 'Show alternative ids')
+      .parent()
+      .parent()
+      .parent()
+      .parent()
+      .find('tr')
+      .should('have.length', 1 + 3);
 
     // Allocated Resources
     // By clicking at the Add alternative id button you can add alternative id by which you can filter allocated resources
-    cy.get('[data-cy="resource-pool-alternative-id"]').click();  // Add alternative id
+    cy.get('[data-cy="resource-pool-alternative-id"]').click(); // Add alternative id
     // appears following controls: Key Value etc
-    cy.get('[data-cy="resource-pool-claim-key-0"]').clear();  // Key:
-    cy.get('[data-cy="resource-pool-claim-key-0"]').type('alfa');  // Key:
-    cy.get('[data-cy="resource-pool-tag-active"]').click();  // Value: [x] active - click to remove
+    cy.get('[data-cy="resource-pool-claim-key-0"]').clear(); // Key:
+    cy.get('[data-cy="resource-pool-claim-key-0"]').type('alfa'); // Key:
+    cy.get('[data-cy="resource-pool-tag-active"]').click(); // Value: [x] active - click to remove
     //cy.get('[data-cy="resource-pool-label-value"]').type('');  // Value (press Enter to add value)
-    cy.get('[data-cy="alternative-id-0"]').click();  // Delete Alternative Id
+    cy.get('[data-cy="alternative-id-0"]').click(); // Delete Alternative Id
 
     // Allocated Resources
     // By clicking at the Add alternative id button you can add alternative id by which you can filter allocated resources
-    cy.get('[data-cy="resource-pool-alternative-id"]').click();  // Add alternative id
+    cy.get('[data-cy="resource-pool-alternative-id"]').click(); // Add alternative id
     // appears following controls: Key Value etc
-    cy.get('[data-cy="resource-pool-claim-key-0"]').clear();  // Key:
-    cy.get('[data-cy="resource-pool-claim-key-0"]').type('alfa');  // Key:
-    cy.get('[data-cy="resource-pool-tag-active"]').click();  // Value: [x] active - click to remove
+    cy.get('[data-cy="resource-pool-claim-key-0"]').clear(); // Key:
+    cy.get('[data-cy="resource-pool-claim-key-0"]').type('alfa'); // Key:
+    cy.get('[data-cy="resource-pool-tag-active"]').click(); // Value: [x] active - click to remove
     //cy.get('[data-cy="resource-pool-label-value"]').type('');  // Value (press Enter to add value)
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
         req.reply({ fixture: 'resource-manager/pools/ga/alfa/AllocatedResources.json' });
       }
     }).as('AllocatedResources');
-    cy.get('[data-cy="resource-pool-search-by-id"]').click();  // Search by alternative id
+    cy.get('[data-cy="resource-pool-search-by-id"]').click(); // Search by alternative id
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids').parent().parent().parent().parent().find('tr').should('have.length', 1 + 1)
+    cy.contains('button', 'Show alternative ids')
+      .parent()
+      .parent()
+      .parent()
+      .parent()
+      .find('tr')
+      .should('have.length', 1 + 1);
 
-    cy.get('[data-cy="resource-pool-claim-key-0"]').should('not.exist');  // Key:
-    cy.get('[data-cy="resource-pool-search-by-id"]').click();  // Search by alternative id
+    cy.get('[data-cy="resource-pool-claim-key-0"]').should('not.exist'); // Key:
+    cy.get('[data-cy="resource-pool-search-by-id"]').click(); // Search by alternative id
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids').parent().parent().parent().parent().find('tr').should('have.length', 1 + 3)
-
+    cy.contains('button', 'Show alternative ids')
+      .parent()
+      .parent()
+      .parent()
+      .parent()
+      .find('tr')
+      .should('have.length', 1 + 3);
   });
 
   it('Pool detail page - Nested pools detail page - Allocated Resources - pager', () => {
@@ -267,13 +309,19 @@ describe('Check pools', () => {
         req.reply({ fixture: 'resource-manager/pools/mik/AllocatedResources.json' });
       }
     }).as('AllocatedResources');
-    cy.get('[data-cy="config-pool-mik"]').click();  // click config button of mik pool
+    cy.get('[data-cy="config-pool-mik"]').click(); // click config button of mik pool
 
     cy.contains('h1', 'mik');
-    cy.contains('0 / 16');  // Utilized capacity
-    cy.get('[data-cy="resource-pool-claim-resource"]').should('be.disabled')  // Claim resource
+    cy.contains('0 / 16'); // Utilized capacity
+    cy.get('[data-cy="resource-pool-claim-resource"]').should('be.disabled'); // Claim resource
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids').parent().parent().parent().parent().find('tr').should('have.length', 1 + 10)
+    cy.contains('button', 'Show alternative ids')
+      .parent()
+      .parent()
+      .parent()
+      .parent()
+      .find('tr')
+      .should('have.length', 1 + 10);
     cy.contains('p', 'Previous');
     cy.contains('button', 'Next');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -281,9 +329,15 @@ describe('Check pools', () => {
         req.reply({ fixture: 'resource-manager/pools/mik/AllocatedResources_page2.json' });
       }
     }).as('AllocatedResources');
-    cy.contains('button', 'Next').click();  // Next
+    cy.contains('button', 'Next').click(); // Next
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids').parent().parent().parent().parent().find('tr').should('have.length', 1 + 6)
+    cy.contains('button', 'Show alternative ids')
+      .parent()
+      .parent()
+      .parent()
+      .parent()
+      .find('tr')
+      .should('have.length', 1 + 6);
     cy.contains('button', 'Previous');
     cy.contains('p', 'Next');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -291,18 +345,24 @@ describe('Check pools', () => {
         req.reply({ fixture: 'resource-manager/pools/mik/AllocatedResources.json' });
       }
     }).as('AllocatedResources');
-    cy.contains('button', 'Previous').click();  // Previous
+    cy.contains('button', 'Previous').click(); // Previous
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids').parent().parent().parent().parent().find('tr').should('have.length', 1 + 10)
+    cy.contains('button', 'Show alternative ids')
+      .parent()
+      .parent()
+      .parent()
+      .parent()
+      .find('tr')
+      .should('have.length', 1 + 10);
     cy.contains('p', 'Previous');
     cy.contains('button', 'Next');
   });
 
   it('IPAM / IPAM', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
-    cy.contains('button span', 'IPAM').click( {force: true} );
+    cy.contains('button span', 'IPAM').click({ force: true });
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllIPPools')) {
         req.reply({ fixture: 'resource-manager/pools/preset1/GetPools.json' });
@@ -310,7 +370,9 @@ describe('Check pools', () => {
     }).as('GetAllIPPools');
     cy.contains('a', 'IPAM').click();
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 1 + 5)
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 5);
 
     // try if controls work as expected
     //Click Create Pool
@@ -334,23 +396,25 @@ describe('Check pools', () => {
         req.reply({ fixture: 'resource-manager/pools/create/RequiredPoolProperties.json' });
       }
     }).as('RequiredPoolProperties');
-    cy.get('[data-cy="create-pool-btn"]').click();  // Create Pool
+    cy.get('[data-cy="create-pool-btn"]').click(); // Create Pool
     cy.contains('h1', 'Create new Pool');
-    cy.get('[data-cy="create-pool-type"]');  // Resource type*
-    cy.get('[data-cy="create-pool-type"]').find('option').then(options => {
-      const actual = [...options].map(o => o.text)
-      console.log(options)
-      console.log(actual)
-      console.log(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6'])
-      expect(actual).to.deep.eq(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6'])
-    })
+    cy.get('[data-cy="create-pool-type"]'); // Resource type*
+    cy.get('[data-cy="create-pool-type"]')
+      .find('option')
+      .then((options) => {
+        const actual = [...options].map((o) => o.text);
+        console.log(options);
+        console.log(actual);
+        console.log(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6']);
+        expect(actual).to.deep.eq(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6']);
+      });
   });
 
   it('IPAM / Aggregates', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
-    cy.contains('button span', 'IPAM').click( {force: true} );
+    cy.contains('button span', 'IPAM').click({ force: true });
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetIpPools')) {
         req.reply({ fixture: 'resource-manager/pools/IPAM/GetIpPools.json' });
@@ -362,9 +426,9 @@ describe('Check pools', () => {
 
   it('IPAM / IP Ranges', () => {
     cy.contains('h1', 'Pools');
-    cy.get('table').find('tr').should('have.length', 21)
+    cy.get('table').find('tr').should('have.length', 21);
 
-    cy.contains('button span', 'IPAM').click( {force: true} );
+    cy.contains('button span', 'IPAM').click({ force: true });
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypes')) {
         req.reply({ fixture: 'resource-manager/pools/preset1/GetResourceTypes.json' });
@@ -377,25 +441,39 @@ describe('Check pools', () => {
     }).as('GetPoolIpRanges');
     cy.contains('a', 'IP Ranges').click();
     cy.contains('h1', 'IP Ranges');
-    cy.get('table').find('tr').should('have.length', 1 + 5)
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 5);
 
     //click tag
-    cy.get('[data-cy="range-tag-ga"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 1 + 1)
-    cy.get('[data-cy="clear-all-btn"]').click();  // Clear all
-    cy.get('table').find('tr').should('have.length', 1 + 5)
+    cy.get('[data-cy="range-tag-ga"]').click(); // in column TAGS click a tag
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
+    cy.get('[data-cy="clear-all-btn"]').click(); // Clear all
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 5);
 
     //click tag
-    cy.get('[data-cy="range-tag-tt"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 1 + 1)
+    cy.get('[data-cy="range-tag-tt"]').click(); // in column TAGS click a tag
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
     cy.contains('button', 'Clear tags').click(); // Clear tags
-    cy.get('table').find('tr').should('have.length', 1 + 5)
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 5);
 
     //click tag
-    cy.get('[data-cy="range-tag-tt"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 1 + 1)
-    cy.get('[data-cy="range-tag-tt"]').click();  // in column TAGS click a tag
-    cy.get('table').find('tr').should('have.length', 1 + 5)
+    cy.get('[data-cy="range-tag-tt"]').click(); // in column TAGS click a tag
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 1);
+    cy.get('[data-cy="range-tag-tt"]').click(); // in column TAGS click a tag
+    cy.get('table')
+      .find('tr')
+      .should('have.length', 1 + 5);
 
     //click ip address - ga & tt pools are nested -> there are clickable IPs
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -410,7 +488,7 @@ describe('Check pools', () => {
     }).as('AllocatedResources');
     cy.contains('td', 'ga').parent().find('td a').first().click();
     cy.contains('h1', 'IP Ranges of ga');
-    cy.url().should('include', '/nested-ranges')
+    cy.url().should('include', '/nested-ranges');
     cy.contains('table tr td', 'alex');
     cy.screenshot();
   });

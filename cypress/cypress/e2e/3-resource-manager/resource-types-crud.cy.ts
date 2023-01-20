@@ -6,8 +6,7 @@
 import { hasOperationName } from '../../helpers/utils';
 
 describe('Resource Types', () => {
-  beforeEach(() => {
-  });
+  beforeEach(() => {});
 
   it('Show', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -47,7 +46,6 @@ describe('Resource Types', () => {
     cy.contains('header', 'Create Resource Type');
     cy.get('[data-cy="new-type-name"]').type('stano');
 
-
     // Click Create
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateResourceType')) {
@@ -64,7 +62,7 @@ describe('Resource Types', () => {
 
     // TODO Zeleny box
     cy.contains('Resource type created successfully');
-    cy.wait(3000)
+    cy.wait(3000);
 
     cy.contains('table', 'stano');
   });
@@ -96,11 +94,8 @@ describe('Resource Types', () => {
 
     // TODO Zeleny box
     cy.contains('Resource type deleted successfully');
-    cy.wait(3000)
+    cy.wait(3000);
 
     cy.get('[data-cy="delete-type-stano"]').should('not.exist');
   });
-
-
-
 });
