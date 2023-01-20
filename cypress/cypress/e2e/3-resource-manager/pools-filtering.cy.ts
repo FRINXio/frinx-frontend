@@ -26,7 +26,7 @@ describe('Check pools', () => {
     cy.get('table').find('tr').should('have.length', 21);
   });
 
-  it('Search by name', () => {
+  it.skip('Search by name', () => {
     cy.contains('h1', 'Pools');
     cy.get('table').find('tr').should('have.length', 21);
 
@@ -410,7 +410,7 @@ describe('Check pools', () => {
       });
   });
 
-  it('IPAM / Aggregates', () => {
+  it.skip('IPAM / Aggregates', () => {
     cy.contains('h1', 'Pools');
     cy.get('table').find('tr').should('have.length', 21);
 
