@@ -165,7 +165,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
           <Tbody>
             {Object.keys(resourcePool.PoolProperties).map((entry) => {
               return (
-                <Tr>
+                <Tr key={entry}>
                   <Td width="50%">{entry}</Td>
                   <Td width="50%">{resourcePool.PoolProperties[entry].toString()}</Td>
                 </Tr>

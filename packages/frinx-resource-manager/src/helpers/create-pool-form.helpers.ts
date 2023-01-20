@@ -249,7 +249,11 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                         .number()
                         .min(1, 'Minimal required value is 1')
                         .typeError('Please enter a number')
-                        .required(`Please enter a value`),
+                        .when('isNested', {
+                          is: 'false',
+                          then: yup.number().required(`Please enter a value`),
+                          otherwise: yup.number().notRequired(),
+                        }),
                     };
                   }
 
@@ -262,7 +266,11 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                         .max(4095, 'Maximal allowed value is 4095')
                         .lessThan(poolProperties.to, 'FROM value must be less than TO value')
                         .typeError('Please enter a number')
-                        .required(`Please enter a value`),
+                        .when('isNested', {
+                          is: 'false',
+                          then: yup.number().required(`Please enter a value`),
+                          otherwise: yup.number().notRequired(),
+                        }),
                     };
                   }
 
@@ -275,7 +283,11 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                         .max(4095, 'Maximal allowed value is 4095')
                         .moreThan(poolProperties.from, 'TO value must be greater than FROM value')
                         .typeError('Please enter a number')
-                        .required(`Please enter a value`),
+                        .when('isNested', {
+                          is: 'false',
+                          then: yup.number().required(`Please enter a value`),
+                          otherwise: yup.number().notRequired(),
+                        }),
                     };
                   }
 
@@ -311,7 +323,14 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
 
                   return {
                     ...acc,
-                    [key]: yup.string().required('Please enter a value'),
+                    [key]: yup
+                      .string()
+                      .required('Please enter a value')
+                      .when('isNested', {
+                        is: 'false',
+                        then: yup.string().required(`Please enter a value`),
+                        otherwise: yup.string().notRequired(),
+                      }),
                   };
                 }, {}),
               }),
@@ -363,7 +382,13 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                 ...Object.keys(poolProperties).reduce((acc, key) => {
                   return {
                     ...acc,
-                    [key]: yup.string().required('This field is required'),
+                    [key]: yup
+                      .string()
+                      .when('isNested', {
+                        is: 'false',
+                        then: yup.string().required(`This field is required`),
+                        otherwise: yup.string().notRequired(),
+                      }),
                   };
                 }, {}),
               }),
@@ -379,7 +404,11 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                       .typeError('Please enter a number')
                       .min(-2147483648, 'Please enter a number between -2147483648 and 2147483647')
                       .max(2147483647, 'Please enter a number between -2147483648 and 2147483647')
-                      .required('Please enter a value'),
+                      .when('isNested', {
+                        is: 'false',
+                        then: yup.number().required(`Please enter a value`),
+                        otherwise: yup.number().notRequired(),
+                      }),
                   };
                 }, {}),
               }),
