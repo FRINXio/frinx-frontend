@@ -45,7 +45,7 @@ describe('Check pools', () => {
     }).as('AllocatedResourcesNone');
 
     cy.get('[data-cy="config-pool-test_ipv6"]').click();
-    cy.wait(['@GetPoolDetail', '@GetResourceTypeByName', '@AllocatedResourcesNone'])
+    cy.wait(['@GetPoolDetail', '@GetResourceTypeByName', '@AllocatedResourcesNone']);
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
@@ -76,17 +76,17 @@ describe('Check pools', () => {
     }).as('AllocatedResourcesOne');
 
     cy.get('[data-cy="resource-pool-claim-confirm"]').click();
-    cy.wait(['@ClaimResourceWithAltId', '@GetPoolDetail', '@AllocatedResourcesOne'])
+    cy.wait(['@ClaimResourceWithAltId', '@GetPoolDetail', '@AllocatedResourcesOne']);
 
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551617');
     // TODO Zeleny box
     cy.contains('Successfully claimed resource from pool');
-    cy.wait(3000)
+    cy.wait(3000);
 
     // TODO check this in table
-    cy.contains("action").parent().parent().parent().contains('2001:db8:1::')
+    cy.contains('action').parent().parent().parent().contains('2001:db8:1::');
 
     // Going to click Deallocate resource in the table
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -107,14 +107,24 @@ describe('Check pools', () => {
       }
     }).as('GetPoolDetail');
 
-    cy.contains("action").parent().parent().parent().contains('2001:db8:1::').parent().find('td').eq(3).find('button').contains("Deallocate resource").click()
-    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetail'])
+    cy.contains('action')
+      .parent()
+      .parent()
+      .parent()
+      .contains('2001:db8:1::')
+      .parent()
+      .find('td')
+      .eq(3)
+      .find('button')
+      .contains('Deallocate resource')
+      .click();
+    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetail']);
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
     cy.contains('There are no allocated resources yet.');
     // TODO Zeleny box
     cy.contains('Successfully freed resource from pool');
-    cy.wait(3000)
+    cy.wait(3000);
   });
 
   it('Claim resource ipv6 - filled in values', () => {
@@ -142,7 +152,7 @@ describe('Check pools', () => {
     }).as('AllocatedResourcesNone');
 
     cy.get('[data-cy="config-pool-test_ipv6"]').click();
-    cy.wait(['@GetPoolDetail', '@GetResourceTypeByName', '@AllocatedResourcesNone'])
+    cy.wait(['@GetPoolDetail', '@GetResourceTypeByName', '@AllocatedResourcesNone']);
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
@@ -179,18 +189,18 @@ describe('Check pools', () => {
     }).as('AllocatedResourcesOtherOne');
 
     cy.get('[data-cy="resource-pool-claim-confirm"]').click();
-    cy.wait(['@ClaimResourceWithAltId', '@GetPoolDetail', '@AllocatedResourcesOtherOne'])
+    cy.wait(['@ClaimResourceWithAltId', '@GetPoolDetail', '@AllocatedResourcesOtherOne']);
 
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551617');
     // TODO Zeleny box
     cy.contains('Successfully claimed resource from pool');
-    cy.wait(3000)
+    cy.wait(3000);
 
     // TODO check this in table
-    cy.contains("action").parent().parent().parent().contains('2001:db8:1::fffa:fffb:fffc:fffd')
-    cy.contains("action").parent().parent().parent().contains('MIKOVINIHO4 NITRA 94911')
+    cy.contains('action').parent().parent().parent().contains('2001:db8:1::fffa:fffb:fffc:fffd');
+    cy.contains('action').parent().parent().parent().contains('MIKOVINIHO4 NITRA 94911');
 
     // Going to click Deallocate resource in the table
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -211,15 +221,23 @@ describe('Check pools', () => {
       }
     }).as('GetPoolDetail');
 
-    cy.contains("action").parent().parent().parent().contains('2001:db8:1::fffa:fffb:fffc:fffd').parent().find('td').eq(3).find('button').contains("Deallocate resource").click()
-    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetail'])
+    cy.contains('action')
+      .parent()
+      .parent()
+      .parent()
+      .contains('2001:db8:1::fffa:fffb:fffc:fffd')
+      .parent()
+      .find('td')
+      .eq(3)
+      .find('button')
+      .contains('Deallocate resource')
+      .click();
+    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetail']);
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
     cy.contains('There are no allocated resources yet.');
     // TODO Zeleny box
     cy.contains('Successfully freed resource from pool');
-    cy.wait(3000)
-
+    cy.wait(3000);
   });
-
 });
