@@ -382,13 +382,11 @@ export function getSchemaForCreatePoolForm(poolType: string, isNested: boolean) 
                 ...Object.keys(poolProperties).reduce((acc, key) => {
                   return {
                     ...acc,
-                    [key]: yup
-                      .string()
-                      .when('isNested', {
-                        is: 'false',
-                        then: yup.string().required(`This field is required`),
-                        otherwise: yup.string().notRequired(),
-                      }),
+                    [key]: yup.string().when('isNested', {
+                      is: 'false',
+                      then: yup.string().required(`This field is required`),
+                      otherwise: yup.string().notRequired(),
+                    }),
                   };
                 }, {}),
               }),

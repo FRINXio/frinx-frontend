@@ -152,7 +152,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     setFieldValue('poolPropertyTypes', { ...poolPropertyTypes });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceTypes, resourceTypeId, setFieldValue]);
-  
 
   const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
@@ -166,8 +165,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
   const initialResourceNameType = new URLSearchParams(window.location.search).get('type') || 'default';
-
-  
 
   const handleOnResourceTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedResourceTypeName = [...availableResourceTypes, ...derivedFromAvailableResourceTypes].find(
@@ -187,11 +184,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     values.poolProperties,
   );
 
-   const handleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
-     handleChange(e);
-      Object.keys(poolProperties).forEach(value => setFieldValue(`poolProperties.${value}`, ''))
-   };
-
+  const handleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(e);
+    Object.keys(poolProperties).forEach((value) => setFieldValue(`poolProperties.${value}`, ''));
+  };
 
   return (
     <form onSubmit={handleSubmit}>
