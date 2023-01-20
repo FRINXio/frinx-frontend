@@ -136,7 +136,7 @@ describe('Check pools', () => {
     cy.contains('h1', 'Pools');
     cy.get('table').find('tr').should('have.length', 21);
 
-    //click tag
+    // click tag
     cy.get('[data-cy="pool-ga-ga"]').click(); // in column TAGS click a tag
     cy.get('table')
       .find('tr')
@@ -144,7 +144,7 @@ describe('Check pools', () => {
     cy.get('[data-cy="clear-all-btn"]').click(); // Clear all
     cy.get('table').find('tr').should('have.length', 21);
 
-    //click tag
+    // click tag
     cy.get('[data-cy="pool-tt-tt"]').click(); // in column TAGS click a tag
     cy.get('table')
       .find('tr')
@@ -152,7 +152,7 @@ describe('Check pools', () => {
     cy.contains('button', 'Clear tags').click(); // Clear tags
     cy.get('table').find('tr').should('have.length', 21);
 
-    //click tag
+    // click tag
     cy.get('[data-cy="pool-tt-tt"]').click(); // in column TAGS click a tag
     cy.get('table')
       .find('tr')
@@ -236,7 +236,7 @@ describe('Check pools', () => {
     cy.get('[data-cy="resource-pool-claim-key-0"]').clear(); // Key:
     cy.get('[data-cy="resource-pool-claim-key-0"]').type('alfa'); // Key:
     cy.get('[data-cy="resource-pool-tag-active"]').click(); // Value: [x] active - click to remove
-    //cy.get('[data-cy="resource-pool-label-value"]').type('');  // Value (press Enter to add value)
+    // cy.get('[data-cy="resource-pool-label-value"]').type('');  // Value (press Enter to add value)
     cy.get('[data-cy="alternative-id-0"]').click(); // Delete Alternative Id
 
     // Allocated Resources
@@ -246,7 +246,7 @@ describe('Check pools', () => {
     cy.get('[data-cy="resource-pool-claim-key-0"]').clear(); // Key:
     cy.get('[data-cy="resource-pool-claim-key-0"]').type('alfa'); // Key:
     cy.get('[data-cy="resource-pool-tag-active"]').click(); // Value: [x] active - click to remove
-    //cy.get('[data-cy="resource-pool-label-value"]').type('');  // Value (press Enter to add value)
+    // cy.get('[data-cy="resource-pool-label-value"]').type('');  // Value (press Enter to add value)
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
         req.reply({ fixture: 'resource-manager/pools/ga/alfa/AllocatedResources.json' });
@@ -375,7 +375,7 @@ describe('Check pools', () => {
       .should('have.length', 1 + 5);
 
     // try if controls work as expected
-    //Click Create Pool
+    // Click Create Pool
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectPools')) {
         req.reply({ fixture: 'resource-manager/pools/IPAM/SelectPools.json' });
@@ -402,10 +402,10 @@ describe('Check pools', () => {
     cy.get('[data-cy="create-pool-type"]')
       .find('option')
       .then((options) => {
-        const actual = [...options].map((o) => o.text);
-        console.log(options);
-        console.log(actual);
-        console.log(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6']);
+        const actual = Array.from(options).map((o) => o.text);
+        // console.log(options);
+        // console.log(actual);
+        // console.log(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6']);
         expect(actual).to.deep.eq(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6']);
       });
   });
@@ -445,7 +445,7 @@ describe('Check pools', () => {
       .find('tr')
       .should('have.length', 1 + 5);
 
-    //click tag
+    // click tag
     cy.get('[data-cy="range-tag-ga"]').click(); // in column TAGS click a tag
     cy.get('table')
       .find('tr')
@@ -455,7 +455,7 @@ describe('Check pools', () => {
       .find('tr')
       .should('have.length', 1 + 5);
 
-    //click tag
+    // click tag
     cy.get('[data-cy="range-tag-tt"]').click(); // in column TAGS click a tag
     cy.get('table')
       .find('tr')
@@ -465,7 +465,7 @@ describe('Check pools', () => {
       .find('tr')
       .should('have.length', 1 + 5);
 
-    //click tag
+    // click tag
     cy.get('[data-cy="range-tag-tt"]').click(); // in column TAGS click a tag
     cy.get('table')
       .find('tr')
@@ -475,7 +475,7 @@ describe('Check pools', () => {
       .find('tr')
       .should('have.length', 1 + 5);
 
-    //click ip address - ga & tt pools are nested -> there are clickable IPs
+    // click ip address - ga & tt pools are nested -> there are clickable IPs
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolDetail')) {
         req.reply({ fixture: 'resource-manager/pools/ga/GetPoolDetail.json' });

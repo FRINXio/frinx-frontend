@@ -27,7 +27,7 @@ describe('Create pool, claim, create nested pool', () => {
     cy.contains('td', 'ipv4');
     cy.get('[data-cy="config-pool-test"]');
 
-    //Click Create Pool
+    // Click Create Pool
     cy.log('Click Create Pool');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectPools')) {
@@ -75,7 +75,7 @@ describe('Create pool, claim, create nested pool', () => {
       }
     }).as('CreateAllocationPool');
 
-    //Note: canceled???
+    // Note: canceled???
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectPools')) {
         req.reply({ fixture: 'resource-manager/pools/NITRA_KLOKOCINA/CreatePool/SelectPools.json' });
@@ -141,7 +141,7 @@ describe('Create pool, claim, create nested pool', () => {
     cy.contains('a', 'Create pool');
     cy.screenshot();
 
-    //Note when no allocation has not been done yet there is in section button 'Create pool' but it is not possible to use it for creation of nested pool !!!
+    // Note when no allocation has not been done yet there is in section button 'Create pool' but it is not possible to use it for creation of nested pool !!!
     //     // click Create pool
     //     cy.contains('a', 'Create pool').click();
     //
@@ -155,8 +155,8 @@ describe('Create pool, claim, create nested pool', () => {
     cy.get('[data-cy="resource-pool-claim-resource"]').click(); // Claim resource
     cy.contains('header', 'Claim resource for NITRA_KLOKOCINA');
 
-    //Desired size (number of allocated addresses)*
-    //Max number of allocated addresses can be 8
+    // Desired size (number of allocated addresses)*
+    // Max number of allocated addresses can be 8
     cy.get('[data-cy="resource-pool-claim-value"]').type('4'); // Desired size (number of allocated addresses)*
     cy.get('[data-cy="resource-pool-claim-description"]').type('Mikoviniho'); // Description
 
@@ -242,10 +242,10 @@ describe('Create pool, claim, create nested pool', () => {
     cy.contains('h1', 'Create new Pool');
     cy.get('[data-cy="create-pool-nested"]').should('have.attr', 'data-checked'); // Nested ON/OFF is set ON
     cy.get('[data-cy="create-pool-parent"]').select('NITRA_KLOKOCINA', { timeout: 50000 }); // Parent pool*
-    //cy.get('[data-cy="create-pool-parent"]').invoke("text").should("eq", "NITRA_KLOKOCINA")
+    // cy.get('[data-cy="create-pool-parent"]').invoke("text").should("eq", "NITRA_KLOKOCINA")
     cy.contains('select', 'NITRA_KLOKOCINA');
     cy.get('[data-cy="create-pool-allocated-resources"]').select('192.168.10.1', { timeout: 50000 }); // Parent allocated resources*
-    //cy.get('[data-cy="create-pool-allocated-resources"]').invoke("text").should("eq", "192.168.10.1")
+    // cy.get('[data-cy="create-pool-allocated-resources"]').invoke("text").should("eq", "192.168.10.1")
     cy.contains('select', '192.168.10.1');
     cy.get('[data-cy="create-pool-type"]').select('ipv4'); // Resource type*
     cy.contains('select', 'ipv4');
@@ -314,7 +314,7 @@ describe('Create pool, claim, create nested pool', () => {
       .find('td')
       .eq(5)
       .contains('button', 'Deallocate resource');
-    //cy.contains("action").parent().parent().parent().find('tr').eq(1).find('td').eq(5).contains('button', "Deallocate resource").should('be.disabled');
+    // cy.contains("action").parent().parent().parent().find('tr').eq(1).find('td').eq(5).contains('button', "Deallocate resource").should('be.disabled');
 
     // Nested Pools (table)
     cy.contains('th', 'Utilized Capacity').parent().parent().parent().as('NestedPoolsTable');
@@ -349,7 +349,7 @@ describe('Create pool, claim, create nested pool', () => {
     cy.contains('td', 'ipv4');
     cy.get('[data-cy="config-pool-test"]');
 
-    //Click Create Pool
+    // Click Create Pool
     cy.log('Click Create Pool');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectPools')) {
@@ -397,7 +397,7 @@ describe('Create pool, claim, create nested pool', () => {
       }
     }).as('CreateAllocationPool');
 
-    //Note: canceled???
+    // Note: canceled???
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectPools')) {
         req.reply({ fixture: 'resource-manager/pools/NITRA_KLOKOCINA/CreatePool/SelectPools.json' });
@@ -477,7 +477,7 @@ describe('Create pool, claim, create nested pool', () => {
     cy.contains('a', 'Create pool');
     cy.screenshot();
 
-    //Note when no allocation has not been done yet there is in section button 'Create pool' but it is not possible to use it for creation of nested pool !!!
+    // Note when no allocation has not been done yet there is in section button 'Create pool' but it is not possible to use it for creation of nested pool !!!
     //     // click Create pool
     //     cy.contains('a', 'Create pool').click();
     //
@@ -491,8 +491,8 @@ describe('Create pool, claim, create nested pool', () => {
     cy.get('[data-cy="resource-pool-claim-resource"]').click(); // Claim resource
     cy.contains('header', 'Claim resource for NITRA_KLOKOCINA');
 
-    //Desired size (number of allocated addresses)*
-    //Max number of allocated addresses can be 8
+    // Desired size (number of allocated addresses)*
+    // Max number of allocated addresses can be 8
     cy.get('[data-cy="resource-pool-claim-value"]').type('4'); // Desired size (number of allocated addresses)*
     cy.get('[data-cy="resource-pool-claim-description"]').type('Mikoviniho'); // Description
 
@@ -585,7 +585,7 @@ describe('Create pool, claim, create nested pool', () => {
     cy.screenshot();
 
     cy.contains('h1', 'NITRA_KLOKOCINA');
-    //???cy.contains('8 / 8');  // Utilized capacity
+    // ???cy.contains('8 / 8');  // Utilized capacity
 
     // click button Create nested pool
     cy.log('Click Create nested pool');
@@ -621,16 +621,16 @@ describe('Create pool, claim, create nested pool', () => {
     cy.screenshot();
 
     cy.contains('a', 'Create nested pool').click(); // Create nested pool
-    //cy.wait(['@SelectPools', '@RequiredPoolProperties']) // , '@CreateNestedAllocationPool', '@GetPools'
+    // cy.wait(['@SelectPools', '@RequiredPoolProperties']) // , '@CreateNestedAllocationPool', '@GetPools'
     cy.wait(['@SelectPools', '@SelectAllocationStrategies', '@SelectResourceTypes', '@RequiredPoolProperties']);
 
     cy.contains('h1', 'Create new Pool');
     cy.get('[data-cy="create-pool-nested"]').should('have.attr', 'data-checked'); // Nested ON/OFF is set ON
     cy.get('[data-cy="create-pool-parent"]').select('NITRA_KLOKOCINA', { timeout: 50000 }); // Parent pool*
-    //cy.get('[data-cy="create-pool-parent"]').invoke("text").should("eq", "NITRA_KLOKOCINA")
+    // cy.get('[data-cy="create-pool-parent"]').invoke("text").should("eq", "NITRA_KLOKOCINA")
     cy.contains('select', 'NITRA_KLOKOCINA');
     cy.get('[data-cy="create-pool-allocated-resources"]').select('192.168.10.1', { timeout: 50000 }); // Parent allocated resources*
-    //cy.get('[data-cy="create-pool-allocated-resources"]').invoke("text").should("eq", "192.168.10.1")
+    // cy.get('[data-cy="create-pool-allocated-resources"]').invoke("text").should("eq", "192.168.10.1")
     cy.contains('select', '192.168.10.1');
     cy.get('[data-cy="create-pool-type"]').select('ipv4'); // Resource type*
     cy.contains('select', 'ipv4');
@@ -710,7 +710,7 @@ describe('Create pool, claim, create nested pool', () => {
       .find('td')
       .eq(5)
       .contains('button', 'Deallocate resource');
-    //cy.contains("action").parent().parent().parent().find('tr').eq(1).find('td').eq(5).contains('button', "Deallocate resource").should('be.disabled');
+    // cy.contains("action").parent().parent().parent().find('tr').eq(1).find('td').eq(5).contains('button', "Deallocate resource").should('be.disabled');
 
     // Nested Pools (table)
     cy.contains('th', 'Utilized Capacity').parent().parent().parent().as('NestedPoolsTable');

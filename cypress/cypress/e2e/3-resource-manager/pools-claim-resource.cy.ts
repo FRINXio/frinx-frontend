@@ -162,9 +162,9 @@ describe('Check pools', () => {
     cy.get('[data-cy="resource-pool-claim-resource"]').click();
     cy.contains('header', 'Claim resource for test_ipv6');
 
-    //Desired value (optional input)
-    //Set specific value that you want to allocate from test_ipv6
-    //Your address should be between 2001:db8:1:: and 2001:db8:1::ffff:ffff:ffff:ffff.
+    // Desired value (optional input)
+    // Set specific value that you want to allocate from test_ipv6
+    // Your address should be between 2001:db8:1:: and 2001:db8:1::ffff:ffff:ffff:ffff.
     cy.get('[data-cy="resource-pool-claim-value"]').type('2001:db8:1::fffa:fffb:fffc:fffd');
     cy.get('[data-cy="resource-pool-claim-description"]').type('MIKOVINIHO4 NITRA 94911');
 

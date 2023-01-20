@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-/* global cy,it,describe,Cypress,beforeEach */
+/* global cy,it,describe,Cypress */
 
 /// <reference types="cypress" />
 
@@ -105,7 +105,7 @@ describe('Check pools', () => {
     }).as('GetResourceTypes');
 
     cy.visit(Cypress.env('resource-manager-pools'));
-    //cy.wait(['@getPools', '@GetResourceTypes'])
+    // cy.wait(['@getPools', '@GetResourceTypes'])
     cy.contains('h1', 'Pools');
 
     // click Delete
