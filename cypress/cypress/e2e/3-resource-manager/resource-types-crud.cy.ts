@@ -1,13 +1,11 @@
 /* eslint-disable no-prototype-builtins */
-/* global cy,it,describe,Cypress,beforeEach */
+/* global cy,it,describe,Cypress */
 
 /// <reference types="cypress" />
 
 import { hasOperationName } from '../../helpers/utils';
 
 describe('Resource Types', () => {
-  beforeEach(() => {});
-
   it('Show', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
