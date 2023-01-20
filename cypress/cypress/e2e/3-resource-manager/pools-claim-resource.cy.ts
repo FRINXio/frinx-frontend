@@ -9,12 +9,12 @@ describe('Check pools', () => {
   beforeEach(() => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-        req.reply({ fixture: 'resource-manager/create-pool/GetPoolsAfter.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/GetPools.json' });
       }
     }).as('getPools');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/default-pools2.json' });
+        req.reply({ fixture: 'resource-manager/pools/GetResourceTypes' });
       }
     }).as('GetResourceTypes');
     cy.visit(Cypress.env('resource-manager-pools'));
@@ -28,24 +28,24 @@ describe('Check pools', () => {
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolDetail')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetPoolDetail-test_ipv6-Before.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/GetPoolDetail.json' });
       }
-    }).as('GetPoolDetailBefore');
+    }).as('GetPoolDetail');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypeByName')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetResourceTypeByName.json' });
+        req.reply({ fixture: 'resource-manager/pools/GetResourceTypes.json' });
       }
     }).as('GetResourceTypeByName');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
-        req.reply({ fixture: 'resource-manager/allocate/AllocatedResourcesNone.json' });
+        req.reply({ fixture: 'resource-manager/create-pool/AllocatedResources.json' });
       }
     }).as('AllocatedResourcesNone');
 
     cy.get('[data-cy="config-pool-test_ipv6"]').click();
-    cy.wait(['@GetPoolDetailBefore', '@GetResourceTypeByName', '@AllocatedResourcesNone'])
+    cy.wait(['@GetPoolDetail', '@GetResourceTypeByName', '@AllocatedResourcesNone'])
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
@@ -59,28 +59,28 @@ describe('Check pools', () => {
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ClaimResourceWithAltId')) {
-        req.reply({ fixture: 'resource-manager/allocate/ClaimResourceWithAltId_defaults.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/claim1/ClaimResourceWithAltId.json' });
       }
-    }).as('ClaimResourceWithAltId_defaults');
+    }).as('ClaimResourceWithAltId');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolDetail')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetPoolDetail-test_ipv6-After_defaults.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/claim1/GetPoolDetail.json' });
       }
-    }).as('GetPoolDetail_defaults');
+    }).as('GetPoolDetail');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
-        req.reply({ fixture: 'resource-manager/allocate/AllocatedResourcesOne.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/claim1/AllocatedResourcesOne.json' });
       }
     }).as('AllocatedResourcesOne');
 
     cy.get('[data-cy="resource-pool-claim-confirm"]').click();
-    cy.wait(['@ClaimResourceWithAltId_defaults', '@GetPoolDetail_defaults', '@AllocatedResourcesOne'])
+    cy.wait(['@ClaimResourceWithAltId', '@GetPoolDetail', '@AllocatedResourcesOne'])
 
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
-    cy.contains('18446744073709551615 / 18446744073709551617');
+    cy.contains('18446744073709551616 / 18446744073709551617');
     // TODO Zeleny box
     cy.contains('Successfully claimed resource from pool');
     cy.wait(3000)
@@ -97,18 +97,18 @@ describe('Check pools', () => {
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
-        req.reply({ fixture: 'resource-manager/allocate/AllocatedResourcesNone.json' });
+        req.reply({ fixture: 'resource-manager/create-pool/AllocatedResources.json' });
       }
     }).as('AllocatedResourcesNone');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolDetail')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetPoolDetail-test_ipv6-Before.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/GetPoolDetail.json' });
       }
-    }).as('GetPoolDetailBefore');
+    }).as('GetPoolDetail');
 
     cy.contains("action").parent().parent().parent().contains('2001:db8:1::').parent().find('td').eq(3).find('button').contains("Deallocate resource").click()
-    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetailBefore'])
+    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetail'])
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
     cy.contains('There are no allocated resources yet.');
@@ -125,24 +125,24 @@ describe('Check pools', () => {
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolDetail')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetPoolDetail-test_ipv6-Before.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/GetPoolDetail.json' });
       }
-    }).as('GetPoolDetailBefore');
+    }).as('GetPoolDetail');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypeByName')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetResourceTypeByName.json' });
+        req.reply({ fixture: 'resource-manager/pools/GetResourceTypes.json' });
       }
     }).as('GetResourceTypeByName');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
-        req.reply({ fixture: 'resource-manager/allocate/AllocatedResourcesNone.json' });
+        req.reply({ fixture: 'resource-manager/create-pool/AllocatedResources.json' });
       }
     }).as('AllocatedResourcesNone');
 
     cy.get('[data-cy="config-pool-test_ipv6"]').click();
-    cy.wait(['@GetPoolDetailBefore', '@GetResourceTypeByName', '@AllocatedResourcesNone'])
+    cy.wait(['@GetPoolDetail', '@GetResourceTypeByName', '@AllocatedResourcesNone'])
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
@@ -162,28 +162,28 @@ describe('Check pools', () => {
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ClaimResourceWithAltId')) {
-        req.reply({ fixture: 'resource-manager/allocate/ClaimResourceWithAltId_filledin.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/claim2/ClaimResourceWithAltId.json' });
       }
-    }).as('ClaimResourceWithAltId_filledin');
+    }).as('ClaimResourceWithAltId');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolDetail')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetPoolDetail-test_ipv6-After_filledin.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/claim2/GetPoolDetail.json' });
       }
-    }).as('GetPoolDetail_filledin');
+    }).as('GetPoolDetail');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
-        req.reply({ fixture: 'resource-manager/allocate/AllocatedResourcesOtherOne.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/claim2/AllocatedResourcesOtherOne.json' });
       }
     }).as('AllocatedResourcesOtherOne');
 
     cy.get('[data-cy="resource-pool-claim-confirm"]').click();
-    cy.wait(['@ClaimResourceWithAltId_filledin', '@GetPoolDetail_filledin', '@AllocatedResourcesOtherOne'])
+    cy.wait(['@ClaimResourceWithAltId', '@GetPoolDetail', '@AllocatedResourcesOtherOne'])
 
     cy.contains('h1', 'test_ipv6');
     cy.contains('Utilized capacity');
-    cy.contains('18446744073709551615 / 18446744073709551617');
+    cy.contains('18446744073709551616 / 18446744073709551617');
     // TODO Zeleny box
     cy.contains('Successfully claimed resource from pool');
     cy.wait(3000)
@@ -201,18 +201,18 @@ describe('Check pools', () => {
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'AllocatedResources')) {
-        req.reply({ fixture: 'resource-manager/allocate/AllocatedResourcesNone.json' });
+        req.reply({ fixture: 'resource-manager/create-pool/AllocatedResources.json' });
       }
     }).as('AllocatedResourcesNone');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolDetail')) {
-        req.reply({ fixture: 'resource-manager/allocate/GetPoolDetail-test_ipv6-Before.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/GetPoolDetail.json' });
       }
-    }).as('GetPoolDetailBefore');
+    }).as('GetPoolDetail');
 
     cy.contains("action").parent().parent().parent().contains('2001:db8:1::fffa:fffb:fffc:fffd').parent().find('td').eq(3).find('button').contains("Deallocate resource").click()
-    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetailBefore'])
+    cy.wait(['@FreeResource', '@AllocatedResourcesNone', '@GetPoolDetail'])
     cy.contains('Utilized capacity');
     cy.contains('18446744073709551616 / 18446744073709551616');
     cy.contains('There are no allocated resources yet.');
