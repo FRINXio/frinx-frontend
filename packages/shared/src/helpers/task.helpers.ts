@@ -1,37 +1,37 @@
 /* eslint-disable no-template-curly-in-string */
 import { v4 as uuid } from 'uuid';
 import {
-  Task,
-  HTTPTask,
-  GraphQLTask,
-  JSPythonTask,
-  StartTask,
   EndTask,
-  ExtendedLambdaTask,
-  ExtendedForkTask,
-  ExtendedJoinTask,
-  ExtendedWhileTask,
-  ExtendedWhileEndTask,
   ExtendedDecisionTask,
-  ExtendedTerminateTask,
   ExtendedEventTask,
-  ExtendedWaitTask,
-  ExtendedSubworkflowTask,
-  ExtendedHTTPTask,
-  ExtendedGraphQLTask,
-  ExtendedKafkaPublishTask,
-  ExtendedJsonJQTask,
-  InputParameters,
-  HTTPInputParams,
-  GraphQLInputParams,
-  LambdaInputParams,
-  TaskLabel,
-  ExtendedTask,
-  TaskDefinition,
-  ExtendedSimpleTask,
   ExtendedExclusiveJoinTask,
+  ExtendedForkTask,
+  ExtendedGraphQLTask,
+  ExtendedHTTPTask,
+  ExtendedJoinTask,
+  ExtendedJsonJQTask,
+  ExtendedKafkaPublishTask,
+  ExtendedLambdaTask,
+  ExtendedSimpleTask,
+  ExtendedSubworkflowTask,
+  ExtendedTask,
+  ExtendedTerminateTask,
+  ExtendedWaitTask,
+  ExtendedWhileEndTask,
+  ExtendedWhileTask,
+  GraphQLInputParams,
+  GraphQLTask,
+  HTTPInputParams,
+  HTTPTask,
+  InputParameters,
+  JSPythonTask,
+  LambdaInputParams,
   SerializerEnum,
-} from '@frinx/shared/src';
+  StartTask,
+  Task,
+  TaskDefinition,
+  TaskLabel,
+} from './workflow-api.types';
 
 const DEFAULT_TASK_OPTIONS: Pick<Task, 'optional' | 'startDelay'> = {
   startDelay: 0,
@@ -503,5 +503,13 @@ export function convertTaskDefinition(taskDefinition: TaskDefinition): ExtendedS
     optional: false,
     startDelay: 0,
     inputParameters: createGenericInputParams(inputKeys),
+  };
+}
+
+export function convertWorkflowTaskToExtendedTask(workflowTask: Task): ExtendedTask {
+  return {
+    id: uuid(),
+    label: getTaskLabel(workflowTask),
+    ...workflowTask,
   };
 }
