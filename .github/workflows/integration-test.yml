@@ -4,6 +4,12 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+      run_only_tests:
+        description: 'Input relative path from cypress/e2e/ e.g. 3-resource-manager/resource-types-crud.cy.ts or **/*cy.ts:'
+        required: true
+        type: string
+
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
@@ -22,8 +28,27 @@ jobs:
       - name: Prepare env variable
         run: cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
       - name: Cypress tests
+        if: ${{ (!inputs.run_only_tests)  || (github.event_name != 'workflow_dispatch') }}
         uses: cypress-io/github-action@v4
         with:
           project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
+      - name: Cypress tests
+        if: ${{ (inputs.run_only_tests)  && (github.event_name == 'workflow_dispatch') }}
+        uses: cypress-io/github-action@v4
+        with:
+          project: ./cypress
+          start: yarn dev
+          wait-on: 'http://localhost:3000'
+          spec: cypress/e2e/${{ inputs.run_only_tests }}
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/cypress/screenshots
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/cypress/videos
