@@ -27,6 +27,7 @@ const POOL_DETAIL_QUERY = gql`
         id
         Name
         Lang
+        Script
       }
       ResourceType {
         id
@@ -47,6 +48,7 @@ const POOL_DETAIL_QUERY = gql`
             id
             Name
             Lang
+            Script
           }
           ResourceType {
             id
