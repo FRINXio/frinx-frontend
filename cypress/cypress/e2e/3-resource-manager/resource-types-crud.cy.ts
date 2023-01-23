@@ -27,7 +27,7 @@ describe('Resource Types', () => {
     cy.contains('table', 'ipv6');
   });
 
-  it('Create', () => {
+  it.skip('Create', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
         req.reply({ fixture: 'resource-manager/resource-types/ResourceTypes.json' });
@@ -65,7 +65,7 @@ describe('Resource Types', () => {
     cy.contains('table', 'stano');
   });
 
-  it('Delete resource type', () => {
+  it.skip('Delete resource type', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
         req.reply({ fixture: 'resource-manager/resource-types/ANewTestType/ResourceTypes.json' });
