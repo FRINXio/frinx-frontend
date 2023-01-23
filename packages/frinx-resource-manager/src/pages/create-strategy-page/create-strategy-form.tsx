@@ -1,9 +1,14 @@
-import React, { VoidFunctionComponent } from 'react';
-import { Button, FormControl, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
+import React, { useEffect, VoidFunctionComponent } from 'react';
+import { Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { Editor, unwrap } from '@frinx/shared/src';
 import * as yup from 'yup';
-import { AllocationStrategyLang } from '../../__generated__/graphql';
+import { omit } from 'lodash';
+import {
+  AllocationStrategyLang,
+  CreateAllocationStrategyInput,
+  CreateResourceTypeInput,
+} from '../../__generated__/graphql';
 import 'ace-builds/webpack-resolver';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-python';
@@ -11,17 +16,43 @@ import 'ace-builds/src-noconflict/theme-tomorrow';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
-function getDefaultScriptValue(): string {
-  return `function invoke() {
-  log(JSON.stringify({ respool: resourcePool.ResourcePoolName, currentRes: currentResources }));
-  return { vlan: userInput.desiredVlan };
+function getDefaultInvokeScript(lang: 'js' | 'py'): string {
+  if (lang === 'js') {
+    return `function invoke() {
+    log(JSON.stringify({ respool: resourcePool.ResourcePoolName, currentRes: currentResources }));
+    return { vlan: userInput.desiredVlan };
 }`;
+  } else {
+    return `def invoke():
+  log(JSON.stringify({ 'respool': resourcePool.ResourcePoolName, 'currentRes': currentResources }))
+  return { 'vlan': userInput.desiredVlan }`;
+  }
+}
+
+function getDefaultCapacityScript(lang: 'js' | 'py'): string {
+  if (lang === 'js') {
+    return `function capacity() {
+      // here will be your code, that will calculate capacity of the resource pool
+    
+      // this function needs to return free and utilized capacity of the resource pool
+      // e.g. next example returns 0 for both free and utilized capacity
+      return { free: 0, utilized: 0 };
+}`;
+  } else {
+    return `def capacity():
+    # here will be your code, that will calculate capacity of the resource pool
+    
+    # this function needs to return free and utilized capacity of the resource pool
+    # e.g. next example returns 0 for both free and utilized capacity
+    return { 'free': 0, 'utilized': 0 }`;
+  }
 }
 
 const INITIAL_VALUES: FormValues = {
   name: '',
   lang: 'js',
-  script: getDefaultScriptValue(),
+  capacityScript: getDefaultCapacityScript('js'),
+  invokeScript: getDefaultInvokeScript('js'),
   expectedPoolPropertyTypes: [{ key: 'address', type: 'string' }],
   resourceTypeProperties: [{ key: 'address', type: 'string' }],
 };
@@ -45,7 +76,8 @@ yup.addMethod(yup.array, 'unique', function unique(message, mapper = (a: unknown
 const validationSchema = yup.object().shape({
   name: yup.string().required('Name of allocation strategy is required'),
   lang: yup.string().required('Language of script for allocation strategy is required'),
-  script: yup.string().required('Allocation strategy script is required'),
+  capacityScript: yup.string().required('Capacity script is required'),
+  invokeScript: yup.string().required('Invoke script is required'),
   expectedPoolPropertyTypes: yup
     .array()
     .of(
@@ -69,26 +101,72 @@ const validationSchema = yup.object().shape({
 export type FormValues = {
   name: string;
   lang: AllocationStrategyLang;
-  script: string;
+  capacityScript: string;
+  invokeScript: string;
   expectedPoolPropertyTypes?: ExpectedProperty[];
   resourceTypeProperties?: ExpectedProperty[];
 };
 type Props = {
-  onFormSubmit: (values: FormValues) => void;
+  onFormSubmit: (values: {
+    stratInput: CreateAllocationStrategyInput;
+    resourceTypeInput: CreateResourceTypeInput;
+  }) => void;
   onFormCancel: () => void;
 };
 
 const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onFormCancel }) => {
-  const { handleChange, handleSubmit, values, isSubmitting, setFieldValue, errors, setSubmitting } = useFormik({
+  const {
+    handleChange,
+    handleSubmit,
+    values,
+    isSubmitting,
+    setFieldValue,
+    errors,
+    setSubmitting,
+    touched,
+    setFieldTouched,
+  } = useFormik({
     initialValues: INITIAL_VALUES,
     validateOnBlur: false,
     validateOnChange: false,
     validationSchema,
     onSubmit: (data) => {
-      onFormSubmit(data);
+      const updatedData = {
+        ...data,
+        script: data.capacityScript.concat('\n\n'.concat(data.invokeScript)),
+      };
+
+      onFormSubmit({
+        stratInput: {
+          ...omit(updatedData, ['capacityScript', 'invokeScript', 'resourceTypeProperties']),
+          expectedPoolPropertyTypes: updatedData.expectedPoolPropertyTypes?.reduce(
+            (acc, curr) => ({ ...acc, [curr.key]: curr.type }),
+            {},
+          ),
+        },
+        resourceTypeInput: {
+          resourceName: updatedData.name,
+          resourceProperties: updatedData.resourceTypeProperties?.reduce(
+            (acc, curr) => ({ ...acc, [curr.key]: curr.type }),
+            {},
+          ),
+        },
+      });
       setSubmitting(false);
     },
   });
+
+  useEffect(() => {
+    if (!touched.invokeScript) {
+      setFieldValue('invokeScript', getDefaultInvokeScript(values.lang));
+    }
+
+    if (!touched.capacityScript) {
+      setFieldValue('capacityScript', getDefaultCapacityScript(values.lang));
+    }
+    // because we do not want to execute this effect when script's touched state changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.lang, setFieldValue, getDefaultInvokeScript, getDefaultCapacityScript]);
 
   type FormErrors = typeof errors &
     FormikErrors<{ expectedPoolPropertyTypesDuplicatedKeys?: string; resourceTypePropertiesDuplicatedKeys?: string }>;
@@ -109,6 +187,11 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
       </FormControl>
 
       <ExpectedProperties
+        tooltipLabel={`
+          A resource pool is an entity that allocates and deallocates resources for a single specific resource type.
+          When you are creating a new resource pool, you need to define what properties it will have.
+          So, that we can use them when we will allocate resources for you.
+        `}
         label="Expected pool properties"
         formErrors={{
           duplicatePropertyKey: formErrors.expectedPoolPropertyTypesDuplicatedKeys,
@@ -136,18 +219,25 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
         </Select>
       </FormControl>
 
-      <FormControl marginY={5}>
-        <FormLabel data-cy="new-strategy-editor">Strategy script</FormLabel>
+      <FormControl marginY={5} isRequired isInvalid={errors.capacityScript != null}>
+        <FormLabel data-cy="new-strategy-editor">
+          Capacity function that will calculate the capacity of resource pool
+        </FormLabel>
         <Editor
-          height="450px"
+          height="200px"
           width="100%"
           mode={values.lang === 'js' ? 'javascript' : 'python'}
           theme="tomorrow"
           editorProps={{ $blockScrolling: true }}
-          value={values.script}
+          value={values.capacityScript}
           fontSize={16}
           onChange={(value) => {
-            setFieldValue('script', value);
+            setFieldValue('capacityScript', value);
+            if (INITIAL_VALUES.capacityScript === value) {
+              setFieldTouched('capacityScript', false);
+            } else {
+              setFieldTouched('capacityScript', true);
+            }
           }}
           setOptions={{
             enableBasicAutocompletion: true,
@@ -157,9 +247,44 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
             tabSize: 2,
           }}
         />
+        <FormErrorMessage>{errors.capacityScript}</FormErrorMessage>
+      </FormControl>
+
+      <FormControl marginY={5} isRequired isInvalid={errors.invokeScript != null}>
+        <FormLabel data-cy="new-strategy-editor">Invoke function that will allocate resources</FormLabel>
+        <Editor
+          height="200px"
+          width="100%"
+          mode={values.lang === 'js' ? 'javascript' : 'python'}
+          theme="tomorrow"
+          editorProps={{ $blockScrolling: true }}
+          value={values.invokeScript}
+          fontSize={16}
+          onChange={(value) => {
+            setFieldValue('invokeScript', value);
+            if (INITIAL_VALUES.invokeScript === value) {
+              setFieldTouched('invokeScript', false);
+            } else {
+              setFieldTouched('invokeScript', true);
+            }
+          }}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+        <FormErrorMessage>{errors.invokeScript}</FormErrorMessage>
       </FormControl>
 
       <ExpectedProperties
+        tooltipLabel={`
+          Resource type is a blueprint for how to represent a resource instance. 
+          A resource type is essentially a set of property types, where each property type defines as object of
+          "Name" of the property and "Type" such as int, string, float etc.
+        `}
         label="Expected resource type structure"
         formErrors={{
           duplicatePropertyKey: formErrors.resourceTypePropertiesDuplicatedKeys,

@@ -322,7 +322,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
               isLoadingPoolProperties={isLoadingRequiredPoolProperties}
               customPoolProperties={requiredPoolProperties}
               formValues={values}
-              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
+              onChange={({ key, value, type }) => {
+                setFieldValue(`poolProperties.${key}`, value);
+                setFieldValue(`poolPropertyTypes.${key}`, type);
+              }}
               poolPropertyErrors={errors.poolProperties}
             />
           ) : (
