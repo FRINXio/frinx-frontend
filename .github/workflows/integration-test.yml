@@ -17,6 +17,11 @@ jobs:
       PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
       PRIVATE_NPM_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
     steps:
+      - name: Upgrade Ubuntu to suppress error dri3 extension not supported
+        run: |
+          # https://stackoverflow.com/questions/72392219/errorgpu-memory-buffer-support-x11-cc44-dri3-extension-not-supported
+          sudo apt list --upgradable
+          sudo apt upgrade
       - name: Checkout repository code
         uses: actions/checkout@v3
       - name: Use CI yarnrc
@@ -26,7 +31,9 @@ jobs:
       - name: Create directory
         run: mkdir build-client
       - name: Prepare env variable
-        run: cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
+        run: |
+          cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
+          sed -i "s/http:\/\/localhost:4000\/api\/resource/\/api\/resource/g" ./packages/frinx-frontend-server/.env
       - name: Cypress tests
         if: ${{ (!inputs.run_only_tests)  || (github.event_name != 'workflow_dispatch') }}
         uses: cypress-io/github-action@v5
