@@ -19,11 +19,12 @@ jobs:
     steps:
       - name: Upgrade Ubuntu to suppress error dri3 extension not supported
         run: |
+          exit 0
           # https://stackoverflow.com/questions/72392219/errorgpu-memory-buffer-support-x11-cc44-dri3-extension-not-supported
           sudo apt list --upgradable
           sudo apt upgrade
           lspci | grep -i --color 'vga\|3d\|2d'
-          xdpyinfo | grep -i "DRI"
+          # not  installed in ubuntu xdpyinfo | grep -i "DRI"
           sudo apt list --installed | grep dri3
           # https://forums.debian.net/viewtopic.php?t=152570
           # So if you want DRI3 try nouveau.
@@ -46,6 +47,7 @@ jobs:
           project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
+          browser: firefox
       - name: Cypress tests
         if: ${{ (inputs.run_only_tests)  && (github.event_name == 'workflow_dispatch') }}
         uses: cypress-io/github-action@v5
@@ -53,6 +55,7 @@ jobs:
           project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
+          browser: firefox
           spec: cypress/e2e/${{ inputs.run_only_tests }}
       - uses: actions/upload-artifact@v3
         #if: failure()
