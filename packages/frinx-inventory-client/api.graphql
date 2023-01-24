@@ -273,6 +273,18 @@ type GraphNode {
   interfaces: [String!]!
 }
 
+type GraphVersionEdge {
+  id: ID!
+  source: EdgeSourceTarget!
+  target: EdgeSourceTarget!
+}
+
+type GraphVersionNode {
+  id: ID!
+  interfaces: [String!]!
+  name: String!
+}
+
 type InstallDevicePayload {
   device: Device!
 }
@@ -384,7 +396,10 @@ type Query {
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   node(id: ID!): Node
   topology(filter: FilterTopologyInput): Topology!
+  topologyVersionData(version: String!): TopologyVersionData!
+  topologyVersions: [String!]
   transactions: [Transaction!]!
+  uniconfigShellSession: String
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
 }
 
@@ -412,7 +427,7 @@ enum SortDirection {
 }
 
 type Subscription {
-  uniconfigShell(input: String, trigger: Int): String
+  uniconfigShell(input: String, sessionId: String!, trigger: Int): String
 }
 
 type SyncFromNetworkPayload {
@@ -422,6 +437,11 @@ type SyncFromNetworkPayload {
 type Topology {
   edges: [GraphEdge!]!
   nodes: [GraphNode!]!
+}
+
+type TopologyVersionData {
+  edges: [GraphVersionEdge!]!
+  nodes: [GraphVersionNode!]!
 }
 
 type Transaction {

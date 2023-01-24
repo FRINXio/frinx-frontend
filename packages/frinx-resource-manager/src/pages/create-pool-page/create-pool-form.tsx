@@ -312,7 +312,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             <Heading as="h4" size="md">
               Set pool properties
             </Heading>
-
             <Text color="gray">available resources (allocated in selected parent):</Text>
             <List>
               {formattedSuggestedProperties.map((property) => (
