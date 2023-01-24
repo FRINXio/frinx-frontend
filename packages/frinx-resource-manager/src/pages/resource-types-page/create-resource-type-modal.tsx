@@ -18,11 +18,12 @@ import * as yup from 'yup';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
 import { unwrap } from '@frinx/shared/src';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
+import { CreateResourceTypeInput } from '../../__generated__/graphql';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (resourceTypeName: string) => void;
+  onCreate: (resourceType: CreateResourceTypeInput) => void;
 };
 
 type FormValues = {
@@ -70,7 +71,17 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
       validateOnChange: false,
       validationSchema,
       onSubmit: (data) => {
-        onCreate(data.resourceTypeName);
+        onCreate({
+          resourceName: data.resourceTypeName,
+          resourceProperties:
+            data.resourceTypeProperties?.reduce(
+              (acc, curr) => ({
+                ...acc,
+                [curr.key]: curr.type,
+              }),
+              {},
+            ) ?? {},
+        });
         onClose();
       },
     },
@@ -87,7 +98,12 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
         <ModalBody>
           <FormControl isRequired isInvalid={errors.resourceTypeName != null}>
             <FormLabel>Resource Type name</FormLabel>
-            <Input name="resourceTypeName" onChange={handleChange} value={values.resourceTypeName} />
+            <Input
+              data-cy="new-type-name"
+              name="resourceTypeName"
+              onChange={handleChange}
+              value={values.resourceTypeName}
+            />
             <FormErrorMessage>{errors.resourceTypeName}</FormErrorMessage>
           </FormControl>
 
@@ -105,8 +121,16 @@ const CreateResourceTypeModal: VoidFunctionComponent<Props> = ({ isOpen, onClose
         </ModalBody>
         <ModalFooter>
           <ButtonGroup spacing={2}>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button isLoading={isSubmitting || isValidating} colorScheme="blue" onClick={submitForm} type="submit">
+            <Button data-cy="new-type-cancel" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              data-cy="new-type-create"
+              isLoading={isSubmitting || isValidating}
+              colorScheme="blue"
+              onClick={submitForm}
+              type="submit"
+            >
               Create
             </Button>
           </ButtonGroup>

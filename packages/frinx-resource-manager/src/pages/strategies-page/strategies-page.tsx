@@ -36,6 +36,7 @@ const DELETE_STRATEGY_MUTATION = gql`
 type ScriptState = {
   lang: string;
   script: string;
+  name?: string;
 };
 
 const StrategiesPage: VoidFunctionComponent = () => {
@@ -81,8 +82,8 @@ const StrategiesPage: VoidFunctionComponent = () => {
     },
     [deleteStrategy, addToastNotification],
   );
-  const handleScriptBtnClick = (lang: string, script: string) => {
-    setScriptState({ lang, script });
+  const handleScriptBtnClick = (lang: string, script: string, name?: string) => {
+    setScriptState({ lang, script, name });
   };
 
   if (fetching) {
@@ -104,6 +105,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
           Strategies
         </Heading>
         <Button
+          data-cy="new-strategy-btn"
           marginLeft="auto"
           leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
           colorScheme="blue"
@@ -124,6 +126,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
           setScriptState(null);
         }}
         {...scriptState}
+        strategyName={scriptState?.name}
       />
     </>
   );

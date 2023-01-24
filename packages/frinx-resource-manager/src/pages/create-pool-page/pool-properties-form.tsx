@@ -50,6 +50,7 @@ const PoolPropertyInput = ({
   if (pKey === 'subnet') {
     return (
       <Switch
+        data-cy="device-state-subnet"
         disabled={shouldBeDisabled}
         name={pKey}
         onChange={(e) => {
@@ -62,6 +63,7 @@ const PoolPropertyInput = ({
 
   return (
     <Input
+      data-cy={`device-state-${pKey}`}
       placeholder={placeholder}
       name={pKey}
       onChange={(e) => {
@@ -92,7 +94,8 @@ const PoolPropertiesForm: VoidFunctionComponent<Props> = ({
         const pType = poolPropertyTypes[pKey];
         const placeholder = getPlaceholder(resourceTypeName)[pKey];
         const shouldBeNumber = pType === 'int';
-        const shouldBeDisabled = poolProperties.prefix === 128;
+        const shouldBeDisabled =
+          poolProperties.prefix === 128 || poolProperties.prefix === 32 || poolProperties.prefix === 31;
 
         return (
           pKey !== 'idFormat' && (

@@ -24,6 +24,7 @@ type Props = {
   pools: GetPoolsQuery['QueryRootResourcePools'];
   isLoading: boolean;
   isNestedShown?: boolean;
+  onStrategyClick?: (name?: string) => void;
   onDeleteBtnClick: (id: string) => void;
   onTagClick?: (tag: string) => void;
 };
@@ -31,6 +32,7 @@ type Props = {
 const PoolsTable: VoidFunctionComponent<Props> = ({
   pools,
   onDeleteBtnClick,
+  onStrategyClick,
   isLoading,
   isNestedShown = true,
   onTagClick,
@@ -65,6 +67,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   {isNestedShown && (
                     <Td>
                       <Button
+                        data-cy={`pool-${pool.Name}-children`}
                         isDisabled={!hasNestedPools}
                         as={Link}
                         to={`/resource-manager/pools/nested/${pool.id}`}
@@ -83,6 +86,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   <Td>
                     {pool.Tags?.map((t: Omit<TagType, 'Pools'>) => (
                       <Tag
+                        data-cy={`pool-${pool.Name}-${t.Tag}`}
                         key={t.id}
                         marginRight={1}
                         cursor="pointer"
@@ -98,7 +102,13 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   </Td>
                   <Td>{pool.PoolType}</Td>
                   <Td>
-                    <Text as="span" fontFamily="monospace" color="red">
+                    <Text
+                      as="span"
+                      fontFamily="monospace"
+                      color="red"
+                      cursor="pointer"
+                      onClick={() => onStrategyClick?.(pool.ResourceType?.id)}
+                    >
                       {pool.ResourceType?.Name}
                     </Text>
                   </Td>
@@ -108,6 +118,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                   <Td>
                     <HStack spacing={2}>
                       <IconButton
+                        data-cy={`config-pool-${pool.Name}`}
                         aria-label="config"
                         size="xs"
                         variant="outline"
@@ -121,6 +132,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         poolName={pool.Name}
                       >
                         <IconButton
+                          data-cy={`delete-pool-${pool.Name}`}
                           variant="outline"
                           size="xs"
                           colorScheme="red"

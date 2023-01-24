@@ -59,9 +59,10 @@ const CustomPoolPropertiesForm: VoidFunctionComponent<Props> = ({
     <HStack mt={2} align="flex-start">
       {customPoolProperties.map(({ Name, Type, ...placeholders }) => {
         return (
-          <FormControl key={Name} id={Name} isInvalid={errors[Name] !== undefined} isRequired>
+          <FormControl key={Name} id={Name} isInvalid={errors[Name] != null} isRequired>
             <FormLabel htmlFor={Name}>{Name}</FormLabel>
             <Input
+              data-cy={`create-pool-${Name}`}
               name={Name}
               onChange={(e) =>
                 onChange({

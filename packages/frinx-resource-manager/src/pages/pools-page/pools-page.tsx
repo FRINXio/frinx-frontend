@@ -31,6 +31,7 @@ const ALL_POOLS_QUERY = gql`
         id
         Name
         Lang
+        Script
       }
       ResourceType {
         id
@@ -110,6 +111,12 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSelectedResourceType('');
   };
 
+  const handleOnStrategyClick = (id?: string) => {
+    if (id != null) {
+      setSelectedResourceType(id);
+    }
+  };
+
   if (isQueryLoading) {
     return <Progress isIndeterminate size="sm" mt={-10} />;
   }
@@ -147,6 +154,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         <Spacer />
         <Box marginLeft="auto">
           <Button
+            data-cy="create-pool-btn"
             mr={2}
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
@@ -179,6 +187,7 @@ const PoolsPage: VoidFunctionComponent = () => {
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
           onTagClick={handleOnTagClick}
+          onStrategyClick={handleOnStrategyClick}
         />
       </Box>
     </>

@@ -76,7 +76,7 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
       <HStack my={5}>
         <Heading size="md">Allocated Resources</Heading>
         <Spacer />
-        <Button onClick={handleOnAlternativeIdsSubmit} colorScheme="blue">
+        <Button data-cy="resource-pool-search-by-id" onClick={handleOnAlternativeIdsSubmit} colorScheme="blue">
           Search by alternative id
         </Button>
       </HStack>

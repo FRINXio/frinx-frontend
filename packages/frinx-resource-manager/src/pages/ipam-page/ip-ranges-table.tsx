@@ -72,7 +72,13 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                   <Td>{name}</Td>
                   <Td>
                     {tags.map(({ Tag: tagName, id: tagId }) => (
-                      <Tag key={tagId} mr={1} onClick={() => onTagClick(tagName)} cursor="pointer">
+                      <Tag
+                        data-cy={`range-tag-${tagName}`}
+                        key={tagId}
+                        mr={1}
+                        onClick={() => onTagClick(tagName)}
+                        cursor="pointer"
+                      >
                         {tagName}
                       </Tag>
                     ))}
@@ -80,6 +86,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                   <Td>
                     <ButtonGroup spacing={1}>
                       <IconButton
+                        data-cy={`config-${name}`}
                         aria-label="config"
                         size="xs"
                         variant="outline"
@@ -89,6 +96,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                       />
                       {onDeleteBtnClick && (
                         <IconButton
+                          data-cy={`delete-${name}`}
                           variant="outline"
                           size="xs"
                           colorScheme="red"

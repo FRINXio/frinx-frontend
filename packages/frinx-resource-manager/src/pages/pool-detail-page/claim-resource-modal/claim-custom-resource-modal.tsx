@@ -106,6 +106,7 @@ const ClaimCustomResourceModal: FC<Props> = ({ isOpen, onClaimWithAltId, onClose
               <FormControl>
                 <FormLabel>User input</FormLabel>
                 <Editor
+                  data-cy="resource-pool-claim-value"
                   value={values.userInput}
                   onChange={handleChange}
                   name="userInput"
@@ -117,6 +118,7 @@ const ClaimCustomResourceModal: FC<Props> = ({ isOpen, onClaimWithAltId, onClose
               <FormControl isInvalid={errors.description != null}>
                 <FormLabel>Description</FormLabel>
                 <Textarea
+                  data-cy="resource-pool-claim-description"
                   value={values.description}
                   onChange={handleChange}
                   name="description"
@@ -139,7 +141,12 @@ const ClaimCustomResourceModal: FC<Props> = ({ isOpen, onClaimWithAltId, onClose
           </form>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" onClick={submitForm} isLoading={isSubmitting}>
+          <Button
+            data-cy="resource-pool-confirm-claim"
+            colorScheme="blue"
+            onClick={submitForm}
+            isLoading={isSubmitting}
+          >
             Claim resource
           </Button>
         </ModalFooter>

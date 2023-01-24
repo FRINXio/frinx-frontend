@@ -5,7 +5,7 @@ import { QueryAllocationStrategiesQuery } from '../../__generated__/graphql';
 
 type Props = {
   strategies: QueryAllocationStrategiesQuery['QueryAllocationStrategies'];
-  onScriptBtnClick: (lang: string, script: string) => void;
+  onScriptBtnClick: (lang: string, script: string, name: string) => void;
   onDeleteBtnClick: (id: string) => void;
 };
 
@@ -35,14 +35,16 @@ const StrategiesTable: VoidFunctionComponent<Props> = ({ strategies, onScriptBtn
             <Td>
               <ButtonGroup variant="outline" spacing={2} size="xs">
                 <IconButton
+                  data-cy={`strategy-${strategy.Name}-code`}
                   colorScheme="blue"
                   aria-label="code"
                   icon={<Icon size={20} as={FeatherIcon} icon="code" color="blue" />}
                   onClick={() => {
-                    onScriptBtnClick(strategy.Lang, strategy.Script);
+                    onScriptBtnClick(strategy.Lang, strategy.Script, strategy.Name);
                   }}
                 />
                 <IconButton
+                  data-cy={`strategy-${strategy.Name}-delete`}
                   colorScheme="red"
                   aria-label="delete"
                   icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}

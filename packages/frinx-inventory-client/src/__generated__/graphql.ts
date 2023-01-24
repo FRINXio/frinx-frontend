@@ -669,6 +669,17 @@ export type SortDirection =
   | 'ASC'
   | 'DESC';
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  uniconfigShell: Maybe<Scalars['String']>;
+};
+
+
+export type SubscriptionUniconfigShellArgs = {
+  input?: InputMaybe<Scalars['String']>;
+  trigger?: InputMaybe<Scalars['Int']>;
+};
+
 export type SyncFromNetworkPayload = {
   __typename?: 'SyncFromNetworkPayload';
   dataStore: Maybe<DataStore>;
@@ -1014,3 +1025,11 @@ export type CloseTransactionListMutationVariables = Exact<{
 
 
 export type CloseTransactionListMutation = { __typename?: 'Mutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } };
+
+export type TerminalSubscriptionVariables = Exact<{
+  command?: InputMaybe<Scalars['String']>;
+  trigger?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type TerminalSubscription = { __typename?: 'Subscription', uniconfigShell: string | null };

@@ -153,6 +153,19 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceTypes, resourceTypeId, setFieldValue]);
 
+  // disable subnet and set it to false value, because of when prefix is 32 or 31,
+  // subnet is not allowed and there would be problem when calculating capacity on the backend
+
+  // backend will return error since combination of subnet true and 31/32 prefixes are not allowed
+  useEffect(() => {
+    if (
+      values.poolProperties?.subnet === 'true' &&
+      (values.poolProperties?.prefix === 32 || values.poolProperties?.prefix === 31)
+    ) {
+      setFieldValue('poolProperties', { ...values.poolProperties, subnet: 'false' });
+    }
+  }, [values.poolProperties, setFieldValue]);
+
   const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
   const parentResourceTypeName = pools.find((pool) => pool.id === parentPoolId)?.ResourceType.Name ?? null;
@@ -188,7 +201,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     <form onSubmit={handleSubmit}>
       <FormControl id="isNested">
         <FormLabel>Nested</FormLabel>
-        <Switch onChange={handleChange} name="isNested" isChecked={isNested} />
+        <Switch data-cy="create-pool-nested" onChange={handleChange} name="isNested" isChecked={isNested} />
       </FormControl>
       {isNested && (
         <NestedFormPart
@@ -204,6 +217,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         <FormControl id="resourceTypeId" isInvalid={errors.resourceTypeId !== undefined} isRequired>
           <FormLabel htmlFor="resourceType">Resource type</FormLabel>
           <Select
+            data-cy="create-pool-type"
             id="resourceType"
             name="resourceTypeId"
             value={resourceTypeId}
@@ -225,6 +239,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         <FormControl id="name" marginY={5} isInvalid={errors.name !== undefined} isRequired>
           <FormLabel htmlFor="poolName">Name</FormLabel>
           <Input
+            data-cy="create-pool-name"
             id="poolName"
             type="text"
             onChange={handleChange}
@@ -239,6 +254,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
       <FormControl id="description">
         <FormLabel htmlFor="descriptionField">Description</FormLabel>
         <Textarea
+          data-cy="create-pool-description"
           id="descriptionField"
           onChange={handleChange}
           name="description"
@@ -249,6 +265,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
       <FormControl mt={4}>
         <SearchByTagInput
+          data-cy="create-pool-tags"
           selectedTags={tagsInput.selectedTags}
           onTagCreate={tagsInput.handleTagCreation}
           onSelectionChange={tagsInput.handleOnSelectionChange}
@@ -305,7 +322,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
               isLoadingPoolProperties={isLoadingRequiredPoolProperties}
               customPoolProperties={requiredPoolProperties}
               formValues={values}
-              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
+              onChange={({ key, value, type }) => {
+                setFieldValue(`poolProperties.${key}`, value);
+                setFieldValue(`poolPropertyTypes.${key}`, type);
+              }}
               poolPropertyErrors={errors.poolProperties}
             />
           ) : (
@@ -324,10 +344,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
       <HStack mt={5}>
         <Spacer />
-        <Button onClick={() => navigate(-1)} variant="solid">
+        <Button data-cy="create-pool-cancel" onClick={() => navigate(-1)} variant="solid">
           Cancel
         </Button>
-        <Button type="submit" colorScheme="blue" isLoading={isSubmitting}>
+        <Button data-cy="create-pool-submit" type="submit" colorScheme="blue" isLoading={isSubmitting}>
           Create pool
         </Button>
       </HStack>

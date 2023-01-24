@@ -10,6 +10,8 @@ import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
   GetAllIpPoolsQuery,
+  GetResourceTypesQuery,
+  GetResourceTypesQueryVariables,
 } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 
@@ -28,6 +30,7 @@ const POOLS_QUERY = gql`
         id
         Name
         Lang
+        Script
       }
       ResourceType {
         id
@@ -55,11 +58,24 @@ const DELETE_POOL_MUTATION = gql`
   }
 `;
 
+const GET_RESOURCE_TYPES = gql`
+  query GetResourceTypes {
+    QueryResourceTypes {
+      id
+      Name
+    }
+  }
+`;
+
 const IpamPoolPage: VoidFunctionComponent = () => {
+  const [selectedResourceType, setSelectedResourceType] = React.useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllIpPoolsQuery>({
     query: POOLS_QUERY,
     context,
+  });
+  const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
+    query: GET_RESOURCE_TYPES,
   });
   const [{ fetching: isMutationLoading }, deletePool] = useMutation<
     DeletePoolMutation,
@@ -91,8 +107,15 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     }
   };
 
+  const handleOnStrategyClick = (id?: string) => {
+    if (id != null) {
+      setSelectedResourceType(id);
+    }
+  };
+
   const handleOnClearSearch = () => {
     setSearchText('');
+    setSelectedResourceType('');
     clearAllTags();
   };
 
@@ -116,6 +139,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
         </Heading>
         <Box marginLeft="auto">
           <Button
+            data-cy="create-pool-btn"
             mr={2}
             leftIcon={<Icon size={20} as={FeatherIcon} icon="plus" />}
             colorScheme="blue"
@@ -137,12 +161,17 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           clearAllTags={clearAllTags}
           onTagClick={handleOnTagClick}
           onClearSearch={handleOnClearSearch}
+          canFilterByResourceType
+          resourceTypes={resourceTypes?.QueryResourceTypes}
+          selectedResourceType={selectedResourceType}
+          setSelectedResourceType={handleOnStrategyClick}
         />
         <PoolsTable
           pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
           onTagClick={handleOnTagClick}
+          onStrategyClick={handleOnStrategyClick}
         />
       </Box>
     </>
