@@ -47,7 +47,7 @@ jobs:
           project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
-          browser: firefox
+          #browser: firefox
       - name: Cypress tests
         if: ${{ (inputs.run_only_tests)  && (github.event_name == 'workflow_dispatch') }}
         uses: cypress-io/github-action@v5
@@ -55,16 +55,16 @@ jobs:
           project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
-          browser: firefox
+          #browser: firefox
           spec: cypress/e2e/${{ inputs.run_only_tests }}
       - uses: actions/upload-artifact@v3
-        #if: failure()
-        if: always()
+        if: failure()
+        #if: always()
         with:
           name: cypress-screenshots
           path: cypress/cypress/screenshots
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: cypress-videos
-          path: cypress/cypress/videos
+      #- uses: actions/upload-artifact@v3
+      #  if: always()
+      #  with:
+      #    name: cypress-videos
+      #    path: cypress/cypress/videos
