@@ -8,11 +8,11 @@ import {
   WorkflowDefinition,
   ExtendedTask,
   ExecutedWorkflowTask,
+  convertWorkflowTaskToExtendedTask,
+  getElementsFromWorkflow,
 } from '@frinx/shared/src';
-import { getElementsFromWorkflow } from '../helpers/api-to-graph.helpers';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './components';
-import { convertWorkflowTaskToExtendedTask } from '../helpers/task.helpers';
 
 const nodeTypes = {
   base: BaseNode,

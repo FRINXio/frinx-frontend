@@ -1,13 +1,12 @@
-import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { partition } from 'lodash';
 import { Edge, getConnectedEdges, getIncomers, getOutgoers, Node } from 'react-flow-renderer';
-import { ExtendedDecisionTask, ExtendedForkTask, ExtendedTask, Task } from '@frinx/shared/src';
+import { ExtendedDecisionTask, ExtendedForkTask, ExtendedTask, NodeData } from './workflow-api.types';
+import unwrap from './unwrap';
 
-function convertNodeToTask(node: Node): ExtendedTask {
+function convertNodeToTask(node: Node<NodeData>): ExtendedTask {
   const { data } = node;
   const { task } = data;
-  const { id, label, ...rest } = task;
-  return rest;
+  return unwrap(task);
 }
 
 function isConnectionNode(node: Node, elements: { nodes: Node[]; edges: Edge[] }): boolean {
@@ -141,7 +140,7 @@ function traverseElements(
   return [...tasks, currentTask, ...nextTasks[0]];
 }
 
-export function convertToTasks(elements: { nodes: Node[]; edges: Edge[] }): Task[] {
+export function convertToTasks(elements: { nodes: Node[]; edges: Edge[] }): ExtendedTask[] {
   const { nodes, edges } = elements;
 
   const startNode = unwrap(nodes.find((n) => n.id === 'start'));
