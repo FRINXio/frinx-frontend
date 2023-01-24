@@ -15,7 +15,6 @@ describe('Resource Types', () => {
     cy.visit(Cypress.env('resource-manager-resource-types'));
 
     cy.contains('h1', 'Resource Types');
-    cy.contains('button', 'Create resource type');
     cy.contains('table', 'unique_id');
     cy.contains('table', 'random_signed_int32');
     cy.contains('table', 'route_distinguisher');
@@ -27,7 +26,7 @@ describe('Resource Types', () => {
     cy.contains('table', 'ipv6');
   });
 
-  it.skip('Create', () => {
+  it('Delete resource type', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
         req.reply({ fixture: 'resource-manager/resource-types/ResourceTypes.json' });
@@ -36,64 +35,26 @@ describe('Resource Types', () => {
     cy.visit(Cypress.env('resource-manager-resource-types'));
 
     cy.contains('h1', 'Resource Types');
-    cy.contains('button', 'Create resource type');
-    cy.contains('table', 'unique_id');
-
-    // Click Create Resource Type
-    cy.get('[data-cy="create-resource-type"]').click();
-    cy.contains('header', 'Create Resource Type');
-    cy.get('[data-cy="new-type-name"]').type('stano');
-
-    // Click Create
-    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateResourceType')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ANewTestType/CreateResourceType.json' });
-      }
-    }).as('CreateResourceType');
-    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ANewTestType/ResourceTypes.json' });
-      }
-    }).as('ResourceTypesAfter');
-
-    cy.get('[data-cy="new-type-create"]').click();
-
-    // TODO Zeleny box
-    cy.contains('Resource type created successfully');
-    cy.wait(3000);
-
-    cy.contains('table', 'stano');
-  });
-
-  it.skip('Delete resource type', () => {
-    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ANewTestType/ResourceTypes.json' });
-      }
-    }).as('ResourceTypesAfter');
-    cy.visit(Cypress.env('resource-manager-resource-types'));
-
-    cy.contains('h1', 'Resource Types');
-    cy.contains('table', 'stano');
+    cy.contains('table', 'vlan');
 
     // Click Delete Resource Type
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'DeleteResourceType')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ANewTestType/DeleteResourceType.json' });
+        req.reply({ fixture: 'resource-manager/resource-types/DeleteResourceType.json' });
       }
     }).as('DeleteResourceType');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ResourceTypes.json' });
+        req.reply({ fixture: 'resource-manager/resource-types/ResourceTypesNoVLAN.json' });
       }
-    }).as('ResourceTypes');
+    }).as('ResourceTypesNoVLAN');
 
-    cy.get('[data-cy="delete-type-stano"]').click();
+    cy.get('[data-cy="delete-type-vlan"]').click();
 
     // TODO Zeleny box
     cy.contains('Resource type deleted successfully');
     cy.wait(3000);
 
-    cy.get('[data-cy="delete-type-stano"]').should('not.exist');
+    cy.get('[data-cy="delete-type-vlan"]').should('not.exist');
   });
 });
