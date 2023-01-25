@@ -1,31 +1,33 @@
-import React, { ReactNode } from 'react';
-import { FormikErrors } from 'formik';
-import * as yup from 'yup';
 import {
-  ExtendedTask,
-  InputParameters,
   DecisionInputParams,
-  LambdaInputParams,
-  HTTPInputParams,
-  GraphQLInputParams,
-  KafkaPublishInputParams,
-  JsonJQInputParams,
-  WhileInputParams,
-  TerminateInputParams,
   EventInputParams,
+  ExtendedTask,
+  GraphQLInputParams,
+  HTTPInputParams,
+  InputParameters,
+  isGraphQLTaskInputParams,
+  isHttpTaskInputParams,
+  isLambdaTaskInputParams,
+  JsonJQInputParams,
+  KafkaPublishInputParams,
+  LambdaInputParams,
+  TerminateInputParams,
+  WhileInputParams,
 } from '@frinx/shared/src';
+import { FormikErrors } from 'formik';
+import React, { ReactNode } from 'react';
+import * as yup from 'yup';
+import { GraphExtendedTask } from '../../helpers/types';
 import DecisionInputForm, { DecisionInputParamsSchema } from './decision-input-form';
 import EventInputForm, { EventInputParamsSchema } from './event-input-form';
+import GenericInputForm from './generic-input-form';
 import GraphQLInputsForm, { GraphQLInputParamsSchema } from './graphql-input-form';
-import KafkaInputsForm, { KafkaPublishInputParamsSchema } from './kafka-input-form';
-import JsonInputsForm, { JsonJQNInputParamsSchema } from './json-input-form';
 import HTTPInputsForm, { HttpInputParamsSchema } from './http-input-form';
+import JsonInputsForm, { JsonJQNInputParamsSchema } from './json-input-form';
+import KafkaInputsForm, { KafkaPublishInputParamsSchema } from './kafka-input-form';
 import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
 import TerminateInputForm, { TerminateInputParamsSchema } from './terminate-input-form';
 import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
-import GenericInputForm from './generic-input-form';
-import { isGraphQLTaskInputParams, isHttpTaskInputParams, isLambdaTaskInputParams } from '../../helpers/task.helpers';
-import { GraphExtendedTask } from '../../helpers/types';
 
 const SettingsSchema = yup.object().shape({
   taskReferenceName: yup.string().required('Please enter task reference name'),

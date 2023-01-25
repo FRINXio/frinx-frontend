@@ -1,6 +1,6 @@
 import { assert, describe, test } from 'vitest';
 import { readFileSync } from 'fs';
-import { ExtendedTask, Workflow } from '@frinx/shared/src';
+import { ExtendedTask, Workflow } from './workflow-api.types';
 import { getElementsFromWorkflow } from './api-to-graph.helpers';
 import { convertToTasks } from './graph-to-api.helpers';
 
