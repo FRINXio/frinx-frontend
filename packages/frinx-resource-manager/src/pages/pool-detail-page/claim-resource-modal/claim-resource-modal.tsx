@@ -43,6 +43,7 @@ type AlternativeId = {
 };
 
 type FormValues = {
+  labelsInput?: string;
   description: string;
   userInput?: string | number;
   alternativeIds: AlternativeId[];
@@ -75,8 +76,20 @@ function getHint(name: string, poolProperties: Record<string, string>, totalCapa
   }
 }
 
+yup.addMethod(yup.mixed, 'isLabelValid', function isLabelValid(message: string) {
+  return this.test('isLabelValid', message, (value: string, context) => {
+    const { path, createError } = context;
+
+    if (value) {
+      return createError({ path, message });
+    }
+    return true;
+  });
+});
+
 const validationSchema = (resourceTypeName: string) => {
   let userInputSchema;
+
   if (resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
     userInputSchema = yup.number().typeError('Please enter a number').required('This field is required');
   }
@@ -92,6 +105,8 @@ const validationSchema = (resourceTypeName: string) => {
     description: yup.string().notRequired(),
     userInput: userInputSchema || yup.number().typeError('Please enter a number').notRequired(),
     alternativeIds: AlternativeIdSchema,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    labelsInput: yup.string().isLabelValid('Unsaved labels input'),
   });
 };
 
@@ -106,7 +121,7 @@ const ClaimResourceModal: FC<Props> = ({
 }) => {
   const shouldBeDesiredSize =
     resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
-  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue, resetForm } =
+  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setErrors, setFieldValue, resetForm } =
     useFormik<FormValues>({
       initialValues: {
         description: '',
@@ -117,6 +132,7 @@ const ClaimResourceModal: FC<Props> = ({
           },
         ],
         userInput: '',
+        labelsInput: '',
       },
       onSubmit: (formValues) => {
         let userInput = {};
@@ -145,6 +161,7 @@ const ClaimResourceModal: FC<Props> = ({
         onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
         resetForm();
+        setErrors({});
       },
       validationSchema: validationSchema(resourceTypeName),
       validateOnBlur: false,
@@ -153,6 +170,10 @@ const ClaimResourceModal: FC<Props> = ({
 
   const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
     setFieldValue('alternativeIds', changedAlternativeIds);
+  };
+
+  const handleLabelsInputChange = (changeLabelsInput: string) => {
+    setFieldValue('labelsInput', changeLabelsInput);
   };
 
   const canShowDesiredValueInput =
@@ -231,10 +252,13 @@ const ClaimResourceModal: FC<Props> = ({
               </Heading>
 
               <AlternativeIdForm
+                isModalOpen={isOpen}
                 alternativeIds={values.alternativeIds}
                 errors={errors.alternativeIds as FormikErrors<AlternativeId>[]}
                 duplicateError={formErrors.duplicateAlternativeIds}
                 onChange={handleAlternativeIdsChange}
+                onLabelsChange={handleLabelsInputChange}
+                labelsError={errors.labelsInput}
               />
             </fieldset>
           </form>

@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React, { ChangeEvent, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
+import { useSearchParams } from 'react-router-dom';
 import { LabelsInput, unwrap } from '@frinx/shared/src';
 import { FormikErrors, FormikValues } from 'formik';
 import FeatherIcon from 'feather-icons-react';
@@ -47,24 +48,49 @@ export type AlternativeId = {
 };
 
 type Props = {
+  onLabelsChange: (value: string) => void;
+  labelsError?: FormikErrors<string | null>;
+  isModalOpen: boolean;
   alternativeIds: AlternativeId[];
   errors?: FormikErrors<AlternativeId>[];
   duplicateError?: string;
   onChange: (aid: AlternativeId[]) => void;
 } & Omit<BoxProps, 'onChange'>;
 
-const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
-  const { alternativeIds, errors, duplicateError, onChange, ...rest } = props;
+const AlternativeIdForm: VoidFunctionComponent<Props> = React.forwardRef((props: Props) => {
+  const { alternativeIds, errors, isModalOpen, duplicateError, onLabelsChange, labelsError, onChange, ...rest } = props;
+
+  const [, setSearchParams] = useSearchParams();
+
+  const setNewParams = (newParams: AlternativeId[]) => {
+    setSearchParams(
+      newParams.reduce((prev, curr) => {
+        if (Object.keys(prev).includes(curr.key)) {
+          return { ...prev, [curr.key]: [...new Set(curr.value.concat(prev[curr.key]))] };
+        }
+
+        return { ...prev, [curr.key]: curr.value };
+      }, {} as Record<string, string | string[]>),
+    );
+  };
+
+  console.log(labelsError);
 
   const handleAdd = () => {
     const newValues = [...alternativeIds, { key: 'status', value: ['active'] }];
     onChange(newValues);
+    if (!isModalOpen) {
+      setNewParams(newValues);
+    }
   };
 
   const handleDelete = (index: number) => {
     const newValues = [...alternativeIds];
     newValues.splice(index, 1);
     onChange(newValues);
+    if (!isModalOpen) {
+      setNewParams(newValues);
+    }
   };
 
   const handleValueChange = (changedValues: string[], changedIndex: number) => {
@@ -72,6 +98,9 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
     const newValues = [...alternativeIds];
     newValues.splice(changedIndex, 1, { ...oldAlternativeId, value: changedValues });
     onChange(newValues);
+    if (!isModalOpen) {
+      setNewParams(newValues);
+    }
   };
 
   const handleKeyChange = (event: ChangeEvent<HTMLInputElement>, changedIndex: number) => {
@@ -80,7 +109,12 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
     const newValues = [...alternativeIds];
     newValues.splice(changedIndex, 1, { ...oldAlternativeId, key: changedKey });
     onChange(newValues);
+    if (!isModalOpen) {
+      setNewParams(newValues);
+    }
   };
+
+  console.log(labelsError);
 
   const canShowErrors = typeof errors === 'string';
 
@@ -114,8 +148,11 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
                   {i === 0 && <FormLabel margin="0">Value:</FormLabel>}
                   <HStack>
                     <LabelsInput
+                      onLabelsChange={onLabelsChange}
                       data-cy={`resource-pool-claim-labels-${i}`}
                       labels={value}
+                      index={i}
+                      key={key}
                       placeholder="Value (press Enter to add value)"
                       onChange={(values) => handleValueChange(values, i)}
                     />
@@ -148,8 +185,11 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
           {errors}
         </Text>
       )}
+      <FormControl isInvalid={labelsError !== null}>
+        <FormErrorMessage>{labelsError}</FormErrorMessage>
+      </FormControl>
     </Box>
   );
-};
+});
 
 export default AlternativeIdForm;
