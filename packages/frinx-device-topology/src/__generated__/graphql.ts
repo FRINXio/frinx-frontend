@@ -583,6 +583,7 @@ export type Query = {
   locations: LocationConnection;
   node: Maybe<Node>;
   topology: Topology;
+  topologyCommonNodes: Maybe<TopologyCommonNodes>;
   topologyVersionData: TopologyVersionData;
   topologyVersions: Maybe<Array<Scalars['String']>>;
   transactions: Array<Transaction>;
@@ -654,6 +655,11 @@ export type QueryTopologyArgs = {
 };
 
 
+export type QueryTopologyCommonNodesArgs = {
+  nodes: Array<Scalars['String']>;
+};
+
+
 export type QueryTopologyVersionDataArgs = {
   version: Scalars['String'];
 };
@@ -690,6 +696,17 @@ export type SortDirection =
   | 'ASC'
   | 'DESC';
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  uniconfigShell: Maybe<Scalars['String']>;
+};
+
+
+export type SubscriptionUniconfigShellArgs = {
+  input?: InputMaybe<Scalars['String']>;
+  trigger?: InputMaybe<Scalars['Int']>;
+};
+
 export type SyncFromNetworkPayload = {
   __typename?: 'SyncFromNetworkPayload';
   dataStore: Maybe<DataStore>;
@@ -699,6 +716,11 @@ export type Topology = {
   __typename?: 'Topology';
   edges: Array<GraphEdge>;
   nodes: Array<GraphNode>;
+};
+
+export type TopologyCommonNodes = {
+  __typename?: 'TopologyCommonNodes';
+  commonNodes: Array<Scalars['String']>;
 };
 
 export type TopologyVersionData = {
@@ -822,6 +844,13 @@ export type TopologyVersionDataQueryQueryVariables = Exact<{
 
 
 export type TopologyVersionDataQueryQuery = { __typename?: 'Query', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<string> }> } };
+
+export type TopologyCommonNodesQueryVariables = Exact<{
+  nodes: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type TopologyCommonNodesQuery = { __typename?: 'Query', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null };
 
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<PositionInput> | PositionInput;
