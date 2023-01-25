@@ -1,8 +1,11 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import {
   callbackUtils,
+  convertToTasks,
   ExecuteWorkflowModal,
   ExtendedTask,
+  getElementsFromWorkflow,
+  getNodeType,
   NodeData,
   TaskDefinition,
   useNotifications,
@@ -38,8 +41,6 @@ import BaseNode from './components/workflow-nodes/base-node';
 import DecisionNode from './components/workflow-nodes/decision-node';
 import StartEndNode from './components/workflow-nodes/start-end-node';
 import { EdgeRemoveContext } from './edge-remove-context';
-import { getElementsFromWorkflow, getNodeType } from './helpers/api-to-graph.helpers';
-import { convertToTasks } from './helpers/graph-to-api.helpers';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
 

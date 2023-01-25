@@ -22,13 +22,11 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
-import { ExtendedTask, InputParameters } from '@frinx/shared/src';
+import { convertTaskToExtendedTask, ExtendedTask, getRandomString, InputParameters } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { FormikErrors, useFormik } from 'formik';
 import produce from 'immer';
 import React, { FC } from 'react';
-import { convertTaskToExtendedTask } from '../../helpers/api-to-graph.helpers';
-import { getRandomString } from '../../helpers/task.helpers';
 import { GraphExtendedTask } from '../../helpers/types';
 import { getValidationSchema, renderInputParamForm } from './input-params-forms';
 
