@@ -41,7 +41,7 @@ const VpnServicesOutputValidator = t.type({
       'resource-assignment': optional(
         t.type({
           bearer: t.type({
-            'default-c-vlan': t.number,
+            'default-c-vlan': optional(t.number),
           }),
           ipv4: optional(
             t.type({
@@ -85,8 +85,10 @@ export type CreateVpnServiceInput = {
         }[];
       };
       'vpn-service-topology': string;
-      'resource-assignment'?: {
-        bearer: string;
+      'resource-assignment': {
+        bearer: {
+          'default-c-vlan'?: string;
+        };
         ipv4?: {
           'permit-manual-assignment'?: boolean;
           'management-pool-tag'?: string;
@@ -103,8 +105,6 @@ export type CreateVpnServiceInput = {
           'lan-prefix-length'?: number;
         };
       };
-
-      'default-c-vlan': string;
     },
   ];
 };
