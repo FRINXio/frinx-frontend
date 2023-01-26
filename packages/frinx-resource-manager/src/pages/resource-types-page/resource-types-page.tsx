@@ -73,9 +73,7 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
   const [, deleteResourceType] = useMutation<DeleteResourceTypeMutation, DeleteResourceTypeMutationVariables>(
     DELETE_RESOURCE_TYPE_MUTATION,
   );
-  const [, createResourceType] = useMutation<CreateResourceTypeMutation, CreateResourceTypeMutationVariables>(
-    CREATE_RESOURCE_TYPE_MUTATION,
-  );
+
   const [, deleteStrategy] = useMutation<DeleteStrategyMutation, DeleteStrategyMutationVariables>(
     DELETE_STRATEGY_MUTATION,
   );
@@ -117,26 +115,6 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
     },
     [deleteStrategy, notification],
   );
-
-  const handleOnCreate = (resourceTypeName: string) => {
-    createResourceType(
-      {
-        input: {
-          resourceName: resourceTypeName,
-          resourceProperties: {},
-        },
-      },
-      ctx,
-    )
-      .then(({ error: createResourceTypeError }) => {
-        if (createResourceTypeError != null) {
-          throw Error();
-        }
-
-        notification.addToastNotification({ content: 'Resource type created successfully', type: 'success' });
-      })
-      .catch(() => notification.addToastNotification({ content: 'Resource type creation failed', type: 'error' }));
-  };
 
   const handleOnDelete = (resourceTypeId: string) => {
     deleteResourceType({ input: { resourceTypeId } }, ctx)
