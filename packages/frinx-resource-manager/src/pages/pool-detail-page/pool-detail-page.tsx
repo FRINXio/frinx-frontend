@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
-import DeletePoolPopover from '../../components/delete-pool-modal';
+import DeletePoolPopover from '../../components/delete-modal';
 import PageContainer from '../../components/page-container';
 import { isCustomResourceType } from '../../helpers/create-pool-form.helpers';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
