@@ -15,7 +15,7 @@
     "build": "NODE_ENV=production webpack --mode production",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen": "cp ../../../frinx-inventory-server/src/schema/api.graphql ./ && graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "test": "vitest",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts custom.d.ts src/index.ts"

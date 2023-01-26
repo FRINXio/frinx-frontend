@@ -96,7 +96,8 @@ const PoolDetailPage: VoidFunctionComponent = () => {
   const { QueryResourcePool: resourcePool } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
   const freeCapacity = BigInt(Number(resourcePool.Capacity?.freeCapacity));
-  const canClaimResources = resourcePool.Capacity != null && freeCapacity > 0n && freeCapacity <= totalCapacity;
+  const canClaimResources =
+    (resourcePool.Capacity != null && freeCapacity > 0n && freeCapacity <= totalCapacity) || totalCapacity < 2;
   const isAllocating = resourcePool.PoolType === 'allocating';
   const canDeletePool = resourcePool.Resources.length === 0;
   const progressValue =
@@ -147,7 +148,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Text fontSize="lg">Utilized capacity</Text>
         <Progress size="xs" value={progressValue} />
         <Text as="span" fontSize="xs" color="gray.600" fontWeight={500}>
-          {resourcePool.Capacity?.freeCapacity ?? 0} / {totalCapacity.toString()}
+          {freeCapacity.toString() ?? 0} / {totalCapacity.toString()}
         </Text>
       </Box>
 
@@ -165,7 +166,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
           <Tbody>
             {Object.keys(resourcePool.PoolProperties).map((entry) => {
               return (
-                <Tr>
+                <Tr key={entry}>
                   <Td width="50%">{entry}</Td>
                   <Td width="50%">{resourcePool.PoolProperties[entry].toString()}</Td>
                 </Tr>

@@ -22,6 +22,7 @@ declare interface Window {
     isDeviceTopologyEnabled: boolean;
     URLBasename: string;
     inventoryApiURL: string;
+    inventoryWsURL: string;
     uniresourceApiURL: string;
     uniflowApiDocsURL: string;
     MSALAuthority: string;

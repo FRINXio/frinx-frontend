@@ -396,10 +396,10 @@ type Query {
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   node(id: ID!): Node
   topology(filter: FilterTopologyInput): Topology!
+  topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
   topologyVersionData(version: String!): TopologyVersionData!
   topologyVersions: [String!]
   transactions: [Transaction!]!
-  uniconfigShellSession: String
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
 }
 
@@ -427,7 +427,7 @@ enum SortDirection {
 }
 
 type Subscription {
-  uniconfigShell(input: String, sessionId: String!, trigger: Int): String
+  uniconfigShell(input: String, trigger: Int): String
 }
 
 type SyncFromNetworkPayload {
@@ -437,6 +437,10 @@ type SyncFromNetworkPayload {
 type Topology {
   edges: [GraphEdge!]!
   nodes: [GraphNode!]!
+}
+
+type TopologyCommonNodes {
+  commonNodes: [String!]!
 }
 
 type TopologyVersionData {

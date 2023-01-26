@@ -2,6 +2,7 @@ import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import { TopologyMode } from '../../state.actions';
 import {
   getDeviceNodeTransformProperties,
   getNodeBackgroundColor,
@@ -13,8 +14,11 @@ import {
 type Props = {
   positions: PositionsWithGroupsMap;
   isSelected: boolean;
+  isCommon: boolean;
   isFocused: boolean;
+  isSelectedForCommonSearch: boolean;
   node: GraphNodeWithDiff;
+  topologyMode: TopologyMode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
@@ -28,7 +32,10 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
   isSelected,
+  isCommon,
+  isSelectedForCommonSearch,
   node,
+  topologyMode,
   onPointerDown,
   onPointerMove,
   onPointerUp,
@@ -40,7 +47,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
 
   return (
     <G
-      cursor="pointer"
+      cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}
       transform={`translate3d(${x}px, ${y}px, 0)`}
       transformOrigin="center center"
       onPointerDown={onPointerDown}
@@ -105,6 +112,10 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
           <path strokeWidth="1.2" d="m9.975 3-7 7" transform="rotate(-90 17.547 6.488)" />
         </g>
       </G>
+      {isSelectedForCommonSearch && (
+        <Circle r={`${circleDiameter / 2}px`} fill="transparent" strokeWidth={6} stroke="red.300" />
+      )}
+      {isCommon && <Circle r={`${circleDiameter / 2}px`} fill="transparent" strokeWidth={6} stroke="green.300" />}
     </G>
   );
 };

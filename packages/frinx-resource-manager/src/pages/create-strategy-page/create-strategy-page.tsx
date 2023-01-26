@@ -1,15 +1,16 @@
 import React, { VoidFunctionComponent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'urql';
-import { omit } from 'lodash';
 import { Heading, Flex, Box } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import { useNotifications } from '@frinx/shared/src';
 import {
   CreateAllocationStrategyAndResourceTypeMutation,
   CreateAllocationStrategyAndResourceTypeMutationVariables,
+  CreateAllocationStrategyInput,
+  CreateResourceTypeInput,
 } from '../../__generated__/graphql';
-import CreateStrategyForm, { FormValues } from './create-strategy-form';
+import CreateStrategyForm from './create-strategy-form';
 
 const CREATE_STRATEGY_MUTATION = gql`
   mutation CreateAllocationStrategyAndResourceType(
@@ -45,22 +46,16 @@ const CreateStrategyPage: VoidFunctionComponent<Props> = ({ onSaveButtonClick })
     CreateAllocationStrategyAndResourceTypeMutationVariables
   >(CREATE_STRATEGY_MUTATION);
 
-  const handleFormSubmit = (values: FormValues) => {
+  const handleFormSubmit = ({
+    stratInput,
+    resourceTypeInput,
+  }: {
+    stratInput: CreateAllocationStrategyInput;
+    resourceTypeInput: CreateResourceTypeInput;
+  }) => {
     addStrategy({
-      stratInput: {
-        ...omit(values, 'resourceTypeProperties'),
-        expectedPoolPropertyTypes: values.expectedPoolPropertyTypes?.reduce(
-          (acc, curr) => ({ ...acc, [curr.key]: curr.type }),
-          {},
-        ),
-      },
-      resourceTypeInput: {
-        resourceName: values.name,
-        resourceProperties: values.resourceTypeProperties?.reduce(
-          (acc, curr) => ({ ...acc, [curr.key]: curr.type }),
-          {},
-        ),
-      },
+      stratInput,
+      resourceTypeInput,
     })
       .then(({ error }) => {
         if (error != null) {

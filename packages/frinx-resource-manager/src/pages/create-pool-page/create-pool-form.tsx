@@ -153,6 +153,19 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceTypes, resourceTypeId, setFieldValue]);
 
+  // disable subnet and set it to false value, because of when prefix is 32 or 31,
+  // subnet is not allowed and there would be problem when calculating capacity on the backend
+
+  // backend will return error since combination of subnet true and 31/32 prefixes are not allowed
+  useEffect(() => {
+    if (
+      values.poolProperties?.subnet === 'true' &&
+      (values.poolProperties?.prefix === 32 || values.poolProperties?.prefix === 31)
+    ) {
+      setFieldValue('poolProperties', { ...values.poolProperties, subnet: 'false' });
+    }
+  }, [values.poolProperties, setFieldValue]);
+
   const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
   const parentResourceTypeName = pools.find((pool) => pool.id === parentPoolId)?.ResourceType.Name ?? null;
@@ -184,11 +197,16 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     values.poolProperties,
   );
 
+  const handleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange(e);
+    Object.keys(poolProperties).forEach((value) => setFieldValue(`poolProperties.${value}`, ''));
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="isNested">
         <FormLabel>Nested</FormLabel>
-        <Switch data-cy="create-pool-nested" onChange={handleChange} name="isNested" isChecked={isNested} />
+        <Switch data-cy="create-pool-nested" onChange={handleSwitch} name="isNested" isChecked={isNested} />
       </FormControl>
       {isNested && (
         <NestedFormPart
@@ -285,44 +303,43 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           />
         </>
       )}
-      {resourceTypeName !== 'route_distinguisher' && values.poolType === 'allocating' && resourceTypeName != null && (
-        <>
-          <Divider mb={6} orientation="horizontal" color="gray.200" />
-          <Heading as="h4" size="md">
-            Set pool properties
-          </Heading>
-          {isNested && (
-            <>
-              <Text color="gray">available resources (allocated in selected parent):</Text>
-              <List>
-                {formattedSuggestedProperties.map((property) => (
-                  <ListItem ml={2} color="gray" fontSize="sm" key={property}>
-                    {property}
-                  </ListItem>
-                ))}
-              </List>
-            </>
-          )}
+      {!isNested &&
+        resourceTypeName !== 'route_distinguisher' &&
+        values.poolType === 'allocating' &&
+        resourceTypeName != null && (
+          <>
+            <Divider mb={6} orientation="horizontal" color="gray.200" />
+            <Heading as="h4" size="md">
+              Set pool properties
+            </Heading>
+            <Text color="gray">available resources (allocated in selected parent):</Text>
+            <List>
+              {formattedSuggestedProperties.map((property) => (
+                <ListItem ml={2} color="gray" fontSize="sm" key={property}>
+                  {property}
+                </ListItem>
+              ))}
+            </List>
 
-          {isCustomResourceType(values.resourceTypeName) ? (
-            <CustomPoolPropertiesForm
-              isLoadingPoolProperties={isLoadingRequiredPoolProperties}
-              customPoolProperties={requiredPoolProperties}
-              formValues={values}
-              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
-              poolPropertyErrors={errors.poolProperties}
-            />
-          ) : (
-            <PoolPropertiesForm
-              poolProperties={poolProperties}
-              poolPropertyTypes={poolPropertyTypes}
-              onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
-              poolPropertyErrors={errors.poolProperties}
-              resourceTypeName={resourceTypeName}
-            />
-          )}
-        </>
-      )}
+            {isCustomResourceType(values.resourceTypeName) ? (
+              <CustomPoolPropertiesForm
+                isLoadingPoolProperties={isLoadingRequiredPoolProperties}
+                customPoolProperties={requiredPoolProperties}
+                formValues={values}
+                onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
+                poolPropertyErrors={errors.poolProperties}
+              />
+            ) : (
+              <PoolPropertiesForm
+                poolProperties={poolProperties}
+                poolPropertyTypes={poolPropertyTypes}
+                onChange={({ key, value }) => setFieldValue(`poolProperties.${key}`, value)}
+                poolPropertyErrors={errors.poolProperties}
+                resourceTypeName={resourceTypeName}
+              />
+            )}
+          </>
+        )}
 
       <AdvancedOptions poolPropertiesErrors={errors} poolType={poolType} values={values} handleChange={handleChange} />
 

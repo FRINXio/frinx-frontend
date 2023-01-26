@@ -15,8 +15,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { ExtendedTask, TaskDefinition, useMinisearch } from '@frinx/shared/src';
-import { convertTaskDefinition } from '../../helpers/task.helpers';
+import { convertTaskDefinition, ExtendedTask, TaskDefinition, useMinisearch } from '@frinx/shared/src';
 import { parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {

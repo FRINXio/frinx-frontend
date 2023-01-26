@@ -56,6 +56,7 @@ const RESOURCE_TYPES_QUERY = gql`
 type ScriptState = {
   lang: string;
   script: string;
+  name?: string;
 };
 
 const StrategiesPage: VoidFunctionComponent = () => {
@@ -134,8 +135,8 @@ const StrategiesPage: VoidFunctionComponent = () => {
     },
     [deleteStrategy, addToastNotification, deleteResourceTypeById, findResourceTypeId],
   );
-  const handleScriptBtnClick = (lang: string, script: string) => {
-    setScriptState({ lang, script });
+  const handleScriptBtnClick = (lang: string, script: string, name?: string) => {
+    setScriptState({ lang, script, name });
   };
 
   if (fetching) {
@@ -178,6 +179,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
           setScriptState(null);
         }}
         {...scriptState}
+        strategyName={scriptState?.name}
       />
     </>
   );
