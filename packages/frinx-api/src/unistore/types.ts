@@ -38,7 +38,32 @@ const VpnServicesOutputValidator = t.type({
         }),
       ),
       'vpn-service-topology': t.string,
-      'default-c-vlan': t.number,
+      'resource-assignment': optional(
+        t.type({
+          bearer: t.type({
+            'default-c-vlan': optional(t.number),
+          }),
+          ipv4: optional(
+            t.type({
+              'permit-manual-assignment': optional(t.boolean),
+              'management-pool-tag': optional(t.string),
+              'ip-connection-pool-tag': optional(t.string),
+              'ip-connection-prefix-length': optional(t.number),
+              'lan-pool-tag': optional(t.string),
+              'lan-prefix-length': optional(t.number),
+            }),
+          ),
+          ipv6: optional(
+            t.type({
+              'permit-manual-assignment': optional(t.boolean),
+              'management-pool-tag': optional(t.string),
+              'ip-connection-pool-tag': optional(t.string),
+              'lan-pool-tag': optional(t.string),
+              'lan-prefix-length': optional(t.number),
+            }),
+          ),
+        }),
+      ),
     }),
   ),
 });
@@ -60,7 +85,26 @@ export type CreateVpnServiceInput = {
         }[];
       };
       'vpn-service-topology': string;
-      'default-c-vlan': string;
+      'resource-assignment': {
+        bearer: {
+          'default-c-vlan'?: string;
+        };
+        ipv4?: {
+          'permit-manual-assignment'?: boolean;
+          'management-pool-tag'?: string;
+          'ip-connection-pool-tag'?: string;
+          'ip-connection-prefix-length'?: number;
+          'lan-pool-tag'?: string;
+          'lan-prefix-length'?: number;
+        };
+        ipv6?: {
+          'permit-manual-assignment'?: boolean;
+          'management-pool-tag'?: string;
+          'ip-connection-pool-tag'?: string;
+          'lan-pool-tag'?: string;
+          'lan-prefix-length'?: number;
+        };
+      };
     },
   ];
 };
@@ -257,6 +301,18 @@ const IPConnectionValidator = t.type({
       ),
     }),
   ),
+  ipv6: optional(
+    t.type({
+      'address-allocation-type': optional(t.string),
+      addresses: optional(
+        t.type({
+          'customer-address': optional(t.string),
+          'prefix-length': optional(t.number),
+          'provider-address': optional(t.string),
+        }),
+      ),
+    }),
+  ),
 });
 
 export type IPConnectionOutput = t.TypeOf<typeof IPConnectionValidator>;
@@ -396,6 +452,14 @@ export type CreateIPConnectionInput = {
     };
   };
   ipv4?: {
+    'address-allocation-type'?: string;
+    addresses?: {
+      'customer-address'?: string;
+      'prefix-length'?: number;
+      'provider-address'?: string;
+    };
+  };
+  ipv6?: {
     'address-allocation-type'?: string;
     addresses?: {
       'customer-address'?: string;
