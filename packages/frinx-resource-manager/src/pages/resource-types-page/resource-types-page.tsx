@@ -94,6 +94,7 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
           if (response.error) {
             throw Error(response.error.message);
           }
+          notification.addToastNotification({ content: 'Strategy deleted successfully', type: 'success' });
         })
         .catch(() => {
           notification.addToastNotification({
