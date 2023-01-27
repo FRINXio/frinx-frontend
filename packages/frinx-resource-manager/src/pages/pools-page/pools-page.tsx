@@ -71,7 +71,7 @@ const GET_RESOURCE_TYPES = gql`
 
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
-  const [selectedResourceType, setSelectedResourceType] = useState<string>('');
+  const [selectedResourceType, setSelectedResourceType] = useState<string>('Select resource type to filter');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [{ data, fetching: isQueryLoading, error }] = useQuery<GetPoolsQuery, GetPoolsQueryVariables>({
     query: ALL_POOLS_QUERY,
@@ -108,7 +108,7 @@ const PoolsPage: VoidFunctionComponent = () => {
   const handleOnClearSearch = () => {
     setSearchText('');
     clearAllTags();
-    setSelectedResourceType('');
+    setSelectedResourceType('Select resource type to filter');
   };
 
   const handleOnStrategyClick = (id?: string) => {
@@ -125,7 +125,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     return <div>{error?.message}</div>;
   }
 
-  const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;
+  const isSelectedResourceTypeEmpty = selectedResourceType === 'Select resource type to filter';
 
   const resourcePools = results.filter((pool) => {
     if (!isSelectedResourceTypeEmpty && selectedTags.length > 0) {
