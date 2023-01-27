@@ -92,8 +92,8 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
       )
         .then((response) => {
           if (response.error) {
-            throw Error(response.error.message)
-          } 
+            throw Error(response.error.message);
+          }
         })
         .catch(() => {
           notification.addToastNotification({
