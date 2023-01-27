@@ -29,7 +29,7 @@ const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDel
                 <DeletePopover
                   type="resource type"
                   onDelete={() => onDelete(resourceType.id)}
-                  propName={resourceType.Name}
+                  entityName={resourceType.Name}
                 >
                   <IconButton
                     data-cy={`delete-type-${resourceType.Name}`}

@@ -20,10 +20,10 @@ type Props = {
   type: string;
   onDelete: () => void;
   canDeletePool?: boolean;
-  propName: string;
+  entityName: string;
 };
 
-const DeleteModal: FC<Props> = ({ type, onDelete, canDeletePool = true, children, propName }) => {
+const DeleteModal: FC<Props> = ({ type, onDelete, canDeletePool = true, children, entityName }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   const getWarningText = (typeName: string) => {
@@ -60,18 +60,18 @@ const DeleteModal: FC<Props> = ({ type, onDelete, canDeletePool = true, children
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            Delete {type} {propName}
+            Delete {type} {entityName}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text>
-              Are you sure you want to delete {type} {propName}?
+              Are you sure you want to delete {type} {entityName}?
             </Text>
             {(type === 'strategy' || type === 'resource type') && (
               <>
                 <Divider mt={4} mb={4} />
                 <Text color="red.500">
-                  {getWarningText(type)} {propName}
+                  {getWarningText(type)} {entityName}
                 </Text>
               </>
             )}

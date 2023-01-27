@@ -209,7 +209,7 @@ const PoolDetailPage: VoidFunctionComponent = () => {
           type="resource pool"
           onDelete={() => deleteResourcePool(poolId, { redirectOnSuccess: '/resource-manager/pools' })}
           canDeletePool={canDeletePool}
-          propName={resourcePool.Name}
+          entityName={resourcePool.Name}
         >
           <Button data-cy="delete-resource-pool" mt={5} variant="outline" colorScheme="red" isDisabled={!canDeletePool}>
             Delete resource pool

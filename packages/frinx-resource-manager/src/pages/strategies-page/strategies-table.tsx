@@ -44,7 +44,11 @@ const StrategiesTable: VoidFunctionComponent<Props> = ({ strategies, onScriptBtn
                     onScriptBtnClick(strategy.Lang, strategy.Script, strategy.Name);
                   }}
                 />
-                <DeletePopover type="strategy" onDelete={() => onDeleteBtnClick(strategy.id)} propName={strategy.Name}>
+                <DeletePopover
+                  type="strategy"
+                  onDelete={() => onDeleteBtnClick(strategy.id)}
+                  entityName={strategy.Name}
+                >
                   <IconButton
                     data-cy={`strategy-${strategy.Name}-delete`}
                     colorScheme="red"

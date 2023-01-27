@@ -129,7 +129,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                       <DeletePoolPopover
                         onDelete={() => onDeleteBtnClick(pool.id)}
                         canDeletePool={pool.Resources.length === 0}
-                        propName={pool.Name}
+                        entityName={pool.Name}
                         type="resource pool"
                       >
                         <IconButton

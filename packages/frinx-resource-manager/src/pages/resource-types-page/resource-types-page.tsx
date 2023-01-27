@@ -45,8 +45,6 @@ const STRATEGIES_QUERY = gql`
     QueryAllocationStrategies {
       id
       Name
-      Lang
-      Script
     }
   }
 `;
@@ -94,21 +92,12 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
       )
         .then((response) => {
           if (response.error) {
-            notification.addToastNotification({
-              content: response.error.message,
-              type: 'error',
-            });
-          } else {
-            notification.addToastNotification({
-              title: 'Success',
-              content: 'Strategy deleted',
-              type: 'success',
-            });
-          }
+            throw Error(response.error.message)
+          } 
         })
-        .catch((err) => {
+        .catch(() => {
           notification.addToastNotification({
-            content: err.message,
+            content: 'There was a problem with strategy deletion',
             type: 'error',
           });
         });
@@ -124,10 +113,10 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
         }
 
         notification.addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
+        const strategyId = findStrategyId(resourceTypeId);
+        deleteStrategyById(strategyId || '');
       })
       .catch(() => notification.addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
-    const strategyId = findStrategyId(resourceTypeId);
-    deleteStrategyById(strategyId || '');
   };
 
   if (fetching) {

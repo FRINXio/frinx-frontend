@@ -87,21 +87,6 @@ const StrategiesPage: VoidFunctionComponent = () => {
     return typeName?.id;
   };
 
-  const deleteResourceTypeById = useCallback(
-    (resourceTypeId: string) => {
-      deleteResourceType({ input: { resourceTypeId } })
-        .then(({ error: deleteResourceTypeError }) => {
-          if (deleteResourceTypeError != null) {
-            throw Error();
-          }
-
-          addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
-        })
-        .catch(() => addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
-    },
-    [deleteResourceType, addToastNotification],
-  );
-
   const handleDeleteBtnClick = useCallback(
     (id: string) => {
       deleteStrategy(
@@ -122,6 +107,20 @@ const StrategiesPage: VoidFunctionComponent = () => {
               content: 'Strategy deleted',
               type: 'success',
             });
+            const resourceTypeById = findResourceTypeId(id);
+
+            const deleteResourceTypeById = (resourceTypeId: string) => {
+              deleteResourceType({ input: { resourceTypeId } })
+                .then(({ error: deleteResourceTypeError }) => {
+                  if (deleteResourceTypeError != null) {
+                    throw Error();
+                  }
+
+                  addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
+                })
+                .catch(() => addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
+            };
+            deleteResourceTypeById(resourceTypeById || '');
           }
         })
         .catch((err) => {
@@ -130,10 +129,8 @@ const StrategiesPage: VoidFunctionComponent = () => {
             type: 'error',
           });
         });
-      const resourceTypeById = findResourceTypeId(id);
-      deleteResourceTypeById(resourceTypeById || '');
     },
-    [deleteStrategy, addToastNotification, deleteResourceTypeById, findResourceTypeId],
+    [deleteStrategy, addToastNotification, deleteResourceType, findResourceTypeId],
   );
   const handleScriptBtnClick = (lang: string, script: string, name?: string) => {
     setScriptState({ lang, script, name });
