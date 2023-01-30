@@ -1,5 +1,7 @@
+import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
-import { Workflow } from './workflow-api.types';
+import { getTaskLabel } from './task.helpers';
+import { ExtendedTask, Workflow } from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
@@ -79,4 +81,41 @@ export function getInitialValuesFromParsedInputParameters(
   }
 
   return initialValues;
+}
+
+export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
+  const { tasks, ...rest } = wf;
+  return {
+    ...rest,
+    tasks: tasks.map((t) => ({
+      ...t,
+      id: uuid(),
+      label: getTaskLabel(t),
+    })),
+  };
+}
+
+export function createEmptyWorkflow(): Pick<
+  Workflow,
+  | 'name'
+  | 'description'
+  | 'version'
+  | 'ownerEmail'
+  | 'restartable'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds'
+  | 'outputParameters'
+  | 'variables'
+> {
+  return {
+    name: '',
+    description: '{}',
+    version: 1,
+    ownerEmail: '',
+    restartable: true,
+    timeoutPolicy: 'ALERT_ONLY',
+    timeoutSeconds: 0,
+    outputParameters: {},
+    variables: {},
+  };
 }

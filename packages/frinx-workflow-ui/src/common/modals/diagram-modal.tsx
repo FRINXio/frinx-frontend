@@ -9,12 +9,10 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { Workflow } from '@frinx/shared/src';
+import { convertWorkflowTaskToExtendedTask, getElementsFromWorkflow, Workflow } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
-import { getElementsFromWorkflow } from '../../helpers/api-to-graph.helpers';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
-import { convertWorkflowTaskToExtendedTask } from '../../helpers/task.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from '../components';
 
 type ModalProps = {

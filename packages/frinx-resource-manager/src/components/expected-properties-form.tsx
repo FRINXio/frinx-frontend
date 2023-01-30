@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   FormControl,
   FormErrorMessage,
@@ -9,6 +10,7 @@ import {
   Kbd,
   Spacer,
   Text,
+  Tooltip,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
@@ -24,6 +26,7 @@ type Props = {
   label?: string;
   expectedPropertyTypes?: ExpectedProperty[];
   formErrors: ExpectedPropertyErrors;
+  tooltipLabel?: string;
   onPropertyChange: (values: ExpectedProperty[]) => void;
   onPropertyAdd: (values: ExpectedProperty[]) => void;
   onPropertyDelete: (values: ExpectedProperty[]) => void;
@@ -64,6 +67,7 @@ function getExpectedFieldError(
 const ExpectedProperties: VoidFunctionComponent<Props> = ({
   expectedPropertyTypes = [],
   formErrors,
+  tooltipLabel,
   onPropertyAdd,
   onPropertyDelete,
   onPropertyChange,
@@ -95,6 +99,13 @@ const ExpectedProperties: VoidFunctionComponent<Props> = ({
     <>
       <HStack my={3} align="flex-start">
         <Text fontWeight="semibold">{label}</Text>
+        {tooltipLabel != null && (
+          <Tooltip label={tooltipLabel} aria-label="A tooltip">
+            <Box>
+              <FeatherIcon icon="info" size={15} />
+            </Box>
+          </Tooltip>
+        )}
         <Spacer />
         <Button data-cy="add-expected-property" size="sm" onClick={handleOnPoolPropertyAdd}>
           Add new expected property

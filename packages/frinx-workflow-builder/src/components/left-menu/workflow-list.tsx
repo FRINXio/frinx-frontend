@@ -13,12 +13,11 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { ExtendedTask, Workflow } from '@frinx/shared/src';
+import { createSubWorkflowTask, ExtendedTask, Workflow } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import throttle from 'lodash/throttle';
 import MiniSearch from 'minisearch';
 import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
-import { createSubWorkflowTask } from '../../helpers/task.helpers';
 import { getFilteredResults, parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {

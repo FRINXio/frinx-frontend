@@ -1,12 +1,19 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
-import { callbackUtils, ExtendedTask, TaskDefinition, unwrap, Workflow } from '@frinx/shared/src';
+import {
+  callbackUtils,
+  convertWorkflow,
+  createEmptyWorkflow,
+  ExtendedTask,
+  TaskDefinition,
+  unwrap,
+  Workflow,
+} from '@frinx/shared/src';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
-import { convertWorkflow, createEmptyWorkflow } from './helpers/workflow.helpers';
 import { TaskActionsProvider } from './task-actions-context';
 
 type Props = {

@@ -4,7 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
 type InventoryComponents = Omit<typeof import('@frinx/inventory-client/src'), 'getInventoryApiProvider'> & {
-  InventoryAPIProvider: FC<{ client: InventoryApiClient }>;
+  InventoryAPIProvider: FC<{ client: InventoryApiClient; wsUrl: string }>;
 };
 const InventoryApp: FC = () => {
   const [components, setComponents] = useState<InventoryComponents | null>(null);
@@ -27,7 +27,10 @@ const InventoryApp: FC = () => {
   const { InventoryAPIProvider, InventoryApp: App } = components;
 
   return (
-    <InventoryAPIProvider client={InventoryApi.create({ url: window.__CONFIG__.inventoryApiURL, authContext }).client}>
+    <InventoryAPIProvider
+      wsUrl={window.__CONFIG__.inventoryWsURL}
+      client={InventoryApi.create({ url: window.__CONFIG__.inventoryApiURL, authContext }).client}
+    >
       <App />
     </InventoryAPIProvider>
   );
