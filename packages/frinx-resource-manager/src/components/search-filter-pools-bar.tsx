@@ -36,16 +36,11 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
           <Select
             data-cy="select-resource-type"
             value={selectedResourceType}
-            onChange={(e) =>
-              setSelectedResourceType &&
-              setSelectedResourceType(e.target.value)
-            }
+            onChange={(e) => setSelectedResourceType && setSelectedResourceType(e.target.value)}
             variant="outline"
             bgColor="white"
           >
-            <option value=''>
-              Select resource type to filter
-            </option>
+            <option value="">Select resource type to filter</option>
             {resourceTypes.map(({ Name, id }) => (
               <option key={id} value={id}>
                 {Name}
