@@ -81,11 +81,14 @@ const StrategiesPage: VoidFunctionComponent = () => {
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const findResourceTypeId = (id: string) => {
-    const StrategyById = data?.QueryAllocationStrategies.find((type) => type.id === id)?.Name;
-    const typeName = resourceType?.QueryResourceTypes.find((type) => type.Name === StrategyById);
-    return typeName?.id;
-  };
+  const findResourceTypeId = useCallback(
+    (id: string) => {
+      const StrategyById = data?.QueryAllocationStrategies.find((type) => type.id === id)?.Name;
+      const typeName = resourceType?.QueryResourceTypes.find((type) => type.Name === StrategyById);
+      return typeName?.id;
+    },
+    [data?.QueryAllocationStrategies, resourceType?.QueryResourceTypes],
+  );
 
   const handleDeleteBtnClick = useCallback(
     (id: string) => {
@@ -107,20 +110,21 @@ const StrategiesPage: VoidFunctionComponent = () => {
               content: 'Strategy deleted',
               type: 'success',
             });
-            const resourceTypeById = findResourceTypeId(id);
+            const resourceTypeId = findResourceTypeId(id);
 
-            const deleteResourceTypeById = (resourceTypeId: string) => {
+            if (resourceTypeId) {
               deleteResourceType({ input: { resourceTypeId } })
                 .then(({ error: deleteResourceTypeError }) => {
                   if (deleteResourceTypeError != null) {
                     throw Error();
                   }
-
                   addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
                 })
                 .catch(() => addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
-            };
-            deleteResourceTypeById(resourceTypeById || '');
+            }
+            if (!resourceTypeId) {
+              addToastNotification({ content: 'Resource type could not be found', type: 'error' });
+            }
           }
         })
         .catch((err) => {
