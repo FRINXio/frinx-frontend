@@ -38,12 +38,12 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
             value={selectedResourceType}
             onChange={(e) =>
               setSelectedResourceType &&
-              setSelectedResourceType(e.target.value === 'Select resource type to filter' ? '' : e.target.value)
+              setSelectedResourceType(e.target.value)
             }
             variant="outline"
             bgColor="white"
           >
-            <option onChange={() => setSelectedResourceType && setSelectedResourceType('')}>
+            <option value=''>
               Select resource type to filter
             </option>
             {resourceTypes.map(({ Name, id }) => (

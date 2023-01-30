@@ -125,7 +125,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     return <div>{error?.message}</div>;
   }
 
-  const isSelectedResourceTypeEmpty = selectedResourceType === null || selectedResourceType.trim().length === 0;
+  const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;
 
   const resourcePools = results.filter((pool) => {
     if (!isSelectedResourceTypeEmpty && selectedTags.length > 0) {
