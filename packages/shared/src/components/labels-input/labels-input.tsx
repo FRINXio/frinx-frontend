@@ -2,14 +2,13 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import { HStack, Input, InputGroup, InputLeftAddon, Tag, TagCloseButton, Text } from '@chakra-ui/react';
 
 type Props = {
-  onLabelsChange: (value: string) => void;
-  index: number;
+  onLabelsChange?: (value: string) => void;
   placeholder: string;
   labels: string[];
   onChange: (labels: string[]) => void;
 };
 
-const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChange, onLabelsChange, index }: Props) => {
+const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChange, onLabelsChange }: Props) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +16,7 @@ const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChan
     event.stopPropagation();
     const { value } = event.currentTarget;
     setInputValue(value);
-    onLabelsChange(value);
+    onLabelsChange?.(value);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -28,7 +27,7 @@ const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChan
         const newLabels = [...labels, inputValue];
         onChange(newLabels);
         setInputValue('');
-        onLabelsChange('');
+        onLabelsChange?.('');
       }
     }
   };
@@ -55,7 +54,7 @@ const LabelsInput: VoidFunctionComponent<Props> = ({ placeholder, labels, onChan
         </InputLeftAddon>
       )}
       <Input
-        data-cy={`resource-pool-label-value-${index}`}
+        data-cy="resource-pool-label-value"
         type="text"
         placeholder={placeholder}
         value={inputValue}

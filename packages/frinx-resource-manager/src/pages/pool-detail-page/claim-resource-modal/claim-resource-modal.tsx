@@ -76,12 +76,10 @@ function getHint(name: string, poolProperties: Record<string, string>, totalCapa
   }
 }
 
-yup.addMethod(yup.mixed, 'isLabelValid', function isLabelValid(message: string) {
-  return this.test('isLabelValid', message, (value: string, context) => {
-    const { path, createError } = context;
-
-    if (value) {
-      return createError({ path, message });
+yup.addMethod(yup.string, 'mustBeEmpty', function mustBeEmpty(message: string) {
+  return this.test('mustBeEmpty', message, (value?: string) => {
+    if (value != null && value.trim().length > 0) {
+      return false;
     }
     return true;
   });
@@ -105,8 +103,7 @@ const validationSchema = (resourceTypeName: string) => {
     description: yup.string().notRequired(),
     userInput: userInputSchema || yup.number().typeError('Please enter a number').notRequired(),
     alternativeIds: AlternativeIdSchema,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    labelsInput: yup.string().isLabelValid('Unsaved labels input'),
+    labelsInput: yup.string().mustBeEmpty('Unsaved labels input'),
   });
 };
 
@@ -252,7 +249,6 @@ const ClaimResourceModal: FC<Props> = ({
               </Heading>
 
               <AlternativeIdForm
-                isModalOpen={isOpen}
                 alternativeIds={values.alternativeIds}
                 errors={errors.alternativeIds as FormikErrors<AlternativeId>[]}
                 duplicateError={formErrors.duplicateAlternativeIds}
