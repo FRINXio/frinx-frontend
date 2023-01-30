@@ -228,18 +228,29 @@ const RoutingProtocolItemValidator = t.type({
   type: t.string,
   vrrp: optional(
     t.type({
-      'address-family': t.array(t.string),
+      'address-family': t.string,
     }),
   ),
   static: optional(
     t.type({
       'cascaded-lan-prefixes': t.type({
-        'ipv4-lan-prefixes': t.array(
-          t.type({
-            lan: t.string,
-            'next-hop': t.string,
-            'lan-tag': optional(t.string),
-          }),
+        'ipv4-lan-prefixes': optional(
+          t.array(
+            t.type({
+              lan: t.string,
+              'next-hop': t.string,
+              'lan-tag': optional(t.string),
+            }),
+          ),
+        ),
+        'ipv6-lan-prefixes': optional(
+          t.array(
+            t.type({
+              lan: t.string,
+              'next-hop': t.string,
+              'lan-tag': optional(t.string),
+            }),
+          ),
         ),
       }),
     }),
@@ -417,7 +428,12 @@ export type CreateRoutingProtocolItem = {
   type: 'bgp' | 'vrrp' | 'static';
   static?: {
     'cascaded-lan-prefixes': {
-      'ipv4-lan-prefixes': {
+      'ipv4-lan-prefixes'?: {
+        lan: string;
+        'next-hop': string;
+        'lan-tag'?: string;
+      }[];
+      'ipv6-lan-prefixes'?: {
         lan: string;
         'next-hop': string;
         'lan-tag'?: string;
