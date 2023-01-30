@@ -35,10 +35,16 @@ yup.addMethod(yup.array, 'unique', function unique(message, mapper = (a: unknown
   });
 });
 
-const AlternativeIdSchema = yup.object({
-  key: yup.string().required('Key is required'),
-  value: yup.array().of(yup.string()),
-});
+const AlternativeIdSchema = yup.object(
+  {
+    key: yup.string().required('Key is required'),
+    value: yup
+      .array()
+      .of(yup.string()).min(1)
+      .required('Label is required'),
+        
+  },
+);
 
 export const ValidationSchema = yup.array(AlternativeIdSchema).unique('Keys cannot repeat', (a: FormikValues) => a.key);
 
@@ -73,8 +79,6 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = React.forwardRef((props:
       }, {} as Record<string, string | string[]>),
     );
   };
-
-  console.log(labelsError);
 
   const handleAdd = () => {
     const newValues = [...alternativeIds, { key: 'status', value: ['active'] }];
@@ -113,8 +117,6 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = React.forwardRef((props:
       setNewParams(newValues);
     }
   };
-
-  console.log(labelsError);
 
   const canShowErrors = typeof errors === 'string';
 
