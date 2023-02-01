@@ -9,7 +9,7 @@ describe('Resource Types', () => {
   it('Show', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ResourceTypes.json' });
+        req.reply({ fixture: 'resource-manager/resource-types/resource-types.json' });
       }
     }).as('ResourceTypes');
     cy.visit(Cypress.env('resource-manager-resource-types'));
@@ -29,7 +29,7 @@ describe('Resource Types', () => {
   it('Delete resource type', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ResourceTypes.json' });
+        req.reply({ fixture: 'resource-manager/resource-types/resource-types.json' });
       }
     }).as('ResourceTypes');
     cy.visit(Cypress.env('resource-manager-resource-types'));
@@ -40,12 +40,12 @@ describe('Resource Types', () => {
     // Click Delete Resource Type
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'DeleteResourceType')) {
-        req.reply({ fixture: 'resource-manager/resource-types/DeleteResourceType.json' });
+        req.reply({ fixture: 'resource-manager/resource-types/delete-resource-type.json' });
       }
     }).as('DeleteResourceType');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'ResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/resource-types/ResourceTypesNoVLAN.json' });
+        req.reply({ fixture: 'resource-manager/resource-types/resource-types-no-vlan.json' });
       }
     }).as('ResourceTypesNoVLAN');
 
