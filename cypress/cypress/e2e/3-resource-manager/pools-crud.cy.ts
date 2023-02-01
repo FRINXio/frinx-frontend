@@ -9,12 +9,12 @@ describe('Check pools', () => {
   it('Check', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-        req.reply({ fixture: 'resource-manager/pools/GetPools.json' });
+        req.reply({ fixture: 'resource-manager/pools/get-pools.json' });
       }
     }).as('getPools');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/pools/GetResourceTypes' });
+        req.reply({ fixture: 'resource-manager/pools/get-resource-types' });
       }
     }).as('GetResourceTypes');
 
@@ -26,12 +26,12 @@ describe('Check pools', () => {
   it('Create pool test_ipv6', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-        req.reply({ fixture: 'resource-manager/pools/GetPools.json' });
+        req.reply({ fixture: 'resource-manager/pools/get-pools.json' });
       }
     }).as('getPools');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/pools/GetResourceTypes' });
+        req.reply({ fixture: 'resource-manager/pools/get-resource-types' });
       }
     }).as('GetResourceTypes');
 
@@ -42,22 +42,22 @@ describe('Check pools', () => {
     // click Create pool
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectPools')) {
-        req.reply({ fixture: 'resource-manager/pools/SelectPools.json' });
+        req.reply({ fixture: 'resource-manager/pools/select-pools.json' });
       }
     }).as('SelectPools');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectAllocationStrategies')) {
-        req.reply({ fixture: 'resource-manager/pools/SelectAllocationStrategies.json' });
+        req.reply({ fixture: 'resource-manager/pools/select-allocation-strategies.json' });
       }
     }).as('SelectAllocationStrategies');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/pools/create/SelectResourceTypes.json' });
+        req.reply({ fixture: 'resource-manager/pools/create/select-resource-types.json' });
       }
     }).as('SelectResourceTypes');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'RequiredPoolProperties')) {
-        req.reply({ fixture: 'resource-manager/pools/create/RequiredPoolProperties.json' });
+        req.reply({ fixture: 'resource-manager/pools/create/required-pool-properties.json' });
       }
     }).as('RequiredPoolProperties');
 
@@ -76,12 +76,12 @@ describe('Check pools', () => {
     // click Create pool
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateAllocationPool')) {
-        req.reply({ fixture: 'resource-manager/pools/test_ipv6/CreateAllocationPool.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/create-allocation-pool.json' });
       }
     }).as('CreateAllocationPool');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-        req.reply({ fixture: 'resource-manager/pools/test_ipv6/GetPools.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/get-pools.json' });
       }
     }).as('GetPools');
 
@@ -95,12 +95,12 @@ describe('Check pools', () => {
   it('Delete pool test_ipv6', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-        req.reply({ fixture: 'resource-manager/pools/test_ipv6/GetPools.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/get-pools.json' });
       }
     }).as('getPools');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/pools/GetResourceTypes' });
+        req.reply({ fixture: 'resource-manager/pools/get-resource-types' });
       }
     }).as('GetResourceTypes');
 
@@ -111,12 +111,12 @@ describe('Check pools', () => {
     // click Delete
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'DeletePool')) {
-        req.reply({ fixture: 'resource-manager/pools/test_ipv6/DeletePool.json' });
+        req.reply({ fixture: 'resource-manager/pools/test_ipv6/delete-pool.json' });
       }
     }).as('DeletePool');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-        req.reply({ fixture: 'resource-manager/pools/GetPools.json' });
+        req.reply({ fixture: 'resource-manager/pools/get-pools.json' });
       }
     }).as('GetPools');
 
