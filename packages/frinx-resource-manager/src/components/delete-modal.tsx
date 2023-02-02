@@ -23,8 +23,7 @@ type Props = {
   entityName: string;
 };
 
-
-const getWarningText = (typeName: ( 'strategy'| 'resource type')) => {
+const getWarningText = (typeName: 'strategy' | 'resource type') => {
   if (typeName === 'resource type') {
     return 'You are also deleting strategy';
   }
