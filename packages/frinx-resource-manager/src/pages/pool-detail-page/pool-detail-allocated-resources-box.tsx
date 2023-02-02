@@ -51,21 +51,28 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
   }, [isLoadingResources, searchParams]);
 
   const handleOnAlternativeIdsSubmit = () => {
-    setSearchParams(
-      altIds.reduce((prev, curr) => {
-        if (Object.keys(prev).includes(curr.key)) {
-          return { ...prev, [curr.key]: [...new Set(curr.value.concat(prev[curr.key]))] };
-        }
+    const newValues = [{ key: 'status', value: ['active'] }];
 
-        return { ...prev, [curr.key]: curr.value };
-      }, {} as Record<string, string | string[]>),
-    );
+    if (altIds.length === 0) {
+      setAltIds(newValues);
+    }
+    if (altIds.length > 0) {
+      setSearchParams(
+        altIds.reduce((prev, curr) => {
+          if (Object.keys(prev).includes(curr.key)) {
+            return { ...prev, [curr.key]: [...new Set(curr.value.concat(prev[curr.key]))] };
+          }
+
+          return { ...prev, [curr.key]: curr.value };
+        }, {} as Record<string, string | string[]>),
+      );
+    }
 
     handleAlternativeIdsChange(
       altIds.reduce((prev, curr) => {
         return {
           ...prev,
-          [curr.key]: curr.value.length === 1 ? curr.value.pop() : curr.value,
+          [curr.key]: curr.value,
         };
       }, {}),
     );

@@ -63,6 +63,7 @@ const PoolPropertyInput = ({
 
   return (
     <Input
+      type={shouldBeNumber ? 'number' : 'text'}
       data-cy={`device-state-${pKey}`}
       placeholder={placeholder}
       name={pKey}

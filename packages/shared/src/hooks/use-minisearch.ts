@@ -6,6 +6,7 @@ type Item<T> = T & { Name: string };
 
 function getFilteredResults<T extends { Name: string }>(searchResult: SearchResult[], items: T[]): T[] {
   const itemsMap = new Map(items.map((item) => [item.Name, item]));
+
   return compact(
     searchResult.map((r) => {
       return itemsMap.get(r.id);
@@ -32,13 +33,12 @@ const useMinisearch = <T>({
       if (searchText != null) {
         return getFilteredResults(minisearch.search(searchText, { prefix: true }), items || []);
       }
-
       return [];
     }, 80)();
 
-  useEffect(() => minisearch.addAll(items || []), []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => minisearch.addAll(items || []), [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const results = searchText && searchText.length > 2 ? searchFn() : items;
+  const results = searchText.length > 0 ? searchFn() : items;
 
   return {
     results: results || [],
