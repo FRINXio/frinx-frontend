@@ -2,7 +2,7 @@ import { Table, Thead, Tr, Th, Tbody, Td, HStack, IconButton, Icon } from '@chak
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
 import { ResourceTypesQuery } from '../../__generated__/graphql';
-import DeletePopover from '../../components/delete-modal';
+import DeleteModal from '../../components/delete-modal';
 
 type Props = {
   resourceTypes: ResourceTypesQuery['QueryResourceTypes'];
@@ -26,7 +26,7 @@ const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDel
             <Td>{resourceType.Name}</Td>
             <Td>
               <HStack>
-                <DeletePopover
+                <DeleteModal
                   type="resource type"
                   onDelete={() => onDelete(resourceType.id)}
                   entityName={resourceType.Name}
@@ -39,7 +39,7 @@ const ResourceTypesTable: VoidFunctionComponent<Props> = ({ resourceTypes, onDel
                     aria-label="delete"
                     icon={<Icon as={FeatherIcon} icon="trash-2" />}
                   />
-                </DeletePopover>
+                </DeleteModal>
               </HStack>
             </Td>
           </Tr>

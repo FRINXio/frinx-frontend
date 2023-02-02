@@ -23,18 +23,19 @@ type Props = {
   entityName: string;
 };
 
+
+const getWarningText = (typeName: ( 'strategy'| 'resource type')) => {
+  if (typeName === 'resource type') {
+    return 'You are also deleting strategy';
+  }
+  if (typeName === 'strategy') {
+    return 'You are also deleting resource type';
+  }
+  return '';
+};
+
 const DeleteModal: FC<Props> = ({ type, onDelete, canDeletePool = true, children, entityName }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-
-  const getWarningText = (typeName: string) => {
-    if (typeName === 'resource type') {
-      return 'You are also deleting strategy';
-    }
-    if (typeName === 'strategy') {
-      return 'You are also deleting resource type';
-    }
-    return true;
-  };
 
   return (
     <>
