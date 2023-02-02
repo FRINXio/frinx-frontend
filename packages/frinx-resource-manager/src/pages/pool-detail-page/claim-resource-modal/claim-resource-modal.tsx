@@ -43,6 +43,7 @@ type AlternativeId = {
 };
 
 type FormValues = {
+  labelsInput?: string;
   description: string;
   desiredSize: string | number;
   desiredValue: string | number;
@@ -82,20 +83,24 @@ function getHint(name: string, poolProperties: Record<string, string>, totalCapa
   }
 }
 
+yup.addMethod(yup.string, 'mustBeEmpty', function mustBeEmpty(message: string) {
+  return this.test('mustBeEmpty', message, (value?: string) => {
+    if (value != null && value.trim().length > 0) {
+      return false;
+    }
+    return true;
+  });
+});
+
 const validationSchema = (resourceTypeName: string) => {
-  let desiredSizeSchema;
   let desiredValueSchema;
+  let desiredSizeSchema;
 
-  if (resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
+  if (resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix' || resourceTypeName === 'vlan_range') {
     desiredSizeSchema = yup.number().typeError('Please enter a number').required('This field is required');
   }
 
-  if (resourceTypeName === 'ipv4_prefix') {
-    desiredSizeSchema = yup.number().typeError('Please enter a number').required('This field is required');
-    desiredValueSchema = yup.string().matches(IPV4_REGEX, 'Please enter a valid IPv4 address').notRequired();
-  }
-
-  if (resourceTypeName === 'ipv4') {
+  if (resourceTypeName === 'ipv4' || resourceTypeName === 'ipv4_prefix') {
     desiredValueSchema = yup.string().matches(IPV4_REGEX, 'Please enter a valid IPv4 address').notRequired();
   }
 
@@ -107,6 +112,7 @@ const validationSchema = (resourceTypeName: string) => {
     desiredSize: desiredSizeSchema || yup.number().typeError('Please enter a number').notRequired(),
     desiredValue: desiredValueSchema || yup.number().typeError('Please enter an address').notRequired(),
     alternativeIds: AlternativeIdSchema,
+    labelsInput: yup.string().mustBeEmpty('Unsaved labels input'),
   });
 };
 
@@ -121,14 +127,7 @@ const ClaimResourceModal: FC<Props> = ({
 }) => {
   const shouldBeDesiredSize =
     resourceTypeName === 'vlan_range' || resourceTypeName === 'ipv4_prefix' || resourceTypeName === 'ipv6_prefix';
-
-  const canShowDesiredValueInput =
-    resourceTypeName === 'vlan' ||
-    resourceTypeName === 'ipv4' ||
-    resourceTypeName === 'ipv6' ||
-    resourceTypeName === 'ipv4_prefix';
-
-  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setFieldValue, resetForm } =
+  const { values, handleChange, handleSubmit, submitForm, isSubmitting, errors, setErrors, setFieldValue, resetForm } =
     useFormik<FormValues>({
       initialValues: {
         description: '',
@@ -138,8 +137,9 @@ const ClaimResourceModal: FC<Props> = ({
             value: ['active'],
           },
         ],
-        desiredSize: '',
+        desiredSize: 1,
         desiredValue: '',
+        labelsInput: '',
       },
       onSubmit: (formValues) => {
         let userInput = {};
@@ -175,6 +175,7 @@ const ClaimResourceModal: FC<Props> = ({
         onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
         resetForm();
+        setErrors({});
       },
       validationSchema: validationSchema(resourceTypeName),
       validateOnBlur: false,
@@ -184,6 +185,13 @@ const ClaimResourceModal: FC<Props> = ({
   const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
     setFieldValue('alternativeIds', changedAlternativeIds);
   };
+
+  const handleLabelsInputChange = (changeLabelsInput: string) => {
+    setFieldValue('labelsInput', changeLabelsInput);
+  };
+
+  const canShowDesiredValueInput =
+    shouldBeDesiredSize || (resourceTypeName !== 'unique_id' && resourceTypeName !== 'random_signed_int32');
 
   type FormErrors = typeof errors & FormikErrors<{ duplicateAlternativeIds?: string }>;
   const formErrors: FormErrors = errors;
@@ -265,6 +273,8 @@ const ClaimResourceModal: FC<Props> = ({
                 errors={errors.alternativeIds as FormikErrors<AlternativeId>[]}
                 duplicateError={formErrors.duplicateAlternativeIds}
                 onChange={handleAlternativeIdsChange}
+                onLabelsChange={handleLabelsInputChange}
+                labelsError={errors.labelsInput}
               />
             </fieldset>
           </form>
