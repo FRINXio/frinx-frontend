@@ -36,7 +36,7 @@ yup.addMethod(yup.array, 'unique', function unique(message, mapper = (a: unknown
 
 const AlternativeIdSchema = yup.object({
   key: yup.string().required('Key is required'),
-  value: yup.array().of(yup.string()),
+  value: yup.array().of(yup.string()).min(1).required('Label is required'),
 });
 
 export const ValidationSchema = yup.array(AlternativeIdSchema).unique('Keys cannot repeat', (a: FormikValues) => a.key);
@@ -47,14 +47,16 @@ export type AlternativeId = {
 };
 
 type Props = {
+  onLabelsChange?: (value: string) => void;
+  labelsError?: FormikErrors<string | null>;
   alternativeIds: AlternativeId[];
   errors?: FormikErrors<AlternativeId>[];
   duplicateError?: string;
   onChange: (aid: AlternativeId[]) => void;
 } & Omit<BoxProps, 'onChange'>;
 
-const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
-  const { alternativeIds, errors, duplicateError, onChange, ...rest } = props;
+const AlternativeIdForm: VoidFunctionComponent<Props> = React.forwardRef((props: Props) => {
+  const { alternativeIds, errors, duplicateError, onLabelsChange, labelsError, onChange, ...rest } = props;
 
   const handleAdd = () => {
     const newValues = [...alternativeIds, { key: 'status', value: ['active'] }];
@@ -114,8 +116,10 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
                   {i === 0 && <FormLabel margin="0">Value:</FormLabel>}
                   <HStack>
                     <LabelsInput
+                      onLabelsChange={onLabelsChange}
                       data-cy={`resource-pool-claim-labels-${i}`}
                       labels={value}
+                      key={key}
                       placeholder="Value (press Enter to add value)"
                       onChange={(values) => handleValueChange(values, i)}
                     />
@@ -148,8 +152,11 @@ const AlternativeIdForm: VoidFunctionComponent<Props> = (props: Props) => {
           {errors}
         </Text>
       )}
+      <FormControl isInvalid={labelsError !== null}>
+        <FormErrorMessage>{labelsError}</FormErrorMessage>
+      </FormControl>
     </Box>
   );
-};
+});
 
 export default AlternativeIdForm;
