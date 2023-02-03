@@ -20,6 +20,37 @@ export function extractResult<A>(result: Either<t.Errors, A>): A {
   )(result);
 }
 
+const ResourceAssignmentOutputValidator = t.type({
+  bearer: t.type({
+    'default-c-vlan': optional(t.number),
+  }),
+  ipv4: optional(
+    t.type({
+      'permit-manual-assignment': optional(t.boolean),
+      'management-pool-tag': optional(t.string),
+      'ip-connection-pool-tag': optional(t.string),
+      'ip-connection-prefix-length': optional(t.number),
+      'lan-pool-tag': optional(t.string),
+      'lan-prefix-length': optional(t.number),
+    }),
+  ),
+  ipv6: optional(
+    t.type({
+      'permit-manual-assignment': optional(t.boolean),
+      'management-pool-tag': optional(t.string),
+      'ip-connection-pool-tag': optional(t.string),
+      'lan-pool-tag': optional(t.string),
+      'lan-prefix-length': optional(t.number),
+    }),
+  ),
+});
+
+export type ResourceAssignmentOutput = t.TypeOf<typeof ResourceAssignmentOutputValidator>;
+
+export function decodeResourceAssignmentOutput(value: unknown): ResourceAssignmentOutput {
+  return extractResult(ResourceAssignmentOutputValidator.decode(value));
+}
+
 const VpnServicesOutputValidator = t.type({
   'vpn-service': t.array(
     t.type({
@@ -38,32 +69,7 @@ const VpnServicesOutputValidator = t.type({
         }),
       ),
       'vpn-service-topology': t.string,
-      'resource-assignment': optional(
-        t.type({
-          bearer: t.type({
-            'default-c-vlan': optional(t.number),
-          }),
-          ipv4: optional(
-            t.type({
-              'permit-manual-assignment': optional(t.boolean),
-              'management-pool-tag': optional(t.string),
-              'ip-connection-pool-tag': optional(t.string),
-              'ip-connection-prefix-length': optional(t.number),
-              'lan-pool-tag': optional(t.string),
-              'lan-prefix-length': optional(t.number),
-            }),
-          ),
-          ipv6: optional(
-            t.type({
-              'permit-manual-assignment': optional(t.boolean),
-              'management-pool-tag': optional(t.string),
-              'ip-connection-pool-tag': optional(t.string),
-              'lan-pool-tag': optional(t.string),
-              'lan-prefix-length': optional(t.number),
-            }),
-          ),
-        }),
-      ),
+      'resource-assignment': optional(ResourceAssignmentOutputValidator),
     }),
   ),
 });
@@ -72,6 +78,27 @@ export type VpnServicesOutput = t.TypeOf<typeof VpnServicesOutputValidator>;
 export function decodeVpnServicesOutput(value: unknown): VpnServicesOutput {
   return extractResult(VpnServicesOutputValidator.decode(value));
 }
+
+export type ResourceAssignmentInput = {
+  bearer: {
+    'default-c-vlan'?: string;
+  };
+  ipv4?: {
+    'permit-manual-assignment'?: boolean;
+    'management-pool-tag'?: string;
+    'ip-connection-pool-tag'?: string;
+    'ip-connection-prefix-length'?: number;
+    'lan-pool-tag'?: string;
+    'lan-prefix-length'?: number;
+  };
+  ipv6?: {
+    'permit-manual-assignment'?: boolean;
+    'management-pool-tag'?: string;
+    'ip-connection-pool-tag'?: string;
+    'lan-pool-tag'?: string;
+    'lan-prefix-length'?: number;
+  };
+};
 
 export type CreateVpnServiceInput = {
   'vpn-service': [
@@ -85,26 +112,7 @@ export type CreateVpnServiceInput = {
         }[];
       };
       'vpn-service-topology': string;
-      'resource-assignment': {
-        bearer: {
-          'default-c-vlan'?: string;
-        };
-        ipv4?: {
-          'permit-manual-assignment'?: boolean;
-          'management-pool-tag'?: string;
-          'ip-connection-pool-tag'?: string;
-          'ip-connection-prefix-length'?: number;
-          'lan-pool-tag'?: string;
-          'lan-prefix-length'?: number;
-        };
-        ipv6?: {
-          'permit-manual-assignment'?: boolean;
-          'management-pool-tag'?: string;
-          'ip-connection-pool-tag'?: string;
-          'lan-pool-tag'?: string;
-          'lan-prefix-length'?: number;
-        };
-      };
+      'resource-assignment': ResourceAssignmentInput;
     },
   ];
 };
