@@ -9,6 +9,9 @@ import {
   DeleteStrategyMutation,
   DeleteStrategyMutationVariables,
   QueryAllocationStrategiesQuery,
+  DeleteResourceTypeMutation,
+  DeleteResourceTypeMutationVariables,
+  ResourceTypesQuery,
 } from '../../__generated__/graphql';
 import StrategiesTable from './strategies-table';
 import StrategyScriptModal from './strategy-script-modal';
@@ -33,6 +36,23 @@ const DELETE_STRATEGY_MUTATION = gql`
   }
 `;
 
+const DELETE_RESOURCE_TYPE_MUTATION = gql`
+  mutation DeleteResourceType($input: DeleteResourceTypeInput!) {
+    DeleteResourceType(input: $input) {
+      resourceTypeId
+    }
+  }
+`;
+
+const RESOURCE_TYPES_QUERY = gql`
+  query ResourceTypes {
+    QueryResourceTypes {
+      id
+      Name
+    }
+  }
+`;
+
 type ScriptState = {
   lang: string;
   script: string;
@@ -47,8 +67,27 @@ const StrategiesPage: VoidFunctionComponent = () => {
     query: STRATEGIES_QUERY,
     context,
   });
+
+  const [{ data: resourceType }] = useQuery<ResourceTypesQuery>({
+    query: RESOURCE_TYPES_QUERY,
+    context,
+  });
+
   const [, deleteStrategy] = useMutation<DeleteStrategyMutation, DeleteStrategyMutationVariables>(
     DELETE_STRATEGY_MUTATION,
+  );
+  const [, deleteResourceType] = useMutation<DeleteResourceTypeMutation, DeleteResourceTypeMutationVariables>(
+    DELETE_RESOURCE_TYPE_MUTATION,
+  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const findResourceTypeId = useCallback(
+    (id: string) => {
+      const StrategyById = data?.QueryAllocationStrategies.find((type) => type.id === id)?.Name;
+      const typeName = resourceType?.QueryResourceTypes.find((type) => type.Name === StrategyById);
+      return typeName?.id;
+    },
+    [data?.QueryAllocationStrategies, resourceType?.QueryResourceTypes],
   );
 
   const handleDeleteBtnClick = useCallback(
@@ -71,6 +110,21 @@ const StrategiesPage: VoidFunctionComponent = () => {
               content: 'Strategy deleted',
               type: 'success',
             });
+            const resourceTypeId = findResourceTypeId(id);
+
+            if (resourceTypeId) {
+              deleteResourceType({ input: { resourceTypeId } })
+                .then(({ error: deleteResourceTypeError }) => {
+                  if (deleteResourceTypeError != null) {
+                    throw Error();
+                  }
+                  addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
+                })
+                .catch(() => addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
+            }
+            if (!resourceTypeId) {
+              addToastNotification({ content: 'Resource type could not be found', type: 'error' });
+            }
           }
         })
         .catch((err) => {
@@ -80,7 +134,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
           });
         });
     },
-    [deleteStrategy, addToastNotification],
+    [deleteStrategy, addToastNotification, deleteResourceType, findResourceTypeId],
   );
   const handleScriptBtnClick = (lang: string, script: string, name?: string) => {
     setScriptState({ lang, script, name });
