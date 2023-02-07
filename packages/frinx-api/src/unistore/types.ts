@@ -124,6 +124,7 @@ const SiteDevicesValidator = t.type({
         'device-id': t.string,
         management: optional(
           t.type({
+            'address-family': optional(t.string),
             address: t.string,
           }),
         ),
@@ -561,6 +562,7 @@ export type CreateVpnSiteInput = {
         device: {
           'device-id': string;
           management: {
+            addressFamily?: string;
             address: string;
           };
           location: string;
