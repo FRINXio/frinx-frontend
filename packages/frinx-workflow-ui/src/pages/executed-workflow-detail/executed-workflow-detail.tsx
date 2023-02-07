@@ -13,9 +13,16 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  useToast,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNotifications, unwrap, callbackUtils, ExecutedWorkflowTask } from '@frinx/shared/src';
+import {
+  useNotifications,
+  unwrap,
+  callbackUtils,
+  ExecutedWorkflowTask,
+  ExecutedWorkflowDetailResult,
+} from '@frinx/shared/src';
 import { Link, useParams } from 'react-router-dom';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
@@ -85,6 +92,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
   const { addToastNotification } = useNotifications();
   const [tabIndex, setTabIndex] = useState(0);
+  const toast = useToast();
 
   if (execPayload == null) {
     return <Progress isIndeterminate size="xs" mt={-10} />;
@@ -167,6 +175,37 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
 
   const isResultInputOutputLoaded = result != null && result.input != null && result.output != null;
 
+  const onCopyToClipborad = (inputText: ExecutedWorkflowDetailResult | Record<string, string>) => {
+    if (inputText !== null) {
+      copyToClipBoard(inputText)
+        .then(() => {
+          toast({
+            title: 'Copied to Clipboard',
+            status: 'success',
+            duration: 2500,
+            isClosable: true,
+          });
+        })
+        .catch((err) => {
+          toast({
+            title: 'Error',
+            description: err.message,
+            status: 'error',
+            duration: 2500,
+            isClosable: true,
+          });
+        });
+    }
+    if (!inputText) {
+      toast({
+        title: 'Nothing to copy',
+        status: 'error',
+        duration: 2500,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Container maxWidth={1280}>
       {openedTask != null && (
@@ -209,7 +248,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
             <TabPanel>
               {isResultInputOutputLoaded && (
                 <InputOutputTab
-                  copyToClipBoard={copyToClipBoard}
+                  copyToClipBoard={onCopyToClipborad}
                   isEscaped={isEscaped}
                   input={result.input}
                   output={result.output}
@@ -223,7 +262,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
             <TabPanel>
               {result != null && (
                 <WorkflowJsonTab
-                  copyToClipBoard={copyToClipBoard}
+                  copyToClipBoard={onCopyToClipborad}
                   isEscaped={isEscaped}
                   result={result}
                   onEscapeChange={() => setIsEscaped(!isEscaped)}
