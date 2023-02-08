@@ -175,7 +175,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
 
   const isResultInputOutputLoaded = result != null && result.input != null && result.output != null;
 
-  const onCopyToClipborad = (inputText: ExecutedWorkflowDetailResult | Record<string, string>) => {
+  const handleCopyToClipborad = (inputText: ExecutedWorkflowDetailResult | Record<string, string>) => {
     if (inputText !== null) {
       copyToClipBoard(inputText)
         .then(() => {
@@ -248,7 +248,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
             <TabPanel>
               {isResultInputOutputLoaded && (
                 <InputOutputTab
-                  copyToClipBoard={onCopyToClipborad}
+                  copyToClipBoard={handleCopyToClipborad}
                   isEscaped={isEscaped}
                   input={result.input}
                   output={result.output}
@@ -262,7 +262,7 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
             <TabPanel>
               {result != null && (
                 <WorkflowJsonTab
-                  copyToClipBoard={onCopyToClipborad}
+                  copyToClipBoard={handleCopyToClipborad}
                   isEscaped={isEscaped}
                   result={result}
                   onEscapeChange={() => setIsEscaped(!isEscaped)}
