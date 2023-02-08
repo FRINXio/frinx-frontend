@@ -1,12 +1,15 @@
 import { Flex, Heading, Progress, Text } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
 import gql from 'graphql-tag';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, VoidFunctionComponent, useCallback } from 'react';
 import { useMutation, useQuery } from 'urql';
 import {
   DeleteResourceTypeMutation,
   DeleteResourceTypeMutationVariables,
   ResourceTypesQuery,
+  DeleteStrategyMutation,
+  DeleteStrategyMutationVariables,
+  QueryAllocationStrategiesQuery,
 } from '../../__generated__/graphql';
 import ResourceTypesTable from './resource-types-table';
 
@@ -27,6 +30,25 @@ const DELETE_RESOURCE_TYPE_MUTATION = gql`
   }
 `;
 
+const DELETE_STRATEGY_MUTATION = gql`
+  mutation DeleteStrategy($input: DeleteAllocationStrategyInput!) {
+    DeleteAllocationStrategy(input: $input) {
+      strategy {
+        id
+      }
+    }
+  }
+`;
+
+const STRATEGIES_QUERY = gql`
+  query QueryAllocationStrategies {
+    QueryAllocationStrategies {
+      id
+      Name
+    }
+  }
+`;
+
 const ResourceTypesPage: VoidFunctionComponent = () => {
   const ctx = useMemo(
     () => ({
@@ -41,8 +63,47 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
     context: ctx,
   });
 
+  const [{ data: strategies }] = useQuery<QueryAllocationStrategiesQuery>({
+    query: STRATEGIES_QUERY,
+    context: ctx,
+  });
+
   const [, deleteResourceType] = useMutation<DeleteResourceTypeMutation, DeleteResourceTypeMutationVariables>(
     DELETE_RESOURCE_TYPE_MUTATION,
+  );
+
+  const [, deleteStrategy] = useMutation<DeleteStrategyMutation, DeleteStrategyMutationVariables>(
+    DELETE_STRATEGY_MUTATION,
+  );
+
+  const findStrategyId = (id: string) => {
+    const typeById = data?.QueryResourceTypes.find((type) => type.id === id)?.Name;
+    const strategyId = strategies?.QueryAllocationStrategies.find((strategy) => strategy.Name === typeById);
+    return strategyId?.id;
+  };
+
+  const deleteStrategyById = useCallback(
+    (id: string) => {
+      deleteStrategy(
+        {
+          input: { allocationStrategyId: id },
+        },
+        { additionalTypenames: ['AllocationStrategy'] },
+      )
+        .then((response) => {
+          if (response.error) {
+            throw Error(response.error.message);
+          }
+          notification.addToastNotification({ content: 'Strategy deleted successfully', type: 'success' });
+        })
+        .catch(() => {
+          notification.addToastNotification({
+            content: 'There was a problem with strategy deletion',
+            type: 'error',
+          });
+        });
+    },
+    [deleteStrategy, notification],
   );
 
   const handleOnDelete = (resourceTypeId: string) => {
@@ -53,6 +114,8 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
         }
 
         notification.addToastNotification({ content: 'Resource type deleted successfully', type: 'success' });
+        const strategyId = findStrategyId(resourceTypeId);
+        deleteStrategyById(strategyId || '');
       })
       .catch(() => notification.addToastNotification({ content: 'Resource type deletion failed', type: 'error' }));
   };
