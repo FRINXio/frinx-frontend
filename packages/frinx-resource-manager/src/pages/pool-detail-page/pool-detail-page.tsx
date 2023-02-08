@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
-import DeletePoolPopover from '../../components/delete-pool-modal';
+import DeleteModal from '../../components/delete-modal';
 import PageContainer from '../../components/page-container';
 import { isCustomResourceType } from '../../helpers/create-pool-form.helpers';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
@@ -205,15 +205,16 @@ const PoolDetailPage: VoidFunctionComponent = () => {
         <Text size="sm" textColor="gray.400">
           <strong>Warning:</strong> By deleting this pool, all data will be lost.
         </Text>
-        <DeletePoolPopover
+        <DeleteModal
+          type="resource pool"
           onDelete={() => deleteResourcePool(poolId, { redirectOnSuccess: '/resource-manager/pools' })}
           canDeletePool={canDeletePool}
-          poolName={resourcePool.Name}
+          entityName={resourcePool.Name}
         >
           <Button data-cy="delete-resource-pool" mt={5} variant="outline" colorScheme="red" isDisabled={!canDeletePool}>
             Delete resource pool
           </Button>
-        </DeletePoolPopover>
+        </DeleteModal>
       </Box>
     </PageContainer>
   );

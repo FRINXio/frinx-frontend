@@ -2,6 +2,7 @@ import React, { VoidFunctionComponent } from 'react';
 import { Icon, IconButton, Table, Tbody, Td, Th, Thead, Tr, Text, ButtonGroup } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { QueryAllocationStrategiesQuery } from '../../__generated__/graphql';
+import DeleteModal from '../../components/delete-modal';
 
 type Props = {
   strategies: QueryAllocationStrategiesQuery['QueryAllocationStrategies'];
@@ -43,15 +44,14 @@ const StrategiesTable: VoidFunctionComponent<Props> = ({ strategies, onScriptBtn
                     onScriptBtnClick(strategy.Lang, strategy.Script, strategy.Name);
                   }}
                 />
-                <IconButton
-                  data-cy={`strategy-${strategy.Name}-delete`}
-                  colorScheme="red"
-                  aria-label="delete"
-                  icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                  onClick={() => {
-                    onDeleteBtnClick(strategy.id);
-                  }}
-                />
+                <DeleteModal type="strategy" onDelete={() => onDeleteBtnClick(strategy.id)} entityName={strategy.Name}>
+                  <IconButton
+                    data-cy={`strategy-${strategy.Name}-delete`}
+                    colorScheme="red"
+                    aria-label="delete"
+                    icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
+                  />
+                </DeleteModal>
               </ButtonGroup>
             </Td>
           </Tr>
