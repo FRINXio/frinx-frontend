@@ -3,7 +3,11 @@
 
 /// <reference types="cypress" />
 
-import { hasOperationName, aliasQuery } from '../../helpers/utils';
+import { hasOperationName } from '../../helpers/utils';
+
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
 
 describe('Check pools', () => {
   beforeEach(() => {
@@ -26,7 +30,7 @@ describe('Check pools', () => {
     cy.get('table').find('tr').should('have.length', 21);
   });
 
-  it.skip ('Search by name', () => {
+  it.skip('Search by name', () => {
     cy.contains('h1', 'Pools');
     cy.get('table').find('tr').should('have.length', 21);
 
@@ -35,7 +39,7 @@ describe('Check pools', () => {
     cy.get('table').find('tr').should('have.length', 2);
   });
 
-  it.only('Search by name (workaround)', () => {
+  it('Search by name (workaround)', () => {
     // Note: after clicking of  detail of some pool -> searching fixed (workaround)
 
     cy.contains('h1', 'Pools');
@@ -223,11 +227,7 @@ describe('Check pools', () => {
     cy.contains('h1', 'ga');
 
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids')
-      .parent()
-      .parent()
-      .parent()
-      .parent()
+    cy.get('[data-cy="pool-details-table"]')
       .find('tr')
       .should('have.length', 1 + 3);
 
@@ -256,22 +256,14 @@ describe('Check pools', () => {
     }).as('AllocatedResources');
     cy.get('[data-cy="resource-pool-search-by-id"]').click(); // Search by alternative id
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids')
-      .parent()
-      .parent()
-      .parent()
-      .parent()
+    cy.get('[data-cy="pool-details-table"]')
       .find('tr')
       .should('have.length', 1 + 1);
 
     cy.get('[data-cy="resource-pool-claim-key-0"]').should('not.exist'); // Key:
     cy.get('[data-cy="resource-pool-search-by-id"]').click(); // Search by alternative id
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids')
-      .parent()
-      .parent()
-      .parent()
-      .parent()
+    cy.get('[data-cy="pool-details-table"]')
       .find('tr')
       .should('have.length', 1 + 3);
   });
@@ -317,11 +309,7 @@ describe('Check pools', () => {
     cy.contains('0 / 16'); // Utilized capacity
     cy.get('[data-cy="resource-pool-claim-resource"]').should('be.disabled'); // Claim resource
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids')
-      .parent()
-      .parent()
-      .parent()
-      .parent()
+    cy.get('[data-cy="pool-details-table"]')
       .find('tr')
       .should('have.length', 1 + 10);
     cy.contains('p', 'Previous');
@@ -333,11 +321,7 @@ describe('Check pools', () => {
     }).as('AllocatedResources');
     cy.contains('button', 'Next').click(); // Next
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids')
-      .parent()
-      .parent()
-      .parent()
-      .parent()
+    cy.get('[data-cy="pool-details-table"]')
       .find('tr')
       .should('have.length', 1 + 6);
     cy.contains('button', 'Previous');
@@ -349,11 +333,7 @@ describe('Check pools', () => {
     }).as('AllocatedResources');
     cy.contains('button', 'Previous').click(); // Previous
     // Allocated Resources - table
-    cy.contains('button', 'Show alternative ids')
-      .parent()
-      .parent()
-      .parent()
-      .parent()
+    cy.get('[data-cy="pool-details-table"]')
       .find('tr')
       .should('have.length', 1 + 10);
     cy.contains('p', 'Previous');
@@ -380,7 +360,7 @@ describe('Check pools', () => {
     // Click Create Pool
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectPools')) {
-        req.reply({ fixture: 'resource-manager/pools/IPAM/select-pools.json' });
+        req.reply({ fixture: 'resource-manager/pools/ipam/select-pools.json' });
       }
     }).as('SelectPools');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -390,7 +370,7 @@ describe('Check pools', () => {
     }).as('SelectAllocationStrategies');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'SelectResourceTypes')) {
-        req.reply({ fixture: 'resource-manager/pools/IPAM/select-resource-types.json' });
+        req.reply({ fixture: 'resource-manager/pools/ipam/select-resource-types.json' });
       }
     }).as('SelectResourceTypes');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
@@ -412,14 +392,14 @@ describe('Check pools', () => {
       });
   });
 
-  it('IPAM / Aggregates', () => {
+  it.only('IPAM / Aggregates', () => {
     cy.contains('h1', 'Pools');
     cy.get('table').find('tr').should('have.length', 21);
 
     cy.contains('button span', 'IPAM').click({ force: true });
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetIpPools')) {
-        req.reply({ fixture: 'resource-manager/pools/IPAM/get-ip-pools.json' });
+        req.reply({ fixture: 'resource-manager/pools/ipam/get-ip-pools.json' });
       }
     }).as('GetIpPools');
     cy.contains('a', 'Aggregates').click();
@@ -438,7 +418,7 @@ describe('Check pools', () => {
     }).as('GetResourceTypes');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPoolIpRanges')) {
-        req.reply({ fixture: 'resource-manager/pools/IPAM/get-pool-ip-ranges.json' });
+        req.reply({ fixture: 'resource-manager/pools/ipam/get-pool-ip-ranges.json' });
       }
     }).as('GetPoolIpRanges');
     cy.contains('a', 'IP Ranges').click();

@@ -1,1 +1,34 @@
-{"data":{"QueryRootResourcePools":[{"id":"21474836481","Name":"test","PoolType":"allocating","Tags":[{"id":"30064771072","Tag":"test","__typename":"Tag"}],"PoolProperties":{"address":"192.168.10.1","prefix":24,"subnet":false},"AllocationStrategy":{"id":"2","Name":"ipv4","Lang":"go","__typename":"AllocationStrategy"},"ResourceType":{"id":"25769803777","Name":"ipv4","__typename":"ResourceType"},"Resources":[{"id":"17179869189","NestedPool":null,"__typename":"Resource"}],"Capacity":{"freeCapacity":"255","utilizedCapacity":"1","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836482","Name":"test_ipv6","PoolType":"allocating","Tags":[{"id":"30064771073","Tag":"test_ipv6","__typename":"Tag"}],"PoolProperties":{"address":"2001:db8:1::","prefix":64,"subnet":false},"AllocationStrategy":{"id":"6","Name":"ipv6","Lang":"go","__typename":"AllocationStrategy"},"ResourceType":{"id":"25769803781","Name":"ipv6","__typename":"ResourceType"},"Resources":[],"Capacity":{"freeCapacity":"18446744073709551616","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"}]}}
+{
+  "data": {
+    "QueryRootResourcePools": [
+      {
+        "id": "21474836481",
+        "Name": "test",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771072", "Tag": "test", "__typename": "Tag" }],
+        "PoolProperties": { "address": "192.168.10.1", "prefix": 24, "subnet": false },
+        "AllocationStrategy": { "id": "2", "Name": "ipv4", "Lang": "go", "__typename": "AllocationStrategy" },
+        "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+        "Resources": [{ "id": "17179869189", "NestedPool": null, "__typename": "Resource" }],
+        "Capacity": { "freeCapacity": "255", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836482",
+        "Name": "test_ipv6",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771073", "Tag": "test_ipv6", "__typename": "Tag" }],
+        "PoolProperties": { "address": "2001:db8:1::", "prefix": 64, "subnet": false },
+        "AllocationStrategy": { "id": "6", "Name": "ipv6", "Lang": "go", "__typename": "AllocationStrategy" },
+        "ResourceType": { "id": "25769803781", "Name": "ipv6", "__typename": "ResourceType" },
+        "Resources": [],
+        "Capacity": {
+          "freeCapacity": "18446744073709551616",
+          "utilizedCapacity": "0",
+          "__typename": "PoolCapacityPayload"
+        },
+        "__typename": "ResourcePool"
+      }
+    ]
+  }
+}

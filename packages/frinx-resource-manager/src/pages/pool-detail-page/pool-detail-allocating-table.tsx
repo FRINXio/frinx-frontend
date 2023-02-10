@@ -52,7 +52,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
       {selectedResource != null && (
         <AlternativeIdModal isOpen={isOpen} onClose={onClose} altIds={selectedResource.AlternativeId} />
       )}
-      <Table background="white" size="sm">
+      <Table data-cy="pool-details-table" background="white" size="sm">
         <Thead bgColor="gray.200">
           <Tr>
             {allocatedResourcesKeys.map((key) => (

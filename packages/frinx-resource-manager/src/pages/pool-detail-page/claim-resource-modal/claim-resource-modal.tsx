@@ -217,7 +217,7 @@ const ClaimResourceModal: FC<Props> = ({
                 <FormControl isRequired isInvalid={errors.desiredSize != null} mb={5}>
                   <FormLabel htmlFor="desiredSize">Desired size (number of allocated addresses)</FormLabel>
                   <Input
-                    data-cy="resource-pool-claim-value"
+                    data-cy="resource-pool-claim-size"
                     id="desiredSize"
                     name="desiredSize"
                     placeholder="Enter a number"
@@ -237,6 +237,7 @@ const ClaimResourceModal: FC<Props> = ({
                 <FormControl isInvalid={errors.desiredValue != null} mb={5}>
                   <FormLabel htmlFor="desiredValue">Desired value (optional input)</FormLabel>
                   <Input
+                    data-cy="resource-pool-claim-value"
                     placeholder={`Set specific value that you want to allocate from ${poolName}`}
                     name="desiredValue"
                     id="desiredValue"

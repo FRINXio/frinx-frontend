@@ -122,11 +122,11 @@ describe('Check pools', () => {
 
     cy.get('[data-cy="delete-pool-test_ipv6"]').click();
     cy.contains('header', 'Delete resource pool test_ipv6');
-    cy.get('[data-cy="delete-pool-cancel"]').click();
+    cy.get('[data-cy="delete-cancel"]').click();
 
     cy.get('[data-cy="delete-pool-test_ipv6"]').click();
     cy.contains('header', 'Delete resource pool test_ipv6');
-    cy.get('[data-cy="delete-pool-confirm"]').click();
+    cy.get('[data-cy="delete-confirm"]').click();
 
     cy.wait(['@DeletePool']);
     cy.wait(3000);
