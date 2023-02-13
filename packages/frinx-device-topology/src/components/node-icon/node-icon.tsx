@@ -113,9 +113,23 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         </g>
       </G>
       {isSelectedForCommonSearch && (
-        <Circle r={`${circleDiameter / 2}px`} fill="transparent" strokeWidth={6} stroke="red.300" />
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="red.300"
+        />
       )}
-      {isCommon && <Circle r={`${circleDiameter / 2}px`} fill="transparent" strokeWidth={6} stroke="green.300" />}
+      {isCommon && (
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="green.300"
+        />
+      )}
     </G>
   );
 };
