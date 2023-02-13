@@ -19,7 +19,10 @@ const TOPOLOGY_QUERY = gql`
             y
           }
         }
-        interfaces
+        interfaces {
+          id
+          status
+        }
       }
       edges {
         id

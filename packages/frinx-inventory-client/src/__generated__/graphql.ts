@@ -317,11 +317,21 @@ export type GraphEdge = {
   target: EdgeSourceTarget;
 };
 
+export type GraphEdgeStatus =
+  | 'ok'
+  | 'unknown';
+
 export type GraphNode = {
   __typename?: 'GraphNode';
   device: Device;
   id: Scalars['ID'];
-  interfaces: Array<Scalars['String']>;
+  interfaces: Array<GraphNodeInterface>;
+};
+
+export type GraphNodeInterface = {
+  __typename?: 'GraphNodeInterface';
+  id: Scalars['String'];
+  status: Maybe<GraphEdgeStatus>;
 };
 
 export type GraphVersionEdge = {
@@ -582,7 +592,8 @@ export type Query = {
   labels: LabelConnection;
   locations: LocationConnection;
   node: Maybe<Node>;
-  topology: Topology;
+  topology: Maybe<Topology>;
+  topologyCommonNodes: Maybe<TopologyCommonNodes>;
   topologyVersionData: TopologyVersionData;
   topologyVersions: Maybe<Array<Scalars['String']>>;
   transactions: Array<Transaction>;
@@ -655,6 +666,11 @@ export type QueryTopologyArgs = {
 };
 
 
+export type QueryTopologyCommonNodesArgs = {
+  nodes: Array<Scalars['String']>;
+};
+
+
 export type QueryTopologyVersionDataArgs = {
   version: Scalars['String'];
 };
@@ -712,6 +728,11 @@ export type Topology = {
   __typename?: 'Topology';
   edges: Array<GraphEdge>;
   nodes: Array<GraphNode>;
+};
+
+export type TopologyCommonNodes = {
+  __typename?: 'TopologyCommonNodes';
+  commonNodes: Array<Scalars['String']>;
 };
 
 export type TopologyVersionData = {

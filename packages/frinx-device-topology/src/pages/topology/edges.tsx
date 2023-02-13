@@ -13,7 +13,7 @@ type Props = {
 
 const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
   const { state, dispatch } = useStateContext();
-  const { nodePositions, interfaceGroupPositions, connectedNodeIds, selectedNode, selectedEdge } = state;
+  const { nodePositions, interfaceGroupPositions, connectedNodeIds, selectedNode, selectedEdge, nodes } = state;
 
   const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
     dispatch(setSelectedEdge(edge));
@@ -23,11 +23,14 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
     <g>
       {edgesWithDiff.map((edge) => {
         // dont show edges that are connected to active node
+        // console.log(selectedNode?.device.name, isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions));
         if (isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions)) {
           return null;
         }
 
-        const isActive = selectedNode?.interfaces.includes(edge.source.interface);
+        const isActive = !!selectedNode?.interfaces.find((i) => i.id === edge.source.interface);
+        console.log(edge.source.interface);
+        console.log(selectedNode?.device.name, isActive);
         const isSelected = edge.id === selectedEdge?.id;
 
         const linePoints = getLinePoints({ edge, connectedNodeIds, nodePositions, interfaceGroupPositions });
@@ -44,6 +47,11 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
               edgeGap: EDGE_GAP,
             })
           : [];
+        const isUnknown = !!nodes.find(
+          (n) =>
+            n.interfaces.find((i) => i.id === edge.source.interface || i.id === edge.target.interface)?.status ===
+            'unknown',
+        );
 
         return (
           <Edge
@@ -54,6 +62,7 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
             linePoints={linePoints}
             onClick={handleEdgeClick}
             key={edge.id}
+            isUnknown={isUnknown}
           />
         );
       })}
