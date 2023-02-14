@@ -21,6 +21,8 @@ export type GraphNode = {
   id: string;
   device: Device;
   interfaces: string[];
+  deviceType: string | null;
+  softwareVersion: string | null;
 };
 
 export type SourceTarget = {

@@ -320,8 +320,10 @@ export type GraphEdge = {
 export type GraphNode = {
   __typename?: 'GraphNode';
   device: Device;
+  deviceType: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   interfaces: Array<Scalars['String']>;
+  softwareVersion: Maybe<Scalars['String']>;
 };
 
 export type GraphVersionEdge = {
@@ -582,11 +584,12 @@ export type Query = {
   labels: LabelConnection;
   locations: LocationConnection;
   node: Maybe<Node>;
-  topology: Topology;
+  topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
   topologyVersionData: TopologyVersionData;
   topologyVersions: Maybe<Array<Scalars['String']>>;
   transactions: Array<Transaction>;
+  uniconfigShellSession: Maybe<Scalars['String']>;
   zones: ZonesConnection;
 };
 
@@ -704,6 +707,7 @@ export type Subscription = {
 
 export type SubscriptionUniconfigShellArgs = {
   input?: InputMaybe<Scalars['String']>;
+  sessionId: Scalars['String'];
   trigger?: InputMaybe<Scalars['Int']>;
 };
 
@@ -845,13 +849,6 @@ export type TopologyVersionDataQueryQueryVariables = Exact<{
 
 export type TopologyVersionDataQueryQuery = { __typename?: 'Query', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<string> }> } };
 
-export type TopologyCommonNodesQueryVariables = Exact<{
-  nodes: Array<Scalars['String']> | Scalars['String'];
-}>;
-
-
-export type TopologyCommonNodesQuery = { __typename?: 'Query', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null };
-
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<PositionInput> | PositionInput;
 }>;
@@ -859,9 +856,16 @@ export type UpdatePositionMutationVariables = Exact<{
 
 export type UpdatePositionMutation = { __typename?: 'Mutation', updateDeviceMetadata: { __typename?: 'UpdateDeviceMetadataPayload', devices: Array<{ __typename?: 'Device', id: string, position: { __typename?: 'Position', x: number, y: number } | null } | null> | null } };
 
+export type TopologyCommonNodesQueryVariables = Exact<{
+  nodes: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type TopologyCommonNodesQuery = { __typename?: 'Query', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null };
+
 export type TopologyQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
 }>;
 
 
-export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, interfaces: Array<string>, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } };
+export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, deviceType: string | null, softwareVersion: string | null, interfaces: Array<string>, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize, position: { __typename?: 'Position', x: number, y: number } | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };

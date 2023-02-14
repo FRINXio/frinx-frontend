@@ -19,6 +19,8 @@ const TOPOLOGY_QUERY = gql`
             y
           }
         }
+        deviceType
+        softwareVersion
         interfaces
       }
       edges {
