@@ -29,8 +29,6 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
         }
 
         const isActive = !!selectedNode?.interfaces.find((i) => i.id === edge.source.interface);
-        console.log(edge.source.interface);
-        console.log(selectedNode?.device.name, isActive);
         const isSelected = edge.id === selectedEdge?.id;
 
         const linePoints = getLinePoints({ edge, connectedNodeIds, nodePositions, interfaceGroupPositions });

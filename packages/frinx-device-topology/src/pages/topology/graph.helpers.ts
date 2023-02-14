@@ -291,7 +291,6 @@ export function isTargetingActiveNode(
   const targetNodeId = edge.target.nodeId;
   const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
   const targetGroup = interfaceGroupPositions[targetGroupName];
-  console.log(targetGroup.interfaces);
   return (
     targetNodeId === selectedNode?.device.name && !!targetGroup.interfaces.find((i) => i.id === edge.source.interface)
   );
