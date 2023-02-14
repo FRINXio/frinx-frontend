@@ -40,6 +40,8 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
           name,
           position: { x: getRandomInt(1000), y: getRandomInt(600) },
         },
+        deviceType: null,
+        softwareVersion: null,
         interfaces,
         change: 'DELETED' as const,
       };
