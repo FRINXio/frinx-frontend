@@ -274,8 +274,10 @@ enum GraphEdgeStatus {
 
 type GraphNode {
   device: Device!
+  deviceType: String
   id: ID!
   interfaces: [GraphNodeInterface!]!
+  softwareVersion: String
 }
 
 type GraphNodeInterface {

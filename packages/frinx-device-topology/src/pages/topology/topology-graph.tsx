@@ -105,7 +105,12 @@ const TopologyGraph: FunctionComponent<Props> = ({
           width={60}
           boxShadow="md"
         >
-          <DeviceInfoPanel deviceId={selectedNode.device.id} onClose={handleInfoPanelClose} />
+          <DeviceInfoPanel
+            deviceId={selectedNode.device.id}
+            onClose={handleInfoPanelClose}
+            deviceType={selectedNode.deviceType}
+            softwareVersion={selectedNode.softwareVersion}
+          />
         </Box>
       )}
       {unconfirmedSelectedNodeIds.length && (

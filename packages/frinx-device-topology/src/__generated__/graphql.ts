@@ -324,8 +324,10 @@ export type GraphEdgeStatus =
 export type GraphNode = {
   __typename?: 'GraphNode';
   device: Device;
+  deviceType: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   interfaces: Array<GraphNodeInterface>;
+  softwareVersion: Maybe<Scalars['String']>;
 };
 
 export type GraphNodeInterface = {
@@ -876,4 +878,4 @@ export type TopologyQueryVariables = Exact<{
 }>;
 
 
-export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize, position: { __typename?: 'Position', x: number, y: number } | null }, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus }> }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };
+export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, deviceType: string | null, softwareVersion: string | null, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize, position: { __typename?: 'Position', x: number, y: number } | null }, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus }> }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };

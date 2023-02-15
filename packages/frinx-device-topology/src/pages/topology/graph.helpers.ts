@@ -24,6 +24,8 @@ export type GraphNodeInterface = {
 export type GraphNode = {
   id: string;
   device: Device;
+  deviceType: string | null;
+  softwareVersion: string | null;
   interfaces: GraphNodeInterface[];
 };
 
