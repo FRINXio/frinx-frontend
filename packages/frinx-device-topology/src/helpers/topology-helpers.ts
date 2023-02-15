@@ -42,7 +42,10 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
         },
         deviceType: null,
         softwareVersion: null,
-        interfaces,
+        interfaces: interfaces.map((i) => ({
+          status: 'ok',
+          id: i,
+        })),
         change: 'DELETED' as const,
       };
     });

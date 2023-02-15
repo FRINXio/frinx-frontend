@@ -267,12 +267,22 @@ type GraphEdge {
   target: EdgeSourceTarget!
 }
 
+enum GraphEdgeStatus {
+  ok
+  unknown
+}
+
 type GraphNode {
   device: Device!
   deviceType: String
   id: ID!
-  interfaces: [String!]!
+  interfaces: [GraphNodeInterface!]!
   softwareVersion: String
+}
+
+type GraphNodeInterface {
+  id: String!
+  status: GraphEdgeStatus!
 }
 
 type GraphVersionEdge {
