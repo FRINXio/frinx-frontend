@@ -24,9 +24,11 @@ const DEVICE_QUERY = gql`
 type Props = {
   deviceId: string;
   onClose: () => void;
+  deviceType: string | null;
+  softwareVersion: string | null;
 };
 
-const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose }) => {
+const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose, deviceType, softwareVersion }) => {
   const [{ data, fetching, error }] = useQuery<DeviceQuery, DeviceQueryVariables>({
     query: DEVICE_QUERY,
     variables: { id: deviceId },
@@ -65,6 +67,24 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose }) =>
       <Text as="span" fontSize="xs" color="gray.700">
         {format(localDate, 'dd/MM/yyyy, k:mm')}
       </Text>
+      <Flex marginTop={2} justifyContent="space-between">
+        {deviceType != null && (
+          <Box flex={1}>
+            <Heading as="h4" fontSize="xs">
+              Device type
+            </Heading>
+            {deviceType}
+          </Box>
+        )}
+        {softwareVersion != null && (
+          <Box flex={1}>
+            <Heading as="h4" fontSize="xs">
+              Software version
+            </Heading>
+            {softwareVersion}
+          </Box>
+        )}
+      </Flex>
       <HStack spacing={2} marginTop={4}>
         <Button
           as={Link}
