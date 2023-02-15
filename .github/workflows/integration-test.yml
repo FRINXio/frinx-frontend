@@ -4,12 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
-      run_only_tests:
-        description: 'Input relative path from cypress/e2e/ e.g. 3-resource-manager/resource-types-crud.cy.ts or **/*cy.ts:'
-        required: true
-        type: string
-
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
@@ -17,17 +11,6 @@ jobs:
       PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
       PRIVATE_NPM_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
     steps:
-      - name: Upgrade Ubuntu to suppress error dri3 extension not supported
-        run: |
-          exit 0
-          # https://stackoverflow.com/questions/72392219/errorgpu-memory-buffer-support-x11-cc44-dri3-extension-not-supported
-          sudo apt list --upgradable
-          sudo apt upgrade
-          lspci | grep -i --color 'vga\|3d\|2d'
-          # not  installed in ubuntu xdpyinfo | grep -i "DRI"
-          sudo apt list --installed | grep dri3
-          # https://forums.debian.net/viewtopic.php?t=152570
-          # So if you want DRI3 try nouveau.
       - name: Checkout repository code
         uses: actions/checkout@v3
       - name: Use CI yarnrc
