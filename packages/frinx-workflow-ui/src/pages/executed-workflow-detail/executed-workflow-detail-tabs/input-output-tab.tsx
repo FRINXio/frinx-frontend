@@ -37,6 +37,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
           storagePath={payload.data}
         />
       )}
+
       <SimpleGrid columns={2} spacing={4}>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>

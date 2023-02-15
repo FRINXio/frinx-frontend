@@ -86,8 +86,6 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
     }
   };
 
-  // console.log('commonNodeIds: ', commonNodeIds);
-
   return (
     <g>
       {nodesWithDiff.map((node) => (
