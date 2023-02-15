@@ -22,7 +22,6 @@ jobs:
       - name: Prepare env variable
         run: |
           cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
--frontend-server/.env
       - name: Cypress tests
         uses: cypress-io/github-action@v5
         with:
