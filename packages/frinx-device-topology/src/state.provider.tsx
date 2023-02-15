@@ -19,7 +19,12 @@ const TOPOLOGY_QUERY = gql`
             y
           }
         }
-        interfaces
+        deviceType
+        softwareVersion
+        interfaces {
+          id
+          status
+        }
       }
       edges {
         id

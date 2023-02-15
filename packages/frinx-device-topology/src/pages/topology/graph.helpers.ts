@@ -17,10 +17,16 @@ export type Device = {
   deviceSize: DeviceSize;
 };
 
+export type GraphNodeInterface = {
+  id: string;
+  status: 'ok' | 'unknown';
+};
 export type GraphNode = {
   id: string;
   device: Device;
-  interfaces: string[];
+  deviceType: string | null;
+  softwareVersion: string | null;
+  interfaces: GraphNodeInterface[];
 };
 
 export type SourceTarget = {
@@ -52,7 +58,7 @@ export type PositionsWithGroupsMap = {
 type GroupName = string;
 export type GroupData = {
   position: Position;
-  interfaces: string[];
+  interfaces: GraphNodeInterface[];
 };
 export type PositionGroupsMap = Record<GroupName, GroupData>;
 
@@ -93,17 +99,18 @@ export function getInterfacesPositions({
   const allInterfaces = nodes.map((n) => n.interfaces).flat();
   return allInterfaces.reduce((acc: PositionGroupsMap, curr) => {
     const target =
-      edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source;
+      edges.find((e) => e.source.interface === curr.id)?.target ??
+      edges.find((e) => e.target.interface === curr.id)?.source;
 
     // if interface does not have defined connections, we will not display it
     // because we cannot count angle to properly display it
     // we should be able to display info about not connected interface somewhere in UI
     // for example when you click on particular node
     if (!target) {
-      const node: GraphNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const node: GraphNode = unwrap(nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id)));
       const x = 0;
       const y = getDeviceSizeDiameter(node.device.deviceSize);
-      const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const sourceNode = unwrap(nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id)));
       const groupName = getGroupName(sourceNode, sourceNode);
       const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
 
@@ -116,8 +123,8 @@ export function getInterfacesPositions({
       };
     }
 
-    const sourceNode = nodes.find((n) => n.interfaces.includes(curr));
-    const targetNode = nodes.find((n) => n.interfaces.includes(target.interface));
+    const sourceNode = nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id));
+    const targetNode = nodes.find((n) => !!n.interfaces.find((i) => i.id === target.interface));
 
     // we cant rely on consistent data
     // for example when filtering nodes, we cant be sure if all edges have exisitng nodes
@@ -198,7 +205,7 @@ export function getPointOnSlope({ source, target, radius, length = 1 }: GetPoint
   };
 }
 
-export function getDistanceFromLineList(interfaces: string[]): number[] {
+export function getDistanceFromLineList(interfaces: GraphNodeInterface[]): number[] {
   const numberOfPoints = interfaces.length;
   return [...Array(numberOfPoints).keys()].map((p) => p - (numberOfPoints - 1) / 2);
 }
@@ -261,7 +268,7 @@ export function getControlPoints({
   const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
   const groupData = interfaceGroupPositions[groupName];
   const distanceFromLineList = getDistanceFromLineList(groupData.interfaces);
-  const index = groupData.interfaces.indexOf(edge.target.interface);
+  const index = groupData.interfaces.map((i) => i.id).indexOf(edge.target.interface);
   const length = edgeGap * distanceFromLineList[index];
 
   const nodesDistance = getDistanceBetweenPoints(sourcePosition, targetPosition);
@@ -286,5 +293,7 @@ export function isTargetingActiveNode(
   const targetNodeId = edge.target.nodeId;
   const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
   const targetGroup = interfaceGroupPositions[targetGroupName];
-  return targetNodeId === selectedNode?.device.name && targetGroup?.interfaces.includes(edge.source.interface);
+  return (
+    targetNodeId === selectedNode?.device.name && !!targetGroup.interfaces.find((i) => i.id === edge.source.interface)
+  );
 }

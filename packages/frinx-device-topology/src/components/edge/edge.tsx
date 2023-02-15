@@ -12,9 +12,18 @@ type Props = {
   controlPoints: Position[];
   linePoints: Line;
   onClick: (edge: GraphEdgeWithDiff | null) => void;
+  isUnknown: boolean;
 };
 
-const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, controlPoints, linePoints, onClick }) => {
+const Edge: VoidFunctionComponent<Props> = ({
+  edge,
+  isActive,
+  isSelected,
+  controlPoints,
+  linePoints,
+  onClick,
+  isUnknown,
+}) => {
   const { start, end } = linePoints;
   const { colors } = useTheme<Theme>();
 
@@ -29,6 +38,7 @@ const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, contro
             fill="none"
             d={getCurvePath(start, end, controlPoints)}
             cursor="pointer"
+            opacity={isUnknown ? 0.5 : 1}
           />
           <path
             strokeWidth={5}
@@ -41,6 +51,7 @@ const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, contro
             onClick={() => {
               onClick(edge);
             }}
+            opacity={isUnknown ? 0.5 : 1}
           />
         </g>
       ) : (
@@ -55,6 +66,7 @@ const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, isSelected, contro
           strokeLinecap="round"
           borderWidth={3}
           transition="all .2s ease-in-out"
+          strokeDasharray={isUnknown ? '15, 15' : undefined}
         />
       )}
 

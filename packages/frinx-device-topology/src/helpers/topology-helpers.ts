@@ -40,7 +40,12 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
           name,
           position: { x: getRandomInt(1000), y: getRandomInt(600) },
         },
-        interfaces,
+        deviceType: null,
+        softwareVersion: null,
+        interfaces: interfaces.map((i) => ({
+          status: 'ok',
+          id: i,
+        })),
         change: 'DELETED' as const,
       };
     });

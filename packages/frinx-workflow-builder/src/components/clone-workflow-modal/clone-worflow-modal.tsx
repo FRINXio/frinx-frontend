@@ -57,7 +57,7 @@ const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose, workf
 
       toast({
         duration: 2000,
-        title: `Succesfully saved workflow as ${workflowName}`,
+        title: `Successfully saved workflow as ${workflowName}`,
         isClosable: true,
         status: 'success',
       });
