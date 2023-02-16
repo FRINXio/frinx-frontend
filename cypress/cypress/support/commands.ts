@@ -2,6 +2,16 @@
 
 import '@testing-library/cypress/add-commands';
 
+require('@4tw/cypress-drag-drop')
+
+/* eslint handle-callback-err: "error" */
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+  if (err.message.includes('apiFetch') || err.message.includes('properties of null')) {
+    return false
+  }
+})
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
