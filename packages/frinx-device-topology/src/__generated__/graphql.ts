@@ -892,7 +892,7 @@ export type TopologyVersionDataQueryQueryVariables = Exact<{
 }>;
 
 
-export type TopologyVersionDataQueryQuery = { __typename?: 'Query', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus }> }> } };
+export type TopologyVersionDataQueryQuery = { __typename?: 'Query', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } };
 
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;

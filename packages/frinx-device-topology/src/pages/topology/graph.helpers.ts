@@ -46,6 +46,7 @@ export type BackupGraphNode = {
   id: string;
   name: string;
   interfaces: GraphNodeInterface[];
+  coordinates: Position;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;

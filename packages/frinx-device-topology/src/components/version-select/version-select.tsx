@@ -39,6 +39,10 @@ const TOPOLOGY_VERSION_DATA_QUERY = gql`
           id
           status
         }
+        coordinates {
+          x
+          y
+        }
       }
     }
   }
