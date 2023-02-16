@@ -38,7 +38,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
   onTagClick,
 }) => {
   return (
-    <Table background="white" size="sm">
+    <Table data-cy="pool-details-nested" background="white" size="sm">
       <Thead bgColor="gray.200">
         <Tr>
           {isNestedShown && <Th>Children</Th>}
