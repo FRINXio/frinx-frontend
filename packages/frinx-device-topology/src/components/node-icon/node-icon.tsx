@@ -53,7 +53,6 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      pointerEvents={change === 'DELETED' ? 'none' : 'all'}
     >
       <Circle
         r={isFocused ? `${circleDiameter}px` : 0}
