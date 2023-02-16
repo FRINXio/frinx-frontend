@@ -2,7 +2,7 @@
 
 import '@testing-library/cypress/add-commands';
 
-require('@4tw/cypress-drag-drop')
+require('@4tw/cypress-drag-drop');
 
 /* eslint handle-callback-err: "error" */
 
