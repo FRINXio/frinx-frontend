@@ -1,0 +1,8 @@
+{
+  "data": {
+    "DeleteAllocationStrategy": {
+      "strategy": { "id": "4", "__typename": "AllocationStrategy" },
+      "__typename": "DeleteAllocationStrategyPayload"
+    }
+  }
+}
