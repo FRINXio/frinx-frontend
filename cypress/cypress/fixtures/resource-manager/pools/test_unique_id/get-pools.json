@@ -1,0 +1,36 @@
+{
+  "data": {
+    "QueryRootResourcePools": [
+      {
+        "id": "21474836481",
+        "Name": "test",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771072", "Tag": "test", "__typename": "Tag" }],
+        "PoolProperties": { "address": "192.168.10.1", "prefix": 24, "subnet": false },
+        "AllocationStrategy": { "id": "2", "Name": "ipv4", "Lang": "go", "__typename": "AllocationStrategy" },
+        "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+        "Resources": [{ "id": "17179869189", "NestedPool": null, "__typename": "Resource" }],
+        "Capacity": { "freeCapacity": "255", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836568",
+        "Name": "test_unique_id",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771125", "Tag": "test_unique_id", "__typename": "Tag" }],
+        "PoolProperties": { "from": 1, "idFormat": "{counter}", "to": 2048 },
+        "AllocationStrategy": {
+          "id": "9",
+          "Name": "unique_id",
+          "Lang": "go",
+          "Script": "\n'use strict';\n\n// framework managed constants\n//;\n//;\n// framework managed constants\n\n// STRATEGY_START\n\n/*\nUnique id generator\n- this strategy accepts text template as \"idFormat\" and will replace variables in {} for values\n- {counter} is mandatory static variable for iterations and initial value is 1\n- Unique id resource type to have one optional property of type int [\"from\"] and it sets initial value of {counter}\n- example: 'VPN-{counter}-{network}-{vpn}-local'\n */\n\nString.prototype.format = function(dict) {\n    return this.replace(/{(\\w+)}/g, function(match, key) {\n        return typeof dict[key] !== 'undefined'\n            ? dict[key]\n            : match\n            ;\n    });\n};\n\nfunction getNextFreeCounter(properties) {\n    let max = typeof(properties['from']) == 'undefined' ? 0 : properties['from'] - 1;\n    for (let i = 0; i \u003c currentResources.length; i++) {\n        if (currentResources[i].Properties.counter \u003e max) {\n            max = currentResources[i].Properties.counter;\n        }\n    }\n    return ++max;\n}\n\n// main\nfunction invoke() {\n    if (resourcePoolProperties == null) {\n        console.error(\"Unable to extract resources\");\n        return null\n    }\n    let nextFreeCounter = getNextFreeCounter(resourcePoolProperties);\n    if (!(\"idFormat\" in resourcePoolProperties)) {\n        console.error(\"Missing idFormat in resources\");\n        return null\n    }\n    if (!resourcePoolProperties[\"idFormat\"].includes(\"{counter}\")) {\n        console.error(\"Missing {counter} in idFormat\");\n        return null\n    }\n    const { textFunction, ...poolProperties } = resourcePoolProperties;\n    let idFormat = resourcePoolProperties[\"idFormat\"].format(\n        {...{counter: nextFreeCounter}, ...poolProperties});\n    return { text: idFormat, counter: nextFreeCounter };\n}\n\nfunction capacity() {\n    let allocatedCapacity = getNextFreeCounter(resourcePoolProperties) - 1;\n    let freeCapacity = Number.MAX_SAFE_INTEGER - allocatedCapacity;\n    return { freeCapacity: String(freeCapacity), utilizedCapacity: String(allocatedCapacity) };\n}\n\n\n",
+          "__typename": "AllocationStrategy"
+        },
+        "ResourceType": { "id": "25769803784", "Name": "unique_id", "__typename": "ResourceType" },
+        "Resources": [],
+        "Capacity": { "freeCapacity": "2048", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+        "__typename": "ResourcePool"
+      }
+    ]
+  }
+}

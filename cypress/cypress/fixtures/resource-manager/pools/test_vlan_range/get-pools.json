@@ -1,0 +1,36 @@
+{
+  "data": {
+    "QueryRootResourcePools": [
+      {
+        "id": "21474836481",
+        "Name": "test",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771072", "Tag": "test", "__typename": "Tag" }],
+        "PoolProperties": { "address": "192.168.10.1", "prefix": 24, "subnet": false },
+        "AllocationStrategy": { "id": "2", "Name": "ipv4", "Lang": "go", "__typename": "AllocationStrategy" },
+        "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+        "Resources": [{ "id": "17179869189", "NestedPool": null, "__typename": "Resource" }],
+        "Capacity": { "freeCapacity": "255", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836567",
+        "Name": "test_vlan_range",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771124", "Tag": "test_vlan_range", "__typename": "Tag" }],
+        "PoolProperties": { "from": 1, "to": 2048 },
+        "AllocationStrategy": {
+          "id": "3",
+          "Name": "vlan_range",
+          "Lang": "js",
+          "Script": "\n'use strict';\n\nfunction rangeCapacity(vlanRange) {\n    return vlanRange.to - vlanRange.from + 1\n}\n\nfunction rangeToStr(range) {\n    return `[${range.from}-${range.to}]`\n}\n\nfunction freeCapacity(parentRange, utilisedCapacity) {\n    return rangeCapacity(parentRange) - utilisedCapacity\n}\n\n// framework managed constants\n//;\n//;\n//;\n// framework managed constants\n\n// STRATEGY_START\n\n/*\nVLAN range allocation strategy\n\n- Expects VLAN_range resource type to have 2 properties of type int [\"from\", \"to\"]\n- Produced ranges are inclusive\n- Produced ranges are non-overlapping\n- Logs utilisation stats\n- userInput.desiredSize is a required parameter e.g. desiredSize == 10  ---produces-range-of---\u003e  [0, 9]\n- MIN value is 0, MAX value is 4095\n- 0 and 4095 are not reserved !\n- Allocates previously freed resources\n */\n\nfunction rangesToStr(currentResources) {\n    let subRangesToString = \"\";\n    for (let allocatedRange of currentResources) {\n        subRangesToString += rangeToStr(allocatedRange);\n    }\n    return subRangesToString\n}\n\nfunction rangesCapacity(currentResources) {\n    let width = 0;\n    for (let allocatedRange of currentResources) {\n        width += rangeCapacity(allocatedRange);\n    }\n    return width\n}\n\nfunction utilizedCapacity(allocatedRanges, newlyAllocatedRangeCapacity) {\n    return rangesCapacity(allocatedRanges) + newlyAllocatedRangeCapacity\n}\n\nfunction logStats(newlyAllocatedRange, parentRange, allocatedRanges = [], level = \"log\") {\n    let newlyAllocatedRangeCapacity = 0;\n    if (newlyAllocatedRange) {\n        newlyAllocatedRangeCapacity = rangeCapacity(newlyAllocatedRange);\n    } else {\n        newlyAllocatedRangeCapacity = 0;\n    }\n\n    let utilisedCapacity = utilizedCapacity(allocatedRanges, newlyAllocatedRangeCapacity);\n    let remainingCapacity = freeCapacity(parentRange, utilisedCapacity);\n    let utilPercentage;\n    if (remainingCapacity === 0) {\n        utilPercentage = 100.0;\n    } else {\n        utilPercentage = (utilisedCapacity / rangeCapacity(parentRange)) * 100;\n    }\n    console[level](\"Remaining capacity: \" + remainingCapacity);\n    console[level](\"Utilised capacity: \" + utilisedCapacity);\n    console[level](`Utilisation: ${utilPercentage.toFixed(1)}%`);\n}\n\nfunction invoke() {\n    let parentRange = resourcePoolProperties;\n    if (parentRange == null) {\n        console.error(\"Unable to allocate VLAN range\" +\n            \". Unable to extract parent vlan range from pool name: \" + resourcePoolProperties);\n        return null\n    }\n\n    if (!userInput.desiredSize) {\n        console.error(\"Unable to allocate VLAN range from: \" + rangeToStr(parentRange) +\n            \". Desired size of a new vlan range not provided as userInput.desiredSize\");\n        return null\n    }\n\n    if (userInput.desiredSize \u003c 1) {\n        console.error(\"Unable to allocate VLAN range from: \" + rangeToStr(parentRange) +\n            \". Desired size is invalid: \" + userInput.desiredSize + \". Use values \u003e= 1\");\n        return null\n    }\n\n    // unwrap currentResources\n    let currentResourcesUnwrapped = currentResources.map(cR =\u003e cR.Properties);\n    // make sure to sort ranges\n    currentResourcesUnwrapped.sort(compareVlanRanges);\n\n    let findingAvailableRange = {\n        \"from\": parentRange.from,\n        \"to\": parentRange.to\n    };\n\n    // iterate over allocated ranges and see if a desired new range can be squeezed in\n    for (let allocatedRange of currentResourcesUnwrapped) {\n        // set to bound to from bound of next range\n        findingAvailableRange.to = allocatedRange.from - 1;\n        // if there is enough space, allocate a chunk of that range\n        if (rangeCapacity(findingAvailableRange) \u003e= userInput.desiredSize) {\n            findingAvailableRange.to = findingAvailableRange.from + userInput.desiredSize - 1;\n            // FIXME How to pass these stats ?\n            // logStats(findingAvailableRange, parentRange, currentResourcesUnwrapped)\n            return findingAvailableRange\n        }\n\n        findingAvailableRange.from = allocatedRange.to + 1;\n        findingAvailableRange.to = allocatedRange.to + 1;\n    }\n\n    // check if there is some space left at the end of parent range\n    findingAvailableRange.to = parentRange.to;\n    if (rangeCapacity(findingAvailableRange) \u003e= userInput.desiredSize) {\n        findingAvailableRange.to = findingAvailableRange.from + userInput.desiredSize - 1;\n        // FIXME How to pass these stats ?\n        // logStats(findingAvailableRange, parentRange, currentResourcesUnwrapped)\n        return findingAvailableRange\n    }\n\n    // no suitable range found\n    console.error(\"Unable to allocate VLAN range from: \" + rangeToStr(parentRange) +\n        \". Insufficient capacity to allocate a new range of size: \" + userInput.desiredSize);\n    console.error(\"Currently allocated ranges: \" + rangesToStr(currentResourcesUnwrapped));\n    logStats(null, parentRange, currentResourcesUnwrapped, \"error\");\n    return null\n}\n\nfunction compareVlanRanges(range1, range2) {\n    // assuming non overlapping ranges\n    return range1.to - range2.to\n}\n\nfunction capacity() {\n    let allocatedCapacity = 0;\n    let resource;\n    for (resource of currentResources) {\n        allocatedCapacity += rangeCapacity(resource.Properties);\n    }\n    return {\n        freeCapacity: String(freeCapacity(resourcePoolProperties, allocatedCapacity)),\n        utilizedCapacity: String(allocatedCapacity)\n    };\n}\n\n\n",
+          "__typename": "AllocationStrategy"
+        },
+        "ResourceType": { "id": "25769803778", "Name": "vlan_range", "__typename": "ResourceType" },
+        "Resources": [],
+        "Capacity": { "freeCapacity": "2048", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+        "__typename": "ResourcePool"
+      }
+    ]
+  }
+}
