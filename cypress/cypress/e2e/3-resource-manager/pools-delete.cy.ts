@@ -6,7 +6,6 @@
 import { hasOperationName } from '../../helpers/utils';
 
 describe('Check pools', () => {
-
   it('Delete pool test_ipv6', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
@@ -14,15 +13,15 @@ describe('Check pools', () => {
       }
     }).as('getPools');
 
-     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypes')) {
-         req.reply({ fixture: 'resource-manager/pools/get-resource-types' });
-       }
-     }).as('GetResourceTypes');
+    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetResourceTypes')) {
+        req.reply({ fixture: 'resource-manager/pools/get-resource-types' });
+      }
+    }).as('GetResourceTypes');
 
-     cy.visit(Cypress.env('resource-manager-pools'));
-     // cy.wait(['@getPools', '@GetResourceTypes'])
-     cy.contains('h1', 'Pools');
+    cy.visit(Cypress.env('resource-manager-pools'));
+    // cy.wait(['@getPools', '@GetResourceTypes'])
+    cy.contains('h1', 'Pools');
 
     cy.visit(Cypress.env('resource-manager-pools'));
     // cy.wait(['@getPools', '@GetResourceTypes'])
@@ -56,5 +55,4 @@ describe('Check pools', () => {
     cy.get('[data-cy="delete-pool-test"]');
     cy.contains('test').should('exist');
   });
-
 });

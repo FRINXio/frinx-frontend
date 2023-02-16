@@ -6,8 +6,7 @@
 import { hasOperationName } from '../../helpers/utils';
 
 describe('Create pools', () => {
-
-  beforeEach(()=>{
+  beforeEach(() => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
         req.reply({ fixture: 'resource-manager/pools/get-pools.json' });
@@ -48,8 +47,8 @@ describe('Create pools', () => {
     cy.get('[data-cy="create-pool-btn"]').click(); // Create pool
     cy.wait(['@SelectPools', '@SelectAllocationStrategies', '@SelectResourceTypes', '@RequiredPoolProperties']);
     cy.contains('h1', 'Create new Pool');
-  })
-    
+  });
+
   it('Create pool test_ipv6', () => {
     cy.get('[data-cy="create-pool-type"]').select('ipv6'); // Resource type*
     cy.get('[data-cy="create-pool-name"]').type('test_ipv6'); // Name*
@@ -77,7 +76,7 @@ describe('Create pools', () => {
     cy.contains('test_ipv6').should('be.visible');
   });
 
-  it.only('Create pool test_ipv', () => {
+  it.only('Create pool test_ipv4', () => {
     cy.get('[data-cy="create-pool-type"]').select('ipv4'); // Resource type*
     cy.get('[data-cy="create-pool-name"]').type('test_ipv6'); // Name*
     cy.get('[data-cy="create-pool-description"]').type('This is test_ipv4 resource type\nEnjoy'); // Description
@@ -105,7 +104,6 @@ describe('Create pools', () => {
   });
 
   it('Create pool test_vlan_range', () => {
-    
     cy.get('[data-cy="create-pool-type"]').select('vlan_range'); // Resource type*
     cy.get('[data-cy="create-pool-name"]').type('test_vlan_range'); // Name*
     cy.get('[data-cy="create-pool-description"]').type('This is test_vlan_range resource type\nEnjoy'); // Description
@@ -159,83 +157,80 @@ describe('Create pools', () => {
     cy.contains('test_unique_id').should('be.visible');
   });
 
-   it('Create pool test_random_signed_int32', () => {
-     cy.get('[data-cy="create-pool-type"]').select('random_signed_int32'); // Resource type*
-     cy.get('[data-cy="create-pool-name"]').type('test_random_signed_int32'); // Name*
-     cy.get('[data-cy="create-pool-description"]').type('This is test_random_signed_int32 resource type\nEnjoy'); // Description
+  it('Create pool test_random_signed_int32', () => {
+    cy.get('[data-cy="create-pool-type"]').select('random_signed_int32'); // Resource type*
+    cy.get('[data-cy="create-pool-name"]').type('test_random_signed_int32'); // Name*
+    cy.get('[data-cy="create-pool-description"]').type('This is test_random_signed_int32 resource type\nEnjoy'); // Description
 
-     // Set pool properties
-     cy.get('[data-cy="device-state-from"]').type('-200000'); // from*
-     cy.get('[data-cy="device-state-to"]').type('200000'); // to*
+    // Set pool properties
+    cy.get('[data-cy="device-state-from"]').type('-200000'); // from*
+    cy.get('[data-cy="device-state-to"]').type('200000'); // to*
 
-     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateAllocationPool')) {
-         req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/create-allocation-pool.json' });
-       }
-     }).as('CreateAllocationPool');
-     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-         req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/get-pools.json' });
-       }
-     }).as('GetPools');
+    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateAllocationPool')) {
+        req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/create-allocation-pool.json' });
+      }
+    }).as('CreateAllocationPool');
+    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+        req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/get-pools.json' });
+      }
+    }).as('GetPools');
 
-     cy.get('[data-cy="create-pool-submit"]').click(); // Create pool
-     cy.wait(['@GetPools']);
+    cy.get('[data-cy="create-pool-submit"]').click(); // Create pool
+    cy.wait(['@GetPools']);
 
-     cy.contains('h1', 'Pools');
-     cy.contains('test_random_signed_int32').should('be.visible');
-   });
+    cy.contains('h1', 'Pools');
+    cy.contains('test_random_signed_int32').should('be.visible');
+  });
 
-   it('Create pool test_random_signed_int32', () => {
-     cy.get('[data-cy="create-pool-type"]').select('random_signed_int32'); // Resource type*
-     cy.get('[data-cy="create-pool-name"]').type('test_random_signed_int32'); // Name*
-     cy.get('[data-cy="create-pool-description"]').type('This is test_random_signed_int32 resource type\nEnjoy'); // Description
+  it('Create pool test_random_signed_int32', () => {
+    cy.get('[data-cy="create-pool-type"]').select('random_signed_int32'); // Resource type*
+    cy.get('[data-cy="create-pool-name"]').type('test_random_signed_int32'); // Name*
+    cy.get('[data-cy="create-pool-description"]').type('This is test_random_signed_int32 resource type\nEnjoy'); // Description
 
-     // Set pool properties
-     cy.get('[data-cy="device-state-from"]').type('-200000'); // from*
-     cy.get('[data-cy="device-state-to"]').type('200000'); // to*
+    // Set pool properties
+    cy.get('[data-cy="device-state-from"]').type('-200000'); // from*
+    cy.get('[data-cy="device-state-to"]').type('200000'); // to*
 
-     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateAllocationPool')) {
-         req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/create-allocation-pool.json' });
-       }
-     }).as('CreateAllocationPool');
-     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-         req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/get-pools.json' });
-       }
-     }).as('GetPools');
+    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateAllocationPool')) {
+        req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/create-allocation-pool.json' });
+      }
+    }).as('CreateAllocationPool');
+    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+        req.reply({ fixture: 'resource-manager/pools/test_random_signed_int32/get-pools.json' });
+      }
+    }).as('GetPools');
 
-     cy.get('[data-cy="create-pool-submit"]').click(); // Create pool
-     cy.wait(['@GetPools']);
+    cy.get('[data-cy="create-pool-submit"]').click(); // Create pool
+    cy.wait(['@GetPools']);
 
-     cy.contains('h1', 'Pools');
-     cy.contains('test_random_signed_int32').should('be.visible');
-   });
+    cy.contains('h1', 'Pools');
+    cy.contains('test_random_signed_int32').should('be.visible');
+  });
 
-   it('Create pool test_route_distinguisher', () => {
-     cy.get('[data-cy="create-pool-type"]').select('route_distinguisher'); // Resource type*
-     cy.get('[data-cy="create-pool-name"]').type('test_route_distinguisher'); // Name*
-     cy.get('[data-cy="create-pool-description"]').type('This is test_route_distinguisher resource type\nEnjoy'); // Description
+  it('Create pool test_route_distinguisher', () => {
+    cy.get('[data-cy="create-pool-type"]').select('route_distinguisher'); // Resource type*
+    cy.get('[data-cy="create-pool-name"]').type('test_route_distinguisher'); // Name*
+    cy.get('[data-cy="create-pool-description"]').type('This is test_route_distinguisher resource type\nEnjoy'); // Description
 
-     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateAllocationPool')) {
-         req.reply({ fixture: 'resource-manager/pools/test_route_distinguisher/create-allocation-pool.json' });
-       }
-     }).as('CreateAllocationPool');
-     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-       if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
-         req.reply({ fixture: 'resource-manager/pools/test_route_distinguisher/get-pools.json' });
-       }
-     }).as('GetPools');
+    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'CreateAllocationPool')) {
+        req.reply({ fixture: 'resource-manager/pools/test_route_distinguisher/create-allocation-pool.json' });
+      }
+    }).as('CreateAllocationPool');
+    cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+        req.reply({ fixture: 'resource-manager/pools/test_route_distinguisher/get-pools.json' });
+      }
+    }).as('GetPools');
 
-     cy.get('[data-cy="create-pool-submit"]').click(); // Create pool
-     cy.wait(['@GetPools']);
+    cy.get('[data-cy="create-pool-submit"]').click(); // Create pool
+    cy.wait(['@GetPools']);
 
-     cy.contains('h1', 'Pools');
-     cy.contains('test_route_distinguisher').should('be.visible');
-   });
-
-   
-
+    cy.contains('h1', 'Pools');
+    cy.contains('test_route_distinguisher').should('be.visible');
+  });
 });
