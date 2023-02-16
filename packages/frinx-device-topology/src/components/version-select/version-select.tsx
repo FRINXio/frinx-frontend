@@ -35,7 +35,10 @@ const TOPOLOGY_VERSION_DATA_QUERY = gql`
       nodes {
         id
         name
-        interfaces
+        interfaces {
+          id
+          status
+        }
       }
     }
   }

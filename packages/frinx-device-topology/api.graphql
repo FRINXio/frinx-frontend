@@ -68,6 +68,14 @@ type ApplySnapshotPayload {
   output: String!
 }
 
+interface BaseGraphNode {
+  coordinates: GraphNodeCoordinates!
+  deviceType: String
+  id: ID!
+  interfaces: [GraphNodeInterface!]!
+  softwareVersion: String
+}
+
 type Blueprint implements Node {
   createdAt: String!
   id: ID!
@@ -272,12 +280,24 @@ enum GraphEdgeStatus {
   unknown
 }
 
-type GraphNode {
+type GraphNode implements BaseGraphNode {
+  coordinates: GraphNodeCoordinates!
   device: Device!
   deviceType: String
   id: ID!
   interfaces: [GraphNodeInterface!]!
   softwareVersion: String
+}
+
+type GraphNodeCoordinates {
+  x: Float!
+  y: Float!
+}
+
+input GraphNodeCoordinatesInput {
+  deviceName: String!
+  x: Float!
+  y: Float!
 }
 
 type GraphNodeInterface {
@@ -291,10 +311,13 @@ type GraphVersionEdge {
   target: EdgeSourceTarget!
 }
 
-type GraphVersionNode {
+type GraphVersionNode implements BaseGraphNode {
+  coordinates: GraphNodeCoordinates!
+  deviceType: String
   id: ID!
-  interfaces: [String!]!
+  interfaces: [GraphNodeInterface!]!
   name: String!
+  softwareVersion: String
 }
 
 type InstallDevicePayload {
@@ -363,6 +386,7 @@ type Mutation {
   updateDataStore(deviceId: String!, input: UpdateDataStoreInput!, transactionId: String!): UpdateDataStorePayload!
   updateDevice(id: String!, input: UpdateDeviceInput!): UpdateDevicePayload!
   updateDeviceMetadata(input: [PositionInput!]!): UpdateDeviceMetadataPayload!
+  updateGraphNodeCoordinates(input: [GraphNodeCoordinatesInput!]!): UpdateGraphNodeCoordinatesPayload!
 }
 
 interface Node {
@@ -522,6 +546,10 @@ type UpdateDeviceMetadataPayload {
 
 type UpdateDevicePayload {
   device: Device
+}
+
+type UpdateGraphNodeCoordinatesPayload {
+  deviceNames: [String!]!
 }
 
 """
