@@ -13,7 +13,7 @@ type StatePosition = {
 };
 type Props = {
   nodesWithDiff: GraphNodeWithDiff[];
-  onNodePositionUpdate: (nodeId: string, position: Position) => void;
+  onNodePositionUpdate: (deviceName: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
 };
 

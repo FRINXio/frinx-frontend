@@ -31,7 +31,7 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
   const deletedBackupNodesWithDiff: GraphNodeWithDiff[] = backupGraphNodes
     .filter((n) => !nodesMap.has(n.id))
     .map((n) => {
-      const { id, name, interfaces } = n;
+      const { id, name, interfaces, coordinates } = n;
       return {
         id,
         device: {
@@ -42,10 +42,8 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
         },
         deviceType: null,
         softwareVersion: null,
-        interfaces: interfaces.map((i) => ({
-          status: 'ok',
-          id: i,
-        })),
+        interfaces,
+        coordinates,
         change: 'DELETED' as const,
       };
     });
