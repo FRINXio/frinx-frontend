@@ -248,7 +248,6 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   mountParameters: Maybe<Scalars['String']>;
   name: Scalars['String'];
-  position: Maybe<Position>;
   serviceState: DeviceServiceState;
   source: DeviceSource;
   updatedAt: Scalars['String'];
@@ -447,7 +446,6 @@ export type Mutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
-  updateDeviceMetadata: UpdateDeviceMetadataPayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
 };
 
@@ -577,11 +575,6 @@ export type MutationUpdateDeviceArgs = {
 };
 
 
-export type MutationUpdateDeviceMetadataArgs = {
-  input: Array<PositionInput>;
-};
-
-
 export type MutationUpdateGraphNodeCoordinatesArgs = {
   input: Array<GraphNodeCoordinatesInput>;
 };
@@ -596,22 +589,6 @@ export type PageInfo = {
   hasNextPage: Scalars['Boolean'];
   hasPreviousPage: Scalars['Boolean'];
   startCursor: Maybe<Scalars['String']>;
-};
-
-export type Position = {
-  __typename?: 'Position';
-  x: Scalars['Float'];
-  y: Scalars['Float'];
-};
-
-export type PositionInput = {
-  deviceId: Scalars['ID'];
-  position: PositionInputField;
-};
-
-export type PositionInputField = {
-  x: Scalars['Float'];
-  y: Scalars['Float'];
 };
 
 export type Query = {

@@ -208,7 +208,6 @@ type Device implements Node {
   model: String
   mountParameters: String
   name: String!
-  position: Position
   serviceState: DeviceServiceState!
   source: DeviceSource!
   updatedAt: String!
@@ -385,7 +384,6 @@ type Mutation {
   updateBlueprint(id: String!, input: UpdateBlueprintInput!): UpdateBlueprintPayload!
   updateDataStore(deviceId: String!, input: UpdateDataStoreInput!, transactionId: String!): UpdateDataStorePayload!
   updateDevice(id: String!, input: UpdateDeviceInput!): UpdateDevicePayload!
-  updateDeviceMetadata(input: [PositionInput!]!): UpdateDeviceMetadataPayload!
   updateGraphNodeCoordinates(input: [GraphNodeCoordinatesInput!]!): UpdateGraphNodeCoordinatesPayload!
 }
 
@@ -398,21 +396,6 @@ type PageInfo {
   hasNextPage: Boolean!
   hasPreviousPage: Boolean!
   startCursor: String
-}
-
-type Position {
-  x: Float!
-  y: Float!
-}
-
-input PositionInput {
-  deviceId: ID!
-  position: PositionInputField!
-}
-
-input PositionInputField {
-  x: Float!
-  y: Float!
 }
 
 type Query {
