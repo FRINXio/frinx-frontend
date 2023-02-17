@@ -228,7 +228,9 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_metadata_plus2');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
-    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json' }).as('get_metadata_plus1');
+    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json' }).as(
+      'get_metadata_plus1',
+    );
     deleteButton();
     cy.wait('@del_workflow1');
     cy.wait('@get_metadata_plus1');
@@ -240,7 +242,9 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_metadata_plus1');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
-    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as('get_metadata');
+    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as(
+      'get_metadata',
+    );
     deleteButton();
     cy.wait('@del_workflow2');
     cy.url().should('include', '/workflow-manager/definitions');
