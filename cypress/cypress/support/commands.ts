@@ -1,8 +1,7 @@
 /// <reference types="cypress" />
 
 import '@testing-library/cypress/add-commands';
-
-require('@4tw/cypress-drag-drop');
+import '@4tw/cypress-drag-drop';
 
 /* eslint handle-callback-err: "error" */
 
