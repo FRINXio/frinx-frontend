@@ -12,19 +12,13 @@ import {
   UpdatePositionMutation,
   UpdatePositionMutationVariables,
 } from '../../__generated__/graphql';
-import { Position } from './graph.helpers';
+import { height, Position, width } from './graph.helpers';
 import TopologyGraph from './topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
-  mutation UpdatePosition($input: [PositionInput!]!) {
-    updateDeviceMetadata(input: $input) {
-      devices {
-        id
-        position {
-          x
-          y
-        }
-      }
+  mutation UpdatePosition($input: [GraphNodeCoordinatesInput!]!) {
+    updateGraphNodeCoordinates(input: $input) {
+      deviceNames
     }
   }
 `;
@@ -55,9 +49,13 @@ const TopologyContainer: VoidFunctionComponent = () => {
     pause: selectedNodeIds.length < 2 && difference(unconfirmedSelectedNodeIds, selectedNodeIds).length > 0,
   });
 
-  const handleNodePositionUpdate = async (positions: { deviceId: string; position: Position }[]) => {
+  const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
     updatePosition({
-      input: positions,
+      input: [
+        ...new Set(
+          positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
+        ),
+      ],
     });
   };
 

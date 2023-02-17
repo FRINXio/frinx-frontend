@@ -6,12 +6,9 @@ import { getEdgesWithDiff, getNodesWithDiff } from '../../helpers/topology-helpe
 import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
-import { Position } from './graph.helpers';
+import { height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
-
-const width = 1248;
-const height = 600;
 
 // eslint-disable-next-line no-shadow
 export enum DeviceSize {
@@ -22,7 +19,7 @@ export enum DeviceSize {
 
 type Props = {
   isCommonNodesFetching: boolean;
-  onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
+  onNodePositionUpdate: (positions: { deviceName: string; position: Position }[]) => Promise<void>;
   onCommonNodesSearch: (nodeIds: string[]) => void;
 };
 
@@ -32,8 +29,8 @@ const TopologyGraph: FunctionComponent<Props> = ({
   onCommonNodesSearch,
 }) => {
   const { state, dispatch } = useStateContext();
-  const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
-  const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
+  const lastPositionRef = useRef<{ deviceName: string; position: Position } | null>(null);
+  const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
   const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion, unconfirmedSelectedNodeIds } = state;
 
@@ -47,13 +44,13 @@ const TopologyGraph: FunctionComponent<Props> = ({
       ? getEdgesWithDiff(edges, backupEdges)
       : edges.map((e) => ({ ...e, change: 'NONE' as const }));
 
-  const handleNodePositionUpdate = (nodeId: string, position: Position) => {
+  const handleNodePositionUpdate = (deviceName: string, position: Position) => {
     if (timeoutRef.current != null) {
       clearTimeout(timeoutRef.current);
     }
-    const node = unwrap(nodesWithDiff.find((n) => n.device.name === nodeId));
-    lastPositionRef.current = { deviceId: node.device.id, position };
-    dispatch(updateNodePosition(nodeId, position));
+    const node = unwrap(nodesWithDiff.find((n) => n.device.name === deviceName));
+    lastPositionRef.current = { deviceName: node.device.name, position };
+    dispatch(updateNodePosition(deviceName, position));
   };
 
   const handleNodePositionUpdateFinish = () => {

@@ -14,16 +14,16 @@ const TOPOLOGY_QUERY = gql`
           id
           name
           deviceSize
-          position {
-            x
-            y
-          }
         }
         deviceType
         softwareVersion
         interfaces {
           id
           status
+        }
+        coordinates {
+          x
+          y
         }
       }
       edges {
