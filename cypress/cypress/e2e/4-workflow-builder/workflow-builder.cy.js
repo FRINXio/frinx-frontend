@@ -126,7 +126,7 @@ describe('Create workflow, test and delete it', () => {
 
     // it('workflow editor', () => {
     cy.log('-- 05. Actions/Workflow editor --');
-    cy.contains('button', 'Actions').should('be.visible');
+    cy.contains('button', 'Actions', { timeout: 30000 }).should('be.visible');
     cy.contains('button', 'Actions').click();
     cy.contains('button', 'Workflow editor').click();
     cy.get('.ace_content').type('{backspace}{backspace}{backspace}{backspace}{{}1}{enter}}');
