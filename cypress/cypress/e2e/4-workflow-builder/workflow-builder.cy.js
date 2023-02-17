@@ -223,30 +223,26 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_metadata_plus2');
     cy.get('input[placeholder="Search by label."]').type('test');
     cy.contains('TEST').click();
-    cy.get('a[href="/frinxui/workflow-manager/builder/test workflow/1"]').click();
+    cy.get('a[href="/workflow-manager/builder/test workflow/1"]').click();
     cy.wait('@get_workflow1');
     cy.wait('@get_metadata_plus2');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
+    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json' }).as('get_metadata_plus1');
     deleteButton();
     cy.wait('@del_workflow1');
-    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json' }).as(
-      'get_metadata_plus1',
-    );
     cy.wait('@get_metadata_plus1');
     cy.url().should('include', '/workflow-manager/definitions');
     cy.contains('Reset search').click();
     cy.get('input[placeholder="Search by keyword."]').type('test workflow');
-    cy.get('a[href="/frinxui/workflow-manager/builder/test workflow copy/1"]').click();
+    cy.get('a[href="/workflow-manager/builder/test workflow copy/1"]').click();
     cy.wait('@get_workflow2');
     cy.wait('@get_metadata_plus1');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
+    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as('get_metadata');
     deleteButton();
     cy.wait('@del_workflow2');
-    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as(
-      'get_metadata',
-    );
     cy.url().should('include', '/workflow-manager/definitions');
     cy.wait('@get_metadata');
     cy.contains('Reset search').click();
