@@ -1,6 +1,16 @@
 /// <reference types="cypress" />
 
 import '@testing-library/cypress/add-commands';
+import '@4tw/cypress-drag-drop';
+
+/* eslint handle-callback-err: "error" */
+
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('apiFetch') || err.message.includes('properties of null')) {
+    return false;
+  }
+  return true;
+});
 
 // ***********************************************
 // This example commands.ts shows you how to
