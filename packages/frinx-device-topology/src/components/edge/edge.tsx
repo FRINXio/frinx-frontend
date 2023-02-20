@@ -2,7 +2,7 @@ import { Box, Theme, useTheme } from '@chakra-ui/react';
 import get from 'lodash/get';
 import React, { VoidFunctionComponent } from 'react';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
-import { getAngleBetweenPoints, getCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
+import { getCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
 import { getEdgeColor } from './edge.helpers';
 
 type Props = {
@@ -26,7 +26,6 @@ const Edge: VoidFunctionComponent<Props> = ({
 }) => {
   const { start, end } = linePoints;
   const { colors } = useTheme<Theme>();
-  const angle = getAngleBetweenPoints(start, end);
 
   return (
     <>
