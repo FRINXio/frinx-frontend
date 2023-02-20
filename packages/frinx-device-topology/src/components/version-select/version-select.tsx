@@ -38,6 +38,7 @@ const TOPOLOGY_VERSION_DATA_QUERY = gql`
         interfaces {
           id
           status
+          name
         }
         coordinates {
           x
