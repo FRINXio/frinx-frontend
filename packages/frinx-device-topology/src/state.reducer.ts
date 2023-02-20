@@ -94,6 +94,8 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.selectedVersion = action.version;
         if (action.version === null) {
           acc.selectedLabels = [];
+          acc.selectedNode = null;
+          acc.connectedNodeIds = [];
         }
         return acc;
       }

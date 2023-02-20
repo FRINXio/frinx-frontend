@@ -87,6 +87,14 @@ export type ApplySnapshotPayload = {
   output: Scalars['String'];
 };
 
+export type BaseGraphNode = {
+  coordinates: GraphNodeCoordinates;
+  deviceType: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  interfaces: Array<GraphNodeInterface>;
+  softwareVersion: Maybe<Scalars['String']>;
+};
+
 export type Blueprint = Node & {
   __typename?: 'Blueprint';
   createdAt: Scalars['String'];
@@ -240,7 +248,6 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   mountParameters: Maybe<Scalars['String']>;
   name: Scalars['String'];
-  position: Maybe<Position>;
   serviceState: DeviceServiceState;
   source: DeviceSource;
   updatedAt: Scalars['String'];
@@ -321,13 +328,26 @@ export type GraphEdgeStatus =
   | 'ok'
   | 'unknown';
 
-export type GraphNode = {
+export type GraphNode = BaseGraphNode & {
   __typename?: 'GraphNode';
+  coordinates: GraphNodeCoordinates;
   device: Device;
   deviceType: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   interfaces: Array<GraphNodeInterface>;
   softwareVersion: Maybe<Scalars['String']>;
+};
+
+export type GraphNodeCoordinates = {
+  __typename?: 'GraphNodeCoordinates';
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+};
+
+export type GraphNodeCoordinatesInput = {
+  deviceName: Scalars['String'];
+  x: Scalars['Float'];
+  y: Scalars['Float'];
 };
 
 export type GraphNodeInterface = {
@@ -343,11 +363,14 @@ export type GraphVersionEdge = {
   target: EdgeSourceTarget;
 };
 
-export type GraphVersionNode = {
+export type GraphVersionNode = BaseGraphNode & {
   __typename?: 'GraphVersionNode';
+  coordinates: GraphNodeCoordinates;
+  deviceType: Maybe<Scalars['String']>;
   id: Scalars['ID'];
-  interfaces: Array<Scalars['String']>;
+  interfaces: Array<GraphNodeInterface>;
   name: Scalars['String'];
+  softwareVersion: Maybe<Scalars['String']>;
 };
 
 export type InstallDevicePayload = {
@@ -423,7 +446,7 @@ export type Mutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
-  updateDeviceMetadata: UpdateDeviceMetadataPayload;
+  updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
 };
 
 
@@ -552,8 +575,8 @@ export type MutationUpdateDeviceArgs = {
 };
 
 
-export type MutationUpdateDeviceMetadataArgs = {
-  input: Array<PositionInput>;
+export type MutationUpdateGraphNodeCoordinatesArgs = {
+  input: Array<GraphNodeCoordinatesInput>;
 };
 
 export type Node = {
@@ -566,22 +589,6 @@ export type PageInfo = {
   hasNextPage: Scalars['Boolean'];
   hasPreviousPage: Scalars['Boolean'];
   startCursor: Maybe<Scalars['String']>;
-};
-
-export type Position = {
-  __typename?: 'Position';
-  x: Scalars['Float'];
-  y: Scalars['Float'];
-};
-
-export type PositionInput = {
-  deviceId: Scalars['ID'];
-  position: PositionInputField;
-};
-
-export type PositionInputField = {
-  x: Scalars['Float'];
-  y: Scalars['Float'];
 };
 
 export type Query = {
@@ -814,6 +821,11 @@ export type UpdateDevicePayload = {
   device: Maybe<Device>;
 };
 
+export type UpdateGraphNodeCoordinatesPayload = {
+  __typename?: 'UpdateGraphNodeCoordinatesPayload';
+  deviceNames: Array<Scalars['String']>;
+};
+
 export type Zone = Node & {
   __typename?: 'Zone';
   createdAt: Scalars['String'];
@@ -857,14 +869,14 @@ export type TopologyVersionDataQueryQueryVariables = Exact<{
 }>;
 
 
-export type TopologyVersionDataQueryQuery = { __typename?: 'Query', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<string> }> } };
+export type TopologyVersionDataQueryQuery = { __typename?: 'Query', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } };
 
 export type UpdatePositionMutationVariables = Exact<{
-  input: Array<PositionInput> | PositionInput;
+  input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;
 }>;
 
 
-export type UpdatePositionMutation = { __typename?: 'Mutation', updateDeviceMetadata: { __typename?: 'UpdateDeviceMetadataPayload', devices: Array<{ __typename?: 'Device', id: string, position: { __typename?: 'Position', x: number, y: number } | null } | null> | null } };
+export type UpdatePositionMutation = { __typename?: 'Mutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } };
 
 export type TopologyCommonNodesQueryVariables = Exact<{
   nodes: Array<Scalars['String']> | Scalars['String'];
@@ -878,4 +890,4 @@ export type TopologyQueryVariables = Exact<{
 }>;
 
 
-export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, deviceType: string | null, softwareVersion: string | null, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize, position: { __typename?: 'Position', x: number, y: number } | null }, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus }> }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };
+export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, deviceType: string | null, softwareVersion: string | null, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize }, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };

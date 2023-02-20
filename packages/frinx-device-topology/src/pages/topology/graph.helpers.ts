@@ -1,6 +1,9 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { DeviceSize } from '../../__generated__/graphql';
 
+export const width = 1248;
+export const height = 600;
+
 export function getRandomInt(max: number): number {
   return Math.floor(Math.random() * max);
 }
@@ -13,7 +16,6 @@ export type Position = {
 export type Device = {
   id: string;
   name: string;
-  position: Position | null;
   deviceSize: DeviceSize;
 };
 
@@ -27,6 +29,7 @@ export type GraphNode = {
   deviceType: string | null;
   softwareVersion: string | null;
   interfaces: GraphNodeInterface[];
+  coordinates: Position;
 };
 
 export type SourceTarget = {
@@ -42,7 +45,8 @@ export type GraphEdge = {
 export type BackupGraphNode = {
   id: string;
   name: string;
-  interfaces: string[];
+  interfaces: GraphNodeInterface[];
+  coordinates: Position;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
@@ -153,26 +157,12 @@ export function getInterfacesPositions({
   }, {});
 }
 
-const POSITIONS_CACHE = new Map<string, Position>();
-
-function setCachedNodePosition(nodeId: string, position?: Position): void {
-  if (POSITIONS_CACHE.get(nodeId) == null) {
-    POSITIONS_CACHE.set(nodeId, position ?? { x: getRandomInt(1000), y: getRandomInt(600) });
-  }
-}
-
-function getCachedNodePosition(nodeId: string): Position {
-  return unwrap(POSITIONS_CACHE.get(nodeId));
-}
-
 export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): PositionsWithGroupsMap {
   const nodesMap = nodes.reduce((acc, curr) => {
-    const { device } = curr;
-    const { position } = device;
-    setCachedNodePosition(device.name);
+    const { device, coordinates } = curr;
     return {
       ...acc,
-      [device.name]: position ?? getCachedNodePosition(device.name),
+      [device.name]: { x: coordinates.x * width, y: coordinates.y * height },
     };
   }, {} as Record<string, Position>);
   return {
@@ -294,6 +284,6 @@ export function isTargetingActiveNode(
   const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
   const targetGroup = interfaceGroupPositions[targetGroupName];
   return (
-    targetNodeId === selectedNode?.device.name && !!targetGroup.interfaces.find((i) => i.id === edge.source.interface)
+    targetNodeId === selectedNode?.device.name && !!targetGroup?.interfaces.find((i) => i.id === edge.source.interface)
   );
 }

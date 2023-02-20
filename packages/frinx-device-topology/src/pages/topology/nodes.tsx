@@ -13,7 +13,7 @@ type StatePosition = {
 };
 type Props = {
   nodesWithDiff: GraphNodeWithDiff[];
-  onNodePositionUpdate: (nodeId: string, position: Position) => void;
+  onNodePositionUpdate: (deviceName: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
 };
 
@@ -72,7 +72,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
       onNodePositionUpdate(nodeId, { x: newX, y: newY });
     }
   };
-  const handlePointerUp = (node: GraphNode) => {
+  const handlePointerUp = (node: GraphNodeWithDiff) => {
     setIsPointerDown(false);
     if (isMoved) {
       setPosition({
@@ -82,7 +82,9 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
       });
       onNodePositionUpdateFinish();
     } else {
-      dispatch(setSelectedNode(node));
+      if (node.change !== 'DELETED') {
+        dispatch(setSelectedNode(node));
+      }
     }
   };
 
