@@ -2,7 +2,7 @@ import { Box, Theme, useTheme } from '@chakra-ui/react';
 import get from 'lodash/get';
 import React, { VoidFunctionComponent } from 'react';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
-import { getCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
+import { getAngleBetweenPoints, getCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
 import { getEdgeColor } from './edge.helpers';
 
 type Props = {
@@ -26,6 +26,7 @@ const Edge: VoidFunctionComponent<Props> = ({
 }) => {
   const { start, end } = linePoints;
   const { colors } = useTheme<Theme>();
+  const angle = getAngleBetweenPoints(start, end);
 
   return (
     <>
@@ -33,12 +34,11 @@ const Edge: VoidFunctionComponent<Props> = ({
         <g>
           <path
             strokeWidth={1}
-            stroke={get(colors, getEdgeColor(edge.change))}
+            stroke={get(colors, getEdgeColor(edge.change, isUnknown))}
             strokeLinejoin="round"
             fill="none"
             d={getCurvePath(start, end, controlPoints)}
             cursor="pointer"
-            opacity={isUnknown ? 0.5 : 1}
           />
           <path
             strokeWidth={5}
@@ -51,7 +51,6 @@ const Edge: VoidFunctionComponent<Props> = ({
             onClick={() => {
               onClick(edge);
             }}
-            opacity={isUnknown ? 0.5 : 1}
           />
         </g>
       ) : (
@@ -61,12 +60,11 @@ const Edge: VoidFunctionComponent<Props> = ({
           y1={start.y}
           x2={end.x}
           y2={end.y}
-          stroke={getEdgeColor(edge.change)}
+          stroke={getEdgeColor(edge.change, isUnknown)}
           strokeWidth={isActive ? 3 : 1}
           strokeLinecap="round"
           borderWidth={3}
           transition="all .2s ease-in-out"
-          strokeDasharray={isUnknown ? '15, 15' : undefined}
         />
       )}
 
