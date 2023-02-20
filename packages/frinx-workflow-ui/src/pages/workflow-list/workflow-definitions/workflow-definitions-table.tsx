@@ -98,7 +98,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Table background="white" mb={5}>
+    <Table background="white" mb={5} data-cy="tbl_workflows">
       <Thead>
         <Tr>
           <Th>Name/Version</Th>
