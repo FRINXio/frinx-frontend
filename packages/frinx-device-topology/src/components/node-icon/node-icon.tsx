@@ -130,13 +130,21 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
               opacity={isFocused ? 1 : 0}
             >
               {sourceInterface != null && (
-                <Text fontSize="sm" transform="translate(5px, -5px)">
-                  {sourceInterface?.name}
+                <Text
+                  fontSize="sm"
+                  transform="translate(5px, -5px)"
+                  fill={sourceInterface.status === 'unknown' ? 'red' : 'black'}
+                >
+                  {sourceInterface.name}
                 </Text>
               )}
               {targetInterface != null && (
-                <Text fontSize="sm" transform="translate(5px, -5px)">
-                  {targetInterface?.name}
+                <Text
+                  fontSize="sm"
+                  transform="translate(5px, -5px)"
+                  fill={targetInterface.status === 'unknown' ? 'red' : 'black'}
+                >
+                  {targetInterface.name}
                 </Text>
               )}
               <Circle r="4px" fill="purple" key={groupId} />
