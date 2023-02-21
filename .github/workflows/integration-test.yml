@@ -23,6 +23,8 @@ jobs:
         run: |
           cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
           sed -i "s/http:\/\/localhost:4000\/api\/resource/\/api\/resource/g" ./packages/frinx-frontend-server/.env
+          #sed -i "s/URL_BASENAME=\"\/\"/URL_BASENAME=\"\/frinxui\"/g" ./packages/frinx-frontend-server/.env
+          sed -i "s/WORKFLOW_MANAGER_API_URL=\"\/api\/workflow\"/WORKFLOW_MANAGER_API_URL=\"https:\/\/localhost:4000\/api\/workflow\"/g" ./packages/frinx-frontend-server/.env
       - name: Cypress tests
         uses: cypress-io/github-action@v5
         with:

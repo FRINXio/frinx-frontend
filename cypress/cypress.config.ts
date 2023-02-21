@@ -7,4 +7,6 @@ export default defineConfig({
     },
   },
   chromeWebSecurity: false,
+  viewportWidth: 1600,
+  viewportHeight: 1600,
 });
