@@ -126,6 +126,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
             <G
               transform={isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined}
               opacity={isFocused ? 1 : 0}
+              key={groupId}
             >
               {sourceInterface != null && (
                 <Text
