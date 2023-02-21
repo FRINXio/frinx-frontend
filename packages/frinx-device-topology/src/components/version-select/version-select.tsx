@@ -38,6 +38,7 @@ const TOPOLOGY_VERSION_DATA_QUERY = gql`
         interfaces {
           id
           status
+          name
         }
         coordinates {
           x
@@ -112,7 +113,7 @@ const VersionSelect: VoidFunctionComponent = () => {
 
   return (
     <>
-      <FormLabel marginBottom={4}>Compare with:</FormLabel>
+      <FormLabel marginBottom={4}>Compare current topology with:</FormLabel>
       <Select value={selectedVersion || undefined} onChange={handleSelectVersionChange} background="white">
         <option value="none">None</option>
         {versions.map((v) => (
