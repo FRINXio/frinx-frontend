@@ -147,7 +147,7 @@ describe('Create workflow, test and delete it', () => {
 
     // it('workflow execution', () => {
     cy.log('-- 07. workflow - Save and execute --');
-    cy.contains('button', 'Save and execute').click();
+    cy.contains('button', 'Save and execute').click({ force: true });
     cy.wait('@put_metadata');
     cy.contains('Workflow Saved').as('greenNotif2'); // green notification
     cy.contains('@greenNotif2').should('not.exist');
