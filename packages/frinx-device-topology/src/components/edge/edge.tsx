@@ -35,7 +35,7 @@ const Edge: VoidFunctionComponent<Props> = ({ edge, isActive, controlPoints, lin
         fill="none"
         d={getCurvePath(start, end, controlPoints)}
         cursor="pointer"
-        pointerEvents={edge.change === 'DELETED' ? 'none' : 'all'}
+        pointerEvents={edge.change === 'DELETED' ? 'none' : 'stroke'}
         onClick={() => {
           onClick(edge);
         }}
