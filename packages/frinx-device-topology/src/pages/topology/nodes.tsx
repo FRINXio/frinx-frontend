@@ -29,6 +29,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
     unconfirmedSelectedNodeIds,
     mode,
     commonNodeIds,
+    selectedEdge,
   } = state;
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
@@ -107,6 +108,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
           isCommon={commonNodeIds.includes(node.device.name)}
           topologyMode={mode}
           node={node}
+          selectedEdge={selectedEdge}
         />
       ))}
     </g>
