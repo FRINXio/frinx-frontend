@@ -91,7 +91,7 @@ describe('Create workflow, test and delete it', () => {
 
     // this event will automatically be unbound when this
     // test ends because it's attached to 'cy'
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', (err) => {
       // expect(err.message).to.include('Uncaught NetworkError')
       // there can be also other - TypeError: Cannot read properties of null (reading 'getLength')
       expect(err.message);
