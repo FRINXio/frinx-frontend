@@ -7,7 +7,7 @@ module.exports = {
   parserOptions: {
     // we need to link to tsconfig.json with the full-path,
     // otherwise eslint-in-vscode has problems finding it
-    project: join(__dirname, './tsconfig.json'),
+    project: join(__dirname, 'tsconfig.json'),
   },
   env: {
     browser: true,
