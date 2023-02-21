@@ -33,7 +33,7 @@ const WorkflowActions: FC<Props> = ({
           size="sm"
           variant="outline"
           onClick={onDeleteBtnClick}
-          data-cy={`del_${workflow.name}_${workflow.version}`}
+          data-cy={`del-${workflow.name}-${workflow.version}`}
         >
           <Box as="span" flexShrink={0} alignSelf="center">
             <Box as={FeatherIcon} size="1em" icon="trash-2" flexShrink={0} lineHeight={4} verticalAlign="middle" />
@@ -45,7 +45,7 @@ const WorkflowActions: FC<Props> = ({
           variant="outline"
           as={Link}
           to={`../builder/${workflow.name}/${workflow.version}`}
-          data-cy={`edit_${workflow.name}_${workflow.version}`}
+          data-cy={`edit-${workflow.name}-${workflow.version}`}
         >
           <Box as="span" flexShrink={0} alignSelf="center">
             <Box as={FeatherIcon} size="1em" icon="edit" flexShrink={0} lineHeight={4} verticalAlign="middle" />
@@ -56,7 +56,7 @@ const WorkflowActions: FC<Props> = ({
           size="sm"
           variant="outline"
           onClick={onExecuteBtnClick}
-          data-cy={`exec_${workflow.name}_${workflow.version}`}
+          data-cy={`exec-${workflow.name}-${workflow.version}`}
         >
           <Box as="span" flexShrink={0} alignSelf="center">
             <Box as={FeatherIcon} size="1em" icon="play" flexShrink={0} lineHeight={4} verticalAlign="middle" />
@@ -68,20 +68,20 @@ const WorkflowActions: FC<Props> = ({
             variant="outline"
             size="sm"
             colorScheme="black"
-            data-cy={`menu_${workflow.name}_${workflow.version}`}
+            data-cy={`menu-${workflow.name}-${workflow.version}`}
           >
             <Box as="span" flexShrink={0} alignSelf="center">
               <Box as={FeatherIcon} size="1em" icon="menu" flexShrink={0} lineHeight={4} verticalAlign="middle" />
             </Box>
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={onFavouriteBtnClick} data-cy={`favor_${workflow.name}_${workflow.version}`}>
+            <MenuItem onClick={onFavouriteBtnClick} data-cy={`favor-${workflow.name}-${workflow.version}`}>
               <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
                 <Box as={FeatherIcon} size="1em" icon="star" flexShrink={0} lineHeight={4} verticalAlign="middle" />
               </Box>
               {isFavourite ? 'Remove from favourites' : 'Add to favourites'}
             </MenuItem>
-            <MenuItem onClick={onDiagramBtnClick} data-cy={`diag_${workflow.name}_${workflow.version}`}>
+            <MenuItem onClick={onDiagramBtnClick} data-cy={`diag-${workflow.name}-${workflow.version}`}>
               <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
                 <Box
                   as={FeatherIcon}
@@ -94,13 +94,13 @@ const WorkflowActions: FC<Props> = ({
               </Box>
               Show diagram
             </MenuItem>
-            <MenuItem onClick={onDefinitionBtnClick} data-cy={`showdef_${workflow.name}_${workflow.version}`}>
+            <MenuItem onClick={onDefinitionBtnClick} data-cy={`showdef-${workflow.name}-${workflow.version}`}>
               <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
                 <Box as={FeatherIcon} size="1em" icon="code" flexShrink={0} lineHeight={4} verticalAlign="middle" />
               </Box>
               Show definition
             </MenuItem>
-            <MenuItem onClick={onScheduleBtnClick} data-cy={`sched_${workflow.name}_${workflow.version}`}>
+            <MenuItem onClick={onScheduleBtnClick} data-cy={`sched-${workflow.name}-${workflow.version}`}>
               <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
                 <Box as={FeatherIcon} size="1em" icon="clock" flexShrink={0} lineHeight={4} verticalAlign="middle" />
               </Box>
