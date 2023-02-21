@@ -3,6 +3,7 @@ import React, { PointerEvent, VoidFunctionComponent } from 'react';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
+import { GraphEdge } from '../../__generated__/graphql';
 import {
   getDeviceNodeTransformProperties,
   getNodeBackgroundColor,
@@ -22,6 +23,7 @@ type Props = {
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
+  selectedEdge: GraphEdge | null;
 };
 
 const G = chakra('g');
@@ -39,6 +41,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   onPointerDown,
   onPointerMove,
   onPointerUp,
+  selectedEdge,
 }) => {
   const { device, change } = node;
   const { x, y } = positions.nodes[node.device.name];
@@ -62,21 +65,6 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <G>
-          {interfaceGroups.map(([groupId, data]) => {
-            const iPosition = data.position;
-            return iPosition ? (
-              <Circle
-                r="4px"
-                fill="purple"
-                key={groupId}
-                style={{
-                  transform: isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined,
-                }}
-              />
-            ) : null;
-          })}
-        </G>
         <Circle
           r={`${circleDiameter / 2}px`}
           fill={getNodeBackgroundColor({ isSelected, change })}
@@ -129,6 +117,39 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
           stroke="green.300"
         />
       )}
+      <G>
+        {interfaceGroups.map(([groupId, data]) => {
+          const iPosition = data.position;
+          const sourceInterface = data.interfaces.find((i) => i.id === selectedEdge?.source.interface);
+          const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
+          return iPosition ? (
+            <G
+              transform={isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined}
+              opacity={isFocused ? 1 : 0}
+            >
+              {sourceInterface != null && (
+                <Text
+                  fontSize="sm"
+                  transform="translate(5px, -5px)"
+                  fill={sourceInterface.status === 'unknown' ? 'red' : 'black'}
+                >
+                  {sourceInterface.name}
+                </Text>
+              )}
+              {targetInterface != null && (
+                <Text
+                  fontSize="sm"
+                  transform="translate(5px, -5px)"
+                  fill={targetInterface.status === 'unknown' ? 'red' : 'black'}
+                >
+                  {targetInterface.name}
+                </Text>
+              )}
+              <Circle r="4px" fill="purple" key={groupId} />
+            </G>
+          ) : null;
+        })}
+      </G>
     </G>
   );
 };

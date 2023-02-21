@@ -110,7 +110,7 @@ const TopologyGraph: FunctionComponent<Props> = ({
           />
         </Box>
       )}
-      {unconfirmedSelectedNodeIds.length && (
+      {!!unconfirmedSelectedNodeIds.length && (
         <Box position="absolute" top={2} left="2" background="transparent">
           <Button onClick={handleClearCommonSearch}>Clear common search</Button>
           <Button onClick={handleSearchClick} isDisabled={isCommonNodesFetching}>

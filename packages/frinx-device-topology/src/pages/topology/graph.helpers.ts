@@ -22,6 +22,7 @@ export type Device = {
 export type GraphNodeInterface = {
   id: string;
   status: 'ok' | 'unknown';
+  name: string;
 };
 export type GraphNode = {
   id: string;
