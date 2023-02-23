@@ -28,7 +28,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const [taskDefinitions, setTaskDefinitions] = useState<TaskDefinition[] | null>(null);
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
-  const {addToastNotification} = useNotifications()
+  const { addToastNotification } = useNotifications();
 
   useEffect(() => {
     if (name != null && version != null) {
@@ -100,10 +100,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
         addToastNotification({
           content: 'No workflow definition to be deleted',
           type: 'error',
-        })
+        });
       }
     });
-    
   };
 
   const handleWorkflowChange = (
