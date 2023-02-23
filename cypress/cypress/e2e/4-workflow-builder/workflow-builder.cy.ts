@@ -1,11 +1,9 @@
 /* global cy,it,describe,Cypress */
-
 describe('Create workflow, test and delete it', () => {
   function clickOnButtons() {
     cy.contains('button', 'Actions').click();
     cy.contains('button', 'Save workflow').click();
   }
-
   function deleteButton() {
     cy.contains('button', 'Actions').click();
     cy.contains('button', 'Delete workflow').click();
@@ -16,7 +14,6 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('button', /Delete$/).click();
     // Note: this also works: cy.contains('button', 'Cancel').next().contains('button', 'Delete').click()
   }
-
   it('workflow builder', () => {
     // 'workflow builder': 1 && 'save changes check': 32
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as(
@@ -38,13 +35,11 @@ describe('Create workflow, test and delete it', () => {
     }).as('get_workflow_running');
     // 'workflow builder': 10 COMPLETED
     // cy.intercept('GET', '/api/workflow/id/83c65aef-07e5-4a2a-81b6-dac8f1c96380', { fixture: 'workflow-builder/10get.json', }).as('get_workflow_completed')
-
     cy.log('-- 01. Construct and Actions/Save --');
     cy.visit(Cypress.env('host'));
     cy.get(':nth-child(3) > .chakra-linkbox__overlay').click();
     cy.wait('@get_metadata');
     cy.wait('@get_taskdef');
-
     cy.get('input[name="name"]').type('test workflow');
     cy.get('input[name="description"]').clear().type('test description');
     cy.get('input[placeholder="Add Labels (press Enter to add)"]').type('TEST{enter}');
@@ -64,7 +59,6 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('button', 'Save workflow').click();
     cy.wait('@put_metadata');
     // })
-
     // it('save as', () => {
     cy.log('-- 02. Actions/Save as --');
     cy.contains('button', 'Actions').click();
@@ -81,37 +75,30 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('fully saved').should('not.exist');
     cy.wait('@put_metadata');
     // })
-
     // it('show definition', () => {
     cy.log('-- 03. Actions/Show definition --');
     cy.contains('button', 'Actions').click();
     cy.contains('Show definition').click();
     cy.contains('header', 'Workflow definition');
     cy.get('.ace_content').should('contain', 'test workflow');
-
     // this event will automatically be unbound when this
     // test ends because it's attached to 'cy'
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', (err) => {
       // expect(err.message).to.include('Uncaught NetworkError')
       // there can be also other - TypeError: Cannot read properties of null (reading 'getLength')
       expect(err.message);
-
       // using mocha's async done callback to finish
       // this test so we prove that an uncaught exception
       // was thrown
       // done()
-
       // return false to prevent the error from
       // failing this test
       return false;
     });
-
     // assume this causes an error
     cy.get('button[aria-label="Close"', { timeout: 30000 }).click();
-
     cy.contains('header', 'Workflow definition').should('not.exist');
     // })
-
     // it('edit workflow', () => {
     cy.log('-- 04. Actions/Edit workflow --');
     cy.contains('button', 'Actions').click();
@@ -123,7 +110,6 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('Workflow Saved').as('greenNotif2'); // green notification
     cy.contains('@greenNotif2').should('not.exist');
     // })
-
     // it('workflow editor', () => {
     cy.log('-- 05. Actions/Workflow editor --');
     cy.contains('button', 'Actions', { timeout: 30000 }).should('be.visible');
@@ -137,14 +123,12 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('Workflow Saved').as('greenNotif2'); // green notification
     cy.contains('@greenNotif2').should('not.exist');
     // })
-
     // it('search test', () => {
     // Note: if mocked this does not work ....
     // cy.log('-- 06. workflows - check new ones --')
     // cy.get('input[placeholder="Search tasks"]').type('INVENTORY_install_device_by_name')
     // cy.get('input[placeholder="Search tasks"]').parent().next().should('contain', 'Install device by device name')
     // })
-
     // it('workflow execution', () => {
     cy.log('-- 07. workflow - Save and execute --');
     cy.contains('button', 'Save and execute').click({ force: true });
@@ -161,14 +145,12 @@ describe('Create workflow, test and delete it', () => {
     cy.url().should('include', '/workflow-manager/executed');
     cy.wait('@get_workflow_running');
     cy.contains('RUNNING', { timeout: 30000 }).eq(0).should('be.visible');
-
     cy.intercept('GET', '/api/workflow/id/83c65aef-07e5-4a2a-81b6-dac8f1c96380', {
       fixture: 'workflow-builder/10get.json',
     }).as('get_workflow_completed');
     cy.wait('@get_workflow_completed');
     cy.contains('COMPLETED', { timeout: 30000 }).eq(0).should('be.visible');
   });
-
   it('save changes check', () => {
     // 'save changes check': 21 22 24
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/21get.json' }).as(
@@ -178,7 +160,6 @@ describe('Create workflow, test and delete it', () => {
     cy.intercept('GET', '/api/workflow/metadata/taskdefs', { fixture: 'workflow-builder/00get_taskdef.json' }).as(
       'get_taskdef',
     );
-
     // 'save changes check': 23
     cy.intercept('GET', '/api/workflow/metadata/workflow/test%20workflow?version=1', {
       fixture: 'workflow-builder/23get_workflow1.json',
@@ -187,10 +168,8 @@ describe('Create workflow, test and delete it', () => {
     cy.intercept('DELETE', '/api/workflow/metadata/workflow/test%20workflow/1', {
       fixture: 'workflow-builder/26del_workflow1.json',
     }).as('del_workflow1');
-
     // 'save changes check': 27 - after del one wrkflw def less + also 29
     // cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json', }).as('get_metadata_plus1')
-
     // 'save changes check': 28
     cy.intercept('GET', '/api/workflow/metadata/workflow/test%20workflow%20copy?version=1', {
       fixture: 'workflow-builder/28get_workflow2.json',
@@ -199,10 +178,8 @@ describe('Create workflow, test and delete it', () => {
     cy.intercept('DELETE', '/api/workflow/metadata/workflow/test%20workflow%20copy/1', {
       fixture: 'workflow-builder/31del_workflow2.json',
     }).as('del_workflow2');
-
     // 'workflow builder': 1 && 'save changes check': 32
     // cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json', }).as('get_metadata')
-
     cy.log('-- 01. workflows - search for new ones --');
     cy.visit(Cypress.env('host'));
     cy.contains('a', 'Explore').click();
@@ -215,7 +192,6 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('TEST').should('be.visible');
     cy.contains('TEST2').should('be.visible');
     // })
-
     // it('workflow delete', () => {
     cy.log('-- 02. workflows - delete new ones --');
     cy.visit(Cypress.env('host'));

@@ -4,5 +4,5 @@
     "lib": ["es5", "dom"],
     "types": ["cypress", "node", "@4tw/cypress-drag-drop"]
   },
-  "include": ["**/*.ts","./.eslintrc.js"]
+  "include": ["**/*.ts", "./.eslintrc.js"]
 }
