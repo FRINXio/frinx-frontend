@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { GraphNode, BackupGraphNode, GraphEdge, getRandomInt } from '../pages/topology/graph.helpers';
+import { BackupGraphNode, getRandomInt, GraphEdge, GraphNode } from '../pages/topology/graph.helpers';
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -12,6 +12,12 @@ export type GraphEdgeWithDiff = GraphEdge & {
 };
 
 export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGraphNode[]): GraphNodeWithDiff[] {
+  if (backupGraphNodes.length === 0) {
+    return nodes.map((n) => ({
+      ...n,
+      change: 'NONE' as const,
+    }));
+  }
   const nodesMap = new Map(nodes.map((n) => [n.id, n]));
   const backupNodesMap = new Map(backupGraphNodes.map((n) => [n.id, n]));
   const currentNodesWithDiff = nodes.map((n) => {
@@ -20,12 +26,11 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
         ...n,
         change: 'NONE' as const,
       };
-    } else {
-      return {
-        ...n,
-        change: 'ADDED' as const,
-      };
     }
+    return {
+      ...n,
+      change: 'ADDED' as const,
+    };
   });
 
   const deletedBackupNodesWithDiff: GraphNodeWithDiff[] = backupGraphNodes
@@ -52,20 +57,25 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
 }
 
 export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): GraphEdgeWithDiff[] {
+  if (backupEdges.length === 0) {
+    return edges.map((e) => ({
+      ...e,
+      change: 'NONE' as const,
+    }));
+  }
   const edgesMap = new Map(edges.map((e) => [e.id, e]));
-  const backupEdgesMap = new Map(edges.map((e) => [e.id, e]));
+  const backupEdgesMap = new Map(backupEdges.map((e) => [e.id, e]));
   const currentEdgesWithDiff = edges.map((e) => {
     if (backupEdgesMap.has(e.id)) {
       return {
         ...e,
         change: 'NONE' as const,
       };
-    } else {
-      return {
-        ...e,
-        change: 'ADDED' as const,
-      };
     }
+    return {
+      ...e,
+      change: 'ADDED' as const,
+    };
   });
 
   const deletedBackupEdgesWithDiff = backupEdges
