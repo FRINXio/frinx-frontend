@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { getNodesWithDiff } from './helpers/topology-helpers';
+import { getEdgesWithDiff, getNodesWithDiff } from './helpers/topology-helpers';
 import {
   BackupGraphNode,
   getDefaultPositionsMap,
@@ -101,7 +101,8 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_BACKUP_NODES_AND_EDGES': {
         const allNodes = getNodesWithDiff(state.nodes, action.payload.nodes);
-        const positionsMap = getDefaultPositionsMap(allNodes, action.payload.edges);
+        const allEdges = getEdgesWithDiff(state.edges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap(allNodes, allEdges);
         acc.backupNodes = action.payload.nodes;
         acc.backupEdges = action.payload.edges;
         acc.nodePositions = positionsMap.nodes;

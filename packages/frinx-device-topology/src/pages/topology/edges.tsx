@@ -23,7 +23,6 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
     <g>
       {edgesWithDiff.map((edge) => {
         // dont show edges that are connected to active node
-        // console.log(selectedNode?.device.name, isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions));
         if (isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions)) {
           return null;
         }
