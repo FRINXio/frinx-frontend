@@ -8,4 +8,9 @@ declare module 'yup' {
   export interface ArraySchema<T> {
     unique(errMsg: string, mapper: (a: T) => T): ArraySchema<T>;
   }
+
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-unused-vars
+  export interface StringSchema {
+    mustBeEmpty(msg: string): this;
+  }
 }

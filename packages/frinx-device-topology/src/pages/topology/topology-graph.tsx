@@ -1,17 +1,14 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared/src';
 import React, { FunctionComponent, useRef } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
-import { Change, getEdgesWithDiff, getNodesWithDiff } from '../../helpers/topology-helpers';
-import { setSelectedNode, updateNodePosition } from '../../state.actions';
+import { getEdgesWithDiff, getNodesWithDiff } from '../../helpers/topology-helpers';
+import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
-import { Position } from './graph.helpers';
+import { height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
-
-const width = 1248;
-const height = 600;
 
 // eslint-disable-next-line no-shadow
 export enum DeviceSize {
@@ -21,33 +18,39 @@ export enum DeviceSize {
 }
 
 type Props = {
-  onNodePositionUpdate: (positions: { deviceId: string; position: Position }[]) => Promise<void>;
+  isCommonNodesFetching: boolean;
+  onNodePositionUpdate: (positions: { deviceName: string; position: Position }[]) => Promise<void>;
+  onCommonNodesSearch: (nodeIds: string[]) => void;
 };
 
-const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
+const TopologyGraph: FunctionComponent<Props> = ({
+  isCommonNodesFetching,
+  onNodePositionUpdate,
+  onCommonNodesSearch,
+}) => {
   const { state, dispatch } = useStateContext();
-  const lastPositionRef = useRef<{ deviceId: string; position: Position } | null>(null);
-  const positionListRef = useRef<{ deviceId: string; position: Position }[]>([]);
+  const lastPositionRef = useRef<{ deviceName: string; position: Position } | null>(null);
+  const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion } = state;
+  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion, unconfirmedSelectedNodeIds } = state;
 
   const nodesWithDiff =
     selectedVersion && backupNodes
       ? getNodesWithDiff(nodes, backupNodes)
-      : nodes.map((n) => ({ ...n, change: 'NONE' as Change }));
+      : nodes.map((n) => ({ ...n, change: 'NONE' as const }));
 
   const edgesWithDiff =
     selectedVersion && backupEdges
       ? getEdgesWithDiff(edges, backupEdges)
-      : edges.map((e) => ({ ...e, change: 'NONE' as Change }));
+      : edges.map((e) => ({ ...e, change: 'NONE' as const }));
 
-  const handleNodePositionUpdate = (nodeId: string, position: Position) => {
+  const handleNodePositionUpdate = (deviceName: string, position: Position) => {
     if (timeoutRef.current != null) {
       clearTimeout(timeoutRef.current);
     }
-    const node = unwrap(nodesWithDiff.find((n) => n.device.name === nodeId));
-    lastPositionRef.current = { deviceId: node.device.id, position };
-    dispatch(updateNodePosition(nodeId, position));
+    const node = unwrap(nodesWithDiff.find((n) => n.device.name === deviceName));
+    lastPositionRef.current = { deviceName: node.device.name, position };
+    dispatch(updateNodePosition(deviceName, position));
   };
 
   const handleNodePositionUpdateFinish = () => {
@@ -67,6 +70,14 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
 
   const handleInfoPanelClose = () => {
     dispatch(setSelectedNode(null));
+  };
+
+  const handleClearCommonSearch = () => {
+    dispatch(clearCommonSearch());
+  };
+
+  const handleSearchClick = () => {
+    onCommonNodesSearch(unconfirmedSelectedNodeIds);
   };
 
   return (
@@ -91,7 +102,20 @@ const TopologyGraph: FunctionComponent<Props> = ({ onNodePositionUpdate }) => {
           width={60}
           boxShadow="md"
         >
-          <DeviceInfoPanel deviceId={selectedNode.device.id} onClose={handleInfoPanelClose} />
+          <DeviceInfoPanel
+            deviceId={selectedNode.device.id}
+            onClose={handleInfoPanelClose}
+            deviceType={selectedNode.deviceType}
+            softwareVersion={selectedNode.softwareVersion}
+          />
+        </Box>
+      )}
+      {!!unconfirmedSelectedNodeIds.length && (
+        <Box position="absolute" top={2} left="2" background="transparent">
+          <Button onClick={handleClearCommonSearch}>Clear common search</Button>
+          <Button onClick={handleSearchClick} isDisabled={isCommonNodesFetching}>
+            Find common nodes
+          </Button>
         </Box>
       )}
     </Box>

@@ -1,7 +1,5 @@
 schema:
-  - http://localhost:8001/graphql:
-      headers:
-        'x-tenant-id': 'frinx'
+  - ./api.graphql
 documents:
   - './src/**/*.tsx'
   - './src/**/*.ts'

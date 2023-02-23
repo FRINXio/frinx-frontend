@@ -14,6 +14,9 @@ export * from './helpers/workflow.helpers';
 export * from './contexts';
 export * from './helpers/omit-null-value';
 export * from './hooks';
+export * from './helpers/task.helpers';
+export * from './helpers/api-to-graph.helpers';
+export * from './helpers/graph-to-api.helpers';
 export {
   ToastNotification,
   Editor,

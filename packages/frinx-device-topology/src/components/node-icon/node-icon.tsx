@@ -2,6 +2,8 @@ import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import { TopologyMode } from '../../state.actions';
+import { GraphEdge } from '../../__generated__/graphql';
 import {
   getDeviceNodeTransformProperties,
   getNodeBackgroundColor,
@@ -13,11 +15,15 @@ import {
 type Props = {
   positions: PositionsWithGroupsMap;
   isSelected: boolean;
+  isCommon: boolean;
   isFocused: boolean;
+  isSelectedForCommonSearch: boolean;
   node: GraphNodeWithDiff;
+  topologyMode: TopologyMode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
+  selectedEdge: GraphEdge | null;
 };
 
 const G = chakra('g');
@@ -28,10 +34,14 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
   isSelected,
+  isCommon,
+  isSelectedForCommonSearch,
   node,
+  topologyMode,
   onPointerDown,
   onPointerMove,
   onPointerUp,
+  selectedEdge,
 }) => {
   const { device, change } = node;
   const { x, y } = positions.nodes[node.device.name];
@@ -40,13 +50,12 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
 
   return (
     <G
-      cursor="pointer"
+      cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}
       transform={`translate3d(${x}px, ${y}px, 0)`}
       transformOrigin="center center"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      pointerEvents={change === 'DELETED' ? 'none' : 'all'}
     >
       <Circle
         r={isFocused ? `${circleDiameter}px` : 0}
@@ -56,21 +65,6 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <G>
-          {interfaceGroups.map(([groupId, data]) => {
-            const iPosition = data.position;
-            return iPosition ? (
-              <Circle
-                r="4px"
-                fill="purple"
-                key={groupId}
-                style={{
-                  transform: isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined,
-                }}
-              />
-            ) : null;
-          })}
-        </G>
         <Circle
           r={`${circleDiameter / 2}px`}
           fill={getNodeBackgroundColor({ isSelected, change })}
@@ -104,6 +98,58 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
           <path transform="rotate(-90 23.06 12)" strokeWidth="1.2" d="M15 3h6v6" />
           <path strokeWidth="1.2" d="m9.975 3-7 7" transform="rotate(-90 17.547 6.488)" />
         </g>
+      </G>
+      {isSelectedForCommonSearch && (
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="red.300"
+        />
+      )}
+      {isCommon && (
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="green.300"
+        />
+      )}
+      <G>
+        {interfaceGroups.map(([groupId, data]) => {
+          const iPosition = data.position;
+          const sourceInterface = data.interfaces.find((i) => i.id === selectedEdge?.source.interface);
+          const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
+          return iPosition ? (
+            <G
+              transform={isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined}
+              opacity={isFocused ? 1 : 0}
+              key={groupId}
+            >
+              {sourceInterface != null && (
+                <Text
+                  fontSize="sm"
+                  transform="translate(5px, -5px)"
+                  fill={sourceInterface.status === 'unknown' ? 'red' : 'black'}
+                >
+                  {sourceInterface.name}
+                </Text>
+              )}
+              {targetInterface != null && (
+                <Text
+                  fontSize="sm"
+                  transform="translate(5px, -5px)"
+                  fill={targetInterface.status === 'unknown' ? 'red' : 'black'}
+                >
+                  {targetInterface.name}
+                </Text>
+              )}
+              <Circle r="4px" fill="purple" key={groupId} />
+            </G>
+          ) : null;
+        })}
       </G>
     </G>
   );

@@ -1,6 +1,9 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { DeviceSize } from '../../__generated__/graphql';
 
+export const width = 1248;
+export const height = 600;
+
 export function getRandomInt(max: number): number {
   return Math.floor(Math.random() * max);
 }
@@ -13,14 +16,21 @@ export type Position = {
 export type Device = {
   id: string;
   name: string;
-  position: Position | null;
   deviceSize: DeviceSize;
 };
 
+export type GraphNodeInterface = {
+  id: string;
+  status: 'ok' | 'unknown';
+  name: string;
+};
 export type GraphNode = {
   id: string;
   device: Device;
-  interfaces: string[];
+  deviceType: string | null;
+  softwareVersion: string | null;
+  interfaces: GraphNodeInterface[];
+  coordinates: Position;
 };
 
 export type SourceTarget = {
@@ -36,7 +46,8 @@ export type GraphEdge = {
 export type BackupGraphNode = {
   id: string;
   name: string;
-  interfaces: string[];
+  interfaces: GraphNodeInterface[];
+  coordinates: Position;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
@@ -52,7 +63,7 @@ export type PositionsWithGroupsMap = {
 type GroupName = string;
 export type GroupData = {
   position: Position;
-  interfaces: string[];
+  interfaces: GraphNodeInterface[];
 };
 export type PositionGroupsMap = Record<GroupName, GroupData>;
 
@@ -93,17 +104,18 @@ export function getInterfacesPositions({
   const allInterfaces = nodes.map((n) => n.interfaces).flat();
   return allInterfaces.reduce((acc: PositionGroupsMap, curr) => {
     const target =
-      edges.find((e) => e.source.interface === curr)?.target ?? edges.find((e) => e.target.interface === curr)?.source;
+      edges.find((e) => e.source.interface === curr.id)?.target ??
+      edges.find((e) => e.target.interface === curr.id)?.source;
 
     // if interface does not have defined connections, we will not display it
     // because we cannot count angle to properly display it
     // we should be able to display info about not connected interface somewhere in UI
     // for example when you click on particular node
     if (!target) {
-      const node: GraphNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const node: GraphNode = unwrap(nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id)));
       const x = 0;
       const y = getDeviceSizeDiameter(node.device.deviceSize);
-      const sourceNode = unwrap(nodes.find((n) => n.interfaces.includes(curr)));
+      const sourceNode = unwrap(nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id)));
       const groupName = getGroupName(sourceNode, sourceNode);
       const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
 
@@ -116,8 +128,8 @@ export function getInterfacesPositions({
       };
     }
 
-    const sourceNode = nodes.find((n) => n.interfaces.includes(curr));
-    const targetNode = nodes.find((n) => n.interfaces.includes(target.interface));
+    const sourceNode = nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id));
+    const targetNode = nodes.find((n) => !!n.interfaces.find((i) => i.id === target.interface));
 
     // we cant rely on consistent data
     // for example when filtering nodes, we cant be sure if all edges have exisitng nodes
@@ -146,26 +158,12 @@ export function getInterfacesPositions({
   }, {});
 }
 
-const POSITIONS_CACHE = new Map<string, Position>();
-
-function setCachedNodePosition(nodeId: string, position?: Position): void {
-  if (POSITIONS_CACHE.get(nodeId) == null) {
-    POSITIONS_CACHE.set(nodeId, position ?? { x: getRandomInt(1000), y: getRandomInt(600) });
-  }
-}
-
-function getCachedNodePosition(nodeId: string): Position {
-  return unwrap(POSITIONS_CACHE.get(nodeId));
-}
-
 export function getDefaultPositionsMap(nodes: GraphNode[], edges: GraphEdge[]): PositionsWithGroupsMap {
   const nodesMap = nodes.reduce((acc, curr) => {
-    const { device } = curr;
-    const { position } = device;
-    setCachedNodePosition(device.name);
+    const { device, coordinates } = curr;
     return {
       ...acc,
-      [device.name]: position ?? getCachedNodePosition(device.name),
+      [device.name]: { x: coordinates.x * width, y: coordinates.y * height },
     };
   }, {} as Record<string, Position>);
   return {
@@ -198,7 +196,7 @@ export function getPointOnSlope({ source, target, radius, length = 1 }: GetPoint
   };
 }
 
-export function getDistanceFromLineList(interfaces: string[]): number[] {
+export function getDistanceFromLineList(interfaces: GraphNodeInterface[]): number[] {
   const numberOfPoints = interfaces.length;
   return [...Array(numberOfPoints).keys()].map((p) => p - (numberOfPoints - 1) / 2);
 }
@@ -261,7 +259,7 @@ export function getControlPoints({
   const groupName = getInterfaceGroupName(edge.target.nodeId, edge.source.nodeId);
   const groupData = interfaceGroupPositions[groupName];
   const distanceFromLineList = getDistanceFromLineList(groupData.interfaces);
-  const index = groupData.interfaces.indexOf(edge.target.interface);
+  const index = groupData.interfaces.map((i) => i.id).indexOf(edge.target.interface);
   const length = edgeGap * distanceFromLineList[index];
 
   const nodesDistance = getDistanceBetweenPoints(sourcePosition, targetPosition);
@@ -286,5 +284,7 @@ export function isTargetingActiveNode(
   const targetNodeId = edge.target.nodeId;
   const targetGroupName = getInterfaceGroupName(edge.source.nodeId, edge.target.nodeId);
   const targetGroup = interfaceGroupPositions[targetGroupName];
-  return targetNodeId === selectedNode?.device.name && targetGroup?.interfaces.includes(edge.source.interface);
+  return (
+    targetNodeId === selectedNode?.device.name && !!targetGroup?.interfaces.find((i) => i.id === edge.source.interface)
+  );
 }

@@ -44,7 +44,9 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
       return authContext.emit('UNAUTHORIZED');
     }
 
-    if (response.status === 403) {
+    // https://frinxhelpdesk.atlassian.net/browse/FD-460
+    // error code 422 introduced to properly deal with expired/nonvalid transactions
+    if (response.status === 403 || response.status === 422) {
       return authContext.emit('FORBIDDEN');
     }
 

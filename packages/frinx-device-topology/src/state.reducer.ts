@@ -9,9 +9,10 @@ import {
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
-import { LabelItem, StateAction } from './state.actions';
+import { LabelItem, StateAction, TopologyMode } from './state.actions';
 
 export type State = {
+  mode: TopologyMode;
   nodes: GraphNode[];
   edges: GraphEdge[];
   nodePositions: Record<string, Position>;
@@ -23,9 +24,13 @@ export type State = {
   selectedVersion: string | null;
   backupNodes: BackupGraphNode[];
   backupEdges: GraphEdge[];
+  unconfirmedSelectedNodeIds: string[];
+  selectedNodeIds: string[];
+  commonNodeIds: string[];
 };
 
 export const initialState: State = {
+  mode: 'NORMAL',
   nodes: [],
   edges: [],
   nodePositions: {},
@@ -37,6 +42,9 @@ export const initialState: State = {
   selectedVersion: null,
   backupNodes: [],
   backupEdges: [],
+  unconfirmedSelectedNodeIds: [],
+  selectedNodeIds: [],
+  commonNodeIds: [],
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -86,6 +94,8 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.selectedVersion = action.version;
         if (action.version === null) {
           acc.selectedLabels = [];
+          acc.selectedNode = null;
+          acc.connectedNodeIds = [];
         }
         return acc;
       }
@@ -96,6 +106,28 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.backupEdges = action.payload.edges;
         acc.nodePositions = positionsMap.nodes;
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_UNCONFIRMED_NODE_IDS_TO_FIND_COMMON': {
+        acc.unconfirmedSelectedNodeIds = [...action.nodeIds];
+        return acc;
+      }
+      case 'SET_NODE_IDS_TO_FIND_COMMON': {
+        acc.selectedNodeIds = [...state.unconfirmedSelectedNodeIds];
+        return acc;
+      }
+      case 'SET_MODE': {
+        acc.mode = action.mode;
+        return acc;
+      }
+      case 'CLEAR_COMMON_SEARCH': {
+        acc.unconfirmedSelectedNodeIds = [];
+        acc.selectedNodeIds = [];
+        acc.commonNodeIds = [];
+        return acc;
+      }
+      case 'SET_COMMON_NODE_IDS': {
+        acc.commonNodeIds = action.nodeIds;
         return acc;
       }
       default:

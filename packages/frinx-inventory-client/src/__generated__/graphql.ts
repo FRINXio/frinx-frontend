@@ -317,11 +317,35 @@ export type GraphEdge = {
   target: EdgeSourceTarget;
 };
 
+export type GraphEdgeStatus =
+  | 'ok'
+  | 'unknown';
+
 export type GraphNode = {
   __typename?: 'GraphNode';
   device: Device;
   id: Scalars['ID'];
+  interfaces: Array<GraphNodeInterface>;
+};
+
+export type GraphNodeInterface = {
+  __typename?: 'GraphNodeInterface';
+  id: Scalars['String'];
+  status: Maybe<GraphEdgeStatus>;
+};
+
+export type GraphVersionEdge = {
+  __typename?: 'GraphVersionEdge';
+  id: Scalars['ID'];
+  source: EdgeSourceTarget;
+  target: EdgeSourceTarget;
+};
+
+export type GraphVersionNode = {
+  __typename?: 'GraphVersionNode';
+  id: Scalars['ID'];
   interfaces: Array<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type InstallDevicePayload = {
@@ -568,8 +592,12 @@ export type Query = {
   labels: LabelConnection;
   locations: LocationConnection;
   node: Maybe<Node>;
-  topology: Topology;
+  topology: Maybe<Topology>;
+  topologyCommonNodes: Maybe<TopologyCommonNodes>;
+  topologyVersionData: TopologyVersionData;
+  topologyVersions: Maybe<Array<Scalars['String']>>;
   transactions: Array<Transaction>;
+  uniconfigShellSession: Maybe<Scalars['String']>;
   zones: ZonesConnection;
 };
 
@@ -638,6 +666,16 @@ export type QueryTopologyArgs = {
 };
 
 
+export type QueryTopologyCommonNodesArgs = {
+  nodes: Array<Scalars['String']>;
+};
+
+
+export type QueryTopologyVersionDataArgs = {
+  version: Scalars['String'];
+};
+
+
 export type QueryZonesArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -677,6 +715,7 @@ export type Subscription = {
 
 export type SubscriptionUniconfigShellArgs = {
   input?: InputMaybe<Scalars['String']>;
+  sessionId: Scalars['String'];
   trigger?: InputMaybe<Scalars['Int']>;
 };
 
@@ -689,6 +728,17 @@ export type Topology = {
   __typename?: 'Topology';
   edges: Array<GraphEdge>;
   nodes: Array<GraphNode>;
+};
+
+export type TopologyCommonNodes = {
+  __typename?: 'TopologyCommonNodes';
+  commonNodes: Array<Scalars['String']>;
+};
+
+export type TopologyVersionData = {
+  __typename?: 'TopologyVersionData';
+  edges: Array<GraphVersionEdge>;
+  nodes: Array<GraphVersionNode>;
 };
 
 export type Transaction = {
@@ -1027,9 +1077,15 @@ export type CloseTransactionListMutationVariables = Exact<{
 export type CloseTransactionListMutation = { __typename?: 'Mutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } };
 
 export type TerminalSubscriptionVariables = Exact<{
+  sessionId: Scalars['String'];
   command?: InputMaybe<Scalars['String']>;
   trigger?: InputMaybe<Scalars['Int']>;
 }>;
 
 
 export type TerminalSubscription = { __typename?: 'Subscription', uniconfigShell: string | null };
+
+export type SessionIdQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SessionIdQuery = { __typename?: 'Query', uniconfigShellSession: string | null };

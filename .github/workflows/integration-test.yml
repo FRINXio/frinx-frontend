@@ -20,10 +20,24 @@ jobs:
       - name: Create directory
         run: mkdir build-client
       - name: Prepare env variable
-        run: cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
+        run: |
+          cp ./packages/frinx-frontend-server/.env.example ./packages/frinx-frontend-server/.env
+          sed -i "s/http:\/\/localhost:4000\/api\/resource/\/api\/resource/g" ./packages/frinx-frontend-server/.env
+          #sed -i "s/URL_BASENAME=\"\/\"/URL_BASENAME=\"\/frinxui\"/g" ./packages/frinx-frontend-server/.env
+          sed -i "s/WORKFLOW_MANAGER_API_URL=\"\/api\/workflow\"/WORKFLOW_MANAGER_API_URL=\"https:\/\/localhost:4000\/api\/workflow\"/g" ./packages/frinx-frontend-server/.env
       - name: Cypress tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         with:
           project: ./cypress
           start: yarn dev
           wait-on: 'http://localhost:3000'
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/cypress/screenshots
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/cypress/videos

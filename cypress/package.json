@@ -8,12 +8,13 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^2.2.3",
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
     "@testing-library/cypress": "^8.0.3",
     "@typescript-eslint/eslint-plugin": "5.45.0",
     "@typescript-eslint/parser": "5.45.0",
     "cypress": "^11.0.1",
-    "eslint": "8.27.0",
+    "eslint": "8.34.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-import": "2.26.0",

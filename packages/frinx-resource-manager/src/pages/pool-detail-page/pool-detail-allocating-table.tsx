@@ -52,7 +52,7 @@ const PoolDetailAllocatingTable: FC<Props> = ({
       {selectedResource != null && (
         <AlternativeIdModal isOpen={isOpen} onClose={onClose} altIds={selectedResource.AlternativeId} />
       )}
-      <Table background="white" size="sm">
+      <Table data-cy="pool-details-table" background="white" size="sm">
         <Thead bgColor="gray.200">
           <Tr>
             {allocatedResourcesKeys.map((key) => (
@@ -65,51 +65,51 @@ const PoolDetailAllocatingTable: FC<Props> = ({
         </Thead>
         <Tbody>
           {allocatedResources != null && allocatedResources.edges != null && allocatedResources.edges.length > 0 ? (
-            allocatedResources.edges.map((node) => {
-              const resource = node?.node;
-              const canDeallocateResource = node?.node.NestedPool != null;
+            allocatedResources.edges
+              .filter((edge) => edge !== null)
+              .map((node) => {
+                const resource = node?.node;
+                const canDeallocateResource = node?.node.NestedPool != null;
 
-              return resource != null ? (
-                <Tr key={resource.id}>
-                  {allocatedResourcesKeys.map((key) =>
-                    key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key]}</Td> : null,
-                  )}
-                  <Td>{resource.Description}</Td>
-                  <Td>
-                    <Button
-                      onClick={() => {
-                        setSelectedResource(resource);
-                        onOpen();
-                      }}
-                      size="xs"
-                    >
-                      Show alternative ids
-                    </Button>
-                  </Td>
-                  <Td>
-                    <HStack>
-                      <Tooltip
-                        label="Firstly you need to delete nested pools attached to this resource"
-                        shouldWrapChildren
-                        isDisabled={!canDeallocateResource}
-                      >
+                return (
+                  resource != null && (
+                    <Tr key={resource.id}>
+                      {allocatedResourcesKeys.map((key) =>
+                        key ? <Td key={`${key}-${resource.id}`}>{resource.Properties[key].toString()}</Td> : null,
+                      )}
+                      <Td>{resource.Description}</Td>
+                      <Td>
                         <Button
-                          isDisabled={canDeallocateResource}
-                          onClick={() => onFreeResource(resource.Properties)}
+                          onClick={() => {
+                            setSelectedResource(resource);
+                            onOpen();
+                          }}
                           size="xs"
                         >
-                          Deallocate resource
+                          Show alternative ids
                         </Button>
-                      </Tooltip>
-                    </HStack>
-                  </Td>
-                </Tr>
-              ) : (
-                <Tr>
-                  <Td>There is no record</Td>
-                </Tr>
-              );
-            })
+                      </Td>
+                      <Td>
+                        <HStack>
+                          <Tooltip
+                            label="Firstly you need to delete nested pools attached to this resource"
+                            shouldWrapChildren
+                            isDisabled={!canDeallocateResource}
+                          >
+                            <Button
+                              isDisabled={canDeallocateResource}
+                              onClick={() => onFreeResource(resource.Properties)}
+                              size="xs"
+                            >
+                              Deallocate resource
+                            </Button>
+                          </Tooltip>
+                        </HStack>
+                      </Td>
+                    </Tr>
+                  )
+                );
+              })
           ) : (
             <Tr>
               <Td>There are no allocated resources yet.</Td>
