@@ -82,8 +82,8 @@ const VersionSelect: VoidFunctionComponent = () => {
     if (backupVersionData != null) {
       dispatch(
         setBackupNodesAndEdges({
-          nodes: backupVersionData?.topologyVersionData.nodes || [],
-          edges: backupVersionData?.topologyVersionData.edges || [],
+          nodes: backupVersionData?.topologyVersionData.nodes ?? [],
+          edges: backupVersionData?.topologyVersionData.edges ?? [],
         }),
       );
     }

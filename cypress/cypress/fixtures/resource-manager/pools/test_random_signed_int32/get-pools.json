@@ -1,0 +1,36 @@
+{
+  "data": {
+    "QueryRootResourcePools": [
+      {
+        "id": "21474836481",
+        "Name": "test",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771072", "Tag": "test", "__typename": "Tag" }],
+        "PoolProperties": { "address": "192.168.10.1", "prefix": 24, "subnet": false },
+        "AllocationStrategy": { "id": "2", "Name": "ipv4", "Lang": "go", "__typename": "AllocationStrategy" },
+        "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+        "Resources": [{ "id": "17179869189", "NestedPool": null, "__typename": "Resource" }],
+        "Capacity": { "freeCapacity": "255", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836569",
+        "Name": "test_random_signed_int32",
+        "PoolType": "allocating",
+        "Tags": [{ "id": "30064771126", "Tag": "test_random_signed_int32", "__typename": "Tag" }],
+        "PoolProperties": { "from": -200000, "to": 200000 },
+        "AllocationStrategy": {
+          "id": "8",
+          "Name": "random_signed_int32",
+          "Lang": "js",
+          "Script": "\n'use strict';\n\n// framework managed constants\n//;\n//;\n// framework managed constants\n\n// STRATEGY_START\n\n/*\nsigned int32 random allocation strategy\n\n- Expects random signed int32 resource type to have 1 properties of type int [\"int\"]\n- Logs utilisation stats\n- MIN value is  -2147483648, MAX value is 2147483647\n- Allocates previously freed resources\n */\n\nfunction rangeCapacity(s_int32Range) {\n    return s_int32Range.to - s_int32Range.from + 1\n}\n\nfunction freeCapacity(parentRange, utilisedCapacity) {\n    return rangeCapacity(parentRange) - utilisedCapacity\n}\n\nfunction utilizedCapacity(allocatedRanges, newlyAllocatedS_int32) {\n    return allocatedRanges.length + (newlyAllocatedS_int32 != null)\n}\n\nfunction logStats(newlyAllocatedS_int32, parentRange, allocatedS_int32s = [], level = \"log\") {\n    let utilisedCapacity = utilizedCapacity(allocatedS_int32s, newlyAllocatedS_int32);\n    let remainingCapacity = freeCapacity(parentRange, utilisedCapacity);\n    let utilPercentage;\n    if (remainingCapacity === 0) {\n        utilPercentage = 100.0;\n    } else {\n        utilPercentage = (utilisedCapacity / rangeCapacity(parentRange)) * 100;\n    }\n    console[level](\"Remaining capacity: \" + remainingCapacity);\n    console[level](\"Utilised capacity: \" + utilisedCapacity);\n    console[level](`Utilisation: ${utilPercentage.toFixed(1)}%`);\n}\n\nfunction invoke() {\n    let parentRange = resourcePoolProperties;\n    if (parentRange == null) {\n        console.error(\"Unable to allocate random s_int32\" +\n            \". Unable to extract parent int range from pool name: \" + resourcePoolProperties);\n        return null\n    }\n\n    // unwrap currentResources\n    let currentResourcesUnwrapped = currentResources.map(cR =\u003e cR.Properties);\n    let currentResourcesSet = new Set(currentResourcesUnwrapped.map(s_int32 =\u003e s_int32.int));\n\n    for (let i = parentRange.from; i \u003c= parentRange.to; i++) {\n        let newInt = getRandomInt(parentRange.from, parentRange.to);\n        if (!currentResourcesSet.has(newInt)) {\n            // FIXME How to pass these stats ?\n            // logStats(i, parentRange, currentResourcesUnwrapped)\n            return {\n                \"int\": newInt\n            }\n        }\n    }\n\n    // no more numbers\n    console.error(\"Unable to allocate random s_int32 from: \" + rangeToStr(parentRange) +\n        \". Insufficient capacity to allocate a new s_int32\");\n    logStats(null, parentRange, currentResourcesUnwrapped, \"error\");\n    return null\n}\n\n// returns an int between min and max (inclusive)\nfunction getRandomInt(min, max) {\n    return Math.floor(Math.random() * (max - min + 0.9999) + min);\n}\n\nfunction rangeToStr(range) {\n    return `[${range.from}-${range.to}]`\n}\n\nfunction capacity() {\n    return {\n        freeCapacity: String(freeCapacity(resourcePoolProperties, currentResources.length)),\n        utilizedCapacity: String(currentResources.length)\n    };\n}\n\n\n",
+          "__typename": "AllocationStrategy"
+        },
+        "ResourceType": { "id": "25769803783", "Name": "random_signed_int32", "__typename": "ResourceType" },
+        "Resources": [],
+        "Capacity": { "freeCapacity": "400001", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+        "__typename": "ResourcePool"
+      }
+    ]
+  }
+}

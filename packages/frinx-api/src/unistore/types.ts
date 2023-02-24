@@ -20,6 +20,37 @@ export function extractResult<A>(result: Either<t.Errors, A>): A {
   )(result);
 }
 
+const ResourceAssignmentOutputValidator = t.type({
+  bearer: t.type({
+    'default-c-vlan': optional(t.number),
+  }),
+  ipv4: optional(
+    t.type({
+      'permit-manual-assignment': optional(t.boolean),
+      'management-pool-tag': optional(t.string),
+      'ip-connection-pool-tag': optional(t.string),
+      'ip-connection-prefix-length': optional(t.number),
+      'lan-pool-tag': optional(t.string),
+      'lan-prefix-length': optional(t.number),
+    }),
+  ),
+  ipv6: optional(
+    t.type({
+      'permit-manual-assignment': optional(t.boolean),
+      'management-pool-tag': optional(t.string),
+      'ip-connection-pool-tag': optional(t.string),
+      'lan-pool-tag': optional(t.string),
+      'lan-prefix-length': optional(t.number),
+    }),
+  ),
+});
+
+export type ResourceAssignmentOutput = t.TypeOf<typeof ResourceAssignmentOutputValidator>;
+
+export function decodeResourceAssignmentOutput(value: unknown): ResourceAssignmentOutput {
+  return extractResult(ResourceAssignmentOutputValidator.decode(value));
+}
+
 const VpnServicesOutputValidator = t.type({
   'vpn-service': t.array(
     t.type({
@@ -38,7 +69,7 @@ const VpnServicesOutputValidator = t.type({
         }),
       ),
       'vpn-service-topology': t.string,
-      'default-c-vlan': t.number,
+      'resource-assignment': optional(ResourceAssignmentOutputValidator),
     }),
   ),
 });
@@ -47,6 +78,27 @@ export type VpnServicesOutput = t.TypeOf<typeof VpnServicesOutputValidator>;
 export function decodeVpnServicesOutput(value: unknown): VpnServicesOutput {
   return extractResult(VpnServicesOutputValidator.decode(value));
 }
+
+export type ResourceAssignmentInput = {
+  bearer: {
+    'default-c-vlan'?: string;
+  };
+  ipv4?: {
+    'permit-manual-assignment'?: boolean;
+    'management-pool-tag'?: string;
+    'ip-connection-pool-tag'?: string;
+    'ip-connection-prefix-length'?: number;
+    'lan-pool-tag'?: string;
+    'lan-prefix-length'?: number;
+  };
+  ipv6?: {
+    'permit-manual-assignment'?: boolean;
+    'management-pool-tag'?: string;
+    'ip-connection-pool-tag'?: string;
+    'lan-pool-tag'?: string;
+    'lan-prefix-length'?: number;
+  };
+};
 
 export type CreateVpnServiceInput = {
   'vpn-service': [
@@ -60,7 +112,7 @@ export type CreateVpnServiceInput = {
         }[];
       };
       'vpn-service-topology': string;
-      'default-c-vlan': string;
+      'resource-assignment': ResourceAssignmentInput;
     },
   ];
 };
@@ -72,6 +124,7 @@ const SiteDevicesValidator = t.type({
         'device-id': t.string,
         management: optional(
           t.type({
+            'address-family': optional(t.string),
             address: t.string,
           }),
         ),
@@ -184,18 +237,29 @@ const RoutingProtocolItemValidator = t.type({
   type: t.string,
   vrrp: optional(
     t.type({
-      'address-family': t.array(t.string),
+      'address-family': t.string,
     }),
   ),
   static: optional(
     t.type({
       'cascaded-lan-prefixes': t.type({
-        'ipv4-lan-prefixes': t.array(
-          t.type({
-            lan: t.string,
-            'next-hop': t.string,
-            'lan-tag': optional(t.string),
-          }),
+        'ipv4-lan-prefixes': optional(
+          t.array(
+            t.type({
+              lan: t.string,
+              'next-hop': t.string,
+              'lan-tag': optional(t.string),
+            }),
+          ),
+        ),
+        'ipv6-lan-prefixes': optional(
+          t.array(
+            t.type({
+              lan: t.string,
+              'next-hop': t.string,
+              'lan-tag': optional(t.string),
+            }),
+          ),
         ),
       }),
     }),
@@ -246,6 +310,18 @@ const IPConnectionValidator = t.type({
     }),
   ),
   ipv4: optional(
+    t.type({
+      'address-allocation-type': optional(t.string),
+      addresses: optional(
+        t.type({
+          'customer-address': optional(t.string),
+          'prefix-length': optional(t.number),
+          'provider-address': optional(t.string),
+        }),
+      ),
+    }),
+  ),
+  ipv6: optional(
     t.type({
       'address-allocation-type': optional(t.string),
       addresses: optional(
@@ -361,7 +437,12 @@ export type CreateRoutingProtocolItem = {
   type: 'bgp' | 'vrrp' | 'static';
   static?: {
     'cascaded-lan-prefixes': {
-      'ipv4-lan-prefixes': {
+      'ipv4-lan-prefixes'?: {
+        lan: string;
+        'next-hop': string;
+        'lan-tag'?: string;
+      }[];
+      'ipv6-lan-prefixes'?: {
         lan: string;
         'next-hop': string;
         'lan-tag'?: string;
@@ -396,6 +477,14 @@ export type CreateIPConnectionInput = {
     };
   };
   ipv4?: {
+    'address-allocation-type'?: string;
+    addresses?: {
+      'customer-address'?: string;
+      'prefix-length'?: number;
+      'provider-address'?: string;
+    };
+  };
+  ipv6?: {
     'address-allocation-type'?: string;
     addresses?: {
       'customer-address'?: string;
@@ -473,6 +562,7 @@ export type CreateVpnSiteInput = {
         device: {
           'device-id': string;
           management: {
+            addressFamily?: string;
             address: string;
           };
           location: string;
