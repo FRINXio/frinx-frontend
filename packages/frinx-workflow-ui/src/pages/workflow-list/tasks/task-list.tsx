@@ -54,10 +54,10 @@ const TaskList = () => {
   useEffect(() => {
     const searchResults = getFilteredResults(minisearch.search(searchTerm, { prefix: true }), tasks);
 
-    if (searchResults.length > 0) {
+    if (searchTerm.length > 0) {
       setItemList(searchResults);
     }
-    if (!searchResults.length) {
+    if (!searchTerm.length) {
       setItemList(tasks);
     }
   }, [searchTerm, tasks, minisearch, setItemList]);
@@ -67,11 +67,12 @@ const TaskList = () => {
     taskConfigModal.onOpen();
   };
 
-  const handleDeleteTask = (name: string) => {
+  const handleDeleteTask = (deleteTask: TaskDefinition) => {
+
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
-    deleteTaskDefinition(name).then((deletedTask) => {
-      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== deletedTask.name));
+    deleteTaskDefinition(deleteTask.name).then(() => {
+      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== deleteTask.name));
     });
   };
 

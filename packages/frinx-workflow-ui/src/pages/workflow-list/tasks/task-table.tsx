@@ -14,7 +14,7 @@ type TaskTableProps = {
   pagination: Pagination;
   tasks: TaskDefinition[];
   sortArray: (fieldName: string) => void;
-  onTaskDelete: (taskName: string) => void;
+  onTaskDelete: (task: TaskDefinition) => void;
   onTaskConfigClick: (task: TaskDefinition) => void;
 };
 
@@ -75,7 +75,7 @@ export default function TaskTable({
                   colorScheme="red"
                   isRound
                   variant="outline"
-                  onClick={() => onTaskDelete(task.name)}
+                  onClick={() => onTaskDelete(task)}
                   title="Delete"
                   icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
                 />
