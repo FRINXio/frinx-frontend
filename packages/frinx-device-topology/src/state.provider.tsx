@@ -20,6 +20,7 @@ const TOPOLOGY_QUERY = gql`
         interfaces {
           id
           status
+          name
         }
         coordinates {
           x
