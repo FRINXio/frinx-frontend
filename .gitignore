@@ -100,6 +100,8 @@ build
 !/.yarn/sdks
 !/.yarn/versions
 !/.yarn/patches
+/.yarn/install-state.gz
+
 /.pnp.*
 build-client
 build-server

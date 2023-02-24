@@ -1,6 +1,5 @@
 import { Change } from '../../helpers/topology-helpers';
 import { getDeviceSizeDiameter, GroupData, PositionGroupsMap } from '../../pages/topology/graph.helpers';
-import { DeviceSize as DeviceSizeEnum } from '../../pages/topology/topology-graph';
 import { DeviceSize } from '../../__generated__/graphql';
 
 type DeviceNodeSize = {
@@ -12,12 +11,12 @@ export function getDeviceNodeTransformProperties(deviceSize: DeviceSize): Device
   const circleDiameter = getDeviceSizeDiameter(deviceSize);
 
   switch (deviceSize) {
-    case DeviceSizeEnum.MEDIUM:
+    case 'MEDIUM':
       return {
         circleDiameter,
         sizeTransform: 'translate3d(-15px, -15px, 0) scale(1.2)',
       };
-    case DeviceSizeEnum.LARGE:
+    case 'LARGE':
       return {
         circleDiameter,
         sizeTransform: 'translate3d(-20px, -20px, 0) scale(1.6)',

@@ -1,6 +1,18 @@
 import { Change } from '../../helpers/topology-helpers';
 
-export function getEdgeColor(change: Change) {
+export function getEdgeColor(change: Change, isUnknown: boolean): string {
+  if (isUnknown) {
+    if (change === 'DELETED') {
+      return 'red.200';
+    }
+    if (change === 'ADDED') {
+      return 'green.200';
+    }
+    if (change === 'UPDATED') {
+      return 'yellow.200';
+    }
+    return 'gray.200';
+  }
   if (change === 'DELETED') {
     return 'red.400';
   }
