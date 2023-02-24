@@ -3934,7 +3934,7 @@ __metadata:
     "@frinxio/gamma": 0.0.19
     "@types/node": 16.11.38
     "@types/react": 17.0.42
-    "@types/react-dom": 17.0.14
+    "@types/react-dom": 17.0.19
     "@types/url-join": 4.0.1
     "@typescript-eslint/eslint-plugin": 5.45.0
     "@typescript-eslint/parser": 5.45.0
@@ -4076,7 +4076,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": 2.4.1
     "@types/json-templates": 3.0.0
     "@types/react": 17.0.42
-    "@types/react-dom": 17.0.14
+    "@types/react-dom": 17.0.19
     "@types/xterm": ^3.0.0
     "@typescript-eslint/eslint-plugin": 5.45.0
     "@typescript-eslint/parser": 5.45.0
@@ -4147,7 +4147,7 @@ __metadata:
     "@graphql-codegen/typescript": 2.5.0
     "@graphql-codegen/typescript-operations": 2.4.1
     "@types/react": 17.0.42
-    "@types/react-dom": 17.0.14
+    "@types/react-dom": 17.0.19
     "@typescript-eslint/eslint-plugin": 5.45.0
     "@typescript-eslint/parser": 5.45.0
     "@urql/exchange-retry": 1.0.0
@@ -4204,7 +4204,7 @@ __metadata:
     "@emotion/styled": 11.9.3
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@types/react": 17.0.42
-    "@types/react-dom": 17.0.14
+    "@types/react-dom": 17.0.19
     "@typescript-eslint/eslint-plugin": 5.45.0
     "@typescript-eslint/parser": 5.45.0
     "@webpack-cli/serve": 1.6.1
@@ -4264,7 +4264,7 @@ __metadata:
     "@types/dagre": 0.7.48
     "@types/file-saver": 2.0.5
     "@types/react": 17.0.42
-    "@types/react-dom": 17.0.14
+    "@types/react-dom": 17.0.19
     "@types/uuid": 8.3.4
     "@typescript-eslint/eslint-plugin": 5.45.0
     "@typescript-eslint/parser": 5.45.0
@@ -4409,7 +4409,7 @@ __metadata:
     "@graphql-codegen/typescript": 2.5.0
     "@graphql-codegen/typescript-operations": 2.4.1
     "@types/react": 17.0.42
-    "@types/react-dom": 17.0.14
+    "@types/react-dom": 17.0.19
     "@typescript-eslint/eslint-plugin": 5.45.0
     "@typescript-eslint/parser": 5.45.0
     "@urql/exchange-retry": 1.0.0
@@ -6007,12 +6007,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:17.0.14":
-  version: 17.0.14
-  resolution: "@types/react-dom@npm:17.0.14"
+"@types/react-dom@npm:17.0.19":
+  version: 17.0.19
+  resolution: "@types/react-dom@npm:17.0.19"
   dependencies:
-    "@types/react": "*"
-  checksum: b54cd0ef573236b3d87fe7493e6d1c36d8b4ca37a3b46364272a5c91ac178e3296b68ea1aeb299ce68f12ad663c5720ee890d0539b14881c6754bdcbdb0befa0
+    "@types/react": ^17
+  checksum: 875a472d868b235435c905ded16cf92297bd2afb20a5a78f5dccd54312f6f038ccf452ea92bb41c0b39150c2f16f3ddff0265a2de756c6f63b0971dd5719578b
   languageName: node
   linkType: hard
 
