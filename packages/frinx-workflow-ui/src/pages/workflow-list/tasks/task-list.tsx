@@ -68,7 +68,6 @@ const TaskList = () => {
   };
 
   const handleDeleteTask = (deleteTask: TaskDefinition) => {
-
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
     deleteTaskDefinition(deleteTask.name).then(() => {
