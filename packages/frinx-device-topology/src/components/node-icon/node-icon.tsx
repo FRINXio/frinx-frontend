@@ -130,6 +130,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
             >
               {sourceInterface != null && (
                 <Text
+                  data-id={sourceInterface.id}
                   fontSize="sm"
                   transform="translate(5px, -5px)"
                   fill={sourceInterface.status === 'unknown' ? 'red' : 'black'}
@@ -139,6 +140,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
               )}
               {targetInterface != null && (
                 <Text
+                  data-id={targetInterface.id}
                   fontSize="sm"
                   transform="translate(5px, -5px)"
                   fill={targetInterface.status === 'unknown' ? 'red' : 'black'}

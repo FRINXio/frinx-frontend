@@ -2,20 +2,12 @@ import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared/src';
 import React, { FunctionComponent, useRef } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
-import { getEdgesWithDiff, getNodesWithDiff } from '../../helpers/topology-helpers';
 import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
 import { height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
-
-// eslint-disable-next-line no-shadow
-export enum DeviceSize {
-  SMALL = 'SMALL',
-  MEDIUM = 'MEDIUM',
-  LARGE = 'LARGE',
-}
 
 type Props = {
   isCommonNodesFetching: boolean;
@@ -32,23 +24,13 @@ const TopologyGraph: FunctionComponent<Props> = ({
   const lastPositionRef = useRef<{ deviceName: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { backupEdges, backupNodes, edges, nodes, selectedNode, selectedVersion, unconfirmedSelectedNodeIds } = state;
-
-  const nodesWithDiff =
-    selectedVersion && backupNodes
-      ? getNodesWithDiff(nodes, backupNodes)
-      : nodes.map((n) => ({ ...n, change: 'NONE' as const }));
-
-  const edgesWithDiff =
-    selectedVersion && backupEdges
-      ? getEdgesWithDiff(edges, backupEdges)
-      : edges.map((e) => ({ ...e, change: 'NONE' as const }));
+  const { edges, nodes, selectedNode, unconfirmedSelectedNodeIds } = state;
 
   const handleNodePositionUpdate = (deviceName: string, position: Position) => {
     if (timeoutRef.current != null) {
       clearTimeout(timeoutRef.current);
     }
-    const node = unwrap(nodesWithDiff.find((n) => n.device.name === deviceName));
+    const node = unwrap(nodes.find((n) => n.device.name === deviceName));
     lastPositionRef.current = { deviceName: node.device.name, position };
     dispatch(updateNodePosition(deviceName, position));
   };
@@ -83,9 +65,9 @@ const TopologyGraph: FunctionComponent<Props> = ({
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Edges edgesWithDiff={edgesWithDiff} />
+        <Edges edgesWithDiff={edges} />
         <Nodes
-          nodesWithDiff={nodesWithDiff}
+          nodesWithDiff={nodes}
           onNodePositionUpdate={handleNodePositionUpdate}
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
