@@ -52,7 +52,8 @@ export function stateReducer(state: State, action: StateAction): State {
     switch (action.type) {
       case 'SET_NODES_AND_EDGES': {
         const allNodes = getNodesWithDiff(action.payload.nodes, state.backupNodes);
-        const positionsMap = getDefaultPositionsMap(allNodes, action.payload.edges);
+        const allEdges = getEdgesWithDiff(state.edges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap(allNodes, allEdges);
         acc.nodes = action.payload.nodes;
         acc.edges = action.payload.edges;
         acc.nodePositions = positionsMap.nodes;
@@ -61,11 +62,13 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'UPDATE_NODE_POSITION': {
         acc.nodePositions[action.nodeId] = action.position;
+        console.log('before:', { ...acc.interfaceGroupPositions });
         acc.interfaceGroupPositions = getInterfacesPositions({
           nodes: acc.nodes,
           edges: acc.edges,
           positionMap: acc.nodePositions,
         });
+        console.log('after:', acc.interfaceGroupPositions);
         return acc;
       }
       case 'SET_SELECTED_NODE': {

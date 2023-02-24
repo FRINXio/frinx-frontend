@@ -48,6 +48,8 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device.deviceSize);
 
+  console.log(device.name, interfaceGroups);
+
   return (
     <G
       cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}
@@ -130,6 +132,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
             >
               {sourceInterface != null && (
                 <Text
+                  data-id={sourceInterface.id}
                   fontSize="sm"
                   transform="translate(5px, -5px)"
                   fill={sourceInterface.status === 'unknown' ? 'red' : 'black'}
@@ -139,6 +142,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
               )}
               {targetInterface != null && (
                 <Text
+                  data-id={targetInterface.id}
                   fontSize="sm"
                   transform="translate(5px, -5px)"
                   fill={targetInterface.status === 'unknown' ? 'red' : 'black'}
