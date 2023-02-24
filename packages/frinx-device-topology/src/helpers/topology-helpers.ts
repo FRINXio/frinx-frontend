@@ -33,11 +33,10 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
       nodesMap.get(id)?.interfaces ?? [],
       'id',
     ).map((i) => ({ ...i, change: 'DELETED' }));
-    const noChangeInterfaces = differenceBy(interfaces, removedInterfaces, 'id').map((i) => ({
+    const noChangeInterfaces = differenceBy(interfaces, removedInterfaces, addedInterfaces, 'id').map((i) => ({
       ...i,
       change: 'NONE',
     }));
-    console.log(n.device.name, { addedInterfaces, removedInterfaces, noChangeInterfaces });
     if (backupNodesMap.has(n.id)) {
       return {
         ...n,
@@ -70,8 +69,6 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
       };
     })
     .filter((n) => !nodesMap.has(n.id));
-
-  console.log(currentNodesWithDiff);
 
   return [...currentNodesWithDiff, ...deletedBackupNodesWithDiff];
 }

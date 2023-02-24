@@ -48,8 +48,6 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device.deviceSize);
 
-  console.log(device.name, interfaceGroups);
-
   return (
     <G
       cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}

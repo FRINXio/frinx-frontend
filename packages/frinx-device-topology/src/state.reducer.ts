@@ -1,7 +1,6 @@
 import produce from 'immer';
-import { getEdgesWithDiff, getNodesWithDiff } from './helpers/topology-helpers';
+import { getEdgesWithDiff, getNodesWithDiff, GraphEdgeWithDiff, GraphNodeWithDiff } from './helpers/topology-helpers';
 import {
-  BackupGraphNode,
   getDefaultPositionsMap,
   getInterfacesPositions,
   GraphEdge,
@@ -13,8 +12,8 @@ import { LabelItem, StateAction, TopologyMode } from './state.actions';
 
 export type State = {
   mode: TopologyMode;
-  nodes: GraphNode[];
-  edges: GraphEdge[];
+  nodes: GraphNodeWithDiff[];
+  edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap;
   selectedNode: GraphNode | null;
@@ -22,8 +21,6 @@ export type State = {
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
   selectedVersion: string | null;
-  backupNodes: BackupGraphNode[];
-  backupEdges: GraphEdge[];
   unconfirmedSelectedNodeIds: string[];
   selectedNodeIds: string[];
   commonNodeIds: string[];
@@ -40,8 +37,6 @@ export const initialState: State = {
   connectedNodeIds: [],
   selectedLabels: [],
   selectedVersion: null,
-  backupNodes: [],
-  backupEdges: [],
   unconfirmedSelectedNodeIds: [],
   selectedNodeIds: [],
   commonNodeIds: [],
@@ -51,24 +46,20 @@ export function stateReducer(state: State, action: StateAction): State {
   return produce(state, (acc) => {
     switch (action.type) {
       case 'SET_NODES_AND_EDGES': {
-        const allNodes = getNodesWithDiff(action.payload.nodes, state.backupNodes);
-        const allEdges = getEdgesWithDiff(state.edges, action.payload.edges);
-        const positionsMap = getDefaultPositionsMap(allNodes, allEdges);
-        acc.nodes = action.payload.nodes;
-        acc.edges = action.payload.edges;
+        const positionsMap = getDefaultPositionsMap(action.payload.nodes, action.payload.edges);
+        acc.nodes = action.payload.nodes.map((n) => ({ ...n, change: 'NONE' }));
+        acc.edges = action.payload.edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.nodePositions = positionsMap.nodes;
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
       case 'UPDATE_NODE_POSITION': {
         acc.nodePositions[action.nodeId] = action.position;
-        console.log('before:', { ...acc.interfaceGroupPositions });
         acc.interfaceGroupPositions = getInterfacesPositions({
           nodes: acc.nodes,
           edges: acc.edges,
           positionMap: acc.nodePositions,
         });
-        console.log('after:', acc.interfaceGroupPositions);
         return acc;
       }
       case 'SET_SELECTED_NODE': {
@@ -103,11 +94,11 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'SET_BACKUP_NODES_AND_EDGES': {
-        const allNodes = getNodesWithDiff(state.nodes, action.payload.nodes);
-        const allEdges = getEdgesWithDiff(state.edges, action.payload.edges);
+        const allNodes = getNodesWithDiff(acc.nodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.edges, action.payload.edges);
         const positionsMap = getDefaultPositionsMap(allNodes, allEdges);
-        acc.backupNodes = action.payload.nodes;
-        acc.backupEdges = action.payload.edges;
+        acc.nodes = allNodes;
+        acc.edges = allEdges;
         acc.nodePositions = positionsMap.nodes;
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
