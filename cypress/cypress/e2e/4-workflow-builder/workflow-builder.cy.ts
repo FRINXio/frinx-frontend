@@ -152,8 +152,7 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('COMPLETED', { timeout: 30000 }).eq(0).should('be.visible');
   });
 
-  // failing for unknown reason
-  it.skip('save changes check', () => {
+  it('save changes check', () => {
     // 'save changes check': 21 22 24
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/21get.json' }).as(
       'get_metadata_plus2',
@@ -207,11 +206,12 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_metadata_plus2');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
+    deleteButton();
+    cy.wait('@get_metadata_plus2');
+    cy.wait('@del_workflow1');
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json' }).as(
       'get_metadata_plus1',
     );
-    deleteButton();
-    cy.wait('@del_workflow1');
     cy.wait('@get_metadata_plus1');
     cy.url().should('include', '/workflow-manager/definitions');
     cy.contains('Reset search').click();
@@ -221,11 +221,12 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_metadata_plus1');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
+    deleteButton();
+    cy.wait('@get_metadata_plus1');
+    cy.wait('@del_workflow2');
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as(
       'get_metadata',
     );
-    deleteButton();
-    cy.wait('@del_workflow2');
     cy.url().should('include', '/workflow-manager/definitions');
     cy.wait('@get_metadata');
     cy.contains('Reset search').click();
