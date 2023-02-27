@@ -90,12 +90,18 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     const { getWorkflows } = callbackUtils.getCallbacks;
     getWorkflows().then((wfs) => {
       const wfExists = wfs.find((wf) => wf.name === workflow?.name);
+
       if (wfExists != null && workflow != null) {
         const { deleteWorkflow } = callbackUtils.getCallbacks;
-        deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
+        deleteWorkflow(workflow.name, workflow?.version.toString()).then(() => {
           onClose();
+          addToastNotification({
+            content: 'Workflow deleted',
+            type: 'success',
+          });
         });
       }
+
       if (!wfExists) {
         addToastNotification({
           content: 'No workflow definition to be deleted',
