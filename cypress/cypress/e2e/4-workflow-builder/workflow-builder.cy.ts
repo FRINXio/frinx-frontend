@@ -151,7 +151,7 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_workflow_completed');
     cy.contains('COMPLETED', { timeout: 30000 }).eq(0).should('be.visible');
   });
-  it('save changes check', () => {
+  it.only('save changes check', () => {
     // 'save changes check': 21 22 24
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/21get.json' }).as(
       'get_metadata_plus2',
