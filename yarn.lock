@@ -3931,7 +3931,7 @@ __metadata:
     "@frinx/workflow-builder": ^1.0.0
     "@frinx/workflow-ui": ^2.0.0
     "@frinxio/device-topology": ^0.0.1
-    "@frinxio/gamma": 0.0.19
+    "@frinxio/gamma": 0.0.20
     "@types/node": 16.11.38
     "@types/react": 17.0.42
     "@types/react-dom": 17.0.14
@@ -4448,13 +4448,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@frinxio/gamma@npm:0.0.19":
-  version: 0.0.19
-  resolution: "@frinxio/gamma@npm:0.0.19::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40FRINXio%2Fgamma%2F0.0.19%2F7cdf8c00ba4bffa3ebf35ca7277bb5d0791b594e"
+"@frinxio/gamma@npm:0.0.20":
+  version: 0.0.20
+  resolution: "@frinxio/gamma@npm:0.0.20::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40FRINXio%2Fgamma%2F0.0.20%2F9bec5cc59e2613f7c02736ae3bf924c02b723240"
   dependencies:
     "@types/lodash": 4.14.181
     "@types/url-join": 4.0.1
     "@types/uuid": ^8.3.4
+    "@urql/exchange-retry": ^1.0.0
     chakra-ui-autocomplete: 1.4.5
     diff-arrays-of-objects: 1.1.9
     downshift: 6.1.7
@@ -4463,7 +4464,9 @@ __metadata:
     fp-ts: 2.11.9
     fuse.js: ^6.6.0
     io-ts: 2.2.16
+    ipaddr.js: ^2.0.1
     url-join: 5.0.0
+    urql: ^3.0.3
     uuid: 8.3.2
     yup: 0.32.11
   peerDependencies:
@@ -4475,7 +4478,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.0.0
-  checksum: 6a66b80e57d40001549c8c85fe3366be36f4006c9e277ffb3da5717ea63e3d7735805742273eeabfa18c18e1dc5b3b405baa6bfc347ff78e0cbd0cd5757abf49
+  checksum: 23977b8b7ca44b192f46f5827b543420370d0f93629f06b76e12809cda581d2b38dffe2b183d1e5bc9278b844a3ad67ea3fd05036a48500253c763b9fe64f727
   languageName: node
   linkType: hard
 
@@ -6340,7 +6343,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@urql/exchange-retry@npm:1.0.0":
+"@urql/exchange-retry@npm:1.0.0, @urql/exchange-retry@npm:^1.0.0":
   version: 1.0.0
   resolution: "@urql/exchange-retry@npm:1.0.0"
   dependencies:
@@ -19212,7 +19215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"urql@npm:3.0.3":
+"urql@npm:3.0.3, urql@npm:^3.0.3":
   version: 3.0.3
   resolution: "urql@npm:3.0.3"
   dependencies:
