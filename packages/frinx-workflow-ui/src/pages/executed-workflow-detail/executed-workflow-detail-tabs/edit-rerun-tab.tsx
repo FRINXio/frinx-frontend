@@ -16,13 +16,12 @@ const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inp
   const { descriptions, labels, values } = inputs;
 
   const getValue = (i: number) => {
-    if (values[i] != null && typeof values[i] === 'object') {
-      return JSON.stringify(values[i]);
+    if (values[i] != null) {
+      return values[i];
     }
 
     return '';
-  };
-
+  };  
   return (
     <>
       {labels.map((label: string, i) => (
