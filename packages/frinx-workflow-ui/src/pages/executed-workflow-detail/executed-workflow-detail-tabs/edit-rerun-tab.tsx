@@ -21,7 +21,7 @@ const getValue = (i: number, values: string[]) => {
 };
 
 const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inputs }) => {
-  const { descriptions, labels, values } = inputs;  
+  const { descriptions, labels, values } = inputs;
 
   return (
     <>
@@ -30,7 +30,11 @@ const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inp
         <Box key={`col1-${i}`}>
           <FormControl>
             <FormLabel>{label}</FormLabel>
-            <Input onChange={(e) => onInputChange(e, label)} placeholder="Enter the input" value={getValue(i, values)} />
+            <Input
+              onChange={(e) => onInputChange(e, label)}
+              placeholder="Enter the input"
+              value={getValue(i, values)}
+            />
             <FormHelperText className="text-muted">{descriptions[i]}</FormHelperText>
           </FormControl>
         </Box>
