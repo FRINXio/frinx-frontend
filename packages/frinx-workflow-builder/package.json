@@ -30,7 +30,7 @@
     "feather-icons-react": "0.6.2",
     "file-saver": "2.0.5",
     "formik": "^2.2.9",
-    "immer": "9.0.16",
+    "immer": "9.0.19",
     "lodash": "4.17.21",
     "minisearch": "^5.0.0",
     "react-flow-renderer": "10.3.17",
