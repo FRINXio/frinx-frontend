@@ -67,11 +67,11 @@ const TaskList = () => {
     taskConfigModal.onOpen();
   };
 
-  const handleDeleteTask = (deleteTask: TaskDefinition) => {
+  const handleDeleteTask = (taskToDelete: TaskDefinition) => {
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
-    deleteTaskDefinition(deleteTask.name).then(() => {
-      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== deleteTask.name));
+    deleteTaskDefinition(taskToDelete.name).then(() => {
+      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== taskToDelete.name));
     });
   };
 
