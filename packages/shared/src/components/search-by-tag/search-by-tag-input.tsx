@@ -7,7 +7,7 @@ type Props = {
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: string[]) => void;
   onTagCreate?: (label: string) => void;
-  tagText?: string;
+  tagText: string;
 };
 
 const SearchByTagInput: FC<Props> = ({
