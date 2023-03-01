@@ -109,7 +109,7 @@ export function createEmptyWorkflow(): Pick<
 > {
   return {
     name: '',
-    description: '{}',
+    description: '',
     version: 1,
     ownerEmail: '',
     restartable: true,

@@ -14,6 +14,7 @@ import {
   Input,
   Select,
   Icon,
+  Textarea,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { omit, omitBy } from 'lodash';
@@ -116,7 +117,15 @@ const WorkflowForm: FC<Props> = ({
     }
   };
 
-  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
+  console.log(values);
+  
+
+  const handleOnChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
     handleChange(e);
     handleOnChangeNotify();
   };
@@ -137,7 +146,7 @@ const WorkflowForm: FC<Props> = ({
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
-        <Input name="description" value={values.description} onChange={handleOnChange} />
+        <Textarea name="description" value={values.description} onChange={handleOnChange} />
       </FormControl>
       <FormControl id="label" my={6}>
         <FormLabel>Label</FormLabel>
