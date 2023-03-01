@@ -100,8 +100,8 @@ function convertTaskToNode(task: ExtendedTask, isReadOnly: boolean): Node<NodeDa
       }, [])
       .flat();
 
-    const defaultExtendedTasks = task.defaultCase.map(convertTaskToExtendedTask);
-    const defaultDecisionNodes = createNodes(defaultExtendedTasks, isReadOnly); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const defaultExtendedTasks = task.defaultCase?.map(convertTaskToExtendedTask);
+    const defaultDecisionNodes = createNodes(defaultExtendedTasks || [], isReadOnly); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [decisionNode, ...decisionChildren, ...defaultDecisionNodes];
   }
 
@@ -175,7 +175,7 @@ function createAfterDecisionEdges(
     .flat();
 
   // default cases edges
-  const defaultCaseTasks = [...decisionTask.defaultCase];
+  const defaultCaseTasks = [...(decisionTask.defaultCase || [])];
   const defaultCaseLastTask = defaultCaseTasks.pop();
 
   if (!defaultCaseLastTask) {
@@ -262,16 +262,17 @@ function createDecisionEdges(previousTask: ExtendedTask, curr: ExtendedDecisionT
     .flat();
 
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  const defaultCaseEdges = createEdges(curr.defaultCase.map(convertTaskToExtendedTask));
-  const startDefaultCaseEdge = curr.defaultCase.length
-    ? {
-        id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
-        source: curr.taskReferenceName,
-        target: curr.defaultCase[0].taskReferenceName,
-        sourceHandle: 'default',
-        type: 'buttonedge',
-      }
-    : null;
+  const defaultCaseEdges = createEdges(curr.defaultCase?.map(convertTaskToExtendedTask) || []);
+  const startDefaultCaseEdge =
+    curr.defaultCase != null && curr.defaultCase.length
+      ? {
+          id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
+          source: curr.taskReferenceName,
+          target: curr.defaultCase[0].taskReferenceName,
+          sourceHandle: 'default',
+          type: 'buttonedge',
+        }
+      : null;
   const allDefaultCaseEdges = startDefaultCaseEdge ? [...defaultCaseEdges, startDefaultCaseEdge] : defaultCaseEdges;
   return hasEdgeToPreviousTask
     ? [newEdge, ...decisionEdges, ...allDefaultCaseEdges]

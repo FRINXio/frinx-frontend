@@ -126,7 +126,7 @@ export type DecisionTask = BaseTask<DecisionInputParams> & {
   caseValueParam?: string;
   caseExpression?: string;
   decisionCases: Record<string, Task[]>;
-  defaultCase: Task[];
+  defaultCase?: Task[];
 };
 export type EventTask = BaseTask<EventInputParams> & {
   type: 'EVENT';
