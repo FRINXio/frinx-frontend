@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { omit, omitBy } from 'lodash';
-import { isWorkflowNameAvailable, LabelsInput, Workflow } from '@frinx/shared/src';
+import { isWorkflowNameAvailable, Workflow, SearchByTagInput, useTagsInput } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
@@ -115,7 +115,9 @@ const WorkflowForm: FC<Props> = ({
     if (onChangeNotify) {
       onChangeNotify();
     }
-  };  
+  };
+
+  const tagsInput = useTagsInput();
 
   const handleOnChange = (
     e:
@@ -145,12 +147,16 @@ const WorkflowForm: FC<Props> = ({
         <FormLabel>Description</FormLabel>
         <Textarea name="description" value={values.description} onChange={handleOnChange} />
       </FormControl>
-      <FormControl id="label" my={6}>
-        <FormLabel>Label</FormLabel>
-        <LabelsInput
-          labels={values.labels || []}
-          onChange={(labels) => setFieldValue('labels', labels)}
-          placeholder="Add Labels (press Enter to add)"
+      <FormControl my={6}>
+        <SearchByTagInput
+          tagText="Label"
+          data-cy="create-pool-tags"
+          selectedTags={tagsInput.selectedTags}
+          onTagCreate={(value) => {
+            tagsInput.handleTagCreation(value);
+            setFieldValue('labels', tagsInput.selectedTags);
+          }}
+          onSelectionChange={tagsInput.handleOnSelectionChange}
         />
       </FormControl>
       <FormControl id="version" my={6} isRequired isInvalid={errors.version != null}>
@@ -195,7 +201,7 @@ const WorkflowForm: FC<Props> = ({
             <Input
               size="sm"
               type="text"
-              variant="filled"
+              borderRadius={6}
               value={newParam}
               onChange={(event) => {
                 event.persist();
@@ -222,7 +228,6 @@ const WorkflowForm: FC<Props> = ({
         </FormControl>
       </Box>
       <Box width="50%">
-        <Divider />
         {Object.keys(values.outputParameters).map((key) => (
           <FormControl id="param" my={2} key={key}>
             <FormLabel>{key}</FormLabel>

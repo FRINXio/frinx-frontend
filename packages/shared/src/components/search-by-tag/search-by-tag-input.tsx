@@ -15,7 +15,7 @@ const SearchByTagInput: FC<Props> = ({
   onTagCreate,
   isCreationDisabled = false,
   onSelectionChange,
-  tagText = 'Select tags',
+  tagText,
 }) => {
   const selectedTagList = selectedTags.map((tag) => ({ label: tag, value: tag }));
 
