@@ -115,10 +115,7 @@ const WorkflowForm: FC<Props> = ({
     if (onChangeNotify) {
       onChangeNotify();
     }
-  };
-
-  console.log(values);
-  
+  };  
 
   const handleOnChange = (
     e:
