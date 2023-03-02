@@ -119,12 +119,7 @@ const WorkflowForm: FC<Props> = ({
 
   const tagsInput = useTagsInput();
 
-  const handleOnChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLSelectElement>
-      | React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
+  const handleOnChange = (e: React.ChangeEvent) => {
     handleChange(e);
     handleOnChangeNotify();
   };
