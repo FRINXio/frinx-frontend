@@ -40,10 +40,10 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "sass": "^1.32.8",
-    "sass-loader": "^12.0.0",
+    "sass-loader": "^13.0.0",
     "stream": "0.0.2",
     "style-loader": "^3.0.0",
-    "superagent": "^5.2.2",
+    "superagent": "^8.0.0",
     "unescape-js": "^1.1.4"
   },
   "scripts": {
