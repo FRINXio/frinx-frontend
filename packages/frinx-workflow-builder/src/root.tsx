@@ -7,6 +7,7 @@ import {
   TaskDefinition,
   unwrap,
   Workflow,
+  useNotifications,
 } from '@frinx/shared/src';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
@@ -26,6 +27,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const [workflows, setWorkflows] = useState<Workflow[] | null>(null);
   const [taskDefinitions, setTaskDefinitions] = useState<TaskDefinition[] | null>(null);
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
+
+  const { addToastNotification } = useNotifications();
 
   useEffect(() => {
     if (name != null && version != null) {
@@ -84,12 +87,28 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   };
 
   const handleWorkflowDelete = () => {
-    if (workflow != null) {
-      const { deleteWorkflow } = callbackUtils.getCallbacks;
-      deleteWorkflow(workflow.name, workflow.version.toString()).then(() => {
-        onClose();
-      });
-    }
+    const { getWorkflows } = callbackUtils.getCallbacks;
+    getWorkflows().then((wfs) => {
+      const isWorkflow = wfs.find((wf) => wf.name === workflow?.name);
+
+      if (isWorkflow != null && workflow != null) {
+        const { deleteWorkflow } = callbackUtils.getCallbacks;
+        deleteWorkflow(workflow.name, workflow?.version.toString()).then(() => {
+          onClose();
+          addToastNotification({
+            content: 'Workflow deleted',
+            type: 'success',
+          });
+        });
+      }
+
+      if (!isWorkflow) {
+        addToastNotification({
+          content: 'No workflow definition to be deleted',
+          type: 'error',
+        });
+      }
+    });
   };
 
   const handleWorkflowChange = (
