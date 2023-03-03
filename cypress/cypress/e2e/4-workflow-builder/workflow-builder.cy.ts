@@ -61,7 +61,7 @@ describe('Create workflow, test and delete it', () => {
     // })
     // it('save as', () => {
     cy.log('-- 02. Actions/Save as --');
-    cy.contains('button', 'Actions').click();
+    cy.contains('button', 'Actions').click({ force: true });
     cy.contains('button', 'Save as').click();
     cy.get('input[placeholder="Please enter name of workflow"').type('test workflow copy');
     cy.contains('button', 'Cancel').next().click();
