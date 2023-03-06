@@ -7,7 +7,7 @@ type Props = {
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: string[]) => void;
   onTagCreate?: (label: string) => void;
-  tagText?: string;
+  tagText: string;
 };
 
 const SearchByTagInput: FC<Props> = ({
@@ -15,7 +15,7 @@ const SearchByTagInput: FC<Props> = ({
   onTagCreate,
   isCreationDisabled = false,
   onSelectionChange,
-  tagText = 'Select tags',
+  tagText,
 }) => {
   const selectedTagList = selectedTags.map((tag) => ({ label: tag, value: tag }));
 

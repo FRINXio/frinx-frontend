@@ -270,6 +270,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
       <FormControl mt={4}>
         <SearchByTagInput
+          tagText="Select tags"
           data-cy="create-pool-tags"
           selectedTags={tagsInput.selectedTags}
           onTagCreate={tagsInput.handleTagCreation}
