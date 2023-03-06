@@ -126,9 +126,11 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
             <G
               transform={isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined}
               opacity={isFocused ? 1 : 0}
+              key={groupId}
             >
               {sourceInterface != null && (
                 <Text
+                  data-id={sourceInterface.id}
                   fontSize="sm"
                   transform="translate(5px, -5px)"
                   fill={sourceInterface.status === 'unknown' ? 'red' : 'black'}
@@ -138,6 +140,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
               )}
               {targetInterface != null && (
                 <Text
+                  data-id={targetInterface.id}
                   fontSize="sm"
                   transform="translate(5px, -5px)"
                   fill={targetInterface.status === 'unknown' ? 'red' : 'black'}

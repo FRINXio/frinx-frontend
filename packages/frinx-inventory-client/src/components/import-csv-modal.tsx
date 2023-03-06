@@ -132,7 +132,8 @@ const ImportCSVModal: VoidFunctionComponent<Props> = ({ onClose }) => {
                 onClick={() => {
                   inputRef.current?.click();
                 }}
-                value={values.file?.name}
+                value={values.file?.name || ''}
+                readOnly
               />
             </InputGroup>
           </FormControl>

@@ -107,14 +107,19 @@ export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
       url,
       fetchOptions: () => {
         const authToken = authContext.getAuthToken();
+        const headers: Record<string, string> = {
+          'Apollo-Require-Preflight': 'true',
+        };
+
         if (authToken != null) {
           return {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
+            ...headers,
+            Authorization: `Bearer ${authToken}`,
           };
         }
-        return {};
+        return {
+          headers,
+        };
       },
     },
     onError: () => {
