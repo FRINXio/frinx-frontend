@@ -831,7 +831,6 @@ export type MaximumRoutes = {
     maximumRoutes: 1000 | 2000 | 5000 | 10000 | 1000000;
   }[];
 };
-export type VPNMaximumRoutes = 1000 | 2000 | 5000 | 10000 | 1000000;
 
 export type VpnService = {
   vpnId?: string;
@@ -961,7 +960,7 @@ export type VpnSite = {
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
-  maximumRoutes: VPNMaximumRoutes;
+  maximumRoutes: 1000 | 2000 | 5000 | 10000 | 1000000;
 };
 
 export type Status = {
