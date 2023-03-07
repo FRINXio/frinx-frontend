@@ -101,7 +101,7 @@ function convertTaskToNode(task: ExtendedTask, isReadOnly: boolean): Node<NodeDa
       .flat();
 
     const defaultExtendedTasks = task.defaultCase?.map(convertTaskToExtendedTask);
-    const defaultDecisionNodes = createNodes(defaultExtendedTasks || [], isReadOnly); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const defaultDecisionNodes = createNodes(defaultExtendedTasks ?? [], isReadOnly); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [decisionNode, ...decisionChildren, ...defaultDecisionNodes];
   }
 
@@ -175,7 +175,7 @@ function createAfterDecisionEdges(
     .flat();
 
   // default cases edges
-  const defaultCaseTasks = [...(decisionTask.defaultCase || [])];
+  const defaultCaseTasks = [...(decisionTask.defaultCase ?? [])];
   const defaultCaseLastTask = defaultCaseTasks.pop();
 
   if (!defaultCaseLastTask) {
