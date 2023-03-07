@@ -4473,7 +4473,7 @@ __metadata:
     framer-motion: 6.2.8
     html-webpack-plugin: ^5.5.0
     lodash: ^4.17.21
-    minisearch: ^5.0.0
+    minisearch: ^6.0.0
     npm-run-all: 4.1.5
     react: 18.2.0
     react-ace: 10.1.0
@@ -4539,7 +4539,7 @@ __metadata:
     html-webpack-plugin: 5.5.0
     immer: 9.0.19
     lodash: 4.17.21
-    minisearch: ^5.0.0
+    minisearch: ^6.0.0
     npm-run-all: 4.1.5
     react: 18.2.0
     react-dom: 18.2.0
@@ -15063,10 +15063,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minisearch@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "minisearch@npm:5.0.0"
-  checksum: e716c877706be6b4977b1e4fe70baa006c392857bdd7cf13f483483fcc7c8cbb34f852616449da9de41bed4b0b2e034dde80305ee3ed7c10f8c4845a813a91ec
+"minisearch@npm:^6.0.0":
+  version: 6.0.1
+  resolution: "minisearch@npm:6.0.1"
+  checksum: 0ce329173720c2c75b36507a0fde4d45ef0dc80b4b41da39b2c6236416700956f61e6f80b7f0080cc94819bcd7c28358c45fb38bdc29f11ae266ada52161bf7a
   languageName: node
   linkType: hard
 
