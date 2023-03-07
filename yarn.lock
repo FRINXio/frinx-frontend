@@ -89,12 +89,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-browser@npm:2.31.0":
-  version: 2.31.0
-  resolution: "@azure/msal-browser@npm:2.31.0"
+"@azure/msal-browser@npm:2.33.0":
+  version: 2.33.0
+  resolution: "@azure/msal-browser@npm:2.33.0"
   dependencies:
-    "@azure/msal-common": ^8.0.0
-  checksum: b7797c6943f20566f448574868f5120a225b401541b4082dc4bf4e3f27080c5955d73de72ceb6dc2591aa4e251e9a466937b412a7c1d863c265d13c23a09e35b
+    "@azure/msal-common": ^10.0.0
+  checksum: 062b4d70dfefed19f4a16eebf4d6062ec000d18e27d708f4dfcb8b6a3560ce84d903280e690698d92c968f87127140f674062ea48574191aa664f6185427c9ca
   languageName: node
   linkType: hard
 
@@ -105,10 +105,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-common@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "@azure/msal-common@npm:8.0.0"
-  checksum: 86d4d68a7d31ae6f0b8fcad9e48f5539ecf4a006beaef660408ef295e5ebe7ae22d95dfafa349fc2c3f348189aa1bb1ca4367b20de40105d1bf17065e6c2fe97
+"@azure/msal-common@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "@azure/msal-common@npm:10.0.0"
+  checksum: 57ff5ed9fcf17f83137c0d0792229f4f4a8856d902502bd8c11879193fad700939bdc38104b48e545f7c6c095dd691c2a7e7a7793ae7a5e999ffa5493f6f3666
   languageName: node
   linkType: hard
 
@@ -4157,7 +4157,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinx/dashboard@workspace:packages/frinx-dashboard"
   dependencies:
-    "@azure/msal-browser": 2.31.0
+    "@azure/msal-browser": 2.33.0
     "@azure/msal-common": 6.4.0
     "@azure/msal-react": 1.5.3
     "@babel/core": 7.21.0
