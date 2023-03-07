@@ -143,7 +143,7 @@ export function decodeSiteDevicesOutput(value: unknown): SiteDevicesOutput {
 const MaximumRoutesValidator = t.type({
   'address-family': t.array(
     t.type({
-      af: t.literal('ipv4'),
+      af: t.union([t.literal('ipv4'), t.literal('ipv6')]),
       'maximum-routes': optional(t.number),
     }),
   ),
@@ -825,7 +825,13 @@ export enum DefaultCVlanEnum {
 }
 
 export type AddressFamily = 'ipv4' | 'ipv6';
-export type MaximumRoutes = 1000 | 2000 | 5000 | 10000 | 1000000;
+export type MaximumRoutes = {
+  addressFamily: {
+    af: AddressFamily;
+    maximumRoutes: 1000 | 2000 | 5000 | 10000 | 1000000;
+  }[];
+};
+export type VPNMaximumRoutes = 1000 | 2000 | 5000 | 10000 | 1000000;
 
 export type VpnService = {
   vpnId?: string;
@@ -955,7 +961,7 @@ export type VpnSite = {
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: VPNMaximumRoutes;
 };
 
 export type Status = {
