@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
-import throttle from 'lodash/throttle';
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { callbackUtils, TaskDefinition } from '@frinx/shared/src';
 import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
@@ -30,9 +29,10 @@ function getFilteredResults<T extends { name: string }>(searchResult: SearchResu
 }
 
 const TaskList = () => {
-  const { currentPage, setCurrentPage, pageItems: tasks, setItemList, totalPages } = usePagination<TaskDefinition>();
+  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<TaskDefinition>();
   const [sorted, setSorted] = useState(false);
   const [task, setTask] = useState<TaskDefinition>();
+  const [tasks, setTasks] = useState<TaskDefinition[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const { current: minisearch } = useRef(new MiniSearch({ fields: ['name'], idField: 'name' }));
   const addTaskModal = useDisclosure();
@@ -43,26 +43,35 @@ const TaskList = () => {
 
     getTaskDefinitions().then((taskDefinitions) => {
       const data = taskDefinitions.sort((a, b) => a.name.localeCompare(b.name)) || [];
-      setItemList(data);
+      setTasks(data);
     });
-  }, [setItemList]);
+  }, []);
 
   useEffect(() => {
     minisearch.addAll(tasks);
   }, [tasks, minisearch]);
 
-  const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), tasks), 60);
+  useEffect(() => {
+    const searchResults = getFilteredResults(minisearch.search(searchTerm, { prefix: true }), tasks);
+
+    if (searchTerm.length > 0) {
+      setItemList(searchResults);
+    }
+    if (!searchTerm.length) {
+      setItemList(tasks);
+    }
+  }, [searchTerm, tasks, minisearch, setItemList]);
 
   const handleTaskModal = (tsk: TaskDefinition) => {
     setTask(tsk);
     taskConfigModal.onOpen();
   };
 
-  const handleDeleteTask = (name: string) => {
+  const handleDeleteTask = (taskToDelete: TaskDefinition) => {
     const { deleteTaskDefinition } = callbackUtils.getCallbacks;
 
-    deleteTaskDefinition(name).then((deletedTask) => {
-      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== deletedTask.name));
+    deleteTaskDefinition(taskToDelete.name).then(() => {
+      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== taskToDelete.name));
     });
   };
 
@@ -92,8 +101,6 @@ const TaskList = () => {
     }
   };
 
-  const result = searchTerm.length > 0 ? searchFn() : tasks;
-
   return (
     <Container maxWidth={1200} mx="auto">
       <AddTaskModal
@@ -121,7 +128,7 @@ const TaskList = () => {
       </Flex>
 
       <TaskTable
-        tasks={result || []}
+        tasks={pageItems}
         onTaskConfigClick={handleTaskModal}
         onTaskDelete={handleDeleteTask}
         pagination={{ currentPage, setCurrentPage, totalPages }}

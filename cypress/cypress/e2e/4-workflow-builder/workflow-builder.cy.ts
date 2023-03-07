@@ -61,7 +61,7 @@ describe('Create workflow, test and delete it', () => {
     // })
     // it('save as', () => {
     cy.log('-- 02. Actions/Save as --');
-    cy.contains('button', 'Actions').click();
+    cy.contains('button', 'Actions').click({ force: true });
     cy.contains('button', 'Save as').click();
     cy.get('input[placeholder="Please enter name of workflow"').type('test workflow copy');
     cy.contains('button', 'Cancel').next().click();
@@ -151,6 +151,7 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_workflow_completed');
     cy.contains('COMPLETED', { timeout: 30000 }).eq(0).should('be.visible');
   });
+
   it('save changes check', () => {
     // 'save changes check': 21 22 24
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/21get.json' }).as(
@@ -205,11 +206,12 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_metadata_plus2');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
+    deleteButton();
+    cy.wait('@get_metadata_plus2');
+    cy.wait('@del_workflow1');
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json' }).as(
       'get_metadata_plus1',
     );
-    deleteButton();
-    cy.wait('@del_workflow1');
     cy.wait('@get_metadata_plus1');
     cy.url().should('include', '/workflow-manager/definitions');
     cy.contains('Reset search').click();
@@ -219,11 +221,12 @@ describe('Create workflow, test and delete it', () => {
     cy.wait('@get_metadata_plus1');
     cy.wait('@get_taskdef');
     cy.url().should('include', '/workflow-manager/builder/test');
+    deleteButton();
+    cy.wait('@get_metadata_plus1');
+    cy.wait('@del_workflow2');
     cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as(
       'get_metadata',
     );
-    deleteButton();
-    cy.wait('@del_workflow2');
     cy.url().should('include', '/workflow-manager/definitions');
     cy.wait('@get_metadata');
     cy.contains('Reset search').click();
