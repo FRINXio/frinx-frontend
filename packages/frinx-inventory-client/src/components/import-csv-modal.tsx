@@ -16,6 +16,7 @@ import {
   ModalOverlay,
   Select,
 } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import React, { ChangeEvent, FormEvent, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -67,6 +68,8 @@ const ImportCSVModal: VoidFunctionComponent<Props> = ({ onClose }) => {
   const [{ data, fetching }] = useQuery<ZonesImportQuery, ZonesImportQueryVariables>({ query: ZONES_QUERY });
   const [values, setValues] = useState<FormValues>(INITIAL_VALUES);
 
+  const { addToastNotification } = useNotifications();
+
   const handleOnFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { files } = event.target;
     if (files == null) {
@@ -91,7 +94,14 @@ const ImportCSVModal: VoidFunctionComponent<Props> = ({ onClose }) => {
         input: values,
       },
       context,
-    );
+    ).then((res) => {
+      if (res.error?.name === 'CombinedError') {
+        addToastNotification({
+          content: 'We could not import all devices because some of the imported devices already exsits',
+          type: 'error',
+        });
+      }
+    });
     onClose();
   };
 
