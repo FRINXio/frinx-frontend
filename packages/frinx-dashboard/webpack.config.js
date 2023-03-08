@@ -23,7 +23,7 @@ const plugins = [
     template: fullPath('../../public', 'index.html'),
     inject: false,
     alwaysWriteToDisk: true,
-    filename: fullPath('../../build-client/', 'index.html'),
+    filename: 'index.html',
   }),
   new HtmlWebpackHarddiskPlugin(),
   new CopyWebpackPlugin({
@@ -32,20 +32,20 @@ const plugins = [
       // the older gamma build is used
       {
         from: fullPath('../../public/', 'l3vpn-options.js'),
-        to: fullPath('../../build-client/static', 'l3vpn-options.js'),
+        to: fullPath('../../build-client/', 'l3vpn-options.js'),
         priority: 1,
       },
       // then we try to overwrite it with files from newer gamma builds
       {
         from: fullPath('../../node_modules/@frinxio/gamma/dist/l3vpn-options.js'),
-        to: fullPath('../../build-client/static', 'l3vpn-options.js'),
+        to: fullPath('../../build-client', 'l3vpn-options.js'),
         priority: 2,
         force: true,
         noErrorOnMissing: true,
       },
       {
         from: fullPath('../../public', 'favicon.ico'),
-        to: fullPath('../../build-client/static', 'favicon.ico'),
+        to: fullPath('../../build-client', 'favicon.ico'),
         priority: 1,
       },
     ],
@@ -55,16 +55,16 @@ const plugins = [
 module.exports = {
   entry: [fullPath('src', 'index.ts')],
   output: {
-    path: fullPath('../../build-client/static'),
+    path: fullPath('../../build-client'),
     filename: 'bundle.js',
-    publicPath: '/static/',
+    publicPath: '/',
   },
   devServer: {
     historyApiFallback: true,
     open: false,
     allowedHosts: 'all',
     port: 2999,
-    static: '../../build-client/',
+    static: '../../build-client',
   },
   devtool: isDev ? 'eval-cheap-module-source-map' : false,
   module: {
