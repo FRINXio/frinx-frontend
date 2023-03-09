@@ -826,10 +826,8 @@ export enum DefaultCVlanEnum {
 
 export type AddressFamily = 'ipv4' | 'ipv6';
 export type MaximumRoutes = {
-  addressFamily: {
-    af: AddressFamily;
-    maximumRoutes: 1000 | 2000 | 5000 | 10000 | 1000000;
-  }[];
+  ipv4?: number | null;
+  ipv6?: number | null;
 };
 
 export type VpnService = {
