@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
@@ -22,11 +22,8 @@ type Props = {
 
 const SetVariableInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) => {
   const { variableName, variableValue } = params;
-  const [, setName] = useState(variableName);
-  const [, setValue] = useState(variableValue);
 
   const handleNameOnChange = (updatedVariableName: string) => {
-    setName(updatedVariableName);
     onChange({
       ...params,
       variableName: updatedVariableName,
@@ -34,7 +31,6 @@ const SetVariableInputsForm: FC<Props> = ({ params, errors, onChange, tasks, tas
   };
 
   const handleValueOnChange = (updatedVariableValue: string) => {
-    setValue(updatedVariableValue);
     onChange({
       ...params,
       variableValue: updatedVariableValue,
