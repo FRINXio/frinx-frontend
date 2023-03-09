@@ -112,13 +112,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-react@npm:1.5.3":
-  version: 1.5.3
-  resolution: "@azure/msal-react@npm:1.5.3"
+"@azure/msal-react@npm:1.5.4":
+  version: 1.5.4
+  resolution: "@azure/msal-react@npm:1.5.4"
   peerDependencies:
-    "@azure/msal-browser": ^2.33.0
+    "@azure/msal-browser": ^2.34.0
     react: ^16.8.0 || ^17 || ^18
-  checksum: 21a510604e72ca6710920df5a95736b64745afa3c8b632ed3fede3f08e15e18634d55fd82f4e74d4a01cb76c3c378b9f588eaab0d67d51298caed6fe547a704f
+  checksum: 53dd7352666d220645cef78648a0e0b92ecc73c54702c82e09c0644e0b666ea22ed007082027bca9903a4e4bf68d30caaedad0278c2dbcecd99bea23b840ca5f
   languageName: node
   linkType: hard
 
@@ -4218,7 +4218,7 @@ __metadata:
   dependencies:
     "@azure/msal-browser": 2.33.0
     "@azure/msal-common": 6.4.0
-    "@azure/msal-react": 1.5.3
+    "@azure/msal-react": 1.5.4
     "@babel/core": 7.21.0
     "@babel/plugin-proposal-class-properties": 7.18.6
     "@babel/plugin-proposal-nullish-coalescing-operator": 7.18.6
