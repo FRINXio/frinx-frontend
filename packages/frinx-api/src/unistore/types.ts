@@ -504,7 +504,7 @@ export type CreateNetworkAccessInput = {
     availability: {
       'access-priority': number;
     };
-    'maximum-routes': {
+    'maximum-routes'?: {
       'address-family': {
         af: 'ipv4' | 'ipv6';
         'maximum-routes'?: number | null;
@@ -569,7 +569,7 @@ export type CreateVpnSiteInput = {
         }[];
       };
       'site-network-accesses'?: CreateNetworkAccessInput;
-      'maximum-routes': {
+      'maximum-routes'?: {
         'address-family': {
           af: 'ipv4' | 'ipv6';
           'maximum-routes'?: number | null;
