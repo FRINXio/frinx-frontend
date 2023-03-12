@@ -35,7 +35,7 @@
     "minisearch": "^6.0.0",
     "react-flow-renderer": "10.3.17",
     "uuid": "9.0.0",
-    "yup": "^0.32.11"
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.21.0",

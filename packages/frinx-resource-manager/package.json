@@ -21,7 +21,7 @@
     "match-sorter": "6.3.1",
     "urql": "3.0.3",
     "uuid": "9.0.0",
-    "yup": "0.32.11"
+    "yup": "1.0.2"
   },
   "scripts": {
     "dev": "webpack serve --mode development",

@@ -34,7 +34,7 @@
     "react-router-dom": "6.8.2",
     "url-join": "5.0.0",
     "uuid": "9.0.0",
-    "yup": "0.32.11"
+    "yup": "1.0.2"
   },
   "scripts": {
     "copy:gamma": "cp ../../public/l3vpn-options.js ../../build-client/",
