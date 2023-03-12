@@ -24,7 +24,7 @@
     "@types/file-saver": "2.0.5",
     "@types/react": "17.0.42",
     "@types/react-dom": "17.0.14",
-    "@types/uuid": "8.3.4",
+    "@types/uuid": "9.0.1",
     "ace-builds": "1.15.3",
     "dagre": "0.8.5",
     "feather-icons-react": "0.6.2",
@@ -34,7 +34,7 @@
     "lodash": "4.17.21",
     "minisearch": "^6.0.0",
     "react-flow-renderer": "10.3.17",
-    "uuid": "8.3.2",
+    "uuid": "9.0.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
