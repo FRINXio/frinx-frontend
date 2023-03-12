@@ -61,7 +61,7 @@
     "@webpack-cli/serve": "1.7.0",
     "babel-loader": "8.3.0",
     "css-loader": "6.7.3",
-    "eslint": "8.35.0",
+    "eslint": "8.36.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-import": "2.27.5",
