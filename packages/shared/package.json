@@ -52,7 +52,7 @@
     "lodash": "^4.17.21",
     "minisearch": "^6.0.0",
     "react-ace": "10.1.0",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
   "peerDependencies": {
     "@chakra-ui/react": "^1.6.7",
