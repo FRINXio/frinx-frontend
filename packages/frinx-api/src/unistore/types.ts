@@ -143,7 +143,7 @@ export function decodeSiteDevicesOutput(value: unknown): SiteDevicesOutput {
 const MaximumRoutesValidator = t.type({
   'address-family': t.array(
     t.type({
-      af: t.literal('ipv4'),
+      af: t.union([t.literal('ipv4'), t.literal('ipv6')]),
       'maximum-routes': optional(t.number),
     }),
   ),
@@ -278,7 +278,7 @@ const RoutingProtocolItemValidator = t.type({
         }),
       ),
       'autonomous-system': t.number,
-      'address-family': t.array(t.string),
+      'address-family': t.array(t.union([t.literal('ipv4'), t.literal('ipv6')])),
     }),
   ),
 });
@@ -456,7 +456,7 @@ export type CreateRoutingProtocolItem = {
       }[];
     };
     'autonomous-system': number;
-    'address-family': ['ipv4'];
+    'address-family': ('ipv4' | 'ipv6')[];
   };
 };
 
@@ -504,10 +504,10 @@ export type CreateNetworkAccessInput = {
     availability: {
       'access-priority': number;
     };
-    'maximum-routes': {
+    'maximum-routes'?: {
       'address-family': {
-        af: 'ipv4';
-        'maximum-routes'?: MaximumRoutes;
+        af: 'ipv4' | 'ipv6';
+        'maximum-routes'?: number;
       }[];
     };
     'routing-protocols': CreateRoutingProtocolsInput;
@@ -569,9 +569,9 @@ export type CreateVpnSiteInput = {
         }[];
       };
       'site-network-accesses'?: CreateNetworkAccessInput;
-      'maximum-routes': {
+      'maximum-routes'?: {
         'address-family': {
-          af: 'ipv4';
+          af: 'ipv4' | 'ipv6';
           'maximum-routes'?: number;
         }[];
       };
@@ -825,7 +825,10 @@ export enum DefaultCVlanEnum {
 }
 
 export type AddressFamily = 'ipv4' | 'ipv6';
-export type MaximumRoutes = 1000 | 2000 | 5000 | 10000 | 1000000;
+export type MaximumRoutes = {
+  ipv4?: number | null;
+  ipv6?: number | null;
+};
 
 export type VpnService = {
   vpnId?: string;
@@ -887,7 +890,7 @@ export type StaticRoutingType = {
   lanTag?: LanTag;
 };
 export type BgpRoutingType = {
-  addressFamily: 'ipv4';
+  addressFamily: AddressFamily[];
   autonomousSystem: string;
   bgpProfile: string | null;
 };
@@ -929,6 +932,14 @@ export type IPConnection = {
       providerAddress?: string;
     };
   };
+  ipv6?: {
+    addressAllocationType?: string;
+    addresses?: {
+      customerAddress?: string;
+      prefixLength?: number;
+      providerAddress?: string;
+    };
+  };
 };
 
 export type SiteNetworkAccess = {
@@ -955,7 +966,7 @@ export type VpnSite = {
   siteServiceQosProfile: string | null;
   enableBgpPicFastReroute: boolean;
   siteNetworkAccesses: SiteNetworkAccess[];
-  maximumRoutes: MaximumRoutes;
+  maximumRoutes: 1000 | 2000 | 5000 | 10000 | 1000000;
 };
 
 export type Status = {
