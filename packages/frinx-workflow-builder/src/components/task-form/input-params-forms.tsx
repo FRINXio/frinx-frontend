@@ -13,6 +13,7 @@ import {
   LambdaInputParams,
   TerminateInputParams,
   WhileInputParams,
+  SetVariableInputParams,
 } from '@frinx/shared/src';
 import { FormikErrors } from 'formik';
 import React, { ReactNode } from 'react';
@@ -25,6 +26,7 @@ import GraphQLInputsForm, { GraphQLInputParamsSchema } from './graphql-input-for
 import HTTPInputsForm, { HttpInputParamsSchema } from './http-input-form';
 import JsonInputsForm, { JsonJQNInputParamsSchema } from './json-input-form';
 import KafkaInputsForm, { KafkaPublishInputParamsSchema } from './kafka-input-form';
+import SetVariableInputsForm, { SetVariableInputParamsSchema } from './set-variable-input-form';
 import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
 import TerminateInputForm, { TerminateInputParamsSchema } from './terminate-input-form';
 import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
@@ -52,6 +54,8 @@ export function getValidationSchema(task: ExtendedTask) {
       return SettingsSchema.concat(KafkaPublishInputParamsSchema);
     case 'JSON_JQ_TRANSFORM':
       return SettingsSchema.concat(JsonJQNInputParamsSchema);
+    case 'SET_VARIABLE':
+      return SettingsSchema.concat(SetVariableInputParamsSchema);
     case 'SIMPLE':
       if (isHttpTaskInputParams(task.inputParameters)) {
         return SettingsSchema.concat(HttpInputParamsSchema);
@@ -82,6 +86,18 @@ export function renderInputParamForm(
         <LambdaInputsForm
           params={task.inputParameters}
           errors={lambdaInputErrors}
+          onChange={onChange}
+          tasks={tasks}
+          task={task}
+        />
+      );
+    }
+    if (task.type === 'SET_VARIABLE') {
+      const setVariableInputErrors = errors as FormikErrors<{ inputParameters: SetVariableInputParams }>;
+      return (
+        <SetVariableInputsForm
+          params={task.inputParameters}
+          errors={setVariableInputErrors}
           onChange={onChange}
           tasks={tasks}
           task={task}
