@@ -19,16 +19,16 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "@chakra-ui/react": "1.8.9",
+    "@chakra-ui/react": "2.5.1",
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
-    "@types/react": "17.0.42",
-    "@types/react-dom": "17.0.14",
+    "@types/react": "17.0.53",
+    "@types/react-dom": "18.0.11",
     "@typescript-eslint/eslint-plugin": "5.54.1",
     "@typescript-eslint/parser": "5.54.1",
     "@webpack-cli/serve": "1.7.0",
-    "eslint": "8.35.0",
+    "eslint": "8.36.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-import": "2.27.5",
@@ -41,7 +41,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-flow-renderer": "10.3.17",
-    "react-router-dom": "6.8.2",
+    "react-router-dom": "6.9.0",
     "typescript": "4.9.5",
     "vitest": "0.29.2"
   },
@@ -52,10 +52,10 @@
     "lodash": "^4.17.21",
     "minisearch": "^6.0.0",
     "react-ace": "10.1.0",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
   "peerDependencies": {
-    "@chakra-ui/react": "^1.6.7",
+    "@chakra-ui/react": "^1.6.7 || ^2.0.0",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "formik": "^2.2.9",
