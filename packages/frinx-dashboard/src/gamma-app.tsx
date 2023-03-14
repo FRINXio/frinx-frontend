@@ -18,10 +18,11 @@ const GammaApp: VoidFunctionComponent = () => {
       setComponents({
         GammaApp: App,
         GammaAppProvider: getGammaAppProvider({
-          unistoreCallbacks: UnistoreApi.create({ url: window.__CONFIG__.unistoreApiURL, authContext }, '').client,
+          unistoreClient: UnistoreApi.create({ url: window.__CONFIG__.unistoreApiURL, authContext }, '').client,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          workflowManagerCallbacks: UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
+          workflowManagerClient: UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
+          resourceManagerClient: ResourceManagerApi.create({ url: window.__CONFIG__.uniresourceApiURL, authContext }),
         }),
       });
     });
@@ -38,14 +39,9 @@ const GammaApp: VoidFunctionComponent = () => {
   }
 
   const { GammaAppProvider, GammaApp: App } = components;
-  const resourceManagerClient = ResourceManagerApi.create({
-    url: window.__CONFIG__.uniresourceApiURL,
-    authContext,
-  });
 
   return (
     <GammaAppProvider
-      resourceManagerClient={resourceManagerClient}
       hasTransactionError={hasTransactionError}
       onTransactionRefresh={() => {
         setHasTransactionError(false);
