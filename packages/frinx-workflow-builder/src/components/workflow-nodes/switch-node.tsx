@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
-import { ExtendedDecisionTask } from '@frinx/shared/src';
+import { ExtendedSwitchTask } from '@frinx/shared/src';
 import React, { memo, useEffect, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position, useUpdateNodeInternals } from 'react-flow-renderer';
 import { useTaskActions } from '../../task-actions-context';
@@ -10,7 +10,7 @@ type Props = NodeProps<{
   type: string;
   label: string;
   handles: string[];
-  task: ExtendedDecisionTask;
+  task: ExtendedSwitchTask;
   isReadOnly: boolean;
 }>;
 
@@ -94,7 +94,7 @@ const SwitchNode: VoidFunctionComponent<Props> = memo(({ id, data }) => {
         </Tooltip>
         <Flex height={8} alignItems="center" justifyContent="center" isTruncated>
           <Text size="sm" color="gray.700" fontFamily="monospace">
-            if {task.caseValueParam} ==
+            if {task.expression} ==
           </Text>
         </Flex>
       </Box>
