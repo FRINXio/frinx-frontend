@@ -16,7 +16,13 @@ export type LambdaInputParams = {
   scriptExpression: string;
 };
 
+
 export type SwitchInputParams = Record<string, string>;
+
+export type SetVariableInputParams = {
+  variableName: string;
+  variableValue: string;
+};
 
 export type GraphQLInputParams = {
   http_request: {
@@ -208,7 +214,7 @@ export type ForkJoinDynamicTask = BaseTask<ForkJoinDynamicInputParams> & {
   type: 'FORK_JOIN_DYNAMIC';
 };
 
-export type SetVariableTask = BaseTask<Record<string, string>> & {
+export type SetVariableTask = BaseTask<SetVariableInputParams> & {
   type: 'SET_VARIABLE';
 };
 

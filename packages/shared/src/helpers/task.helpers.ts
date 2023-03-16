@@ -20,6 +20,7 @@ import {
   ExtendedSwitchTask,
   ExtendedWhileEndTask,
   ExtendedWhileTask,
+  ExtendedSetVariableTask,
   GraphQLInputParams,
   GraphQLTask,
   HTTPInputParams,
@@ -345,6 +346,18 @@ export function createSubWorkflowTask(
   };
 }
 
+export function createSetVariableTask(name: string): ExtendedSetVariableTask {
+  return {
+    id: uuid(),
+    label: 'set variable',
+    name,
+    type: 'SET_VARIABLE',
+    taskReferenceName: `setVariable_${getRandomString(4)}`,
+    inputParameters: { variableName: '', variableValue: '' },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
 export function createTask(taskLabel: TaskLabel): ExtendedTask {
   switch (taskLabel) {
     case 'http':
@@ -381,6 +394,8 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createKafkaPublishTask(taskLabel);
     case 'json jq':
       return createJsonJQTask(taskLabel);
+    case 'set variable':
+      return createSetVariableTask(taskLabel);
     default:
       throw new Error('should never happen');
   }
@@ -419,6 +434,7 @@ export function createSystemTasks(): TaskLabel[] {
     'while end',
     'kafka publish',
     'json jq',
+    'set variable',
   ];
 }
 

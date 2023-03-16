@@ -1,4 +1,4 @@
-FROM node:16.19.1-alpine as build
+FROM node:19.7.0-alpine as build
 
 ARG PRIVATE_GH_TOKEN
 ARG PRIVATE_NPM_TOKEN
@@ -14,7 +14,7 @@ RUN yarn install --immutable
 ENV NODE_ENV production
 RUN yarn run build
 
-FROM node:16.19.1-alpine
+FROM node:19.7.0-alpine
 
 ENV NODE_ENV production
 ENV HOST 0.0.0.0
