@@ -16,7 +16,6 @@ export type LambdaInputParams = {
   scriptExpression: string;
 };
 
-
 export type SwitchInputParams = Record<string, string>;
 
 export type SetVariableInputParams = {
