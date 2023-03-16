@@ -39,6 +39,7 @@ import WorkflowEditorModal from './components/workflow-editor-modal/workflow-edi
 import WorkflowForm from './components/workflow-form/workflow-form';
 import BaseNode from './components/workflow-nodes/base-node';
 import DecisionNode from './components/workflow-nodes/decision-node';
+import SwitchNode from './components/workflow-nodes/switch-node';
 import StartEndNode from './components/workflow-nodes/start-end-node';
 import { EdgeRemoveContext } from './edge-remove-context';
 import { getLayoutedElements } from './helpers/layout.helpers';
@@ -57,6 +58,7 @@ type WorkflowParam = Pick<
 >;
 
 const nodeTypes = {
+  switch: SwitchNode,
   decision: DecisionNode,
   start: StartEndNode,
   end: StartEndNode,
@@ -160,7 +162,7 @@ const App: VoidFunctionComponent<Props> = ({
         },
       };
 
-      if (t.type === 'DECISION') {
+      if (t.type === 'DECISION' || t.type === 'SWITCH') {
         newElement.data = {
           ...newElement.data,
           handles: ['default', 'other'],
@@ -180,7 +182,7 @@ const App: VoidFunctionComponent<Props> = ({
       const index = acc.nodes.findIndex((n) => n.data?.task?.id === t.id);
       acc.nodes[index].data.task = t;
 
-      if (t.type === 'DECISION') {
+      if (t.type === 'DECISION' || t.type === 'SWITCH') {
         const { handles } = acc.nodes[index].data;
         acc.nodes[index].data.handles = [...Object.keys(t.decisionCases), 'default'];
         const oldDecisionCases = handles ? handles.filter((h) => h !== 'default') : [];

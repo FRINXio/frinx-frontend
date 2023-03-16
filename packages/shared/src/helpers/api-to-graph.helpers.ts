@@ -16,7 +16,7 @@ import {
   TaskType,
 } from './workflow-api.types';
 
-type NodeType = 'decision' | 'fork_join' | 'join' | 'base';
+type NodeType = 'decision' | 'switch' | 'fork_join' | 'join' | 'base';
 
 type Position = { x: number; y: number };
 
@@ -39,6 +39,8 @@ export function getNodeType(taskType: TaskType): NodeType {
   switch (taskType) {
     case 'DECISION':
       return 'decision';
+    case 'SWITCH':
+      return 'switch';
     case 'FORK_JOIN':
     case 'JOIN':
     default:

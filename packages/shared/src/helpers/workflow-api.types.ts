@@ -15,6 +15,9 @@ export type LambdaInputParams = {
   lambdaValue: string;
   scriptExpression: string;
 };
+
+export type SwitchInputParams = Record<string, string>;
+
 export type GraphQLInputParams = {
   http_request: {
     uri: string;
@@ -86,6 +89,7 @@ export type ForkJoinDynamicInputParams = {
 export type InputParameters =
   | WhileInputParams
   | DecisionInputParams
+  | SwitchInputParams
   | LambdaInputParams
   | GraphQLInputParams
   | KafkaPublishInputParams
@@ -125,6 +129,13 @@ export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
   caseValueParam?: string;
   caseExpression?: string;
+  decisionCases: Record<string, Task[]>;
+  defaultCase?: Task[];
+};
+export type SwitchTask = BaseTask<SwitchInputParams> & {
+  type: 'SWITCH';
+  evaluatorType: 'javascript' | 'value-param';
+  expression: string;
   decisionCases: Record<string, Task[]>;
   defaultCase?: Task[];
 };
@@ -203,6 +214,7 @@ export type SetVariableTask = BaseTask<Record<string, string>> & {
 
 export type Task =
   | DecisionTask
+  | SwitchTask
   | EventTask
   | HTTPTask
   | GraphQLTask
@@ -225,6 +237,7 @@ export type Task =
 
 export type TaskLabel =
   | 'decision'
+  | 'switch'
   | 'while'
   | 'end'
   | 'event'
@@ -265,11 +278,13 @@ export type ExtendedWhileTask = WhileTask & { id: string; label: TaskLabel };
 export type ExtendedWhileEndTask = WhileEndTask & { id: string; label: TaskLabel };
 export type ExtendedStartTask = StartTask & { id: string; label: TaskLabel };
 export type ExtendedEndTask = EndTask & { id: string; label: TaskLabel };
+export type ExtendedSwitchTask = SwitchTask & { id: string; label: TaskLabel };
 export type ExtendedSimpleTask = SimpleTask & { id: string; label: TaskLabel };
 export type ExtendedSetVariableTask = SetVariableTask & { id: string; label: TaskLabel };
 
 export type ExtendedTask =
   | ExtendedDecisionTask
+  | ExtendedSwitchTask
   | ExtendedEventTask
   | ExtendedHTTPTask
   | ExtendedGraphQLTask

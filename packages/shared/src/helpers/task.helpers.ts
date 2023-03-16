@@ -17,6 +17,7 @@ import {
   ExtendedTask,
   ExtendedTerminateTask,
   ExtendedWaitTask,
+  ExtendedSwitchTask,
   ExtendedWhileEndTask,
   ExtendedWhileTask,
   GraphQLInputParams,
@@ -185,6 +186,47 @@ function createJoinTask(label: TaskLabel): ExtendedJoinTask {
   };
 }
 
+function createSwitchTask(label: TaskLabel): ExtendedSwitchTask {
+  return {
+    id: uuid(),
+    label,
+    name: 'switchTask',
+    type: 'SWITCH',
+    taskReferenceName: `switch_${getRandomString(4)}`,
+    evaluatorType: 'value-param',
+    expression: '',
+    defaultCase: [],
+    decisionCases: {
+      true: [],
+    },
+    inputParameters: {
+      param: 'true',
+      foo: 'bar',
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
+function createDecisionTask(label: TaskLabel): ExtendedDecisionTask {
+  return {
+    id: uuid(),
+    label,
+    name: 'decisionTask',
+    type: 'DECISION',
+    taskReferenceName: `decision_${getRandomString(4)}`,
+    caseValueParam: 'param',
+    decisionCases: {
+      true: [],
+    },
+    defaultCase: [],
+    inputParameters: {
+      param: 'true',
+      foo: 'bar',
+    },
+    ...DEFAULT_TASK_OPTIONS,
+  };
+}
+
 function createExclusiveJoinTask(label: TaskLabel): ExtendedExclusiveJoinTask {
   return {
     id: uuid(),
@@ -221,26 +263,6 @@ function createWhileEndTask(label: TaskLabel): ExtendedWhileEndTask {
     name: 'whileEndTask',
     type: 'WHILE_END',
     taskReferenceName: `whileEnd_${getRandomString(4)}`,
-    ...DEFAULT_TASK_OPTIONS,
-  };
-}
-
-function createDecisionTask(label: TaskLabel): ExtendedDecisionTask {
-  return {
-    id: uuid(),
-    label,
-    name: 'decisionTask',
-    type: 'DECISION',
-    taskReferenceName: `decision_${getRandomString(4)}`,
-    caseValueParam: 'param',
-    decisionCases: {
-      true: [],
-    },
-    defaultCase: [],
-    inputParameters: {
-      param: 'true',
-      foo: 'bar',
-    },
     ...DEFAULT_TASK_OPTIONS,
   };
 }
@@ -335,6 +357,8 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createStartEndTask(taskLabel);
     case 'end':
       return createStartEndTask(taskLabel);
+    case 'switch':
+      return createSwitchTask(taskLabel);
     case 'fork':
       return createForkTask(taskLabel);
     case 'join':
@@ -384,6 +408,7 @@ export function createSystemTasks(): TaskLabel[] {
     'graphql',
     'lambda',
     'decision',
+    'switch',
     'event',
     'while',
     'fork',
@@ -403,6 +428,8 @@ export function getTaskLabel(t: Task): TaskLabel {
   switch (t.type) {
     case 'DECISION':
       return 'decision';
+    case 'SWITCH':
+      return 'switch';
     case 'DO_WHILE':
       return 'while';
     case 'END_TASK':

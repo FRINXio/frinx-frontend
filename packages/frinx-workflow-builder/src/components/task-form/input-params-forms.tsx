@@ -1,5 +1,6 @@
 import {
   DecisionInputParams,
+  SwitchInputParams,
   EventInputParams,
   ExtendedTask,
   GraphQLInputParams,
@@ -28,6 +29,7 @@ import KafkaInputsForm, { KafkaPublishInputParamsSchema } from './kafka-input-fo
 import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
 import TerminateInputForm, { TerminateInputParamsSchema } from './terminate-input-form';
 import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
+import SwitchInputForm, { SwitchInputParamsSchema } from './switch-input-form';
 
 const SettingsSchema = yup.object().shape({
   taskReferenceName: yup.string().required('Please enter task reference name'),
@@ -44,6 +46,8 @@ export function getValidationSchema(task: ExtendedTask) {
       return SettingsSchema.concat(LambdaInputParamsSchema);
     case 'EVENT':
       return SettingsSchema.concat(EventInputParamsSchema);
+    case 'SWITCH':
+      return SettingsSchema.concat(SwitchInputParamsSchema);
     case 'DO_WHILE':
       return SettingsSchema.concat(WhileInputParamsSchema);
     case 'TERMINATE':
@@ -75,6 +79,10 @@ export function renderInputParamForm(
     if (task.type === 'DECISION') {
       const decisionInputErrors = errors as FormikErrors<{ inputParameters: DecisionInputParams }>;
       return <DecisionInputForm params={task.inputParameters} errors={decisionInputErrors} onChange={onChange} />;
+    }
+    if (task.type === 'SWITCH') {
+      const switchInputErrors = errors as FormikErrors<{ inputParameters: SwitchInputParams }>;
+      return <SwitchInputForm params={task.inputParameters} errors={switchInputErrors} onChange={onChange} />;
     }
     if (task.type === 'LAMBDA') {
       const lambdaInputErrors = errors as FormikErrors<{ inputParameters: LambdaInputParams }>;

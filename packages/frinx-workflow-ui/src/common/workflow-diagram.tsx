@@ -12,9 +12,10 @@ import {
   getElementsFromWorkflow,
 } from '@frinx/shared/src';
 import { getLayoutedElements } from '../helpers/layout.helpers';
-import { BaseNode, DecisionNode, StartEndNode } from './components';
+import { BaseNode, DecisionNode, StartEndNode, SwitchNode } from './components';
 
 const nodeTypes = {
+  switch: SwitchNode,
   base: BaseNode,
   decision: DecisionNode,
   start: StartEndNode,

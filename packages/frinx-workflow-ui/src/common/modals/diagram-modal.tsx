@@ -13,7 +13,7 @@ import { convertWorkflowTaskToExtendedTask, getElementsFromWorkflow, Workflow } 
 import React, { VoidFunctionComponent } from 'react';
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
-import { BaseNode, DecisionNode, StartEndNode } from '../components';
+import { BaseNode, DecisionNode, StartEndNode, SwitchNode } from '../components';
 
 type ModalProps = {
   isOpen: boolean;
@@ -23,6 +23,7 @@ type ModalProps = {
 
 const nodeTypes = {
   base: BaseNode,
+  switch: SwitchNode,
   decision: DecisionNode,
   start: StartEndNode,
   end: StartEndNode,

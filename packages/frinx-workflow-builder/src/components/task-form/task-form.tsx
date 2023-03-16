@@ -8,27 +8,21 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftAddon,
   Stack,
-  Switch,
+  Input,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
-import { convertTaskToExtendedTask, ExtendedTask, getRandomString, InputParameters } from '@frinx/shared/src';
-import FeatherIcon from 'feather-icons-react';
-import { FormikErrors, useFormik } from 'formik';
-import produce from 'immer';
+import { convertTaskToExtendedTask, ExtendedTask, InputParameters } from '@frinx/shared/src';
+import { useFormik } from 'formik';
 import React, { FC } from 'react';
 import { GraphExtendedTask } from '../../helpers/types';
 import { getValidationSchema, renderInputParamForm } from './input-params-forms';
+import DecisionTaskForm from './decision-task-form';
+import SwitchTaskForm from './switch-task-form';
 
 type Props = {
   task: ExtendedTask;
@@ -42,10 +36,21 @@ function convertExtendedTaskToGraphExtendedTask(task: ExtendedTask): GraphExtend
     const decisionCases = Object.entries(task.decisionCases).map(([key, tasks]) => {
       return { key, tasks: tasks.map(convertTaskToExtendedTask) };
     });
+
     return {
       ...task,
       decisionCases,
       isCaseExpressionEnabled: !!task.caseExpression,
+    };
+  }
+  if (task.type === 'SWITCH') {
+    const decisionCases = Object.entries(task.decisionCases).map(([key, tasks]) => {
+      return { key, tasks: tasks.map(convertTaskToExtendedTask) };
+    });
+    return {
+      ...task,
+      decisionCases,
+      evaluatorType: 'value-param',
     };
   }
   return task;
@@ -66,22 +71,20 @@ function convertGraphExtendedTaskToExtendedTask(task: GraphExtendedTask): Extend
       caseValueParam: task.isCaseExpressionEnabled ? undefined : task.caseValueParam,
     };
   }
-  return task;
-}
-
-function getDecisionCaseError(
-  errors: FormikErrors<GraphExtendedTask>,
-  index: number,
-): FormikErrors<{ caseValueParam: string; decisionCase: string }> | null {
-  if ('decisionCases' in errors) {
-    const { decisionCases, caseValueParam } = errors;
-    const decisionCaseErrors = decisionCases && decisionCases[index];
+  if (task.type === 'SWITCH') {
+    const decisionCases = task.decisionCases.reduce((prev, curr) => {
+      return {
+        ...prev,
+        [curr.key]: curr.tasks,
+      };
+    }, {});
     return {
-      caseValueParam,
-      decisionCase: typeof decisionCaseErrors === 'object' ? decisionCaseErrors.key : undefined,
+      ...task,
+      decisionCases,
+      expression: task.expression,
     };
   }
-  return null;
+  return task;
 }
 
 const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
@@ -98,22 +101,6 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
 
   const handleUpdateInputParameters = (inputParameters: InputParameters) => {
     setFieldValue('inputParameters', inputParameters);
-  };
-
-  const handleAddDecisionCase = () => {
-    if (values.type !== 'DECISION') {
-      return;
-    }
-    const newDecisionCases = [...values.decisionCases, { key: `case_${getRandomString(3)}`, tasks: [] }];
-    setFieldValue('decisionCases', newDecisionCases);
-  };
-
-  const handleDeleteDecisionCase = (decisionKey: string) => {
-    if (values.type !== 'DECISION') {
-      return;
-    }
-    const newDecisionCases = values.decisionCases.filter((c) => c.key !== decisionKey);
-    setFieldValue('decisionCases', newDecisionCases);
   };
 
   return (
@@ -163,90 +150,20 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
               <FormHelperText>when set to true - workflow continues even if the task fails.</FormHelperText>
             </FormControl>
             {values.type === 'DECISION' && (
-              <>
-                <HStack spacing={2} marginY={2} alignItems="center">
-                  <FormControl isInvalid={getDecisionCaseError(errors, 0)?.caseValueParam != null}>
-                    <InputGroup>
-                      <InputLeftAddon>if</InputLeftAddon>
-                      {values.isCaseExpressionEnabled ? (
-                        <Input
-                          type="text"
-                          name="caseExpression"
-                          value={values.caseExpression || ''}
-                          onChange={handleChange}
-                        />
-                      ) : (
-                        <Input
-                          type="text"
-                          name="caseValueParam"
-                          value={values.caseValueParam || ''}
-                          onChange={handleChange}
-                        />
-                      )}
-                    </InputGroup>
-                    <FormErrorMessage>{getDecisionCaseError(errors, 0)?.caseValueParam}</FormErrorMessage>
-                  </FormControl>
-                  <Button aria-label="Add decision case" size="sm" colorScheme="blue" onClick={handleAddDecisionCase}>
-                    Add case
-                  </Button>
-                </HStack>
-                <FormControl display="flex" alignItems="center">
-                  <FormLabel htmlFor="useCaseExpression" mb="0">
-                    use case expression
-                  </FormLabel>
-                  <Switch
-                    id="isCaseExpressionEnabled"
-                    name="isCaseExpressionEnabled"
-                    size="md"
-                    isChecked={values.isCaseExpressionEnabled}
-                    onChange={() => setFieldValue('isCaseExpressionEnabled', !values.isCaseExpressionEnabled)}
-                  />
-                </FormControl>
-                {values.decisionCases.map(({ key }, index) => {
-                  const decisionErrors = getDecisionCaseError(errors, index);
-                  return (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <React.Fragment key={index}>
-                      <HStack spacing={2} marginY={2} alignItems="flex-start" paddingLeft={2}>
-                        <FormControl isInvalid={decisionErrors?.decisionCase != null}>
-                          <InputGroup>
-                            <InputLeftAddon>is equal to</InputLeftAddon>
-                            <Input
-                              type="text"
-                              value={key}
-                              onChange={(event) => {
-                                event.persist();
-                                if (values.type !== 'DECISION') {
-                                  return;
-                                }
-
-                                const newDecisionCases = produce(values.decisionCases, (draft) => {
-                                  const newCase = {
-                                    ...draft[index],
-                                    key: event.target.value,
-                                  };
-                                  draft.splice(index, 1, newCase);
-                                });
-                                setFieldValue('decisionCases', newDecisionCases);
-                              }}
-                            />
-                          </InputGroup>
-                          <FormErrorMessage>{decisionErrors?.decisionCase}</FormErrorMessage>
-                        </FormControl>
-                        <IconButton
-                          colorScheme="red"
-                          size="md"
-                          aria-label="Delete blueprint"
-                          icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
-                          onClick={() => {
-                            handleDeleteDecisionCase(key);
-                          }}
-                        />
-                      </HStack>
-                    </React.Fragment>
-                  );
-                })}
-              </>
+              <DecisionTaskForm
+                values={values}
+                errors={errors}
+                handleChange={handleChange}
+                setFieldValue={setFieldValue}
+              />
+            )}
+            {values.type === 'SWITCH' && (
+              <SwitchTaskForm
+                values={values}
+                errors={errors}
+                handleChange={handleChange}
+                setFieldValue={setFieldValue}
+              />
             )}
             {values.type === 'EVENT' && (
               <FormControl id="sink">

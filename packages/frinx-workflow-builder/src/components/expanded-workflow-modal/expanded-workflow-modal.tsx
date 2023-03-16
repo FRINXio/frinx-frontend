@@ -24,9 +24,11 @@ import { Link } from 'react-router-dom';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
 import BaseNode from '../workflow-nodes/base-node';
 import DecisionNode from '../workflow-nodes/decision-node';
+import SwitchNode from '../workflow-nodes/switch-node';
 import StartEndNode from '../workflow-nodes/start-end-node';
 
 const nodeTypes = {
+  switch: SwitchNode,
   decision: DecisionNode,
   start: StartEndNode,
   end: StartEndNode,
