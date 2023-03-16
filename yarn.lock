@@ -4620,7 +4620,7 @@ __metadata:
     url-join: 5.0.0
     url-loader: 4.1.1
     uuid: 9.0.0
-    webpack: 5.75.0
+    webpack: 5.76.0
     webpack-cli: 4.10.0
     yup: 0.32.11
   languageName: unknown
@@ -4813,7 +4813,7 @@ __metadata:
     typescript: 4.9.5
     urql: 3.0.3
     uuid: 9.0.0
-    webpack: 5.75.0
+    webpack: 5.76.0
     webpack-cli: 4.10.0
     xterm: ^5.0.0
     xterm-addon-fit: ^0.7.0
@@ -4885,7 +4885,7 @@ __metadata:
     typescript: 4.9.5
     urql: 3.0.3
     uuid: 9.0.0
-    webpack: 5.75.0
+    webpack: 5.76.0
     webpack-cli: 4.10.0
     webpack-dev-server: 4.11.1
     yup: 0.32.11
@@ -5002,7 +5002,7 @@ __metadata:
     typescript: 4.9.5
     uuid: 9.0.0
     vitest: 0.29.2
-    webpack: 5.75.0
+    webpack: 5.76.0
     webpack-cli: 4.10.0
     yup: ^0.32.11
   peerDependencies:
@@ -14811,9 +14811,9 @@ __metadata:
   linkType: hard
 
 "moment@npm:^2.24.0":
-  version: 2.29.1
-  resolution: "moment@npm:2.29.1"
-  checksum: 1e14d5f422a2687996be11dd2d50c8de3bd577c4a4ca79ba5d02c397242a933e5b941655de6c8cb90ac18f01cc4127e55b4a12ae3c527a6c0a274e455979345e
+  version: 2.29.4
+  resolution: "moment@npm:2.29.4"
+  checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
   languageName: node
   linkType: hard
 
@@ -19320,9 +19320,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.75.0":
-  version: 5.75.0
-  resolution: "webpack@npm:5.75.0"
+"webpack@npm:5.76.0":
+  version: 5.76.0
+  resolution: "webpack@npm:5.76.0"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^0.0.51
@@ -19353,7 +19353,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 2bcc5f3c195f375944e8af2f00bf2feea39cb9fda5f763b0d1b00077f1c51783db25c94d3fae96a07dead9fa085e6ae7474417e5ab31719c9776ea5969ceb83a
+  checksum: e897b3b34068222fe910d8894837cbf39f5e66b4772fe8d24dfc0090cd13e19337a3a757a97bc185be6c64d9d5a7b1ae372821b65a6079ce8c7ceba606edb409
   languageName: node
   linkType: hard
 
