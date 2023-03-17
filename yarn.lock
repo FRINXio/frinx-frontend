@@ -4581,7 +4581,7 @@ __metadata:
     "@frinx/shared": "workspace:^"
     "@frinx/workflow-builder": "workspace:^"
     "@frinx/workflow-ui": "workspace:^"
-    "@frinxio/gamma": 0.0.22
+    "@frinxio/gamma": 0.0.23
     "@types/node": 16.18.14
     "@types/react": 17.0.53
     "@types/react-dom": 18.0.11
@@ -5068,9 +5068,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@frinxio/gamma@npm:0.0.22":
-  version: 0.0.22
-  resolution: "@frinxio/gamma@npm:0.0.22::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40FRINXio%2Fgamma%2F0.0.22%2F6d7588fe10433c3d2a5067b1915e74375acd416c"
+"@frinxio/gamma@npm:0.0.23":
+  version: 0.0.23
+  resolution: "@frinxio/gamma@npm:0.0.23::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40FRINXio%2Fgamma%2F0.0.23%2F8dc2e0b017239207127e979fbf992ca9bc73252f"
   dependencies:
     "@types/lodash": 4.14.181
     "@types/url-join": 4.0.1
@@ -5098,7 +5098,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.0.0
-  checksum: fb49e04faa66078f3c6db6358c0509d0b3edfb89285e135020fc536f06890f5e99f31117312e8eb39eb0e33e67b20a9ddd66a52ff8f525417b9ea436bf0c489a
+  checksum: 2de4d34b399d8933cd99d5574d0df57e4a1f13d18092e55e2d10d40e1a8ea7afad986c643b96acedc91abbb3afa2b4045f46df737a8052f7c2193ee7dc597fa0
   languageName: node
   linkType: hard
 
