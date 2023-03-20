@@ -37,7 +37,8 @@ const useMinisearch = <T>({
     }, 80)();
 
   useEffect(() => {
-    minisearch.removeAll(), minisearch.addAll(items || []);
+    minisearch.removeAll();
+    minisearch.addAll(items || []);
   }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const results = searchText.length > 0 ? searchFn() : items;
