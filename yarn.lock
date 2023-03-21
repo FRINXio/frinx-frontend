@@ -5028,6 +5028,8 @@ __metadata:
     "@frinx/shared": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
     "@types/unescape-js": ^1.0.0
+    "@urql/exchange-multipart-fetch": 1.0.1
+    "@urql/exchange-retry": 1.0.0
     ace-builds: ^1.4.12
     babel-loader: 8.3.0
     babel-preset-env: 1.7.0
@@ -5056,6 +5058,7 @@ __metadata:
     react-router-dom: 6.9.0
     typescript: 4.9.5
     unescape-js: ^1.1.4
+    urql: 3.0.3
   peerDependencies:
     "@chakra-ui/react": ^1.6.7 || ^2.0.0
     "@emotion/react": ^11.1.4
