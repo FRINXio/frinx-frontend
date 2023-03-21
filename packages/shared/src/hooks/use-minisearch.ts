@@ -36,10 +36,12 @@ const useMinisearch = <T>({
       return [];
     }, 80)();
 
-  useEffect(() => minisearch.addAll(items || []), [items]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    minisearch.removeAll();
+    minisearch.addAll(items || []);
+  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const results = searchText.length > 0 ? searchFn() : items;
-
   return {
     results: results || [],
     searchText,
