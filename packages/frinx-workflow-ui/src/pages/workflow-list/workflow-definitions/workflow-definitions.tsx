@@ -1,12 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { Container, useDisclosure } from '@chakra-ui/react';
 import { callbackUtils, jsonParse, omitNullValue, Workflow } from '@frinx/shared/src';
+import { gql, useQuery} from 'urql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
 import { usePagination } from '../../../common/pagination-hook';
+import {
+  WorkflowsQuery,
+} from '../../../../../frinx-inventory-client/src/__generated__/graphql';
 
 type DescriptionJSON = { labels: string[]; description: string };
+
+const WORKFLOWS_QUERY = gql`
+  query Workflows {
+    worfklows {
+      edges {
+        node {
+          id
+          name
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          tasks
+        }
+      }
+      totalCount
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
 
 const getLabels = (dataset: Workflow[]) => {
   const labelsArr = dataset
@@ -39,6 +68,10 @@ const WorkflowDefinitions = () => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
+
+  const [{ data: workflowsData, fetching: isFetchingWorkflows, error }] = useQuery<WorkflowsQuery>({
+    query: WORKFLOWS_QUERY,
+  });
 
   useEffect(() => {
     const { getWorkflows } = callbackUtils.getCallbacks;

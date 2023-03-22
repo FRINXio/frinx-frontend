@@ -1082,6 +1082,9 @@ export type TerminalSubscriptionVariables = Exact<{
   trigger?: InputMaybe<Scalars['Int']>;
 }>;
 
+export type WorkflowsQuery = { __typename?: 'Query', workflows: { __typename?: 'Workflows', edges: Array<{ __typename?: 'WorkflowEdge', node: { __typename?: 'Workflow', id: string, name: string, createdAt: string, updatedAt: string, createdBy: string, updatedBy: string } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
+
 
 export type TerminalSubscription = { __typename?: 'Subscription', uniconfigShell: string | null };
 
