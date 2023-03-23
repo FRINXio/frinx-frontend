@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Container, useDisclosure } from '@chakra-ui/react';
 import { callbackUtils, jsonParse, omitNullValue, Workflow } from '@frinx/shared/src';
-import { gql, useQuery} from 'urql';
+import { gql, useQuery } from 'urql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
 import { usePagination } from '../../../common/pagination-hook';
-import {
-  WorkflowsQuery,
-} from '../../../../../frinx-inventory-client/src/__generated__/graphql';
+import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
+import { WorkflowsQuery } from '../../../../../frinx-inventory-client/src/__generated__/graphql';
 
 type DescriptionJSON = { labels: string[]; description: string };
 
 const WORKFLOWS_QUERY = gql`
-  query Workflows {
-    worfklows {
+  query Workflows($first: Int, $after: String, $last: Int, $before: String) {
+    worfklows(first: $first, after: $after, last: $last, before: $before) {
       edges {
         node {
           id
@@ -68,9 +67,13 @@ const WorkflowDefinitions = () => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage, firstPage }] = graphlUsePagination();
 
   const [{ data: workflowsData, fetching: isFetchingWorkflows, error }] = useQuery<WorkflowsQuery>({
     query: WORKFLOWS_QUERY,
+    variables: {
+      ...paginationArgs,
+    },
   });
 
   useEffect(() => {
@@ -151,6 +154,12 @@ const WorkflowDefinitions = () => {
       });
     });
   };
+
+  if (isFetchingWorkflows && workflowsData == null) {
+    return null;
+  }
+
+  console.log(workflowsData);
 
   return (
     <Container maxWidth={1200} mx="auto">
