@@ -1082,7 +1082,7 @@ export type TerminalSubscriptionVariables = Exact<{
   trigger?: InputMaybe<Scalars['Int']>;
 }>;
 
-export type WorkflowsQuery = { __typename?: 'Query', workflows: { __typename?: 'Workflows', edges: Array<{ __typename?: 'WorkflowEdge', node: { __typename?: 'Workflow', id: string, name: string, createdAt: string, updatedAt: string, createdBy: string, updatedBy: string } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+export type WorkflowsQuery = { __typename?: 'Query', workflows: { __typename?: 'WorkflowConnection', edges: Array<{ __typename?: 'WorkflowEdge', node: { __typename?: 'Workflow', id: string, name: string, description: string, version: number, createdAt: string, updatedAt: string, createdBy: string, updatedBy: string, tasks: string } }>, totalCount: Scalars['Int'], pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 
 

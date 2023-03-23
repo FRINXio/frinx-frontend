@@ -13,11 +13,13 @@ type DescriptionJSON = { labels: string[]; description: string };
 
 const WORKFLOWS_QUERY = gql`
   query Workflows($first: Int, $after: String, $last: Int, $before: String) {
-    worfklows(first: $first, after: $after, last: $last, before: $before) {
+    workflows(first: $first, after: $after, last: $last, before: $before) {
       edges {
         node {
           id
           name
+          description
+          version
           createdAt
           updatedAt
           createdBy
@@ -76,13 +78,23 @@ const WorkflowDefinitions = () => {
     },
   });
 
-  useEffect(() => {
-    const { getWorkflows } = callbackUtils.getCallbacks;
+  const wfs = workflowsData?.workflows.edges.map(({node})=> {
+  const {name, id, description, version} = node
+  return {
+    id,
+    name,
+    description,
+    version
+  }
+})
 
-    getWorkflows().then((wfs) => {
+  useEffect(() => {
+/*     const { getWorkflows } = callbackUtils.getCallbacks;
+
+    getWorkflows().then((wfs) => { */
       setWorkflows(wfs);
       setAllLabels(getLabels(wfs));
-    });
+
   }, []);
 
   useEffect(() => {
@@ -159,7 +171,7 @@ const WorkflowDefinitions = () => {
     return null;
   }
 
-  console.log(workflowsData);
+console.log(wfs, workflows, workflowsData, allLabels);
 
   return (
     <Container maxWidth={1200} mx="auto">
