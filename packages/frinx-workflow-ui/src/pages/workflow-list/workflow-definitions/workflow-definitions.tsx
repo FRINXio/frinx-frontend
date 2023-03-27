@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Container, useDisclosure } from '@chakra-ui/react';
+import { Container, useDisclosure, Box } from '@chakra-ui/react';
 import { callbackUtils, jsonParse, omitNullValue, Workflow } from '@frinx/shared/src';
 import { gql, useQuery } from 'urql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
-import { usePagination } from '../../../common/pagination-hook';
+import Pagination from '../../../../../frinx-inventory-client/src/components/pagination';
 import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
 import { WorkflowsQuery } from '../../../../../frinx-inventory-client/src/__generated__/graphql';
 
 type DescriptionJSON = { labels: string[]; description: string };
+
+
 
 const WORKFLOWS_QUERY = gql`
   query Workflows($first: Int, $after: String, $last: Int, $before: String) {
@@ -38,13 +40,14 @@ const WORKFLOWS_QUERY = gql`
   }
 `;
 
-const getLabels = (dataset: Workflow[]) => {
-  const labelsArr = dataset
-    .flatMap(({ description }) => {
-      return jsonParse<DescriptionJSON>(description)?.labels;
+const getLabels = (dataset: WorkflowsQuery | undefined) => {
+  const labelsArr = dataset?.workflows.edges
+    .flatMap(({ node }) => {
+      return jsonParse<DescriptionJSON>(node.description)?.labels;
     })
     .filter(omitNullValue);
   const allLabels = [...new Set(labelsArr)];
+
   return allLabels
     .filter((e) => {
       return e !== undefined;
@@ -61,8 +64,6 @@ const WorkflowDefinitions = () => {
   const [allLabels, setAllLabels] = useState<string[]>([]);
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
-  const { currentPage, setCurrentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>();
-
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
   const dependencyModal = useDisclosure();
@@ -71,31 +72,24 @@ const WorkflowDefinitions = () => {
   const confirmDeleteModal = useDisclosure();
   const [paginationArgs, { nextPage, previousPage, firstPage }] = graphlUsePagination();
 
-  const [{ data: workflowsData, fetching: isFetchingWorkflows, error }] = useQuery<WorkflowsQuery>({
+  const [{ data: workflowsData, fetching: isFetchingWorkflows }] = useQuery<WorkflowsQuery>({
     query: WORKFLOWS_QUERY,
     variables: {
       ...paginationArgs,
     },
   });
 
-  const wfs = workflowsData?.workflows.edges.map(({node})=> {
-  const {name, id, description, version} = node
-  return {
-    id,
-    name,
-    description,
-    version
-  }
-})
+  const wfs = workflowsData?.workflows.edges.map(( {node} ) => {
+    return node;
+  });
 
   useEffect(() => {
-/*     const { getWorkflows } = callbackUtils.getCallbacks;
+    setWorkflows(wfs);
+    setAllLabels(getLabels(workflowsData));
+  }, [workflowsData]);
 
-    getWorkflows().then((wfs) => { */
-      setWorkflows(wfs);
-      setAllLabels(getLabels(wfs));
-
-  }, []);
+  console.log(workflowsData,wfs);
+  
 
   useEffect(() => {
     const results =
@@ -118,8 +112,8 @@ const WorkflowDefinitions = () => {
 
             return false;
           });
-    setItemList(results);
-  }, [workflows, labels, keywords, setItemList]);
+    setWorkflows(results);
+  }, [workflows, labels, keywords]);
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
@@ -161,7 +155,6 @@ const WorkflowDefinitions = () => {
             return a.name.localeCompare(b.name);
           }) || [];
         setWorkflows(dataset);
-        setItemList(dataset);
         setAllLabels(getLabels(dataset));
       });
     });
@@ -170,8 +163,6 @@ const WorkflowDefinitions = () => {
   if (isFetchingWorkflows && workflowsData == null) {
     return null;
   }
-
-console.log(wfs, workflows, workflowsData, allLabels);
 
   return (
     <Container maxWidth={1200} mx="auto">
@@ -191,7 +182,7 @@ console.log(wfs, workflows, workflowsData, allLabels);
             setAllLabels(getLabels(wfs));
           });
         }}
-        workflows={pageItems}
+        workflows={workflows}
       />
       <WorkflowDefinitionsHeader
         allLabels={allLabels}
@@ -207,7 +198,7 @@ console.log(wfs, workflows, workflowsData, allLabels);
         }}
       />
       <WorkflowDefinitionsTable
-        workflows={pageItems}
+        workflows={workflows}
         definitionModal={definitionModal}
         diagramModal={diagramModal}
         dependencyModal={dependencyModal}
@@ -220,12 +211,17 @@ console.log(wfs, workflows, workflowsData, allLabels);
           setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
         }}
         allLabels={allLabels}
-        paginationProps={{
-          currentPage,
-          setCurrentPage,
-          totalPages,
-        }}
       />
+      {workflowsData && (
+        <Box marginTop={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(workflowsData.workflows.pageInfo.startCursor)}
+            onNext={nextPage(workflowsData.workflows.pageInfo.endCursor)}
+            hasNextPage={workflowsData.workflows.pageInfo.hasNextPage}
+            hasPreviousPage={workflowsData.workflows.pageInfo.hasPreviousPage}
+          />
+        </Box>
+      )}
     </Container>
   );
 };

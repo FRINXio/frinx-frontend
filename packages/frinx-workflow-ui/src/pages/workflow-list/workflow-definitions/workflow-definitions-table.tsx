@@ -15,14 +15,13 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
-  Tfoot,
+
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { jsonParse, Workflow } from '@frinx/shared/src';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabels from '../../../common/workflow-labels';
-import Paginator from '../../../common/pagination';
 
 type Props = {
   workflows: Workflow[];
@@ -33,11 +32,7 @@ type Props = {
   dependencyModal: UseDisclosureReturn;
   scheduleWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  paginationProps: {
-    currentPage: number;
-    totalPages: number;
-    setCurrentPage: (page: number) => void;
-  };
+  
   onLabelClick: (label: string) => void;
   onFavoriteClick: (wf: Workflow) => void;
   setActiveWorkflow: (wf: Workflow) => void;
@@ -78,7 +73,6 @@ const Labels: VoidFunctionComponent<{ wf: Workflow; labels: string[]; onClick: (
 const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   setActiveWorkflow,
   onFavoriteClick,
-  paginationProps,
   confirmDeleteModal,
   onLabelClick,
   workflows,
@@ -188,17 +182,6 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
           })
         )}
       </Tbody>
-      <Tfoot>
-        <Tr>
-          <Th>
-            <Paginator
-              pagesCount={paginationProps.totalPages}
-              onPaginationClick={paginationProps.setCurrentPage}
-              currentPage={paginationProps.currentPage}
-            />
-          </Th>
-        </Tr>
-      </Tfoot>
     </Table>
   );
 };
