@@ -86,10 +86,7 @@ const WorkflowDefinitions = () => {
   useEffect(() => {
     setWorkflows(wfs);
     setAllLabels(getLabels(workflowsData));
-  }, [workflowsData]);
-
-  console.log(workflowsData,wfs);
-  
+  }, [workflowsData]);  
 
   useEffect(() => {
     const results =
