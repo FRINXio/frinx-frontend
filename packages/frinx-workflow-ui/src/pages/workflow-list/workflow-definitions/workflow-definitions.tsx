@@ -11,8 +11,6 @@ import { WorkflowsQuery } from '../../../../../frinx-inventory-client/src/__gene
 
 type DescriptionJSON = { labels: string[]; description: string };
 
-
-
 const WORKFLOWS_QUERY = gql`
   query Workflows($first: Int, $after: String, $last: Int, $before: String) {
     workflows(first: $first, after: $after, last: $last, before: $before) {
@@ -79,14 +77,14 @@ const WorkflowDefinitions = () => {
     },
   });
 
-  const wfs = workflowsData?.workflows.edges.map(( {node} ) => {
+  const wfs = workflowsData?.workflows.edges.map(({ node }) => {
     return node;
   });
 
   useEffect(() => {
     setWorkflows(wfs);
     setAllLabels(getLabels(workflowsData));
-  }, [workflowsData]);  
+  }, [workflowsData]);
 
   useEffect(() => {
     const results =

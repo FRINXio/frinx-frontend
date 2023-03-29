@@ -15,7 +15,6 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
-
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
@@ -32,7 +31,7 @@ type Props = {
   dependencyModal: UseDisclosureReturn;
   scheduleWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  
+
   onLabelClick: (label: string) => void;
   onFavoriteClick: (wf: Workflow) => void;
   setActiveWorkflow: (wf: Workflow) => void;
