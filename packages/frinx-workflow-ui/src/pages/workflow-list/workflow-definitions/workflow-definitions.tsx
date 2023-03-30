@@ -78,6 +78,7 @@ const WorkflowDefinitions = () => {
     },
   });
 
+<<<<<<< HEAD
   const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
     query: WORKFLOW_LABELS_QUERY,
   });
@@ -89,6 +90,40 @@ const WorkflowDefinitions = () => {
       }, 500),
     [],
   );
+=======
+  const wfs = workflowsData?.workflows.edges.map(({ node }) => {
+    return node;
+  });
+
+  useEffect(() => {
+    setWorkflows(wfs);
+    setAllLabels(getLabels(workflowsData));
+  }, [workflowsData]);
+
+  useEffect(() => {
+    const results =
+      !keywords && labels.length === 0
+        ? workflows
+        : workflows.filter((e) => {
+            const queryWords = keywords.toUpperCase();
+            const wfName = e.name.toUpperCase();
+            const labelsArr = jsonParse<DescriptionJSON>(e.description)?.labels;
+
+            // if labels are used and wf does not contain selected labels => filter out
+            if (labels.length) {
+              return labels?.every((label: string) => labelsArr?.includes(label));
+            }
+
+            // search for keywords in "searchedKeys"
+            if (wfName.includes(queryWords)) {
+              return true;
+            }
+
+            return false;
+          });
+    setWorkflows(results);
+  }, [workflows, labels, keywords]);
+>>>>>>> 9027186b5278bcdf83cb38cb25cd95cc61b38afa
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
