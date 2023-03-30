@@ -295,6 +295,21 @@ export type ExtendedTask =
   | ExtendedJsonJQTask
   | ExtendedSetVariableTask;
 
+export type GraphqlWorkflow = {
+  id: string;
+  name: string;
+  description: string | null;
+  version: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+  tasks: Task[];
+  hasSchedule: boolean;
+  labels: string[];
+  inputParameters: string[] | null;
+};
+
 export type Workflow<T = Task> = {
   name: string;
   hasSchedule: boolean;

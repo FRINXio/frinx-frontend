@@ -5,7 +5,7 @@ import WfAutoComplete from '../../../common/wf-autocomplete';
 
 type Props = {
   allLabels: string[];
-  keywords: string[];
+  keywords: string;
   labels: string[];
   onKeywordsChange: (keywords: string) => void;
   onLabelsChange: (labels: string[]) => void;

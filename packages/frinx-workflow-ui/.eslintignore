@@ -8,3 +8,4 @@ flow-typed/npm/**/*.js
 **/thrift/gen-nodejs/*.js
 config/webpack.*.js
 tgnms/**/*.js
+graphql.ts

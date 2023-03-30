@@ -1,14 +1,14 @@
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
-import { ExtendedTask, Workflow } from './workflow-api.types';
+import { Workflow, GraphqlWorkflow, ExtendedTask } from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
   { value: string; description: string; type: string; options?: string[] | null }
 >;
 
-export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | null): string[] => {
+export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | GraphqlWorkflow | null): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});
   const match = stringifiedWorkflow.match(REGEX)?.map((path) => path.replace('workflow.input.', ''));

@@ -1,5 +1,5 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications, callbackUtils, Workflow, ScheduledWorkflow, ExecuteWorkflowModal } from '@frinx/shared/src';
+import { useNotifications, callbackUtils, ScheduledWorkflow, ExecuteWorkflowModal } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
@@ -8,6 +8,7 @@ import {
   ScheduledWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
+import { Workflow } from './workflow-types';
 
 type Props = {
   workflows: Workflow[];
@@ -105,7 +106,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     return executeWorkflow({
       input: values,
       name: activeWorkflow.name,
-      version: activeWorkflow.version,
+      version: activeWorkflow.version || 1,
     })
       .then((res) => {
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
@@ -117,45 +118,41 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       });
   };
 
+  if (activeWorkflow == null) {
+    return null;
+  }
+
   return (
     <>
       <DefinitionModal workflow={activeWorkflow} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
-      {activeWorkflow != null && (
-        <DiagramModal workflow={activeWorkflow} isOpen={diagramModal.isOpen} onClose={diagramModal.onClose} />
-      )}
+      <DiagramModal workflow={activeWorkflow} isOpen={diagramModal.isOpen} onClose={diagramModal.onClose} />
       <DependencyModal
         workflow={activeWorkflow}
         onClose={dependencyModal.onClose}
         isOpen={dependencyModal.isOpen}
         workflows={workflows}
       />
-      {activeWorkflow != null && (
-        <ScheduledWorkflowModal
-          workflow={{
-            workflowName: activeWorkflow.name,
-            workflowVersion: String(activeWorkflow.version),
-          }}
-          onClose={scheduledWorkflowModal.onClose}
-          isOpen={scheduledWorkflowModal.isOpen}
-          onSubmit={handleWorkflowSchedule}
-        />
-      )}
-      {activeWorkflow != null && (
-        <ExecuteWorkflowModal
-          workflow={activeWorkflow}
-          onClose={executeWorkflowModal.onClose}
-          isOpen={executeWorkflowModal.isOpen}
-          onSubmit={handleOnExecuteWorkflow}
-        />
-      )}
-      {activeWorkflow != null && (
-        <ConfirmDeleteModal
-          activeWorkflow={activeWorkflow}
-          isOpen={confirmDeleteModal.isOpen}
-          onClose={confirmDeleteModal.onClose}
-          onDelete={handleOnDeleteWorkflowClick}
-        />
-      )}
+      <ScheduledWorkflowModal
+        workflow={{
+          workflowName: activeWorkflow.name,
+          workflowVersion: String(activeWorkflow.version),
+        }}
+        onClose={scheduledWorkflowModal.onClose}
+        isOpen={scheduledWorkflowModal.isOpen}
+        onSubmit={handleWorkflowSchedule}
+      />
+      <ExecuteWorkflowModal
+        workflow={activeWorkflow}
+        onClose={executeWorkflowModal.onClose}
+        isOpen={executeWorkflowModal.isOpen}
+        onSubmit={handleOnExecuteWorkflow}
+      />
+      <ConfirmDeleteModal
+        activeWorkflow={activeWorkflow}
+        isOpen={confirmDeleteModal.isOpen}
+        onClose={confirmDeleteModal.onClose}
+        onDelete={handleOnDeleteWorkflowClick}
+      />
     </>
   );
 };

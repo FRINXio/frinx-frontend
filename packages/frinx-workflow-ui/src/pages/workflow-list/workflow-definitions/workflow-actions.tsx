@@ -2,7 +2,8 @@ import React, { FC } from 'react';
 import { Box, Button, ButtonGroup, Menu, MenuButton, MenuItem, MenuList, Stack } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
-import { jsonParse, Workflow } from '@frinx/shared/src';
+import { jsonParse } from '@frinx/shared/src';
+import { Workflow } from './workflow-types';
 
 type Props = {
   workflow: Workflow;

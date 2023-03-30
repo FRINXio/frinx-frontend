@@ -15,13 +15,13 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
-
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { jsonParse, Workflow } from '@frinx/shared/src';
+import { jsonParse } from '@frinx/shared/src';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabels from '../../../common/workflow-labels';
+import { Workflow } from './workflow-types';
 
 type Props = {
   workflows: Workflow[];
@@ -32,7 +32,7 @@ type Props = {
   dependencyModal: UseDisclosureReturn;
   scheduleWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  
+
   onLabelClick: (label: string) => void;
   onFavoriteClick: (wf: Workflow) => void;
   setActiveWorkflow: (wf: Workflow) => void;
@@ -48,7 +48,7 @@ const Labels: VoidFunctionComponent<{ wf: Workflow; labels: string[]; onClick: (
   onClick,
 }) => {
   const { description } = wf;
-  const labelsDef = getLabelsFromJSON(description);
+  const labelsDef = getLabelsFromJSON(description ?? undefined);
 
   return (
     <>
