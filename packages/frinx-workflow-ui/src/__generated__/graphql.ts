@@ -582,10 +582,14 @@ export type Mutation = {
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   pauseWorkflow: Maybe<IsOkResponse>;
+  removeWorkflow: Maybe<IsOkResponse>;
   resetConfig: ResetConfigPayload;
+  restartWorkflow: Maybe<IsOkResponse>;
   resumeWorkflow: Maybe<IsOkResponse>;
+  retryWorkflow: Maybe<IsOkResponse>;
   revertChanges: RevertChangesPayload;
   syncFromNetwork: SyncFromNetworkPayload;
+  terminateWorkflow: Maybe<IsOkResponse>;
   uninstallDevice: UninstallDevicePayload;
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
@@ -719,13 +723,31 @@ export type MutationPauseWorkflowArgs = {
 };
 
 
+export type MutationRemoveWorkflowArgs = {
+  shouldArchiveWorkflow?: InputMaybe<Scalars['Boolean']>;
+  workflowId: Scalars['String'];
+};
+
+
 export type MutationResetConfigArgs = {
   deviceId: Scalars['String'];
   transactionId: Scalars['String'];
 };
 
 
+export type MutationRestartWorkflowArgs = {
+  shouldUseLatestDefinitions?: InputMaybe<Scalars['Boolean']>;
+  workflowId: Scalars['String'];
+};
+
+
 export type MutationResumeWorkflowArgs = {
+  workflowId: Scalars['String'];
+};
+
+
+export type MutationRetryWorkflowArgs = {
+  shouldResumeSubworkflowTasks?: InputMaybe<Scalars['Boolean']>;
   workflowId: Scalars['String'];
 };
 
@@ -738,6 +760,12 @@ export type MutationRevertChangesArgs = {
 export type MutationSyncFromNetworkArgs = {
   deviceId: Scalars['String'];
   transactionId: Scalars['String'];
+};
+
+
+export type MutationTerminateWorkflowArgs = {
+  reason?: InputMaybe<Scalars['String']>;
+  workflowId: Scalars['String'];
 };
 
 
@@ -1199,3 +1227,11 @@ export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type WorkflowLabelsQuery = { __typename?: 'Query', workflowLabels: Array<string> };
+
+export type DeleteWorkflowMutationVariables = Exact<{
+  name: Scalars['String'];
+  version: Scalars['Int'];
+}>;
+
+
+export type DeleteWorkflowMutation = { __typename?: 'Mutation', deleteWorkflow: { __typename?: 'DeleteWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };
