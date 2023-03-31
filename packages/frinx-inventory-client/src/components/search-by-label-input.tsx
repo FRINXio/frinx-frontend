@@ -30,7 +30,7 @@ const SearchByLabelInput: FC<Props> = ({
 
   return (
     // autocomplete lib has some weird styling at the bottom
-    <Box position="relative">
+    <Box width="100%" position="relative">
       <CUIAutoComplete
         label={labelText}
         labelStyleProps={{
@@ -46,12 +46,7 @@ const SearchByLabelInput: FC<Props> = ({
         onSelectedItemsChange={(changes) => onSelectionChange(changes.selectedItems)}
         disableCreateItem={isCreationDisabled}
         hideToggleButton
-        listStyleProps={{
-          position: 'absolute',
-          right: 0,
-          left: 0,
-          zIndex: 100,
-        }}
+        
       />
     </Box>
   );

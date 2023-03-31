@@ -135,7 +135,7 @@ const WorkflowDefinitions = () => {
     }) ?? [];
 
   return (
-    <Container maxWidth={1200} mx="auto">
+    <Container maxWidth={1280} mx="auto">
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}

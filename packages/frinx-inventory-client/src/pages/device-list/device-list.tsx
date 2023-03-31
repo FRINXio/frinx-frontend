@@ -501,23 +501,32 @@ const DeviceList: VoidFunctionComponent = () => {
 
           <Box>
             <Flex>
-              <Flex gridGap="4" marginRight="auto">
-                <DeviceFilter
-                  labels={labels}
-                  selectedLabels={selectedLabels}
-                  onSelectionChange={handleOnSelectionChange}
-                  isCreationDisabled
-                />
-                <DeviceSearch text={searchText || ''} onChange={setSearchText} onSubmit={handleSearchSubmit} />
+              <Flex align="flex-start"  width="50%">
+                <Box flex={1}>
+                  <DeviceFilter
+                    labels={labels}
+                    selectedLabels={selectedLabels}
+                    onSelectionChange={handleOnSelectionChange}
+                    isCreationDisabled
+                  />
+                </Box>
+                <Box flex={1} marginLeft="2">
+                  <DeviceSearch text={searchText || ''} onChange={setSearchText} />
+                </Box>
+                <Button mb={6} data-cy="search-button" onClick={handleSearchSubmit} colorScheme="blue" marginLeft="2" mt={10}>
+                  Search
+                </Button>
               </Flex>
-              <BulkActions
-                onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
-                onInstallButtonClick={handleInstallSelectedDevices}
-                areButtonsDisabled={selectedDevices.size === 0}
-                onWorkflowButtonClick={() => {
-                  setIsSendingToWorkflows(true);
-                }}
-              />
+              <Flex width="50%" justify="flex-end">
+                <BulkActions
+                  onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
+                  onInstallButtonClick={handleInstallSelectedDevices}
+                  areButtonsDisabled={selectedDevices.size === 0}
+                  onWorkflowButtonClick={() => {
+                    setIsSendingToWorkflows(true);
+                  }}
+                />
+              </Flex>
             </Flex>
           </Box>
           <DeviceTable
