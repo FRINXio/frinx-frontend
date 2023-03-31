@@ -111,7 +111,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
             return (
               <Tr key={`${workflow.name}-${workflow.version}`} role="group">
                 <Td>
-                  <Heading as="h6" size='xs'  marginBottom={1}>
+                  <Heading as="h6" size="xs" marginBottom={1}>
                     {workflow.name} / {workflow.version}
                   </Heading>
                   <Text fontStyle="italic" color="gray.600">
@@ -120,10 +120,10 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                       'no description'}
                   </Text>
                 </Td>
-                <Td >
+                <Td>
                   <Labels labels={allLabels} wf={workflow} onClick={onLabelClick} />
                 </Td>
-                <Td >
+                <Td>
                   <Popover trigger="hover">
                     <PopoverTrigger>
                       <Button

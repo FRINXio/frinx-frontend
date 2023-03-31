@@ -46,7 +46,6 @@ const SearchByLabelInput: FC<Props> = ({
         onSelectedItemsChange={(changes) => onSelectionChange(changes.selectedItems)}
         disableCreateItem={isCreationDisabled}
         hideToggleButton
-        
       />
     </Box>
   );

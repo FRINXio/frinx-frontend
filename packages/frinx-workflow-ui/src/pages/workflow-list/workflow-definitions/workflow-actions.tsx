@@ -1,5 +1,16 @@
 import React, { FC } from 'react';
-import { Box, Icon, Button, ButtonGroup, IconButton, Menu, MenuButton, MenuItem, MenuList, Stack } from '@chakra-ui/react';
+import {
+  Box,
+  Icon,
+  Button,
+  ButtonGroup,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Stack,
+} from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import { jsonParse } from '@frinx/shared/src';
@@ -53,7 +64,7 @@ const WorkflowActions: FC<Props> = ({
           icon={<Icon size={12} as={FeatherIcon} icon="play" />}
           onClick={onExecuteBtnClick}
         />
-        
+
         <Menu>
           <MenuButton
             as={Button}

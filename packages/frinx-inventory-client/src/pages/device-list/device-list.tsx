@@ -501,7 +501,7 @@ const DeviceList: VoidFunctionComponent = () => {
 
           <Box>
             <Flex>
-              <Flex align="flex-start"  width="50%">
+              <Flex align="flex-start" width="50%">
                 <Box flex={1}>
                   <DeviceFilter
                     labels={labels}
@@ -513,7 +513,14 @@ const DeviceList: VoidFunctionComponent = () => {
                 <Box flex={1} marginLeft="2">
                   <DeviceSearch text={searchText || ''} onChange={setSearchText} />
                 </Box>
-                <Button mb={6} data-cy="search-button" onClick={handleSearchSubmit} colorScheme="blue" marginLeft="2" mt={10}>
+                <Button
+                  mb={6}
+                  data-cy="search-button"
+                  onClick={handleSearchSubmit}
+                  colorScheme="blue"
+                  marginLeft="2"
+                  mt={10}
+                >
                   Search
                 </Button>
               </Flex>
