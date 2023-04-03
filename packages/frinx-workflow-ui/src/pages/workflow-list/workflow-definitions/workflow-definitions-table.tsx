@@ -97,7 +97,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
         <Tr>
           <Th>Name/Version</Th>
           <Th>Labels</Th>
-          <Th>Included in</Th>
+          <Th whiteSpace="nowrap">Included in</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
