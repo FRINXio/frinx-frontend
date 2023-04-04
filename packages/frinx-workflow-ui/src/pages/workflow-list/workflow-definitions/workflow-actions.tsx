@@ -45,7 +45,7 @@ const WorkflowActions: FC<Props> = ({
           size="sm"
           variant="outline"
           as={Link}
-          to={`../builder/${workflow.name}/${workflow.version}`}
+          to={`../builder/${workflow.id}`}
           data-cy={`edit-${workflow.name}-${workflow.version}`}
         >
           <Box as="span" flexShrink={0} alignSelf="center">

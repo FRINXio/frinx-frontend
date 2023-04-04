@@ -9,17 +9,17 @@ import {
   ModalOverlay,
   Button,
 } from '@chakra-ui/react';
-import { Editor, ExtendedTask, Workflow } from '@frinx/shared/src';
+import { ClientWorkflow, Editor, ExtendedTask, Workflow } from '@frinx/shared/src';
 
 type Props = {
   isOpen: boolean;
-  workflow: Workflow<ExtendedTask>;
+  workflow: ClientWorkflow<ExtendedTask>;
   onClose: () => void;
   onSave: (workflow: Workflow<ExtendedTask>) => void;
   onChangeNotify: () => void;
 };
 
-const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
+const parseWorkflow = (workflow: ClientWorkflow<ExtendedTask>) => {
   const { name, description, ...rest } = workflow;
   return JSON.stringify(
     {

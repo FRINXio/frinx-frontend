@@ -295,6 +295,21 @@ export type ExtendedTask =
   | ExtendedJsonJQTask
   | ExtendedSetVariableTask;
 
+export type ClientWorkflow<T = Task> = {
+  id: string;
+  name: string;
+  description: string | null;
+  version: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+  tasks: T[];
+  hasSchedule: boolean;
+  // labels: string[];
+  inputParameters: string[] | null;
+};
+
 export type GraphqlWorkflow = {
   id: string;
   name: string;
@@ -304,11 +319,13 @@ export type GraphqlWorkflow = {
   updatedAt: string | null;
   createdBy: string | null;
   updatedBy: string | null;
-  tasks: Task[];
+  tasks: string;
   hasSchedule: boolean;
-  labels: string[];
+  // labels: string[];
   inputParameters: string[] | null;
 };
+
+export type DescriptionJSON = { labels: string[]; description: string };
 
 export type Workflow<T = Task> = {
   name: string;
@@ -338,23 +355,26 @@ export type NodeData = {
   handles?: string[];
 };
 
+type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+type RetryLogic = 'FIXED' | 'EXPONENTIAL_BACKOFF' | 'LINEAR_BACKOFF';
+
 export type TaskDefinition = {
   name: string;
-  description?: string;
-  retryCount: number;
+  description?: string | null;
+  retryCount: number | null;
   timeoutSeconds: number;
   pollTimeoutSeconds?: number;
   inputKeys?: string[];
   outputKeys?: string[];
   inputTemplate?: Record<string, string>;
-  timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
-  retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
-  retryDelaySeconds: number;
-  responseTimeoutSeconds: number;
+  timeoutPolicy: TaskTimeoutPolicy | null;
+  retryLogic: RetryLogic | null;
+  retryDelaySeconds: number | null;
+  responseTimeoutSeconds: number | null;
   concurrentExecLimit?: number;
   rateLimitFrequencyInSeconds?: number;
   rateLimitPerFrequency?: number;
-  ownerEmail: string;
+  ownerEmail: string | null;
 };
 
 export type ExecutedWorkflowTask = {

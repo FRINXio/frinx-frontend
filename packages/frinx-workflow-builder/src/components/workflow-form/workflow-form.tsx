@@ -2,23 +2,16 @@ import React, { FC, useState } from 'react';
 import {
   Box,
   Button,
-  Checkbox,
   Divider,
-  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
   HStack,
-  IconButton,
   Input,
-  Select,
-  Icon,
-  Textarea,
 } from '@chakra-ui/react';
-import FeatherIcon from 'feather-icons-react';
-import { omit, omitBy } from 'lodash';
-import { isWorkflowNameAvailable, Workflow, SearchByTagInput, useTagsInput } from '@frinx/shared/src';
+import { omit } from 'lodash';
+import { isWorkflowNameAvailable, Workflow, SearchByTagInput, useTagsInput, ClientWorkflow } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
@@ -34,18 +27,18 @@ type PartialWorkflow = Pick<
   | 'variables'
 >;
 type Props = {
-  workflow: PartialWorkflow;
+  workflow: ClientWorkflow;
   canEditName: boolean;
-  workflows: Workflow[];
+  workflows: ClientWorkflow[];
   isCreatingWorkflow: boolean;
   onClose?: () => void;
   onSubmit: (workflow: PartialWorkflow) => void;
   onChangeNotify?: () => void;
 };
 
-type FormValues = PartialWorkflow & { labels?: string[] };
+type FormValues = ClientWorkflow & { labels?: string[] };
 
-const getInitialValues = (initialWorkflow: PartialWorkflow): FormValues => {
+const getInitialValues = (initialWorkflow: ClientWorkflow): FormValues => {
   const { description, labels } = JSON.parse(initialWorkflow.description || '{}');
   let initialValues: FormValues = initialWorkflow;
 
@@ -84,7 +77,7 @@ const validationSchema = (isCreatingWorkflow: boolean) =>
 
 const WorkflowForm: FC<Props> = ({
   workflow,
-  onSubmit,
+  onSubmit, // eslint-disable-line @typescript-eslint/no-unused-vars
   onClose,
   workflows,
   canEditName,
@@ -94,6 +87,7 @@ const WorkflowForm: FC<Props> = ({
   const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
     initialValues: getInitialValues(workflow),
     onSubmit: (formValues) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const updatedValues = omit(
         {
           ...formValues,
@@ -104,7 +98,7 @@ const WorkflowForm: FC<Props> = ({
         },
         ['labels'],
       );
-      onSubmit(updatedValues);
+      // onSubmit(updatedValues);
     },
     validationSchema: validationSchema(isCreatingWorkflow),
     validateOnBlur: true,
@@ -140,7 +134,7 @@ const WorkflowForm: FC<Props> = ({
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
-        <Textarea name="description" value={values.description} onChange={handleOnChange} />
+        {/* <Textarea name="description" value={values.description} onChange={handleOnChange} /> */}
       </FormControl>
       <FormControl my={6}>
         <SearchByTagInput
@@ -156,10 +150,10 @@ const WorkflowForm: FC<Props> = ({
       </FormControl>
       <FormControl id="version" my={6} isRequired isInvalid={errors.version != null}>
         <FormLabel>Version</FormLabel>
-        <Input name="version" value={values.version} onChange={handleOnChange} />
+        {/* <Input name="version" value={values.version} onChange={handleOnChange} /> */}
         <FormErrorMessage>{errors.version}</FormErrorMessage>
       </FormControl>
-      {!isCreatingWorkflow && (
+      {/* {!isCreatingWorkflow && (
         <HStack spacing={2} my={6} alignItems="start">
           <FormControl id="timeoutPolicy" isRequired isInvalid={errors.timeoutPolicy != null}>
             <FormLabel>Timeout policy</FormLabel>
@@ -176,8 +170,8 @@ const WorkflowForm: FC<Props> = ({
             <FormErrorMessage>{errors.timeoutSeconds}</FormErrorMessage>
           </FormControl>
         </HStack>
-      )}
-      <FormControl my={6} isInvalid={errors.restartable != null}>
+      )} */}
+      {/* <FormControl my={6} isInvalid={errors.restartable != null}>
         <Flex alignItems="center">
           <Checkbox name="restartable" isChecked={values.restartable} onChange={handleOnChange} id="restartable" />
           <FormLabel htmlFor="restartable" mb={0} ml={2}>
@@ -185,7 +179,7 @@ const WorkflowForm: FC<Props> = ({
           </FormLabel>
         </Flex>
         <FormErrorMessage>{errors.restartable}</FormErrorMessage>
-      </FormControl>
+      </FormControl> */}
       <Heading as="h3" size="md">
         Output parameters
       </Heading>
@@ -204,7 +198,7 @@ const WorkflowForm: FC<Props> = ({
                 handleOnChangeNotify();
               }}
             />
-            <IconButton
+            {/* <IconButton
               size="sm"
               isDisabled={newParam === ''}
               aria-label="add param"
@@ -218,11 +212,11 @@ const WorkflowForm: FC<Props> = ({
                 setNewParam('');
                 handleOnChangeNotify();
               }}
-            />
+            /> */}
           </HStack>
         </FormControl>
       </Box>
-      <Box width="50%">
+      {/* <Box width="50%">
         {Object.keys(values.outputParameters).map((key) => (
           <FormControl id="param" my={2} key={key}>
             <FormLabel>{key}</FormLabel>
@@ -254,7 +248,7 @@ const WorkflowForm: FC<Props> = ({
             </HStack>
           </FormControl>
         ))}
-      </Box>
+      </Box> */}
       <Divider my={6} />
       <HStack spacing={2} align="center">
         <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid && values.name.trim().length === 0}>

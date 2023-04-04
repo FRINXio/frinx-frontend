@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { Editor, Workflow } from '@frinx/shared/src';
+import { ClientWorkflow, Editor } from '@frinx/shared/src';
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  workflow: Workflow;
+  workflow: ClientWorkflow;
 };
 
 const WorkflowDefinitionModal: FC<Props> = ({ isOpen, onClose, workflow }) => {

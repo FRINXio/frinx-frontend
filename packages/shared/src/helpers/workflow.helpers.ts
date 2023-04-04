@@ -1,14 +1,14 @@
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
-import { Workflow, GraphqlWorkflow, ExtendedTask } from './workflow-api.types';
+import { Workflow, GraphqlWorkflow, ExtendedTask, ClientWorkflow } from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
   { value: string; description: string; type: string; options?: string[] | null }
 >;
 
-export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | GraphqlWorkflow | null): string[] => {
+export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | ClientWorkflow | null): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});
   const match = stringifiedWorkflow.match(REGEX)?.map((path) => path.replace('workflow.input.', ''));
@@ -51,7 +51,7 @@ export function parseInputParameters(inputParameters?: string[]): InputParameter
   }, {});
 }
 
-export function isWorkflowNameAvailable(workflows: Workflow[], name: string): boolean {
+export function isWorkflowNameAvailable(workflows: ClientWorkflow[], name: string): boolean {
   return workflows.every((wf) => wf.name !== name);
 }
 
@@ -96,26 +96,42 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
 }
 
 export function createEmptyWorkflow(): Pick<
-  Workflow,
+  ClientWorkflow,
+  | 'id'
   | 'name'
   | 'description'
   | 'version'
-  | 'ownerEmail'
-  | 'restartable'
-  | 'timeoutPolicy'
-  | 'timeoutSeconds'
-  | 'outputParameters'
-  | 'variables'
+  | 'createdAt'
+  | 'createdBy'
+  | 'updatedAt'
+  | 'updatedBy'
+  | 'hasSchedule'
+  | 'tasks'
+  | 'inputParameters'
+  // | 'ownerEmail'
+  // | 'restartable'
+  // | 'timeoutPolicy'
+  // | 'timeoutSeconds'
+  // | 'outputParameters'
+  // | 'variables'
 > {
   return {
+    id: '',
     name: '',
     description: '',
     version: 1,
-    ownerEmail: '',
-    restartable: true,
-    timeoutPolicy: 'ALERT_ONLY',
-    timeoutSeconds: 0,
-    outputParameters: {},
-    variables: {},
+    createdAt: null,
+    createdBy: null,
+    updatedAt: null,
+    updatedBy: null,
+    hasSchedule: false,
+    tasks: [],
+    inputParameters: [],
+    // ownerEmail: '',
+    // restartable: true,
+    // timeoutPolicy: 'ALERT_ONLY',
+    // timeoutSeconds: 0,
+    // outputParameters: {},
+    // variables: {},
   };
 }
