@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import { Thead, Tr, Th, Checkbox } from '@chakra-ui/react';
+import { Thead, Tr, Th, Checkbox, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 
 type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
 type SortOrder = 'ASC' | 'DESC';
@@ -18,22 +19,34 @@ const ExecutedWorkflowTableHead: FC<Props> = ({ sortBy, sortOrder, sortWf, selec
         <Checkbox onChange={(e) => selectAllWorkflows(e.target.checked)} isChecked={areSelectedAll} />
       </Th>
       <Th onClick={() => sortWf('workflowType')} cursor="pointer">
-        Name &nbsp;
+        Workflow ID
         {sortBy === 'workflowType' ? (
-          <i className={sortOrder === 'ASC' ? 'fas fa-sort-up' : 'fas fa-sort-down'} />
+          <Icon as={FeatherIcon} size={40} icon={sortOrder === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        ) : null}
+      </Th>
+      <Th onClick={() => sortWf('workflowType')} cursor="pointer">
+        Workflow name
+        {sortBy === 'workflowType' ? (
+          <Icon as={FeatherIcon} size={40} icon={sortOrder === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        ) : null}
+      </Th>
+      <Th onClick={() => sortWf('startTime')} cursor="pointer">
+        Start Time
+        {sortBy === 'startTime' ? (
+          <Icon as={FeatherIcon} size={40} icon={sortOrder === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        ) : null}
+      </Th>
+      <Th onClick={() => sortWf('endTime')} cursor="pointer">
+        End Time
+        {sortBy === 'endTime' ? (
+          <Icon as={FeatherIcon} size={40} icon={sortOrder === 'ASC' ? 'chevron-down' : 'chevron-up'} />
         ) : null}
       </Th>
       <Th onClick={() => sortWf('status')} cursor="pointer">
-        Status &nbsp;
-        {sortBy === 'status' ? <i className={sortOrder === 'ASC' ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
-      </Th>
-      <Th onClick={() => sortWf('startTime')} cursor="pointer">
-        Start Time &nbsp;
-        {sortBy === 'startTime' ? <i className={sortOrder === 'ASC' ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
-      </Th>
-      <Th onClick={() => sortWf('endTime')} cursor="pointer">
-        End Time &nbsp;
-        {sortBy === 'endTime' ? <i className={sortOrder === 'ASC' ? 'fas fa-sort-down' : 'fas fa-sort-up'} /> : null}
+        Status
+        {sortBy === 'status' ? (
+          <Icon as={FeatherIcon} size={40} icon={sortOrder === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        ) : null}
       </Th>
     </Tr>
   </Thead>

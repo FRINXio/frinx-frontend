@@ -1,20 +1,7 @@
 import React, { FC, useState } from 'react';
 
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Icon,
-  Spinner,
-  Stack,
-} from '@chakra-ui/react';
-import FeatherIcon from 'feather-icons-react';
+import { Button, Card, HStack, Heading, Menu, MenuButton, MenuItem, MenuList, Spacer, Spinner } from '@chakra-ui/react';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import { useNotifications, callbackUtils } from '@frinx/shared/src';
 
 type CallBackUtilsFunctionNames =
@@ -25,14 +12,14 @@ type CallBackUtilsFunctionNames =
   | 'terminateWorkflows';
 
 type Props = {
-  workflowsAmount: number;
+  amountOfVisibleWorkflows: number;
   selectedWorkflows: string[];
   selectAllWorkflows: (isChecked: boolean) => void;
   onSuccessfullOperation: () => void;
 };
 
 const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
-  workflowsAmount,
+  amountOfVisibleWorkflows,
   selectedWorkflows,
   selectAllWorkflows,
   onSuccessfullOperation,
@@ -76,55 +63,37 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
     }
   };
 
-  return (
-    <Accordion allowToggle backgroundColor="white" marginBottom={10}>
-      <AccordionItem>
-        <h2>
-          <AccordionButton>
-            <Box flex="1" textAlign="left">
-              Bulk Processing (click to expand)&nbsp;&nbsp;
-              <Icon size={20} as={FeatherIcon} icon="more-horizontal" />
-              &nbsp;&nbsp; Displaying <b>{workflowsAmount}</b> workflows
-            </Box>
-            <AccordionIcon />
-          </AccordionButton>
-        </h2>
-        <AccordionPanel padding={8}>
-          <Flex justifyContent="space-between">
-            <Box>
-              <Heading as="h5" size="sm">
-                Workflows selected: {selectedWorkflows.length}
-                {isFetching ? (
-                  <Spinner color="blue.500" size="md" marginLeft={8} float="right" marginRight={40} />
-                ) : null}
-              </Heading>
-            </Box>
-            <Stack spacing={4} direction="row">
-              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('pauseWorkflows')}>
-                Pause
-              </Button>
-              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('resumeWorkflows')}>
-                Resume
-              </Button>
-              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('restartWorkflows')}>
-                Restart
-              </Button>
-              <Button variant="outline" colorScheme="red" onClick={() => executeBulkOperation('terminateWorkflows')}>
-                Terminate
-              </Button>
-              <Button
-                variant="outline"
-                colorScheme="gray"
-                onClick={() => executeBulkOperation('deleteWorkflowInstance')}
-              >
-                Delete
-              </Button>
-            </Stack>
-          </Flex>
-        </AccordionPanel>
-      </AccordionItem>
-    </Accordion>
-  );
+  if (selectedWorkflows.length === 0) {
+    return (
+      <Card>
+        <Heading>Showing {amountOfVisibleWorkflows} workflows</Heading>
+      </Card>
+    );
+  } else {
+    return (
+      <Card>
+        <HStack>
+          <Heading>Selected {selectedWorkflows.length} workflows</Heading>
+
+          <Spacer />
+
+          <Menu>
+            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+              Bulk actions
+            </MenuButton>
+            <MenuList>
+              <MenuItem>Restart with current definitions</MenuItem>
+              <MenuItem>Restart with latest definitions</MenuItem>
+              <MenuItem>Retry</MenuItem>
+              <MenuItem>Resume</MenuItem>
+              <MenuItem>Pause</MenuItem>
+              <MenuItem>Terminate</MenuItem>
+            </MenuList>
+          </Menu>
+        </HStack>
+      </Card>
+    );
+  }
 };
 
 export default ExecutedWorkflowBulkOperationsBlock;

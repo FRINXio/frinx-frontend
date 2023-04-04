@@ -1,8 +1,17 @@
 import React, { ChangeEvent, FC, useState } from 'react';
-import { ButtonGroup, Button, Box, Flex, FormControl, Grid, Input, Text, IconButton, Icon } from '@chakra-ui/react';
-import FeatherIcon from 'feather-icons-react';
+import {
+  ButtonGroup,
+  Button,
+  FormControl,
+  Input,
+  Card,
+  HStack,
+  FormLabel,
+  Select,
+  Checkbox,
+  Spacer,
+} from '@chakra-ui/react';
 import debounce from 'lodash/debounce';
-import WfAutoComplete from '../../../../common/wf-autocomplete';
 
 type Props = {
   showFlat: boolean;
@@ -22,50 +31,87 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ changeLabels, changeQuery, chang
   };
 
   return (
-    <>
-      <Flex alignItems="center" marginBottom={4}>
-        <Text marginRight={4}>Workflow view</Text>
+    <Card shadow="md" rounded="lg" backgroundColor="white" p={15}>
+      <HStack>
+        <FormControl>
+          <FormLabel>Workflow Name</FormLabel>
+          <Input value={searchText} onChange={handleSearchChange} />
+        </FormControl>
 
-        <ButtonGroup size="sm" isAttached colorScheme="blue" onChange={changeView}>
-          <Button variant={showFlat ? 'outline' : 'solid'} onClick={() => (showFlat ? changeView() : null)}>
-            Hierarchy
-          </Button>
-          <Button variant={showFlat ? 'solid' : 'outline'} onClick={() => (showFlat ? null : changeView())}>
-            Flat
-          </Button>
-        </ButtonGroup>
-      </Flex>
-
-      <Grid templateColumns="1fr 1fr 40px" gap={4} marginBottom={8}>
-        <Box flexGrow={1}>
-          <WfAutoComplete
-            options={['RUNNING', 'COMPLETED', 'FAILED', 'TIMED_OUT', 'TERMINATED', 'PAUSED']}
-            onChange={(e) => changeLabels(e)}
-            selected={labels}
-            placeholder="Search by status."
+        <FormControl>
+          <FormLabel>Workflow ID</FormLabel>
+          <Input
+            value=""
+            // onChange={() => {}}
           />
-        </Box>
-        <Box flexGrow={1}>
-          <FormControl>
-            <Input
-              value={searchText}
-              onChange={handleSearchChange}
-              placeholder="Search by keyword. (case sensitive)"
-              background="white"
-            />
-          </FormControl>
-        </Box>
-        <IconButton
-          aria-label="Clear"
-          colorScheme="blue"
-          onClick={() => {
-            changeLabels([]);
-            changeQuery('');
-          }}
-          icon={<Icon size={20} as={FeatherIcon} icon="trash-2" />}
-        />
-      </Grid>
-    </>
+        </FormControl>
+
+        <FormControl>
+          <FormLabel>Workflow Status</FormLabel>
+          <Select placeholder="Select option" onChange={(e) => changeLabels([e.target.value])}>
+            {labels.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+      </HStack>
+
+      <HStack mt={15}>
+        <FormControl>
+          <FormLabel>Start Time (From)</FormLabel>
+          <Input
+            value=""
+            // onChange={() => {}}
+            type="datetime-local"
+          />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel>Start Time (To)</FormLabel>
+          <Input
+            value=""
+            // onChange={() => {}}
+            type="datetime-local"
+          />
+        </FormControl>
+
+        <Spacer />
+
+        <FormControl>
+          <FormLabel>Workflows per page</FormLabel>
+          <Select
+            placeholder="Select option"
+            // onChange={() => {}}
+            // onSelect={() => {}}
+          >
+            {[10, 20, 50, 100].map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+      </HStack>
+
+      <HStack mt={15}>
+        <FormControl>
+          <Checkbox isChecked={showFlat} onChange={changeView}>
+            Only root workflows
+          </Checkbox>
+        </FormControl>
+      </HStack>
+
+      <HStack mt={15}>
+        <Spacer />
+
+        <ButtonGroup>
+          <Button>Clear</Button>
+          <Button colorScheme="blue">Search</Button>
+        </ButtonGroup>
+      </HStack>
+    </Card>
   );
 };
 

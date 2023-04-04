@@ -192,19 +192,19 @@ const ExecutedWorkflowList = () => {
 
   return (
     <Container maxWidth={1200} mx="auto">
-      <ExecutedWorkflowBulkOperationsBlock
-        workflowsAmount={totalItemsAmount}
-        selectedWorkflows={state.selectedWorkflows}
-        selectAllWorkflows={selectAllWorkflows}
-        onSuccessfullOperation={handleSuccessfullOperation}
-      />
-
       <ExecutedWorkflowSearchBox
         changeLabels={changeLabels}
         showFlat={state.isFlat}
         changeQuery={changeQuery}
         changeView={changeView}
         labels={state.labels}
+      />
+
+      <ExecutedWorkflowBulkOperationsBlock
+        workflowsAmount={totalItemsAmount}
+        selectedWorkflows={state.selectedWorkflows}
+        selectAllWorkflows={selectAllWorkflows}
+        onSuccessfullOperation={handleSuccessfullOperation}
       />
 
       <ExecutedWorkflowFlatTable
