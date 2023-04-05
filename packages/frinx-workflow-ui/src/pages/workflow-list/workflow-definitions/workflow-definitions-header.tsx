@@ -1,16 +1,5 @@
 import React, { FC } from 'react';
-import {
-  Box,
-  Button,
-  HStack,
-  Flex,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  FormLabel,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, IconButton, Input, InputGroup, FormLabel } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import WfAutoComplete from '../../../common/wf-autocomplete';
 
