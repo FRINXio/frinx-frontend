@@ -97,8 +97,8 @@ function WorkflowListHeader({ onImportSuccess }: Props) {
   };
 
   return (
-    <Container maxWidth={1200} mx="auto">
-      <Flex as="header" alignItems="center" marginBottom={5}>
+    <Container maxWidth={1280} mx="auto">
+      <Flex as="header" alignItems="center" marginBottom={6}>
         <Heading as="h1" size="xl">
           Workflows
         </Heading>
