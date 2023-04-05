@@ -70,6 +70,7 @@ const WORKFLOW_DELETE_MUTATION = gql`
 
 const WorkflowDefinitions = () => {
   const [keywords, setKeywords] = useState('');
+  // TODO: FD-493 this is redundant because we can use the labels from filter state
   const [labels, setLabels] = useState<string[]>([]);
   const [filter, setFilter] = useState<WorkflowFilter>({
     keyword: null,
@@ -163,7 +164,7 @@ const WorkflowDefinitions = () => {
     }) ?? [];
 
   return (
-    <Container maxWidth={1200} mx="auto">
+    <Container maxWidth={1280} mx="auto">
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}
@@ -173,7 +174,9 @@ const WorkflowDefinitions = () => {
         scheduledWorkflowModal={schedulingModal}
         activeWorkflow={activeWf}
         getData={() => {
-          // TODO: can we remove this?
+          // TODO: FD-493 we can remove the getData function
+          // https://github.com/FRINXio/frinx-frontend/blob/main/packages/frinx-resource-manager/src/pages/resource-types-page/resource-types-page.tsx#L53
+          // use context in the useQuery hook provided link can be used as inspiration
         }}
         onDeleteWorkflow={handleDeleteWorkflow}
         workflows={workflows}
@@ -214,6 +217,8 @@ const WorkflowDefinitions = () => {
         setActiveWorkflow={setActiveWf}
         onFavoriteClick={updateFavourite}
         onLabelClick={(label) => {
+          // TODO: FD-492 we ae handling only the labels state that is redundant and we are not updating the filter labels.
+          // That causes when user clicks on label in table nothing will happen... you need to use setFilter function
           setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
         }}
         allLabels={labelsData.workflowLabels}

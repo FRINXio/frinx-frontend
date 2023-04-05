@@ -92,12 +92,12 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Table background="white" mb={5} data-cy="tbl-workflows">
+    <Table background="white" size="lg" data-cy="tbl-workflows">
       <Thead>
         <Tr>
           <Th>Name/Version</Th>
           <Th>Labels</Th>
-          <Th>Included in</Th>
+          <Th whiteSpace="nowrap">Included in</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -120,10 +120,10 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                       'no description'}
                   </Text>
                 </Td>
-                <Td width={64}>
+                <Td>
                   <Labels labels={allLabels} wf={workflow} onClick={onLabelClick} />
                 </Td>
-                <Td width={36}>
+                <Td>
                   <Popover trigger="hover">
                     <PopoverTrigger>
                       <Button
