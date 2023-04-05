@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Container, useDisclosure, Box } from '@chakra-ui/react';
 import { jsonParse } from '@frinx/shared/src';
-import { gql, useQuery } from 'urql';
+import { gql, useMutation, useQuery } from 'urql';
 import { debounce } from 'lodash';
 import { Task } from '@frinx/shared';
 import Pagination from '@frinx/inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
@@ -9,7 +9,12 @@ import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
 import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
-import { WorkflowLabelsQuery, WorkflowsQuery } from '../../../__generated__/graphql';
+import {
+  DeleteWorkflowMutation,
+  DeleteWorkflowMutationVariables,
+  WorkflowLabelsQuery,
+  WorkflowsQuery,
+} from '../../../__generated__/graphql';
 import { Workflow } from './workflow-types';
 
 type DescriptionJSON = { labels: string[]; description: string };
@@ -53,7 +58,18 @@ const WORKFLOW_LABELS_QUERY = gql`
   }
 `;
 
+const WORKFLOW_DELETE_MUTATION = gql`
+  mutation DeleteWorkflow($name: String!, $version: Int!) {
+    deleteWorkflow(name: $name, version: $version) {
+      workflow {
+        id
+      }
+    }
+  }
+`;
+
 const WorkflowDefinitions = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
   // TODO: FD-493 this is redundant because we can use the labels from filter state
   const [filter, setFilter] = useState<WorkflowFilter>({
@@ -70,25 +86,22 @@ const WorkflowDefinitions = () => {
   const confirmDeleteModal = useDisclosure();
   const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
 
-  const ctx = useMemo(
-    () => ({
-      additionalTypenames: ['Workflow'],
-    }),
-    [],
-  );
-
   const [{ data: workflowsData }] = useQuery<WorkflowsQuery>({
     query: WORKFLOWS_QUERY,
     variables: {
       ...paginationArgs,
       filter,
     },
-    context: ctx,
+    context,
   });
 
   const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
     query: WORKFLOW_LABELS_QUERY,
   });
+
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+    WORKFLOW_DELETE_MUTATION,
+  );
 
   const debouncedKeywordFilter = useMemo(
     () =>
@@ -97,6 +110,14 @@ const WorkflowDefinitions = () => {
       }, 500),
     [],
   );
+
+  const handleDeleteWorkflow = async (workflow: Workflow) => {
+    const { name, version } = workflow;
+    await deleteWorkflow({
+      name,
+      version: version || 1,
+    });
+  };
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
@@ -152,6 +173,7 @@ const WorkflowDefinitions = () => {
         executeWorkflowModal={inputParametersModal}
         scheduledWorkflowModal={schedulingModal}
         activeWorkflow={activeWf}
+        onDeleteWorkflow={handleDeleteWorkflow}
         workflows={workflows}
       />
       <WorkflowDefinitionsHeader

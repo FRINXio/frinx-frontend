@@ -19,6 +19,7 @@ type Props = {
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
+  onDeleteWorkflow: (workflow: Workflow) => Promise<void>;
 };
 
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
@@ -30,6 +31,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   diagramModal,
   executeWorkflowModal,
   scheduledWorkflowModal,
+  onDeleteWorkflow,
 }) => {
   const { addToastNotification } = useNotifications();
 
@@ -57,31 +59,22 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     }
   };
 
-  const handleOnDeleteWorkflowClick = () => {
-    const { deleteWorkflow } = callbackUtils.getCallbacks;
-
+  const handleOnDeleteWorkflowClick = async () => {
     if (activeWorkflow != null) {
-      deleteWorkflow(activeWorkflow.name, String(activeWorkflow.version))
-        .then(() => {
-          addToastNotification({
-            type: 'success',
-            title: 'Success',
-            content: 'Successfully deleted workflow',
-          });
-        })
-        .catch(() => {
-          addToastNotification({
-            type: 'error',
-            title: 'Error',
-            content: 'Failed to delete workflow',
-          });
+      try {
+        await onDeleteWorkflow(activeWorkflow);
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Successfully deleted workflow',
         });
-    } else {
-      addToastNotification({
-        type: 'error',
-        title: 'Error',
-        content: 'Failed to delete workflow',
-      });
+      } catch (e) {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Failed to delete workflow',
+        });
+      }
     }
 
     confirmDeleteModal.onClose();

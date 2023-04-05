@@ -524,10 +524,32 @@ type Mutation {
   importCSV(input: CSVImportInput!): CSVImport
   installDevice(id: String!): InstallDevicePayload!
   pauseWorkflow(workflowId: String!): IsOkResponse
+  removeWorkflow(
+    """
+    Default value is true
+    """
+    shouldArchiveWorkflow: Boolean
+    workflowId: String!
+  ): IsOkResponse
   resetConfig(deviceId: String!, transactionId: String!): ResetConfigPayload!
+  restartWorkflow(
+    """
+    Default value is true
+    """
+    shouldUseLatestDefinitions: Boolean
+    workflowId: String!
+  ): IsOkResponse
   resumeWorkflow(workflowId: String!): IsOkResponse
+  retryWorkflow(
+    """
+    Default value is true
+    """
+    shouldResumeSubworkflowTasks: Boolean
+    workflowId: String!
+  ): IsOkResponse
   revertChanges(transactionId: String!): RevertChangesPayload!
   syncFromNetwork(deviceId: String!, transactionId: String!): SyncFromNetworkPayload!
+  terminateWorkflow(reason: String, workflowId: String!): IsOkResponse
   uninstallDevice(id: String!): UninstallDevicePayload!
   updateBlueprint(id: String!, input: UpdateBlueprintInput!): UpdateBlueprintPayload!
   updateDataStore(deviceId: String!, input: UpdateDataStoreInput!, transactionId: String!): UpdateDataStorePayload!
@@ -569,6 +591,7 @@ type Query {
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   node(id: ID!): Node
+  taskDefinitions: [TaskDefinition!]!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
   topologyVersionData(version: String!): TopologyVersionData!
@@ -582,6 +605,12 @@ type Query {
 
 type ResetConfigPayload {
   dataStore: DataStore!
+}
+
+enum RetryLogic {
+  EXPONENTIAL_BACKOFF
+  FIXED
+  LINEAR_BACKOFF
 }
 
 type RevertChangesPayload {
@@ -616,6 +645,29 @@ type SyncFromNetworkPayload {
   dataStore: DataStore
 }
 
+type TaskDefinition {
+  concurrentExecLimit: Int
+  createdAt: String
+  createdBy: String
+  description: String
+  inputKeys: [String!]
+  inputTemplate: String
+  name: String!
+  outputKeys: [String!]
+  ownerEmail: String
+  pollTimeoutSeconds: Int
+  rateLimitFrequencyInSeconds: Int
+  rateLimitPerFrequency: Int
+  responseTimeoutSeconds: Int
+  retryCount: Int
+  retryDelaySeconds: Int
+  retryLogic: RetryLogic
+  timeoutPolicy: TaskTimeoutPolicy
+  timeoutSeconds: Int!
+  updatedAt: String
+  updatedBy: String
+}
+
 input TaskInput {
   asyncComplete: Boolean
   decisionCases: String
@@ -631,6 +683,12 @@ input TaskInput {
   taskReferenceName: String!
   type: String
   workflowTaskType: [WorkflowTaskType]
+}
+
+enum TaskTimeoutPolicy {
+  ALERT_ONLY
+  RETRY
+  TIME_OUT_WF
 }
 
 enum TimeoutPolicy {
