@@ -69,6 +69,7 @@ const WORKFLOW_DELETE_MUTATION = gql`
 `;
 
 const WorkflowDefinitions = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
   // TODO: FD-493 this is redundant because we can use the labels from filter state
   const [labels, setLabels] = useState<string[]>([]);
@@ -86,12 +87,13 @@ const WorkflowDefinitions = () => {
   const confirmDeleteModal = useDisclosure();
   const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
 
-  const [{ data: workflowsData }, reexecuteWorkflowQuery] = useQuery<WorkflowsQuery>({
+  const [{ data: workflowsData }] = useQuery<WorkflowsQuery>({
     query: WORKFLOWS_QUERY,
     variables: {
       ...paginationArgs,
       filter,
     },
+    context,
   });
 
   const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
@@ -116,7 +118,6 @@ const WorkflowDefinitions = () => {
       name,
       version: version || 1,
     });
-    reexecuteWorkflowQuery();
   };
 
   const updateFavourite = (workflow: Workflow) => {
