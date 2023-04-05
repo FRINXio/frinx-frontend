@@ -5027,6 +5027,10 @@ __metadata:
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/shared": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
+    "@graphql-codegen/cli": 2.16.5
+    "@graphql-codegen/introspection": 2.2.3
+    "@graphql-codegen/typescript": 2.8.8
+    "@graphql-codegen/typescript-operations": 2.5.13
     "@types/unescape-js": ^1.0.0
     "@urql/exchange-multipart-fetch": 1.0.1
     "@urql/exchange-retry": 1.0.0

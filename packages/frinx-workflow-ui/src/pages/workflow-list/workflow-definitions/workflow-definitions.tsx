@@ -1,29 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { Container, useDisclosure } from '@chakra-ui/react';
-import { callbackUtils, jsonParse, omitNullValue, Workflow } from '@frinx/shared/src';
-import { gql, useQuery} from 'urql';
+import React, { useMemo, useState } from 'react';
+import { Container, useDisclosure, Box } from '@chakra-ui/react';
+import { jsonParse } from '@frinx/shared/src';
+import { gql, useQuery } from 'urql';
+import { debounce } from 'lodash';
+import { Task } from '@frinx/shared';
+import Pagination from '@frinx/inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
-import { usePagination } from '../../../common/pagination-hook';
-import {
-  WorkflowsQuery,
-} from '../../../../../frinx-inventory-client/src/__generated__/graphql';
+import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
+import { WorkflowLabelsQuery, WorkflowsQuery } from '../../../__generated__/graphql';
+import { Workflow } from './workflow-types';
 
 type DescriptionJSON = { labels: string[]; description: string };
+type WorkflowFilter = {
+  keyword: string[] | null;
+  labels: string[] | null;
+};
 
 const WORKFLOWS_QUERY = gql`
-  query Workflows {
-    worfklows {
+  query Workflows($first: Int, $after: String, $last: Int, $before: String, $filter: FilterWorkflowsInput) {
+    workflows(first: $first, after: $after, last: $last, before: $before, filter: $filter) {
       edges {
         node {
           id
           name
+          description
+          version
           createdAt
           updatedAt
           createdBy
           updatedBy
           tasks
+          hasSchedule
+          inputParameters
         }
       }
       totalCount
@@ -37,30 +47,21 @@ const WORKFLOWS_QUERY = gql`
   }
 `;
 
-const getLabels = (dataset: Workflow[]) => {
-  const labelsArr = dataset
-    .flatMap(({ description }) => {
-      return jsonParse<DescriptionJSON>(description)?.labels;
-    })
-    .filter(omitNullValue);
-  const allLabels = [...new Set(labelsArr)];
-  return allLabels
-    .filter((e) => {
-      return e !== undefined;
-    })
-    .sort((a, b) => {
-      return a.localeCompare(b);
-    });
-};
+const WORKFLOW_LABELS_QUERY = gql`
+  query WorkflowLabels {
+    workflowLabels
+  }
+`;
 
 const WorkflowDefinitions = () => {
   const [keywords, setKeywords] = useState('');
+  // TODO: FD-493 this is redundant because we can use the labels from filter state
   const [labels, setLabels] = useState<string[]>([]);
+  const [filter, setFilter] = useState<WorkflowFilter>({
+    keyword: null,
+    labels: null,
+  });
   const [activeWf, setActiveWf] = useState<Workflow>();
-  const [allLabels, setAllLabels] = useState<string[]>([]);
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
-
-  const { currentPage, setCurrentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -68,43 +69,27 @@ const WorkflowDefinitions = () => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
 
-  const [{ data: workflowsData, fetching: isFetchingWorkflows, error }] = useQuery<WorkflowsQuery>({
+  const [{ data: workflowsData }] = useQuery<WorkflowsQuery>({
     query: WORKFLOWS_QUERY,
+    variables: {
+      ...paginationArgs,
+      filter,
+    },
   });
 
-  useEffect(() => {
-    const { getWorkflows } = callbackUtils.getCallbacks;
+  const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
+    query: WORKFLOW_LABELS_QUERY,
+  });
 
-    getWorkflows().then((wfs) => {
-      setWorkflows(wfs);
-      setAllLabels(getLabels(wfs));
-    });
-  }, []);
-
-  useEffect(() => {
-    const results =
-      !keywords && labels.length === 0
-        ? workflows
-        : workflows.filter((e) => {
-            const queryWords = keywords.toUpperCase();
-            const wfName = e.name.toUpperCase();
-            const labelsArr = jsonParse<DescriptionJSON>(e.description)?.labels;
-
-            // if labels are used and wf does not contain selected labels => filter out
-            if (labels.length) {
-              return labels?.every((label: string) => labelsArr?.includes(label));
-            }
-
-            // search for keywords in "searchedKeys"
-            if (wfName.includes(queryWords)) {
-              return true;
-            }
-
-            return false;
-          });
-    setItemList(results);
-  }, [workflows, labels, keywords, setItemList]);
+  const debouncedKeywordFilter = useMemo(
+    () =>
+      debounce((value) => {
+        setFilter((f) => ({ ...f, keyword: value }));
+      }, 500),
+    [],
+  );
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
@@ -131,29 +116,27 @@ const WorkflowDefinitions = () => {
     else {
       wfDescription.labels.push('FAVOURITE');
     }
-
-    const { putWorkflow, getWorkflows } = callbackUtils.getCallbacks;
-
-    putWorkflow([
-      {
-        ...workflow,
-        description: JSON.stringify(wfDescription),
-      },
-    ]).then(() => {
-      getWorkflows().then((wfs) => {
-        const dataset =
-          wfs.sort((a, b) => {
-            return a.name.localeCompare(b.name);
-          }) || [];
-        setWorkflows(dataset);
-        setItemList(dataset);
-        setAllLabels(getLabels(dataset));
-      });
-    });
   };
 
+  if (workflowsData == null || labelsData == null) {
+    return null;
+  }
+
+  const workflows =
+    workflowsData?.workflows.edges.map((e) => {
+      const { node } = e;
+      const parsedLabels = jsonParse<DescriptionJSON>(e.node.description)?.labels ?? [];
+      const tasks = jsonParse<Task[]>(e.node.tasks) ?? [];
+      return {
+        ...node,
+        labels: parsedLabels,
+        tasks,
+        hasSchedule: node.hasSchedule ?? false,
+      };
+    }) ?? [];
+
   return (
-    <Container maxWidth={1200} mx="auto">
+    <Container maxWidth={1280} mx="auto">
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}
@@ -163,30 +146,39 @@ const WorkflowDefinitions = () => {
         scheduledWorkflowModal={schedulingModal}
         activeWorkflow={activeWf}
         getData={() => {
-          const { getWorkflows } = callbackUtils.getCallbacks;
-
-          getWorkflows().then((wfs) => {
-            setWorkflows(wfs);
-            setAllLabels(getLabels(wfs));
-          });
+          // TODO: FD-493 we can remove the getData function
+          // https://github.com/FRINXio/frinx-frontend/blob/main/packages/frinx-resource-manager/src/pages/resource-types-page/resource-types-page.tsx#L53
+          // use context in the useQuery hook provided link can be used as inspiration
         }}
-        workflows={pageItems}
+        workflows={workflows}
       />
       <WorkflowDefinitionsHeader
-        allLabels={allLabels}
-        keywords={[keywords]}
-        onKeywordsChange={setKeywords}
+        allLabels={labelsData.workflowLabels}
+        keywords={keywords}
+        onKeywordsChange={(value) => {
+          setKeywords(value);
+          debouncedKeywordFilter(value);
+        }}
         labels={labels}
         onLabelsChange={(newLabels) => {
-          setLabels([...new Set(newLabels)]);
+          const newLabelsArray = [...new Set(newLabels)];
+          setLabels(newLabelsArray);
+          setFilter((f) => ({
+            ...f,
+            labels: newLabelsArray,
+          }));
         }}
         onClearSearch={() => {
           setKeywords('');
           setLabels([]);
+          setFilter({
+            keyword: null,
+            labels: null,
+          });
         }}
       />
       <WorkflowDefinitionsTable
-        workflows={pageItems}
+        workflows={workflows}
         definitionModal={definitionModal}
         diagramModal={diagramModal}
         dependencyModal={dependencyModal}
@@ -196,15 +188,22 @@ const WorkflowDefinitions = () => {
         setActiveWorkflow={setActiveWf}
         onFavoriteClick={updateFavourite}
         onLabelClick={(label) => {
+          // TODO: FD-492 we ae handling only the labels state that is redundant and we are not updating the filter labels.
+          // That causes when user clicks on label in table nothing will happen... you need to use setFilter function
           setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
         }}
-        allLabels={allLabels}
-        paginationProps={{
-          currentPage,
-          setCurrentPage,
-          totalPages,
-        }}
+        allLabels={labelsData.workflowLabels}
       />
+      {workflowsData && (
+        <Box marginTop={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(workflowsData.workflows.pageInfo.startCursor)}
+            onNext={nextPage(workflowsData.workflows.pageInfo.endCursor)}
+            hasNextPage={workflowsData.workflows.pageInfo.hasNextPage}
+            hasPreviousPage={workflowsData.workflows.pageInfo.hasPreviousPage}
+          />
+        </Box>
+      )}
     </Container>
   );
 };

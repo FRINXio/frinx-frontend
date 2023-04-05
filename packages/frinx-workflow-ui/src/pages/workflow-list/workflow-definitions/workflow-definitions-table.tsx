@@ -15,14 +15,13 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
-  Tfoot,
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { jsonParse, Workflow } from '@frinx/shared/src';
+import { jsonParse } from '@frinx/shared/src';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabels from '../../../common/workflow-labels';
-import Paginator from '../../../common/pagination';
+import { Workflow } from './workflow-types';
 
 type Props = {
   workflows: Workflow[];
@@ -33,11 +32,7 @@ type Props = {
   dependencyModal: UseDisclosureReturn;
   scheduleWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  paginationProps: {
-    currentPage: number;
-    totalPages: number;
-    setCurrentPage: (page: number) => void;
-  };
+
   onLabelClick: (label: string) => void;
   onFavoriteClick: (wf: Workflow) => void;
   setActiveWorkflow: (wf: Workflow) => void;
@@ -53,7 +48,7 @@ const Labels: VoidFunctionComponent<{ wf: Workflow; labels: string[]; onClick: (
   onClick,
 }) => {
   const { description } = wf;
-  const labelsDef = getLabelsFromJSON(description);
+  const labelsDef = getLabelsFromJSON(description ?? undefined);
 
   return (
     <>
@@ -78,7 +73,6 @@ const Labels: VoidFunctionComponent<{ wf: Workflow; labels: string[]; onClick: (
 const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   setActiveWorkflow,
   onFavoriteClick,
-  paginationProps,
   confirmDeleteModal,
   onLabelClick,
   workflows,
@@ -98,12 +92,12 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Table background="white" mb={5} data-cy="tbl-workflows">
+    <Table background="white" size="lg" data-cy="tbl-workflows">
       <Thead>
         <Tr>
           <Th>Name/Version</Th>
           <Th>Labels</Th>
-          <Th>Included in</Th>
+          <Th whiteSpace="nowrap">Included in</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -126,10 +120,10 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                       'no description'}
                   </Text>
                 </Td>
-                <Td width={64}>
+                <Td>
                   <Labels labels={allLabels} wf={workflow} onClick={onLabelClick} />
                 </Td>
-                <Td width={36}>
+                <Td>
                   <Popover trigger="hover">
                     <PopoverTrigger>
                       <Button
@@ -188,17 +182,6 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
           })
         )}
       </Tbody>
-      <Tfoot>
-        <Tr>
-          <Th>
-            <Paginator
-              pagesCount={paginationProps.totalPages}
-              onPaginationClick={paginationProps.setCurrentPage}
-              currentPage={paginationProps.currentPage}
-            />
-          </Th>
-        </Tr>
-      </Tfoot>
     </Table>
   );
 };

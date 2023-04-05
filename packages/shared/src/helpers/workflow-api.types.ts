@@ -295,6 +295,24 @@ export type ExtendedTask =
   | ExtendedJsonJQTask
   | ExtendedSetVariableTask;
 
+// TODO: FD-493 why are you defining the same type as in the workflow-types.ts file?
+// This can cause types conflicts and other developers will not be sure what type to use and when...
+// What is the difference between those two?
+export type GraphqlWorkflow = {
+  id: string;
+  name: string;
+  description: string | null;
+  version: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+  tasks: Task[];
+  hasSchedule: boolean;
+  labels: string[];
+  inputParameters: string[] | null;
+};
+
 export type Workflow<T = Task> = {
   name: string;
   hasSchedule: boolean;
