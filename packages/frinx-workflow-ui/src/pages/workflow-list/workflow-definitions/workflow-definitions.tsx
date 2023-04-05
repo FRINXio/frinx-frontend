@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Container, useDisclosure, Box } from '@chakra-ui/react';
-import { jsonParse } from '@frinx/shared/src';
+import { ClientWorkflow, jsonParse } from '@frinx/shared/src';
 import { gql, useMutation, useQuery } from 'urql';
 import { debounce } from 'lodash';
 import { Task } from '@frinx/shared';
@@ -15,7 +15,6 @@ import {
   WorkflowLabelsQuery,
   WorkflowsQuery,
 } from '../../../__generated__/graphql';
-import { Workflow } from './workflow-types';
 
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
@@ -69,13 +68,15 @@ const WORKFLOW_DELETE_MUTATION = gql`
 `;
 
 const WorkflowDefinitions = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
+  // TODO: FD-493 this is redundant because we can use the labels from filter state
   const [labels, setLabels] = useState<string[]>([]);
   const [filter, setFilter] = useState<WorkflowFilter>({
     keyword: null,
     labels: null,
   });
-  const [activeWf, setActiveWf] = useState<Workflow>();
+  const [activeWf, setActiveWf] = useState<ClientWorkflow>();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -85,12 +86,13 @@ const WorkflowDefinitions = () => {
   const confirmDeleteModal = useDisclosure();
   const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
 
-  const [{ data: workflowsData }, reexecuteWorkflowQuery] = useQuery<WorkflowsQuery>({
+  const [{ data: workflowsData }] = useQuery<WorkflowsQuery>({
     query: WORKFLOWS_QUERY,
     variables: {
       ...paginationArgs,
       filter,
     },
+    context,
   });
 
   const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
@@ -109,16 +111,15 @@ const WorkflowDefinitions = () => {
     [],
   );
 
-  const handleDeleteWorkflow = async (workflow: Workflow) => {
+  const handleDeleteWorkflow = async (workflow: ClientWorkflow) => {
     const { name, version } = workflow;
     await deleteWorkflow({
       name,
       version: version || 1,
     });
-    reexecuteWorkflowQuery();
   };
 
-  const updateFavourite = (workflow: Workflow) => {
+  const updateFavourite = (workflow: ClientWorkflow) => {
     let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
 
     // if workflow doesn't contain description attr. at all
@@ -149,7 +150,7 @@ const WorkflowDefinitions = () => {
     return null;
   }
 
-  const workflows =
+  const workflows: ClientWorkflow[] =
     workflowsData?.workflows.edges.map((e) => {
       const { node } = e;
       const parsedLabels = jsonParse<DescriptionJSON>(e.node.description)?.labels ?? [];
@@ -163,7 +164,7 @@ const WorkflowDefinitions = () => {
     }) ?? [];
 
   return (
-    <Container maxWidth={1200} mx="auto">
+    <Container maxWidth={1280} mx="auto">
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}
@@ -173,7 +174,9 @@ const WorkflowDefinitions = () => {
         scheduledWorkflowModal={schedulingModal}
         activeWorkflow={activeWf}
         getData={() => {
-          // TODO: can we remove this?
+          // TODO: FD-493 we can remove the getData function
+          // https://github.com/FRINXio/frinx-frontend/blob/main/packages/frinx-resource-manager/src/pages/resource-types-page/resource-types-page.tsx#L53
+          // use context in the useQuery hook provided link can be used as inspiration
         }}
         onDeleteWorkflow={handleDeleteWorkflow}
         workflows={workflows}
@@ -214,6 +217,8 @@ const WorkflowDefinitions = () => {
         setActiveWorkflow={setActiveWf}
         onFavoriteClick={updateFavourite}
         onLabelClick={(label) => {
+          // TODO: FD-492 we ae handling only the labels state that is redundant and we are not updating the filter labels.
+          // That causes when user clicks on label in table nothing will happen... you need to use setFilter function
           setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
         }}
         allLabels={labelsData.workflowLabels}

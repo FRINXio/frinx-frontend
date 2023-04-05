@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
-import { Workflow, GraphqlWorkflow, ExtendedTask, ClientWorkflow } from './workflow-api.types';
+import { Workflow, ExtendedTask, ClientWorkflow } from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
@@ -108,6 +108,7 @@ export function createEmptyWorkflow(): Pick<
   | 'hasSchedule'
   | 'tasks'
   | 'inputParameters'
+  | 'labels'
   // | 'ownerEmail'
   // | 'restartable'
   // | 'timeoutPolicy'
@@ -127,6 +128,7 @@ export function createEmptyWorkflow(): Pick<
     hasSchedule: false,
     tasks: [],
     inputParameters: [],
+    labels: [],
     // ownerEmail: '',
     // restartable: true,
     // timeoutPolicy: 'ALERT_ONLY',

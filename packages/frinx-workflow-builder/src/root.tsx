@@ -9,6 +9,7 @@ import {
   useNotifications,
   Task,
   ClientWorkflow,
+  DescriptionJSON,
 } from '@frinx/shared/src';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
@@ -106,11 +107,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
 
     const tasks = jsonParse<Task[]>(workflowDetail.tasks);
-    const extenedTasks = tasks.map(convertTaskToExtendedTask);
+    const extendedTasks = tasks.map(convertTaskToExtendedTask);
+    const { labels } = jsonParse<DescriptionJSON>(workflowDetail.description);
 
     setWorkflow({
       ...workflowDetail,
-      tasks: extenedTasks,
+      labels,
+      tasks: extendedTasks,
       hasSchedule: workflowDetail.hasSchedule ?? false,
     });
   }, [workflowData]);
@@ -197,12 +200,15 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const clientWorkflowList: ClientWorkflow[] = workflowData.workflows.edges.map((e) => {
     const { node } = e;
     const parsedTasks = jsonParse<Task[]>(node.tasks);
+    const { labels } = jsonParse<DescriptionJSON>(node.description);
     return {
       ...node,
+      labels,
       tasks: parsedTasks,
       hasSchedule: node.hasSchedule || false,
     };
   });
+
   if (shouldCreateWorkflow) {
     return (
       <Container maxWidth={1200}>
@@ -224,7 +230,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
                 updatedAt: '',
                 createdBy: '',
                 updatedBy: '',
-                // labels:
+                labels: [],
                 tasks: [],
                 // updateTime: 0,
                 hasSchedule: false,

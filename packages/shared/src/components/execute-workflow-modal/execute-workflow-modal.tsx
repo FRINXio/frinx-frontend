@@ -36,6 +36,8 @@ type Props = {
 
 const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const { name, description } = workflow;
+  // TODO: FD-493 better would be to handle null/undefined values in the function parseInputParameters
+  // then sent default value in nullish case
   const parsedInputParameters = parseInputParameters(workflow?.inputParameters || []);
   const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
   const [isExecuting, setIsExecuting] = useState(false);

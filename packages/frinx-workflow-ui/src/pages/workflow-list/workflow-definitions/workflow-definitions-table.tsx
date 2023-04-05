@@ -18,13 +18,12 @@ import {
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { jsonParse } from '@frinx/shared/src';
+import { ClientWorkflow, jsonParse } from '@frinx/shared/src';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabels from '../../../common/workflow-labels';
-import { Workflow } from './workflow-types';
 
 type Props = {
-  workflows: Workflow[];
+  workflows: ClientWorkflow[];
   allLabels: string[];
   executeWorkflowModal: UseDisclosureReturn;
   definitionModal: UseDisclosureReturn;
@@ -34,15 +33,15 @@ type Props = {
   confirmDeleteModal: UseDisclosureReturn;
 
   onLabelClick: (label: string) => void;
-  onFavoriteClick: (wf: Workflow) => void;
-  setActiveWorkflow: (wf: Workflow) => void;
+  onFavoriteClick: (wf: ClientWorkflow) => void;
+  setActiveWorkflow: (wf: ClientWorkflow) => void;
 };
 
 function getLabelsFromJSON(description?: string) {
   return jsonParse<{ labels: string[] }>(description)?.labels || [];
 }
 
-const Labels: VoidFunctionComponent<{ wf: Workflow; labels: string[]; onClick: (label: string) => void }> = ({
+const Labels: VoidFunctionComponent<{ wf: ClientWorkflow; labels: string[]; onClick: (label: string) => void }> = ({
   wf,
   labels,
   onClick,
@@ -83,7 +82,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   executeWorkflowModal,
   scheduleWorkflowModal,
 }) => {
-  const getDependencies = (workflow: Workflow) => {
+  const getDependencies = (workflow: ClientWorkflow) => {
     const usedInWfs = workflows.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
@@ -92,12 +91,12 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Table background="white" mb={5} data-cy="tbl-workflows">
+    <Table background="white" size="lg" data-cy="tbl-workflows">
       <Thead>
         <Tr>
           <Th>Name/Version</Th>
           <Th>Labels</Th>
-          <Th>Included in</Th>
+          <Th whiteSpace="nowrap">Included in</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -107,7 +106,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
             <Td colSpan={4}>No workflows match your search params</Td>
           </Tr>
         ) : (
-          workflows.map((workflow: Workflow) => {
+          workflows.map((workflow) => {
             return (
               <Tr key={`${workflow.name}-${workflow.version}`} role="group">
                 <Td>
@@ -120,10 +119,10 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                       'no description'}
                   </Text>
                 </Td>
-                <Td width={64}>
+                <Td>
                   <Labels labels={allLabels} wf={workflow} onClick={onLabelClick} />
                 </Td>
-                <Td width={36}>
+                <Td>
                   <Popover trigger="hover">
                     <PopoverTrigger>
                       <Button
