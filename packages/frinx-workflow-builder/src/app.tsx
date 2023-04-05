@@ -212,6 +212,7 @@ const App: VoidFunctionComponent<Props> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleWorkflowClone = (wfName: string) => {
+    // TODO: FD-513 do the fix in next PR
     // const newTasks = convertToTasks(elements);
     // const { tasks, ...rest } = workflow;
     // onWorkflowClone(
@@ -244,6 +245,7 @@ const App: VoidFunctionComponent<Props> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleOnSaveWorkflow = (editedWorkflow: ClientWorkflow<ExtendedTask>, shouldOpenExecuteModal = false) => {
+    // TODO: FD-513 do the fix in next PR
     try {
       // const { tasks, ...rest } = editedWorkflow;
       // const newTasks = convertToTasks(elements);
@@ -345,8 +347,8 @@ const App: VoidFunctionComponent<Props> = ({
                   onSaveWorkflowBtnClick={() => handleOnSaveWorkflow(workflow)}
                   onFileImport={onFileImport}
                   onFileExport={() => {
+                    // TODO: FD-513 do the fix in next PR
                     // eslint-disable-next-line no-console
-                    console.log('TODO');
                     // const newTasks = convertToTasks(elements);
                     // const { tasks, ...rest } = workflow;
                     // onFileExport({
@@ -427,10 +429,12 @@ const App: VoidFunctionComponent<Props> = ({
                   workflow={workflow}
                   // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   onSubmit={(partialWorkflow) => {
+                    // TODO: FD-513 do the fix in next PR
                     // handleOnWorkflowChange({ ...workflow, ...partialWorkflow }, true);
                     setIsEditing(false);
                   }}
                   onClose={() => {
+                    // TODO: FD-513 do the fix in next PR
                     // handleOnWorkflowChange(workflow, false);
                     setIsEditing(false);
                   }}
