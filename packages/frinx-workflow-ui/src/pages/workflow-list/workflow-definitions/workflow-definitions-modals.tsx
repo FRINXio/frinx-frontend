@@ -19,7 +19,6 @@ type Props = {
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  getData: () => void;
 };
 
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
@@ -30,7 +29,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   dependencyModal,
   diagramModal,
   executeWorkflowModal,
-  getData,
   scheduledWorkflowModal,
 }) => {
   const { addToastNotification } = useNotifications();
@@ -48,7 +46,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
             title: 'Success',
             content: 'Successfully scheduled',
           });
-          getData();
         })
         .catch(() => {
           addToastNotification({
@@ -71,7 +68,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
             title: 'Success',
             content: 'Successfully deleted workflow',
           });
-          getData();
         })
         .catch(() => {
           addToastNotification({
