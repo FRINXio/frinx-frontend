@@ -118,11 +118,10 @@ const WorkflowForm: FC<Props> = ({
   };
 
   const tagsInput = useTagsInput();
-  console.log(values.labels, tagsInput.selectedTags);
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);
-  }, [tagsInput.selectedTags]);
+  }, [tagsInput.selectedTags, setFieldValue]);
 
   const handleOnChange = (e: React.ChangeEvent) => {
     handleChange(e);
