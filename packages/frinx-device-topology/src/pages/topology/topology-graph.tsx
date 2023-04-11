@@ -5,7 +5,7 @@ import DeviceInfoPanel from '../../components/device-info-panel/device-info-pane
 import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
-import { height, Position, width } from './graph.helpers';
+import { ensureNodeHasDevice, height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
@@ -72,7 +72,7 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
       </svg>
-      {selectedNode != null && (
+      {selectedNode != null && ensureNodeHasDevice(selectedNode) && (
         <Box
           position="absolute"
           top={2}

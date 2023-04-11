@@ -4,7 +4,7 @@ import NodeIcon from '../../components/node-icon/node-icon';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { setSelectedNode, setUnconfirmedSelectedNodeIdsToFindCommonNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
-import { GraphNetNode, GraphNode, Position } from './graph.helpers';
+import { ensureNodeHasDevice, GraphNode, Position } from './graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;
@@ -15,10 +15,6 @@ type Props = {
   nodesWithDiff: GraphNodeWithDiff[];
   onNodePositionUpdate: (deviceName: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
-};
-
-const ensureNodeHasDevice = (value: GraphNode | GraphNetNode | null): value is GraphNode => {
-  return value != null && 'device' in value;
 };
 
 const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpdate, onNodePositionUpdateFinish }) => {

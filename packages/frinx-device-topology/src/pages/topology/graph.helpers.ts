@@ -333,3 +333,7 @@ export function getNameFromNode(node: GraphNode | GraphNetNode | null): string |
   }
   return node.name;
 }
+
+export function ensureNodeHasDevice(value: GraphNode | GraphNetNode | null): value is GraphNode {
+  return value != null && 'device' in value;
+}
