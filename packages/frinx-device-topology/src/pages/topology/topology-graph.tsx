@@ -1,6 +1,6 @@
 import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared/src';
-import React, { FunctionComponent, useRef } from 'react';
+import React, { useRef, VoidFunctionComponent } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
@@ -15,7 +15,7 @@ type Props = {
   onCommonNodesSearch: (nodeIds: string[]) => void;
 };
 
-const TopologyGraph: FunctionComponent<Props> = ({
+const TopologyGraph: VoidFunctionComponent<Props> = ({
   isCommonNodesFetching,
   onNodePositionUpdate,
   onCommonNodesSearch,

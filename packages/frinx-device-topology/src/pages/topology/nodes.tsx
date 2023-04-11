@@ -4,7 +4,7 @@ import NodeIcon from '../../components/node-icon/node-icon';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { setSelectedNode, setUnconfirmedSelectedNodeIdsToFindCommonNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
-import { GraphNode, Position } from './graph.helpers';
+import { GraphNetNode, GraphNode, Position } from './graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;
@@ -15,6 +15,10 @@ type Props = {
   nodesWithDiff: GraphNodeWithDiff[];
   onNodePositionUpdate: (deviceName: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
+};
+
+const ensureNodeHasDevice = (value: GraphNode | GraphNetNode | null): value is GraphNode => {
+  return value != null && 'device' in value;
 };
 
 const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpdate, onNodePositionUpdateFinish }) => {
@@ -103,7 +107,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
           }}
           positions={{ nodes: nodePositions, interfaceGroups: interfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.device.name)}
-          isSelected={selectedNode?.device.id === node.device.id}
+          isSelected={ensureNodeHasDevice(selectedNode) && selectedNode.device.id === node.device.id}
           isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.device.name)}
           isCommon={commonNodeIds.includes(node.device.name)}
           topologyMode={mode}
