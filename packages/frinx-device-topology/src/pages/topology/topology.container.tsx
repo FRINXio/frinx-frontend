@@ -50,7 +50,7 @@ const TopologyContainer: VoidFunctionComponent = () => {
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
       dispatch(getNodesAndEdges(client, selectedVersion, selectedLabels));
-    }, 60000);
+    }, 10000);
     dispatch(getNodesAndEdges(client, selectedVersion, selectedLabels));
 
     return () => {

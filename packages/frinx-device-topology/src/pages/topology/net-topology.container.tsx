@@ -35,7 +35,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
       dispatch(getNetNodesAndEdges(client));
-    }, 60000);
+    }, 10000);
     dispatch(getNetNodesAndEdges(client));
 
     return () => {
