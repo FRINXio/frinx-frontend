@@ -2,7 +2,7 @@ import { Box, Heading, Progress } from '@chakra-ui/react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { unwrap, omitNullValue, useNotifications, useMinisearch, useTags } from '@frinx/shared/src';
+import { unwrap, useNotifications, useMinisearch, useTags } from '@frinx/shared/src';
 import PageContainer from '../components/page-container';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {
@@ -94,6 +94,10 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
 
     variables: { poolId: unwrap(poolId) },
   });
+  const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) => {
+    return NestedPool;
+  });
+  const { results, searchText, setSearchText } = useMinisearch({ items: resources });
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
 
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
@@ -104,12 +108,6 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   if (poolId == null) {
     return null;
   }
-
-  const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) => {
-    return NestedPool;
-  });
-
-  const { results, searchText, setSearchText } = useMinisearch({ items: resources });
 
   const handleOnClearSearch = () => {
     setSearchText('');
@@ -154,9 +152,6 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   }
 
   const { QueryResourcePool: resourcePool } = poolData;
-  const nestedPools = resourcePool.Resources.map((resource) =>
-    resource.NestedPool !== null ? resource.NestedPool : null,
-  ).filter(omitNullValue);
 
   return (
     <PageContainer>
@@ -167,7 +162,7 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
         setSearchText={setSearchText}
         searchText={searchText}
         selectedTags={selectedTags}
-        selectedResourceType={''}
+        selectedResourceType=""
         clearAllTags={clearAllTags}
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
