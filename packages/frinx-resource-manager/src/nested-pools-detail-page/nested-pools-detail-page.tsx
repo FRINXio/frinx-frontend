@@ -2,7 +2,7 @@ import { Box, Heading, Progress } from '@chakra-ui/react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { unwrap, omitNullValue, useNotifications } from '@frinx/shared/src';
+import { unwrap, omitNullValue, useNotifications, useMinisearch, useTags } from '@frinx/shared/src';
 import PageContainer from '../components/page-container';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {
@@ -11,6 +11,7 @@ import {
   GetNestedPoolsDetailQuery,
   GetNestedPoolsDetailQueryVariables,
 } from '../__generated__/graphql';
+import SearchFilterPoolsBar from '../components/search-filter-pools-bar';
 
 const POOL_DETAIL_QUERY = gql`
   query GetNestedPoolsDetail($poolId: ID!) {
@@ -85,21 +86,36 @@ const DELETE_POOL_MUTATION = gql`
 
 const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   const { poolId } = useParams<{ poolId: string }>();
-  const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
-  const { addToastNotification } = useNotifications();
-
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<
     GetNestedPoolsDetailQuery,
     GetNestedPoolsDetailQueryVariables
   >({
     query: POOL_DETAIL_QUERY,
+
     variables: { poolId: unwrap(poolId) },
   });
+  const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
+
+  const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
+  const { addToastNotification } = useNotifications();
+
   const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
 
   if (poolId == null) {
     return null;
   }
+
+   const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) => {
+     return NestedPool;
+   });
+
+     const { results, searchText, setSearchText } = useMinisearch({ items: resources });
+
+
+  const handleOnClearSearch = () => {
+    setSearchText('');
+    clearAllTags();
+  };
 
   const handleDeleteBtnClick = (id: string) => {
     deletePool({ input: { resourcePoolId: id } }, context)
@@ -122,6 +138,14 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
       });
   };
 
+    const resourcePools = results.filter((pool) => {
+   
+    if (selectedTags.length > 0) {
+      return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
+    }
+
+    return true;})
+
   if (isLoadingPool) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
@@ -140,6 +164,16 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
       <Heading size="lg" mb={5}>
         Nested pools
       </Heading>
+      <SearchFilterPoolsBar
+        setSearchText={setSearchText}
+        searchText={searchText}
+        selectedTags={selectedTags}
+        selectedResourceType={''}
+        clearAllTags={clearAllTags}
+        onTagClick={handleOnTagClick}
+        onClearSearch={handleOnClearSearch}
+        canFilterByResourceType
+      />
       <Box my={10}>
         <PoolsTable
           pools={[resourcePool]}
@@ -148,7 +182,12 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
           isNestedShown={false}
         />
         <Box ml={10}>
-          <PoolsTable pools={nestedPools} isLoading={isLoadingPool} onDeleteBtnClick={handleDeleteBtnClick} />
+          <PoolsTable
+            pools={resourcePools}
+            onTagClick={handleOnTagClick}
+            isLoading={isLoadingPool}
+            onDeleteBtnClick={handleDeleteBtnClick}
+          />
         </Box>
       </Box>
     </PageContainer>
