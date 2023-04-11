@@ -105,12 +105,11 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     return null;
   }
 
-   const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) => {
-     return NestedPool;
-   });
+  const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) => {
+    return NestedPool;
+  });
 
-     const { results, searchText, setSearchText } = useMinisearch({ items: resources });
-
+  const { results, searchText, setSearchText } = useMinisearch({ items: resources });
 
   const handleOnClearSearch = () => {
     setSearchText('');
@@ -138,13 +137,13 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
       });
   };
 
-    const resourcePools = results.filter((pool) => {
-   
+  const resourcePools = results.filter((pool) => {
     if (selectedTags.length > 0) {
       return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
     }
 
-    return true;})
+    return true;
+  });
 
   if (isLoadingPool) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
