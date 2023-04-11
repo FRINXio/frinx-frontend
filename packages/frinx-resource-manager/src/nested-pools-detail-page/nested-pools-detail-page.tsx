@@ -108,6 +108,7 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   if (poolId == null) {
     return null;
   }
+  console.log(resources, poolData);
 
   const handleOnClearSearch = () => {
     setSearchText('');
