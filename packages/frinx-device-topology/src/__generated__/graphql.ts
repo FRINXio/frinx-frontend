@@ -580,6 +580,34 @@ export type MutationUpdateGraphNodeCoordinatesArgs = {
   input: Array<GraphNodeCoordinatesInput>;
 };
 
+export type NetInterface = {
+  __typename?: 'NetInterface';
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type NetNetwork = {
+  __typename?: 'NetNetwork';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['String'];
+  subnet: Scalars['String'];
+};
+
+export type NetNode = {
+  __typename?: 'NetNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID'];
+  interfaces: Array<NetInterface>;
+  name: Scalars['String'];
+  networks: Array<NetNetwork>;
+};
+
+export type NetTopology = {
+  __typename?: 'NetTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<NetNode>;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -601,6 +629,7 @@ export type Query = {
   devices: DeviceConnection;
   labels: LabelConnection;
   locations: LocationConnection;
+  netTopology: Maybe<NetTopology>;
   node: Maybe<Node>;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -892,3 +921,8 @@ export type TopologyQueryVariables = Exact<{
 
 
 export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, deviceType: string | null, softwareVersion: string | null, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize }, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };
+
+export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NetTopologyQuery = { __typename?: 'Query', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };
