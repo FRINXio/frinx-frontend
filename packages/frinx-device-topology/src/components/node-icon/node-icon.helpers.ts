@@ -29,10 +29,10 @@ export function getDeviceNodeTransformProperties(deviceSize: DeviceSize): Device
   }
 }
 
-export function getNodeInterfaceGroups(
+export function getNodeInterfaceGroups<S extends { id: string; name: string }>(
   nodeId: string,
-  interfaceGroupPositions: PositionGroupsMap,
-): [string, GroupData][] {
+  interfaceGroupPositions: PositionGroupsMap<S>,
+): [string, GroupData<S>][] {
   return Object.entries(interfaceGroupPositions).filter(([groupId]) => {
     return groupId.startsWith(nodeId);
   });

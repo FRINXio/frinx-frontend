@@ -388,6 +388,30 @@ type Mutation {
   updateGraphNodeCoordinates(input: [GraphNodeCoordinatesInput!]!): UpdateGraphNodeCoordinatesPayload!
 }
 
+type NetInterface {
+  id: String!
+  name: String!
+}
+
+type NetNetwork {
+  coordinates: GraphNodeCoordinates!
+  id: String!
+  subnet: String!
+}
+
+type NetNode {
+  coordinates: GraphNodeCoordinates!
+  id: ID!
+  interfaces: [NetInterface!]!
+  name: String!
+  networks: [NetNetwork!]!
+}
+
+type NetTopology {
+  edges: [GraphEdge!]!
+  nodes: [NetNode!]!
+}
+
 interface Node {
   id: ID!
 }
@@ -414,6 +438,7 @@ type Query {
   ): DeviceConnection!
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
+  netTopology: NetTopology
   node(id: ID!): Node
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
