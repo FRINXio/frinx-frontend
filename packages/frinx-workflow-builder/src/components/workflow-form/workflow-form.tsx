@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -119,6 +119,10 @@ const WorkflowForm: FC<Props> = ({
 
   const tagsInput = useTagsInput();
 
+  useEffect(() => {
+    setFieldValue('labels', tagsInput.selectedTags);
+  }, [tagsInput.selectedTags, setFieldValue]);
+
   const handleOnChange = (e: React.ChangeEvent) => {
     handleChange(e);
     handleOnChangeNotify();
@@ -149,7 +153,6 @@ const WorkflowForm: FC<Props> = ({
           selectedTags={tagsInput.selectedTags}
           onTagCreate={(value) => {
             tagsInput.handleTagCreation(value);
-            setFieldValue('labels', tagsInput.selectedTags);
           }}
           onSelectionChange={tagsInput.handleOnSelectionChange}
         />
