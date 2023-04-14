@@ -116,12 +116,13 @@ const WorkflowForm: FC<Props> = ({
       onChangeNotify();
     }
   };
-  if (workflow.description) {
-    const labels = JSON.parse(workflow.description!).labels;
-    useEffect(() => {
+
+  const labels = JSON.parse(workflow.description!).labels;
+  useEffect(() => {
+    if (workflow.description) {
       tagsInput.setSelectedTags(labels);
-    }, []);
-  }
+    }
+  }, []);
 
   const tagsInput = useTagsInput();
 
