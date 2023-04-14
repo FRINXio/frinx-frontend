@@ -118,7 +118,8 @@ const WorkflowForm: FC<Props> = ({
     }
   };
 
-  const labels = JSON.parse(workflow.description!).labels;
+  const parsedDescription = JSON.parse(workflow.description!);
+  const { labels } = parsedDescription;
   useEffect(() => {
     if (workflow.description) {
       tagsInput.setSelectedTags(labels);
