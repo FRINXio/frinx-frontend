@@ -110,6 +110,7 @@ const WorkflowForm: FC<Props> = ({
     validateOnBlur: true,
   });
   const [newParam, setNewParam] = useState<string>('');
+  const tagsInput = useTagsInput();
 
   const handleOnChangeNotify = () => {
     if (onChangeNotify) {
@@ -123,8 +124,6 @@ const WorkflowForm: FC<Props> = ({
       tagsInput.setSelectedTags(labels);
     }
   }, []);
-
-  const tagsInput = useTagsInput();
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);
