@@ -1,6 +1,6 @@
 {
   "name": "@frinx/frontend-server",
-  "version": "1.0.41",
+  "version": "1.0.42",
   "main": "dist/server.js",
   "files": [
     "dist/*"
