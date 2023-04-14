@@ -116,8 +116,15 @@ const WorkflowForm: FC<Props> = ({
       onChangeNotify();
     }
   };
+  
+  const labels = JSON.parse(workflow.description!).labels
 
   const tagsInput = useTagsInput();
+
+  useEffect(() => {
+      tagsInput.setSelectedTags(labels);
+  }, [])
+  
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);
@@ -129,6 +136,7 @@ const WorkflowForm: FC<Props> = ({
   };
 
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
+  console.log(labels, tagsInput.selectedTags);
 
   return (
     <form
@@ -146,7 +154,7 @@ const WorkflowForm: FC<Props> = ({
         <FormLabel>Description</FormLabel>
         <Textarea name="description" value={values.description} onChange={handleOnChange} />
       </FormControl>
-      <FormControl my={6}>
+      <FormControl my={6}> 
         <SearchByTagInput
           tagText="Label"
           data-cy="create-pool-tags"
