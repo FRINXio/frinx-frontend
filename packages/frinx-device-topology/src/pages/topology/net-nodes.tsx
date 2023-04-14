@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import NetNodeIcon from '../../components/net-node-icon/net-node-icon';
+import NetNodeIcon from '../../components/node-icons/net-node-icon';
 import { setSelectedNetNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { GraphNetNode } from './graph.helpers';

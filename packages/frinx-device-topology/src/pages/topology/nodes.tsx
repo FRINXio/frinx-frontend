@@ -1,6 +1,6 @@
 import { unwrap } from '@frinx/shared/src';
 import React, { useState, VoidFunctionComponent } from 'react';
-import NodeIcon from '../../components/node-icon/node-icon';
+import NodeIcon from '../../components/node-icons/node-icon';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { setSelectedNode, setUnconfirmedSelectedNodeIdsToFindCommonNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';

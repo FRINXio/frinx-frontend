@@ -1,7 +1,13 @@
 import { difference } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
-import { getNodesAndEdges, setCommonNodeIds, setMode, setSelectedNodeIdsToFindCommonNode } from '../../state.actions';
+import {
+  getBackupNodesAndEdges,
+  getNodesAndEdges,
+  setCommonNodeIds,
+  setMode,
+  setSelectedNodeIdsToFindCommonNode,
+} from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import {
   TopologyCommonNodesQuery,
@@ -48,15 +54,24 @@ const TopologyContainer: VoidFunctionComponent = () => {
   });
 
   useEffect(() => {
-    intervalRef.current = window.setInterval(() => {
-      dispatch(getNodesAndEdges(client, selectedVersion, selectedLabels));
-    }, 10000);
-    dispatch(getNodesAndEdges(client, selectedVersion, selectedLabels));
+    if (selectedVersion == null) {
+      intervalRef.current = window.setInterval(() => {
+        dispatch(getNodesAndEdges(client, selectedLabels));
+      }, 10000);
+      dispatch(getNodesAndEdges(client, selectedLabels));
+    }
 
     return () => {
       window.clearInterval(intervalRef.current);
     };
   }, [client, dispatch, selectedLabels, selectedVersion, topologyLayer]);
+
+  useEffect(() => {
+    if (selectedVersion != null) {
+      window.clearInterval(intervalRef.current);
+      dispatch(getBackupNodesAndEdges(client, selectedVersion));
+    }
+  }, [client, dispatch, selectedVersion]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
     updatePosition({

@@ -1,13 +1,15 @@
 import { Client, gql } from 'urql';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
-import { CustomDispatch } from './use-thunk-reducer';
 import { BackupGraphNode, GraphEdge, GraphNetNode, GraphNode, Position } from './pages/topology/graph.helpers';
 import { State, TopologyLayer } from './state.reducer';
+import { CustomDispatch } from './use-thunk-reducer';
 import {
   NetTopologyQuery,
   NetTopologyQueryVariables,
   TopologyQuery,
   TopologyQueryVariables,
+  TopologyVersionDataQuery,
+  TopologyVersionDataQueryVariables,
 } from './__generated__/graphql';
 
 export type NodesEdgesPayload = {
@@ -172,6 +174,37 @@ const NET_TOPOLOGY_QUERY = gql`
   }
 `;
 
+const TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query TopologyVersionData($version: String!) {
+    topologyVersionData(version: $version) {
+      edges {
+        id
+        source {
+          nodeId
+          interface
+        }
+        target {
+          nodeId
+          interface
+        }
+      }
+      nodes {
+        id
+        name
+        interfaces {
+          id
+          status
+          name
+        }
+        coordinates {
+          x
+          y
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -179,17 +212,13 @@ export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   };
 }
 
-export function getNodesAndEdges(
-  client: Client,
-  selectedVersion: string | null,
-  labels: LabelItem[],
-): ReturnType<ThunkAction<StateAction, State>> {
+export function getNodesAndEdges(client: Client, labels: LabelItem[]): ReturnType<ThunkAction<StateAction, State>> {
   return (dispatch) => {
     client
       .query<TopologyQuery, TopologyQueryVariables>(
         TOPOLOGY_QUERY,
         {
-          labels: selectedVersion ? [] : labels.map((l) => l.label),
+          labels: labels.map((l) => l.label),
         },
         {
           requestPolicy: 'network-only',
@@ -268,6 +297,30 @@ export function setBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateA
   return {
     type: 'SET_BACKUP_NODES_AND_EDGES',
     payload,
+  };
+}
+
+export function getBackupNodesAndEdges(client: Client, version: string): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<TopologyVersionDataQuery, TopologyVersionDataQueryVariables>(
+        TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setBackupNodesAndEdges({
+            nodes: data.data?.topologyVersionData.nodes ?? [],
+            edges: data.data?.topologyVersionData.edges ?? [],
+          }),
+        );
+      });
   };
 }
 
