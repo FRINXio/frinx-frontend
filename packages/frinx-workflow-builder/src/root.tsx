@@ -200,10 +200,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const clientWorkflowList: ClientWorkflow[] = workflowData.workflows.edges.map((e) => {
     const { node } = e;
     const parsedTasks = jsonParse<Task[]>(node.tasks);
-    const { labels } = jsonParse<DescriptionJSON>(node.description);
+    const description = jsonParse<DescriptionJSON | null>(node.description);
     return {
       ...node,
-      labels,
+      labels: description?.labels || [],
       tasks: parsedTasks,
       hasSchedule: node.hasSchedule || false,
     };

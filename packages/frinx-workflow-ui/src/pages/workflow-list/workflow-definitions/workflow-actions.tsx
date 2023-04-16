@@ -53,7 +53,7 @@ const WorkflowActions: FC<Props> = ({
           size="sm"
           icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
           as={Link}
-          to={`../builder/${workflow.name}/${workflow.version}`}
+          to={`../builder/${workflow.id}`}
         />
         <IconButton
           data-cy={`exec-${workflow.name}-${workflow.version}`}
