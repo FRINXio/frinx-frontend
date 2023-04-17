@@ -123,7 +123,7 @@ const WorkflowForm: FC<Props> = ({
       const { labels } = JSON.parse(workflow.description);
       tagsInput.setSelectedTags(labels);
     }
-  },[tagsInput, workflow.description]);
+  }, [tagsInput, workflow.description]);
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);
