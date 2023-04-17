@@ -3,7 +3,7 @@ import Edge from '../../components/edge/edge';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import { setSelectedEdge } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
-import { getControlPoints, getLinePoints, isTargetingActiveNode } from './graph.helpers';
+import { getControlPoints, getLinePoints, getNameFromNode, isTargetingActiveNode } from './graph.helpers';
 
 const EDGE_GAP = 75;
 
@@ -23,7 +23,7 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
     <g>
       {edgesWithDiff.map((edge) => {
         // dont show edges that are connected to active node
-        if (isTargetingActiveNode(edge, selectedNode, interfaceGroupPositions)) {
+        if (isTargetingActiveNode(edge, getNameFromNode(selectedNode), interfaceGroupPositions)) {
           return null;
         }
 

@@ -1,49 +1,11 @@
 import { unwrap } from '@frinx/shared/src';
-import React, { createContext, Dispatch, FC, Reducer, useContext, useEffect, useMemo, useReducer } from 'react';
-import { gql, useClient } from 'urql';
-import { setNodesAndEdges, StateAction } from './state.actions';
+import React, { createContext, FC, useContext, useMemo } from 'react';
+import useThunkReducer, { CustomDispatch } from './use-thunk-reducer';
+import { StateAction } from './state.actions';
 import { initialState, State, stateReducer } from './state.reducer';
-import { TopologyQuery, TopologyQueryVariables } from './__generated__/graphql';
-
-const TOPOLOGY_QUERY = gql`
-  query Topology($labels: [String!]) {
-    topology(filter: { labels: $labels }) {
-      nodes {
-        id
-        device {
-          id
-          name
-          deviceSize
-        }
-        deviceType
-        softwareVersion
-        interfaces {
-          id
-          status
-          name
-        }
-        coordinates {
-          x
-          y
-        }
-      }
-      edges {
-        id
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
-        }
-      }
-    }
-  }
-`;
 
 export type StateContextType = {
-  dispatch: Dispatch<StateAction>;
+  dispatch: CustomDispatch<StateAction, State>;
   state: State;
 };
 
@@ -54,26 +16,7 @@ export function useStateContext(): StateContextType {
 }
 
 const StateProvider: FC = ({ children }) => {
-  const client = useClient();
-  const [state, dispatch] = useReducer<Reducer<State, StateAction>, State>(
-    stateReducer,
-    initialState,
-    () => initialState,
-  );
-
-  const { selectedLabels, selectedVersion } = state;
-
-  useEffect(() => {
-    client
-      .query<TopologyQuery, TopologyQueryVariables>(TOPOLOGY_QUERY, {
-        labels: selectedVersion ? [] : selectedLabels.map((l) => l.label),
-      })
-      .toPromise()
-      .then((data) => {
-        const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
-        dispatch(setNodesAndEdges({ nodes, edges }));
-      });
-  }, [client, selectedLabels, selectedVersion]);
+  const [state, dispatch] = useThunkReducer<StateAction, State>(stateReducer, initialState, () => initialState);
 
   return (
     <StateContext.Provider
@@ -82,7 +25,7 @@ const StateProvider: FC = ({ children }) => {
           dispatch,
           state,
         }),
-        [state],
+        [state, dispatch],
       )}
     >
       {children}
