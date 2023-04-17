@@ -123,7 +123,8 @@ const WorkflowForm: FC<Props> = ({
       const { labels } = JSON.parse(workflow.description);
       tagsInput.setSelectedTags(labels);
     }
-  }, [tagsInput, workflow.description]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);
