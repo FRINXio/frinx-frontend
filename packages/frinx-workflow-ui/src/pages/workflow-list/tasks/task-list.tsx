@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { callbackUtils, TaskDefinition } from '@frinx/shared/src';
-import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/helpers/utils.helpers';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import FeatherIcon from 'feather-icons-react';
 import TaskTable from './task-table';

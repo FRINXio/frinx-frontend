@@ -1,97 +1,58 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 
 import { Button, Card, HStack, Heading, Menu, MenuButton, MenuItem, MenuList, Spacer, Spinner } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import { useNotifications, callbackUtils } from '@frinx/shared/src';
-
-type CallBackUtilsFunctionNames =
-  | 'restartWorkflows'
-  | 'resumeWorkflows'
-  | 'pauseWorkflows'
-  | 'deleteWorkflowInstance'
-  | 'terminateWorkflows';
 
 type Props = {
   amountOfVisibleWorkflows: number;
-  selectedWorkflows: string[];
-  selectAllWorkflows: (isChecked: boolean) => void;
-  onSuccessfullOperation: () => void;
+  amountOfSelectedWorkflows: number;
+  onRestartWithCurrent: () => void;
+  onRestartWithLatest: () => void;
+  onRetry: () => void;
+  onResume: () => void;
+  onTerminate: () => void;
+  onPause: () => void;
 };
 
 const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
   amountOfVisibleWorkflows,
-  selectedWorkflows,
-  selectAllWorkflows,
-  onSuccessfullOperation,
+  amountOfSelectedWorkflows,
+  onPause,
+  onRestartWithCurrent,
+  onRestartWithLatest,
+  onResume,
+  onRetry,
+  onTerminate,
 }) => {
-  const [isFetching, setIsFetching] = useState(false);
-  const { addToastNotification } = useNotifications();
-
-  const executeBulkOperation = (operationFunctionName: CallBackUtilsFunctionNames) => {
-    if (selectedWorkflows.length === 0) return;
-
-    setIsFetching(true);
-
-    if (operationFunctionName === 'deleteWorkflowInstance') {
-      const operations = callbackUtils.getCallbacks;
-      Promise.all(selectedWorkflows.map((workflow) => operations[operationFunctionName](workflow)))
-        .then(() => {
-          addToastNotification({
-            content: 'Successfully deleted executed workflows',
-            type: 'success',
-            title: 'Success',
-          });
-          onSuccessfullOperation();
-        })
-        .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
-        .finally(() => {
-          setIsFetching(false);
-          selectAllWorkflows(false);
-        });
-    } else {
-      const operations = callbackUtils.getCallbacks;
-      operations[operationFunctionName](selectedWorkflows)
-        .then(() => {
-          addToastNotification({ content: 'Successfully executed bulk operation', type: 'success' });
-          onSuccessfullOperation();
-        })
-        .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
-        .finally(() => {
-          setIsFetching(false);
-          selectAllWorkflows(false);
-        });
-    }
-  };
-
-  if (selectedWorkflows.length === 0) {
+  if (amountOfSelectedWorkflows === 0) {
     return (
-      <Card>
-        <Heading>Showing {amountOfVisibleWorkflows} workflows</Heading>
+      <Card p={15}>
+        <Heading size="lg">Showing {amountOfVisibleWorkflows} workflows</Heading>
       </Card>
     );
   } else {
     return (
-      <Card>
+      <Card p={15} bgColor="blue.200">
         <HStack>
-          <Heading>Selected {selectedWorkflows.length} workflows</Heading>
+          <Heading size="lg" textColor="white">Selected {amountOfSelectedWorkflows} workflows</Heading>
 
           <Spacer />
 
           <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+            <MenuButton as={Button} rightIcon={<ChevronDownIcon />} colorScheme="blue">
               Bulk actions
             </MenuButton>
             <MenuList>
-              <MenuItem>Restart with current definitions</MenuItem>
-              <MenuItem>Restart with latest definitions</MenuItem>
-              <MenuItem>Retry</MenuItem>
-              <MenuItem>Resume</MenuItem>
-              <MenuItem>Pause</MenuItem>
-              <MenuItem>Terminate</MenuItem>
+              <MenuItem onClick={onRestartWithCurrent}>Restart with current definitions</MenuItem>
+              <MenuItem onClick={onRestartWithLatest}>Restart with latest definitions</MenuItem>
+              <MenuItem onClick={onRetry}>Retry</MenuItem>
+              <MenuItem onClick={onResume}>Resume</MenuItem>
+              <MenuItem onClick={onPause}>Pause</MenuItem>
+              <MenuItem onClick={onTerminate}>Terminate</MenuItem>
             </MenuList>
           </Menu>
         </HStack>
-      </Card>
+      </Card >
     );
   }
 };

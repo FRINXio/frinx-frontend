@@ -1,224 +1,230 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Progress } from '@chakra-ui/react';
-import { ExecutedWorkflow, ExecutedWorkflows, NestedExecutedWorkflow } from '@frinx/shared/src';
-import { useNavigate } from 'react-router-dom';
-import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
-import { getSortOrder, getWorkflows } from './search-execs';
-import ExecutedWorkflowFlatTable from './executed-workflow-table/executed-workflow-table';
+import React, { useMemo, useState } from 'react';
+import { Container, Progress, VStack, Text } from '@chakra-ui/react';
+import { useSearchParams } from 'react-router-dom';
+import ExecutedWorkflowSearchBox, { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
+import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
-import { usePagination } from '../../../common/pagination-hook';
-import useQueryParams from '../../../hooks/use-query-params';
-import Paginator from '../../../common/pagination';
+import { gql, useQuery } from 'urql';
+import { ExecutedWorkflow, ExecutedWorkflowsQuery, ExecutedWorkflowsQueryVariables, ExecutedWorkflowStatus } from '../../../__generated__/graphql';
+import { makeArrayFromValue, makeURLSearchParamsFromObject } from '../../../helpers/utils.helpers';
+import moment from 'moment';
+import { omitNullValue } from '@frinx/shared/src';
 
-type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
-type SortOrder = 'ASC' | 'DESC';
+export type SortProperty = { key: keyof ExecutedWorkflow, value: 'ASC' | 'DESC' };
 
-type StateProps = {
-  selectedWorkflows: string[];
-  detailsModal: boolean;
-  workflowId: string;
-  openParentWorkflows: NestedExecutedWorkflow[];
-  isFlat: boolean;
-  showChildren: NestedExecutedWorkflow[];
-  sortBy: SortBy;
-  sortOrder: SortOrder;
-  labels: string[];
-};
+export type ExecutedworkflowsFilter = {
+  isRootWorkflow: boolean,
+  from?: string,
+  to?: string,
+  status: ExecutedWorkflowStatus[] | ExecutedWorkflowStatus,
+  workflowId: string[] | string,
+  workflowType: string[] | string,
+  workflowsPerPage: number
+}
 
-type SearchFilters = {
-  page: number;
-  size: number;
-  sortBy: SortBy;
-  sortOrder: SortOrder;
-  labels: string[];
-  search: string;
-  isFlat: boolean;
-};
+const EXECUTED_WORKFLOW_QUERY = gql`
+  query ExecutedWorkflows($pagination: PaginationArgs, $searchQuery: ExecutedWorkflowSearchInput) {
+    executedWorkflows(pagination: $pagination, searchQuery: $searchQuery) {
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+      edges {
+        cursor
+        node {
+          id
+          createdAt
+          updatedAt
+          status
+          parentWorkflowId
+          input
+          output
+          startTime
+          endTime
+          workflowVersion
+          workflowName
+          workflowId
+        }
+      }
+    }
+  }
+`;
 
-const initialState: StateProps = {
-  selectedWorkflows: [],
-  detailsModal: false,
-  workflowId: '',
-  openParentWorkflows: [],
-  isFlat: false,
-  showChildren: [],
-  sortBy: 'startTime',
-  sortOrder: 'DESC',
-  labels: [],
-};
+const BULK_PAUSE_MUTATION = gql`
+  mutation BulkPause($workflowIds: [String!]!) {
+    bulkPauseWorkflow(workflowIds: $workflowIds) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
 
-const loadExecutedWorkflows = async (filters: SearchFilters): Promise<ExecutedWorkflows> => {
-  const { page, size, sortBy, sortOrder, labels, search, isFlat } = filters;
-  const executedWorkflows = await getWorkflows({
-    isFlat,
-    labels,
-    size,
-    sortBy,
-    sortOrder,
-    start: (page - 1) * size,
-    workflowId: search,
-  });
-
-  return executedWorkflows;
-};
+const BULK_RESUME_MUTATION = gql`
+  mutation BulkResume($workflowIds: [String!]!) {
+    bulkResumeWorkflow(workflowIds: $workflowIds) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
 
 const ExecutedWorkflowList = () => {
-  const navigate = useNavigate();
-  const query = useQueryParams();
-  const [executedWorkflows, setExecutedWorkflows] = useState<ExecutedWorkflow[]>();
-  const {
-    currentPage,
-    setCurrentPage,
-    maxItemsPerPage,
-    totalPages,
-    pageItems: workflows,
-    setTotalItemsAmount,
-    totalItemsAmount,
-    setItemList,
-  } = usePagination<ExecutedWorkflow>({
-    itemList: executedWorkflows,
-    hasCustomAmount: true,
-    maxItemsPerPage: 20,
+  const ctx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), [])
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filter, setFilter] = useState<ExecutedWorkflowSearchQuery>(() => {
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
+    const workflowsPerPage = Number(searchParams.get('workflowsPerPage'));
+
+    return {
+      isRootWorkflow: Boolean(searchParams.get('isRootWorkflow')) ?? false,
+      status: makeArrayFromValue(searchParams.getAll('status')),
+      workflowId: makeArrayFromValue(searchParams.getAll('workflowId')),
+      workflowType: makeArrayFromValue(searchParams.getAll('workflowType')),
+      workflowsPerPage: workflowsPerPage > 0 ? workflowsPerPage : 20,
+      ...(from != null && { from: moment(new Date(from)).format('dd-MM-yyyyThh:mm') }),
+      ...(to != null && { to: moment(new Date(to)).format('dd-MM-yyyyThh:mm') })
+    }
   });
-  const [state, setState] = useState<StateProps>({
-    ...initialState,
-    workflowId: query.get('search') || '',
+  const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
+  const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
+  const [isFlat, setIsFlat] = useState(false);
+
+  const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<ExecutedWorkflowsQuery, ExecutedWorkflowsQueryVariables>({
+    query: EXECUTED_WORKFLOW_QUERY,
+    variables: function() {
+      const status = filter.status.map((s) => {
+        if (s === 'PAUSED' || s === 'TERMINATED' || s === 'RUNNING' || s === 'COMPLETED' || s === 'FAILED' || s === 'TIMED_OUT') {
+          return s;
+        }
+        return null;
+      });
+
+      const result = {
+        pagination: {
+          size: filter?.workflowsPerPage ?? 20,
+          start: 0
+        },
+        searchQuery: {
+          ...(filter.isRootWorkflow != null && { isRootWorkflow: filter.isRootWorkflow }),
+          query: {
+            ...(filter.from != null && {
+              startTime: {
+                from: filter.from,
+                to: filter.to,
+              },
+            }),
+            ...(filter.status != null && filter.status.length > 0 && { status: status.filter(omitNullValue<ExecutedWorkflowStatus>) }),
+            ...(filter.workflowId != null && filter.workflowId.length > 0 && { workflowId: filter.workflowId }),
+            ...(filter.workflowType != null && filter.workflowType.length > 0 && { workflowType: filter.workflowType })
+          }
+        }
+      }
+
+      return result;
+    }(),
+    context: ctx
   });
 
-  useEffect(() => {
-    loadExecutedWorkflows({
-      page: currentPage,
-      size: maxItemsPerPage,
-      sortBy: state.sortBy,
-      sortOrder: state.sortOrder,
-      labels: state.labels,
-      search: state.workflowId,
-      isFlat: state.isFlat,
-    }).then((exWfs) => {
-      setExecutedWorkflows(exWfs.result.hits);
-      setItemList(exWfs.result.hits, currentPage);
-      setTotalItemsAmount(exWfs.result.totalHits);
-    });
-  }, [
-    state.sortBy,
-    state.sortOrder,
-    state.labels,
-    state.workflowId,
-    state.isFlat,
-    currentPage,
-    maxItemsPerPage,
-    setTotalItemsAmount,
-    setItemList,
-  ]);
+  const handleOnWorkflowSelect = (workflowId: string) => {
+    const isAlreadySelected = selectedWorkflows.includes(workflowId);
 
-  useEffect(() => {
-    navigate({ search: state.workflowId ? `search=${state.workflowId}` : '' }, { replace: true });
-  }, [state.workflowId, navigate]);
-
-  useEffect(() => {
-    setState((prev) => ({ ...prev, selectedWorkflows: [...new Set<string>()] }));
-  }, [state.isFlat]);
-
-  if (workflows == null) {
-    return <Progress isIndeterminate size="xs" marginTop={-10} />;
+    if (isAlreadySelected) {
+      setSelectedWorkflows(selectedWorkflows.filter((selectedWorkflowId) => selectedWorkflowId !== workflowId))
+    } else {
+      setSelectedWorkflows([...selectedWorkflows, workflowId])
+    }
   }
 
-  const changeLabels = (labels: string[]) => {
-    setState((prev) => ({ ...prev, labels }));
-    setCurrentPage(1);
-  };
+  const handleOnAllWorkflowsSelect = () => {
+    const areAllWorkflowsSelected = data?.executedWorkflows?.edges.length === selectedWorkflows.length;
 
-  const changeQuery = (changedQuery: string) => {
-    setState((prev) => ({ ...prev, workflowId: changedQuery }));
-    setCurrentPage(1);
-  };
+    if (data == null || data.executedWorkflows == null || data?.executedWorkflows?.edges == null || data?.executedWorkflows?.edges.length === 0) {
+      setSelectedWorkflows([])
 
-  const selectWorkflow = (workflowId: string, isChecked: boolean) => {
-    const selectedWorkflows = new Set(state.selectedWorkflows);
-
-    if (isChecked) {
-      selectedWorkflows.add(workflowId);
-    } else {
-      selectedWorkflows.delete(workflowId);
+      return
     }
 
-    setState((prev) => {
-      return {
-        ...prev,
-        selectedWorkflows: [...selectedWorkflows],
-      };
-    });
-  };
-
-  const selectAllWorkflows = (isChecked: boolean) => {
-    if (isChecked) {
-      setState((prev) => {
-        const selectedWorkflows = new Set(workflows.map((workflow) => workflow.workflowId));
-
-        return { ...prev, selectedWorkflows: [...selectedWorkflows] };
-      });
+    if (areAllWorkflowsSelected) {
+      setSelectedWorkflows([])
     } else {
-      setState((prev) => ({ ...prev, selectedWorkflows: [] }));
+      setSelectedWorkflows(data.executedWorkflows.edges.map(({ node }) => node.id))
     }
-  };
+  }
 
-  const sortWorkflow = (sortBy: SortBy) => {
-    setState((prev) => ({
-      ...prev,
-      sortBy,
-      sortOrder: getSortOrder(sortBy, prev.sortBy, prev.sortOrder),
-    }));
-  };
+  const handleOnSort = ({ key, value }: SortProperty) => {
+    if (key === sort.key && value === 'ASC') {
+      setSort({ key, value: 'DESC' });
+      return;
+    }
 
-  const changeView = () => {
-    setState((prev) => ({ ...prev, isFlat: !prev.isFlat }));
-    setCurrentPage(1);
-  };
+    if (key === sort.key && value === 'DESC') {
+      setSort({ key, value: 'ASC' });
+      return;
+    }
 
-  const handleSuccessfullOperation = () => {
-    loadExecutedWorkflows({
-      page: currentPage,
-      size: maxItemsPerPage,
-      sortBy: state.sortBy,
-      sortOrder: state.sortOrder,
-      labels: state.labels,
-      search: state.workflowId,
-      isFlat: state.isFlat,
-    }).then((exWfs) => {
-      setExecutedWorkflows(exWfs.result.hits);
-      setTotalItemsAmount(exWfs.result.totalHits);
-    });
-  };
+    setSort({ key, value: 'DESC' });
+  }
+
+  const handleOnSearchBoxSubmit = (searchInput: ExecutedWorkflowSearchQuery) => {
+    setFilter(searchInput);
+
+    const newSearchParams = makeURLSearchParamsFromObject({
+      ...searchInput,
+      isRootWorkflow: searchInput.isRootWorkflow.toString(),
+    })
+    setSearchParams(newSearchParams);
+  }
+
+  console.log(filter, data)
 
   return (
     <Container maxWidth={1200} mx="auto">
-      <ExecutedWorkflowSearchBox
-        changeLabels={changeLabels}
-        showFlat={state.isFlat}
-        changeQuery={changeQuery}
-        changeView={changeView}
-        labels={state.labels}
-      />
+      <VStack spacing={10} alignItems="stretch">
+        <ExecutedWorkflowSearchBox
+          onSearchBoxSubmit={handleOnSearchBoxSubmit}
+          onTableTypeChange={() => setIsFlat((prev) => !prev)}
+          isFlat={isFlat}
+          initialSearchValues={filter}
+        />
 
-      <ExecutedWorkflowBulkOperationsBlock
-        workflowsAmount={totalItemsAmount}
-        selectedWorkflows={state.selectedWorkflows}
-        selectAllWorkflows={selectAllWorkflows}
-        onSuccessfullOperation={handleSuccessfullOperation}
-      />
+        <ExecutedWorkflowBulkOperationsBlock
+          amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
+          amountOfSelectedWorkflows={selectedWorkflows.length}
+          onPause={() => { }}
+          onRetry={() => { }}
+          onResume={() => { }}
+          onTerminate={() => { }}
+          onRestartWithLatest={() => { }}
+          onRestartWithCurrent={() => { }}
+        />
 
-      <ExecutedWorkflowFlatTable
-        selectAllWorkflows={selectAllWorkflows}
-        sortWf={sortWorkflow}
-        selectWf={selectWorkflow}
-        selectedWfs={state.selectedWorkflows}
-        sortBy={state.sortBy}
-        sortOrder={state.sortOrder}
-        workflows={workflows}
-        isFlat={state.isFlat}
-      />
+        {!isLoadingWorkflows && (data == null || data.executedWorkflows == null || data.executedWorkflows.edges.length === 0) && (
+          <Text>There are no workflows</Text>
+        )}
 
-      <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} showPageNumbers />
+        {error != null && (
+          <Text textColor="red">{JSON.stringify(error)}</Text>
+        )}
+
+        {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
+
+        {data != null && data.executedWorkflows != null && !isLoadingWorkflows && (
+          <ExecutedWorkflowsTable
+            onSelectAllWorkflows={handleOnAllWorkflowsSelect}
+            onSortPropertyClick={handleOnSort}
+            sort={sort}
+            workflows={data}
+            onWorkflowSelect={handleOnWorkflowSelect}
+            selectedWorkflows={selectedWorkflows}
+            isFlat={isFlat}
+          />
+        )}
+      </VStack>
+
+      {/* <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} showPageNumbers /> */}
     </Container>
   );
 };

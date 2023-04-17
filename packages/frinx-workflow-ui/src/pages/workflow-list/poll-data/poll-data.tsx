@@ -14,7 +14,7 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { sortDescBy, sortAscBy } from '@frinx/workflow-ui/src/utils/helpers.utils';
+import { sortDescBy, sortAscBy } from '@frinx/workflow-ui/src/helpers/utils.helpers';
 import FeatherIcon from 'feather-icons-react';
 import { callbackUtils, Queue } from '@frinx/shared/src';
 import { usePagination } from '../../../common/pagination-hook';

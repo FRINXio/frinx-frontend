@@ -2,17 +2,21 @@ import moment from 'moment';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { Tr, Td, Checkbox, Icon } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { callbackUtils, ExecutedWorkflow, ExecutedWorkflows, ExecutedWorkflowTask } from '@frinx/shared/src';
+import { callbackUtils, ExecutedWorkflowTask } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';
+import ExecutedWorkflowStatusLabels from '../executed-workflow-status-labels';
+import { ExecutedWorkflowsQuery } from '../../../../../__generated__/graphql';
 
 type Props = {
-  workflows: ExecutedWorkflows['result']['hits'];
-  selectedWfs: string[];
-  selectWf: (workflowId: string, isChecked: boolean) => void;
+  workflows: NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>;
+  selectedWorkflows: string[];
+  onWorkflowSelect: (workflowId: string) => void;
 };
 
-type NestedWorkflow = ExecutedWorkflow & {
+type ExecutedWorkflowNode = NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>['edges'][0];
+
+type NestedWorkflow = ExecutedWorkflowNode & {
   isExpanded: boolean;
 };
 
@@ -23,50 +27,56 @@ type ExecutedSubWorkflows = {
   subWorkflows: ExecutedSubworkflowTask[];
 };
 
-const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf, selectedWfs }) => {
+const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, onWorkflowSelect, selectedWorkflows }) => {
   const [nestedWorkflows, setNestedWorkflows] = useState<NestedWorkflow[]>([]);
 
   useEffect(() => {
-    setNestedWorkflows(workflows.map((w) => ({ ...w, isExpanded: false })));
+    setNestedWorkflows(workflows.edges.map(({ cursor, node }) => ({ cursor, node, isExpanded: false })));
   }, [workflows]);
 
   const [subWorkflows, setSubWorkflows] = useState<Map<string, ExecutedSubWorkflows>>(new Map());
 
-  const handleToggle = async (workflow: ExecutedWorkflow) => {
-    const { workflowId } = workflow;
-    const newNestedWorkflows = nestedWorkflows.map((w) => {
-      if (workflowId === w.workflowId) {
-        return { ...w, isExpanded: !w.isExpanded };
+  const handleToggle = async ({ node: workflow }: ExecutedWorkflowNode) => {
+    const newNestedWorkflows = nestedWorkflows.map(({ node: w, isExpanded, cursor }) => {
+      if (workflow.workflowId === w.workflowId) {
+        return { node: w, isExpanded: !isExpanded, cursor };
       }
-      return w;
+
+      return {
+        node: w,
+        cursor,
+        isExpanded,
+      };
     });
     setNestedWorkflows(newNestedWorkflows);
 
     // load subworkflows if not already loaded
-    if (!subWorkflows.has(workflowId)) {
+    if (workflow.workflowId != null && !subWorkflows.has(workflow.workflowId)) {
       const { getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
 
       const loadingSubWorkflows = new Map(subWorkflows);
-      loadingSubWorkflows.set(workflowId, { isLoading: true, subWorkflows: [] });
+      loadingSubWorkflows.set(workflow.workflowId, { isLoading: true, subWorkflows: [] });
       setSubWorkflows(loadingSubWorkflows);
 
-      const workflowDetail = await getWorkflowInstanceDetail(workflowId);
+      const workflowDetail = await getWorkflowInstanceDetail(workflow.workflowId);
       const workflowData = workflowDetail.result.tasks.filter((t) => t.taskType === 'SUB_WORKFLOW') || [];
       const finishedSubWorkflows = new Map(subWorkflows);
-      finishedSubWorkflows.set(workflowId, { isLoading: false, subWorkflows: workflowData });
+      finishedSubWorkflows.set(workflow.workflowId, { isLoading: false, subWorkflows: workflowData });
       setSubWorkflows(finishedSubWorkflows);
     }
   };
 
   return (
     <>
-      {nestedWorkflows.map((item) => (
+      {nestedWorkflows.map(({ node: item, isExpanded, cursor }) => (
         <Fragment key={item.workflowId}>
-          <Tr onClick={() => handleToggle(item)}>
+          <Tr onClick={() => handleToggle({ node: item, cursor })}>
             <Td>
               <Checkbox
-                isChecked={selectedWfs.includes(item.workflowId)}
-                onChange={(e) => selectWf(item.workflowId, e.target.checked)}
+                isChecked={selectedWorkflows.includes(item.id)}
+                onChange={() => {
+                  onWorkflowSelect(item.id)
+                }}
               />
             </Td>
             <Td
@@ -75,21 +85,25 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, selectWf,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}
-              title={item.workflowType}
+              title={item.workflowId ?? "Unknown workflow"}
+              textColor="blue.500"
             >
-              {item.isExpanded ? (
+              {isExpanded ? (
                 <Icon as={FeatherIcon} icon="chevron-up" size={20} w="6" h="6" paddingRight={2} />
               ) : (
                 <Icon as={FeatherIcon} icon="chevron-down" size={20} w="6" h="6" paddingRight={2} />
               )}
-              <Link to={`../executed/${item.workflowId}`}>{item.workflowType}</Link>
+              <Link to={`../executed/${item.workflowId}`}>{item.workflowId ?? '-'}</Link>
             </Td>
-            <Td>{item.status}</Td>
+
+            <Td>{item.workflowName}</Td>
+
             <Td>{moment(item.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
             <Td>{item.endTime ? moment(item.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
+            <Td><ExecutedWorkflowStatusLabels status={item.status ?? 'UNKNOWN'} /></Td>
           </Tr>
 
-          {item.isExpanded && <ExecutedSubWorkflowTable subWorkflows={subWorkflows} workflowId={item.workflowId} />}
+          {isExpanded && <ExecutedSubWorkflowTable subWorkflows={subWorkflows} workflowId={item.workflowId ?? ""} />}
         </Fragment>
       ))}
     </>
