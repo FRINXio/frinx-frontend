@@ -19,7 +19,7 @@ import {
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
   keyword: string[] | null;
-  labels: string[] | null;
+  labels: string[] | [];
 };
 
 const WORKFLOWS_QUERY = gql`
@@ -71,10 +71,9 @@ const WorkflowDefinitions = () => {
   const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
   // TODO: FD-493 this is redundant because we can use the labels from filter state
-  const [labels, setLabels] = useState<string[]>([]);
   const [filter, setFilter] = useState<WorkflowFilter>({
     keyword: null,
-    labels: null,
+    labels: [],
   });
   const [activeWf, setActiveWf] = useState<ClientWorkflow>();
 
@@ -173,11 +172,6 @@ const WorkflowDefinitions = () => {
         executeWorkflowModal={inputParametersModal}
         scheduledWorkflowModal={schedulingModal}
         activeWorkflow={activeWf}
-        getData={() => {
-          // TODO: FD-493 we can remove the getData function
-          // https://github.com/FRINXio/frinx-frontend/blob/main/packages/frinx-resource-manager/src/pages/resource-types-page/resource-types-page.tsx#L53
-          // use context in the useQuery hook provided link can be used as inspiration
-        }}
         onDeleteWorkflow={handleDeleteWorkflow}
         workflows={workflows}
       />
@@ -188,10 +182,9 @@ const WorkflowDefinitions = () => {
           setKeywords(value);
           debouncedKeywordFilter(value);
         }}
-        labels={labels}
+        labels={filter.labels}
         onLabelsChange={(newLabels) => {
           const newLabelsArray = [...new Set(newLabels)];
-          setLabels(newLabelsArray);
           setFilter((f) => ({
             ...f,
             labels: newLabelsArray,
@@ -199,10 +192,9 @@ const WorkflowDefinitions = () => {
         }}
         onClearSearch={() => {
           setKeywords('');
-          setLabels([]);
           setFilter({
             keyword: null,
-            labels: null,
+            labels: [],
           });
         }}
       />
@@ -217,9 +209,7 @@ const WorkflowDefinitions = () => {
         setActiveWorkflow={setActiveWf}
         onFavoriteClick={updateFavourite}
         onLabelClick={(label) => {
-          // TODO: FD-492 we ae handling only the labels state that is redundant and we are not updating the filter labels.
-          // That causes when user clicks on label in table nothing will happen... you need to use setFilter function
-          setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
+          setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}
         allLabels={labelsData.workflowLabels}
       />
