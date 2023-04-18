@@ -1,78 +1,104 @@
-import React, { FC } from 'react';
 import {
-  ButtonGroup,
   Button,
-  FormControl,
-  Input,
+  ButtonGroup,
   Card,
-  HStack,
+  FormControl,
   FormLabel,
+  HStack,
+  Input,
   Select,
-  Spacer, Switch
+  Spacer,
+  Switch,
 } from '@chakra-ui/react';
-import { ExecutedWorkflowStatus } from '../../../../__generated__/graphql';
 import { useFormik } from 'formik';
+import React, { FC } from 'react';
+import { ExecutedWorkflowStatus } from '../../../../__generated__/graphql';
 import ExecutedWorkflowStatusLabels from '../executed-workflow-table/executed-workflow-status-labels';
 
 export type ExecutedWorkflowSearchQuery = {
-  isRootWorkflow: boolean,
-  from?: string,
-  to?: string,
-  status: string[],
-  workflowId: string[],
-  workflowType: string[],
-  workflowsPerPage: number
-}
+  isRootWorkflow: boolean;
+  from?: string;
+  to?: string;
+  status: string[];
+  workflowId: string[];
+  workflowType: string[];
+  workflowsPerPage: number;
+};
 
 type Props = {
   isFlat: boolean;
-  initialSearchValues: ExecutedWorkflowSearchQuery,
+  initialSearchValues: ExecutedWorkflowSearchQuery;
   onTableTypeChange: () => void;
   onSearchBoxSubmit: (filters: ExecutedWorkflowSearchQuery) => void;
 };
 
-const EXECUTED_WORKFLOW_POSSIBLE_STATUSES: ExecutedWorkflowStatus[] = ['COMPLETED', 'FAILED', 'PAUSED', 'RUNNING', 'TERMINATED', 'TIMED_OUT'];
+const EXECUTED_WORKFLOW_POSSIBLE_STATUSES: ExecutedWorkflowStatus[] = [
+  'COMPLETED',
+  'FAILED',
+  'PAUSED',
+  'RUNNING',
+  'TERMINATED',
+  'TIMED_OUT',
+];
 
-const ExecutedWorkflowSearchBox: FC<Props> = ({ onSearchBoxSubmit, onTableTypeChange, isFlat, initialSearchValues }) => {
+const ExecutedWorkflowSearchBox: FC<Props> = ({
+  onSearchBoxSubmit,
+  onTableTypeChange,
+  isFlat,
+  initialSearchValues,
+}) => {
   const { values, handleChange, handleReset, submitForm, setFieldValue } = useFormik<ExecutedWorkflowSearchQuery>({
     initialValues: initialSearchValues,
-    onSubmit: onSearchBoxSubmit
-  })
+    onSubmit: onSearchBoxSubmit,
+  });
 
   const handleOnStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const label = event.target.value;
 
-    setFieldValue('status', [... new Set([...values.status, label])])
-  }
+    setFieldValue('status', [...new Set([...values.status, label])]);
+  };
 
-  const handleOnStatusClick = (status: ExecutedWorkflowStatus | "UNKNOWN") => {
-    setFieldValue('status', values.status.filter((s) => s !== status));
-  }
+  const handleOnStatusClick = (status: ExecutedWorkflowStatus | 'UNKNOWN') => {
+    setFieldValue(
+      'status',
+      values.status.filter((s) => s !== status),
+    );
+  };
 
   return (
     <Card shadow="md" rounded="lg" backgroundColor="white" p={15}>
       <HStack alignItems="flex-end">
         <FormControl>
           <FormLabel>Workflow Name</FormLabel>
-          <Input
-            name="workflowType"
-            value={values.workflowType}
-            onChange={handleChange}
-          />
+          <Input name="workflowType" value={values.workflowType} onChange={handleChange} />
         </FormControl>
 
         <FormControl>
           <FormLabel>Workflow ID</FormLabel>
-          <Input
-            name="workflowId"
-            value={values.workflowId}
-            onChange={handleChange}
-          />
+          <Input name="workflowId" value={values.workflowId} onChange={handleChange} />
         </FormControl>
 
         <FormControl>
           <FormLabel>Workflow Status</FormLabel>
-          {values.status != null && values.status.length > 0 && <HStack mb={5}>{values.status.map((status) => (<ExecutedWorkflowStatusLabels status={status} onClick={handleOnStatusClick} key={status} />))}</HStack>}
+          {values.status != null && values.status.length > 0 && (
+            <HStack mb={5}>
+              {values.status.map((s) => {
+                if (
+                    s === 'PAUSED' ||
+                    s === 'TERMINATED' ||
+                    s === 'RUNNING' ||
+                    s === 'COMPLETED' ||
+                    s === 'FAILED' ||
+                    s === 'TIMED_OUT'
+                ) {
+                  return s;
+                }
+                return 'UNKNOWN';
+              }).map((status) => (
+                <ExecutedWorkflowStatusLabels status={status} onClick={handleOnStatusClick} key={status} />
+              ))}
+            </HStack>
+          )}
           <Select placeholder="Select option" value="" onChange={handleOnStatusChange}>
             {EXECUTED_WORKFLOW_POSSIBLE_STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -86,22 +112,12 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ onSearchBoxSubmit, onTableTypeCh
       <HStack mt={15}>
         <FormControl>
           <FormLabel>Start Time (From)</FormLabel>
-          <Input
-            name="from"
-            value={values.from}
-            onChange={handleChange}
-            type="datetime-local"
-          />
+          <Input name="from" value={values.from} onChange={handleChange} type="datetime-local" />
         </FormControl>
 
         <FormControl>
           <FormLabel>Start Time (To)</FormLabel>
-          <Input
-            name="to"
-            value={values.to || ""}
-            onChange={handleChange}
-            type="datetime-local"
-          />
+          <Input name="to" value={values.to || ''} onChange={handleChange} type="datetime-local" />
         </FormControl>
 
         <Spacer />
@@ -112,7 +128,7 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ onSearchBoxSubmit, onTableTypeCh
             name="workflowsPerPage"
             value={values.workflowsPerPage}
             placeholder="Select option"
-            onChange={(e) => setFieldValue("workflowsPerPage", Number(e.target.value))}
+            onChange={(e) => setFieldValue('workflowsPerPage', Number(e.target.value))}
           >
             {[10, 20, 50, 100].map((status) => (
               <option key={status} value={status}>
@@ -124,21 +140,27 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({ onSearchBoxSubmit, onTableTypeCh
       </HStack>
 
       <HStack mt={15} alignContent="start">
-        <FormControl maxWidth="max-content" display='flex' alignItems='center'>
-          <FormLabel htmlFor='isRootWorkflows' mb='0'>
+        <FormControl maxWidth="max-content" display="flex" alignItems="center">
+          <FormLabel htmlFor="isRootWorkflows" mb="0">
             Only root workflows
           </FormLabel>
-          <Switch id='isRootWorkflows' defaultValue={`${values.isRootWorkflow}`} isChecked={values.isRootWorkflow} onChange={handleChange} name="isRootWorkflow" />
+          <Switch
+            id="isRootWorkflows"
+            defaultValue={`${values.isRootWorkflow}`}
+            isChecked={values.isRootWorkflow}
+            onChange={handleChange}
+            name="isRootWorkflow"
+          />
         </FormControl>
 
         <span>|</span>
 
-        <FormControl maxWidth="max-content" display='flex' alignItems='center'>
-          <FormLabel htmlFor='table-type' mb='0' fontWeight={isFlat ? 'thin' : 'bold'}>
+        <FormControl maxWidth="max-content" display="flex" alignItems="center">
+          <FormLabel htmlFor="table-type" mb="0" fontWeight={isFlat ? 'thin' : 'bold'}>
             Hierarchical
           </FormLabel>
-          <Switch id='table-type' isChecked={isFlat} onChange={onTableTypeChange} colorScheme="gray" />
-          <FormLabel htmlFor='table-type' mb='0' ml={3} fontWeight={isFlat ? 'bold' : 'thin'}>
+          <Switch id="table-type" isChecked={isFlat} onChange={onTableTypeChange} colorScheme="gray" />
+          <FormLabel htmlFor="table-type" mb="0" ml={3} fontWeight={isFlat ? 'bold' : 'thin'}>
             Flat
           </FormLabel>
         </FormControl>

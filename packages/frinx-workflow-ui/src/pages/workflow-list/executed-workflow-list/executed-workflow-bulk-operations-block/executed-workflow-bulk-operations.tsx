@@ -1,13 +1,12 @@
 import React, { FC } from 'react';
 
-import { Button, Card, HStack, Heading, Menu, MenuButton, MenuItem, MenuList, Spacer, Spinner } from '@chakra-ui/react';
+import { Button, Card, HStack, Heading, Menu, MenuButton, MenuItem, MenuList, Spacer } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 
 type Props = {
   amountOfVisibleWorkflows: number;
   amountOfSelectedWorkflows: number;
-  onRestartWithCurrent: () => void;
-  onRestartWithLatest: () => void;
+  onRestart: () => void;
   onRetry: () => void;
   onResume: () => void;
   onTerminate: () => void;
@@ -18,8 +17,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
   amountOfVisibleWorkflows,
   amountOfSelectedWorkflows,
   onPause,
-  onRestartWithCurrent,
-  onRestartWithLatest,
+  onRestart,
   onResume,
   onRetry,
   onTerminate,
@@ -34,7 +32,9 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
     return (
       <Card p={15} bgColor="blue.200">
         <HStack>
-          <Heading size="lg" textColor="white">Selected {amountOfSelectedWorkflows} workflows</Heading>
+          <Heading size="lg" textColor="white">
+            Selected {amountOfSelectedWorkflows} workflows
+          </Heading>
 
           <Spacer />
 
@@ -43,8 +43,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
               Bulk actions
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={onRestartWithCurrent}>Restart with current definitions</MenuItem>
-              <MenuItem onClick={onRestartWithLatest}>Restart with latest definitions</MenuItem>
+              <MenuItem onClick={onRestart}>Restart</MenuItem>
               <MenuItem onClick={onRetry}>Retry</MenuItem>
               <MenuItem onClick={onResume}>Resume</MenuItem>
               <MenuItem onClick={onPause}>Pause</MenuItem>
@@ -52,7 +51,7 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
             </MenuList>
           </Menu>
         </HStack>
-      </Card >
+      </Card>
     );
   }
 };

@@ -1,26 +1,32 @@
+import { Container, Progress, Text, VStack } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { Container, Progress, VStack, Text } from '@chakra-ui/react';
 import { useSearchParams } from 'react-router-dom';
-import ExecutedWorkflowSearchBox, { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
-import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';
+import { gql, useMutation, useQuery } from 'urql';
+import { makeURLSearchParamsFromObject } from '../../../helpers/utils.helpers';
+import {
+  ExecutedWorkflow,
+  ExecutedWorkflowsQuery,
+  ExecutedWorkflowsQueryVariables,
+  ExecutedWorkflowStatus,
+} from '../../../__generated__/graphql';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
-import { gql, useQuery } from 'urql';
-import { ExecutedWorkflow, ExecutedWorkflowsQuery, ExecutedWorkflowsQueryVariables, ExecutedWorkflowStatus } from '../../../__generated__/graphql';
-import { makeArrayFromValue, makeURLSearchParamsFromObject } from '../../../helpers/utils.helpers';
-import moment from 'moment';
-import { omitNullValue } from '@frinx/shared/src';
+import ExecutedWorkflowSearchBox, {
+  ExecutedWorkflowSearchQuery,
+} from './executed-workflow-searchbox/executed-workflow-searchbox';
+import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';
+import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from './executed-workflow.helpers';
 
-export type SortProperty = { key: keyof ExecutedWorkflow, value: 'ASC' | 'DESC' };
+export type SortProperty = { key: keyof ExecutedWorkflow; value: 'ASC' | 'DESC' };
 
 export type ExecutedworkflowsFilter = {
-  isRootWorkflow: boolean,
-  from?: string,
-  to?: string,
-  status: ExecutedWorkflowStatus[] | ExecutedWorkflowStatus,
-  workflowId: string[] | string,
-  workflowType: string[] | string,
-  workflowsPerPage: number
-}
+  isRootWorkflow: boolean;
+  from?: string;
+  to?: string;
+  status: ExecutedWorkflowStatus[] | ExecutedWorkflowStatus;
+  workflowId: string[] | string;
+  workflowType: string[] | string;
+  workflowsPerPage: number;
+};
 
 const EXECUTED_WORKFLOW_QUERY = gql`
   query ExecutedWorkflows($pagination: PaginationArgs, $searchQuery: ExecutedWorkflowSearchInput) {
@@ -70,89 +76,87 @@ const BULK_RESUME_MUTATION = gql`
   }
 `;
 
-const ExecutedWorkflowList = () => {
-  const ctx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), [])
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [filter, setFilter] = useState<ExecutedWorkflowSearchQuery>(() => {
-    const from = searchParams.get('from');
-    const to = searchParams.get('to');
-    const workflowsPerPage = Number(searchParams.get('workflowsPerPage'));
-
-    return {
-      isRootWorkflow: Boolean(searchParams.get('isRootWorkflow')) ?? false,
-      status: makeArrayFromValue(searchParams.getAll('status')),
-      workflowId: makeArrayFromValue(searchParams.getAll('workflowId')),
-      workflowType: makeArrayFromValue(searchParams.getAll('workflowType')),
-      workflowsPerPage: workflowsPerPage > 0 ? workflowsPerPage : 20,
-      ...(from != null && { from: moment(new Date(from)).format('dd-MM-yyyyThh:mm') }),
-      ...(to != null && { to: moment(new Date(to)).format('dd-MM-yyyyThh:mm') })
+const BULK_RETRY_MUTATION = gql`
+  mutation BulkRetry($workflowIds: [String!]!) {
+    bulkRetryWorkflow(workflowIds: $workflowIds) {
+      bulkErrorResults
+      bulkSuccessfulResults
     }
-  });
+  }
+`;
+
+const BULK_TERMINATE_MUTATION = gql`
+  mutation BulkTerminate($workflowIds: [String!]!) {
+    bulkTerminateWorkflow(workflowIds: $workflowIds) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
+
+const BULK_RESTART_MUTATION = gql`
+  mutation BulkRestart($workflowIds: [String!]!) {
+    bulkRestartWorkflow(workflowIds: $workflowIds) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
+
+const ExecutedWorkflowList = () => {
+  const ctx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), []);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [filter, setFilter] = useState<ExecutedWorkflowSearchQuery>(makeFilterFromSearchParams(searchParams));
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
   const [isFlat, setIsFlat] = useState(false);
 
-  const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<ExecutedWorkflowsQuery, ExecutedWorkflowsQueryVariables>({
+  const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<
+    ExecutedWorkflowsQuery,
+    ExecutedWorkflowsQueryVariables
+  >({
     query: EXECUTED_WORKFLOW_QUERY,
-    variables: function() {
-      const status = filter.status.map((s) => {
-        if (s === 'PAUSED' || s === 'TERMINATED' || s === 'RUNNING' || s === 'COMPLETED' || s === 'FAILED' || s === 'TIMED_OUT') {
-          return s;
-        }
-        return null;
-      });
-
-      const result = {
-        pagination: {
-          size: filter?.workflowsPerPage ?? 20,
-          start: 0
-        },
-        searchQuery: {
-          ...(filter.isRootWorkflow != null && { isRootWorkflow: filter.isRootWorkflow }),
-          query: {
-            ...(filter.from != null && {
-              startTime: {
-                from: filter.from,
-                to: filter.to,
-              },
-            }),
-            ...(filter.status != null && filter.status.length > 0 && { status: status.filter(omitNullValue<ExecutedWorkflowStatus>) }),
-            ...(filter.workflowId != null && filter.workflowId.length > 0 && { workflowId: filter.workflowId }),
-            ...(filter.workflowType != null && filter.workflowType.length > 0 && { workflowType: filter.workflowType })
-          }
-        }
-      }
-
-      return result;
-    }(),
-    context: ctx
+    variables: makeSearchQueryVariableFromFilter(filter),
+    context: ctx,
   });
+
+  const [, onBulkPause] = useMutation(BULK_PAUSE_MUTATION);
+  const [, onBulkRetry] = useMutation(BULK_RETRY_MUTATION);
+  const [, onBulkResume] = useMutation(BULK_RESUME_MUTATION);
+  const [, onBulkRestart] = useMutation(BULK_RESTART_MUTATION);
+  const [, onBulkTerminate] = useMutation(BULK_TERMINATE_MUTATION);
 
   const handleOnWorkflowSelect = (workflowId: string) => {
     const isAlreadySelected = selectedWorkflows.includes(workflowId);
 
     if (isAlreadySelected) {
-      setSelectedWorkflows(selectedWorkflows.filter((selectedWorkflowId) => selectedWorkflowId !== workflowId))
+      setSelectedWorkflows(selectedWorkflows.filter((selectedWorkflowId) => selectedWorkflowId !== workflowId));
     } else {
-      setSelectedWorkflows([...selectedWorkflows, workflowId])
+      setSelectedWorkflows([...selectedWorkflows, workflowId]);
     }
-  }
+  };
 
   const handleOnAllWorkflowsSelect = () => {
     const areAllWorkflowsSelected = data?.executedWorkflows?.edges.length === selectedWorkflows.length;
 
-    if (data == null || data.executedWorkflows == null || data?.executedWorkflows?.edges == null || data?.executedWorkflows?.edges.length === 0) {
-      setSelectedWorkflows([])
+    if (
+      data == null ||
+      data.executedWorkflows == null ||
+      data?.executedWorkflows?.edges == null ||
+      data?.executedWorkflows?.edges.length === 0
+    ) {
+      setSelectedWorkflows([]);
 
-      return
+      return;
     }
 
     if (areAllWorkflowsSelected) {
-      setSelectedWorkflows([])
+      setSelectedWorkflows([]);
     } else {
-      setSelectedWorkflows(data.executedWorkflows.edges.map(({ node }) => node.id))
+      setSelectedWorkflows(data.executedWorkflows.edges.map(({ node }) => node.id));
     }
-  }
+  };
 
   const handleOnSort = ({ key, value }: SortProperty) => {
     if (key === sort.key && value === 'ASC') {
@@ -166,19 +170,14 @@ const ExecutedWorkflowList = () => {
     }
 
     setSort({ key, value: 'DESC' });
-  }
+  };
 
   const handleOnSearchBoxSubmit = (searchInput: ExecutedWorkflowSearchQuery) => {
     setFilter(searchInput);
 
-    const newSearchParams = makeURLSearchParamsFromObject({
-      ...searchInput,
-      isRootWorkflow: searchInput.isRootWorkflow.toString(),
-    })
+    const newSearchParams = makeURLSearchParamsFromObject(searchInput);
     setSearchParams(newSearchParams);
-  }
-
-  console.log(filter, data)
+  };
 
   return (
     <Container maxWidth={1200} mx="auto">
@@ -193,21 +192,19 @@ const ExecutedWorkflowList = () => {
         <ExecutedWorkflowBulkOperationsBlock
           amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
           amountOfSelectedWorkflows={selectedWorkflows.length}
-          onPause={() => { }}
-          onRetry={() => { }}
-          onResume={() => { }}
-          onTerminate={() => { }}
-          onRestartWithLatest={() => { }}
-          onRestartWithCurrent={() => { }}
+          onPause={() => {}}
+          onRetry={() => {}}
+          onResume={() => {}}
+          onTerminate={() => {}}
+          onRestart={() => {}}
         />
 
-        {!isLoadingWorkflows && (data == null || data.executedWorkflows == null || data.executedWorkflows.edges.length === 0) && (
-          <Text>There are no workflows</Text>
-        )}
+        {!isLoadingWorkflows &&
+          (data == null || data.executedWorkflows == null || data.executedWorkflows.edges.length === 0) && (
+            <Text>There are no workflows</Text>
+          )}
 
-        {error != null && (
-          <Text textColor="red">{JSON.stringify(error)}</Text>
-        )}
+        {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
 
         {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
 

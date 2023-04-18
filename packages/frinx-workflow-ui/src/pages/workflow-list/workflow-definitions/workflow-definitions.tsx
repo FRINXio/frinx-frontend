@@ -1,13 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import { Container, useDisclosure, Box } from '@chakra-ui/react';
-import { jsonParse } from '@frinx/shared/src';
-import { gql, useMutation, useQuery } from 'urql';
-import { debounce } from 'lodash';
-import { Task } from '@frinx/shared';
+import { Box, Container, useDisclosure } from '@chakra-ui/react';
 import Pagination from '@frinx/inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
-import WorkflowDefinitionsHeader from './workflow-definitions-header';
-import WorkflowDefinitionsModals from './workflow-definitions-modals';
-import WorkflowDefinitionsTable from './workflow-definitions-table';
+import { jsonParse, Task } from '@frinx/shared/src';
+import { debounce } from 'lodash';
+import React, { useMemo, useState } from 'react';
+import { gql, useMutation, useQuery } from 'urql';
 import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
 import {
   DeleteWorkflowMutation,
@@ -15,6 +11,9 @@ import {
   WorkflowLabelsQuery,
   WorkflowsQuery,
 } from '../../../__generated__/graphql';
+import WorkflowDefinitionsHeader from './workflow-definitions-header';
+import WorkflowDefinitionsModals from './workflow-definitions-modals';
+import WorkflowDefinitionsTable from './workflow-definitions-table';
 import { Workflow } from './workflow-types';
 
 type DescriptionJSON = { labels: string[]; description: string };

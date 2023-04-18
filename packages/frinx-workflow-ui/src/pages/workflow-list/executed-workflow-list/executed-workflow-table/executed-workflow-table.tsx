@@ -26,7 +26,11 @@ const ExecutedWorkflowTable: FC<Props> = ({
   sort,
 }) => {
   const areAllWorkflowsSelected = workflows.executedWorkflows?.edges.length === selectedWorkflows.length;
-  const areThereAnyExecutedWorkflows = workflows != null && workflows.executedWorkflows != null && workflows.executedWorkflows?.edges != null && workflows.executedWorkflows.edges.length > 0;
+  const areThereAnyExecutedWorkflows =
+    workflows != null &&
+    workflows.executedWorkflows != null &&
+    workflows.executedWorkflows?.edges != null &&
+    workflows.executedWorkflows.edges.length > 0;
 
   return (
     <Box marginBottom={10}>
@@ -37,11 +41,9 @@ const ExecutedWorkflowTable: FC<Props> = ({
           onSortPropertyClick={onSortPropertyClick}
           sort={sort}
         />
-        {!areThereAnyExecutedWorkflows && (
-          <Text>There no executed workflows</Text>
-        )}
+        {!areThereAnyExecutedWorkflows && <Text>There no executed workflows</Text>}
 
-        {(workflows != null && workflows.executedWorkflows != null) && (
+        {workflows != null && workflows.executedWorkflows != null && (
           <Tbody fontSize={13} textAlign="left">
             {isFlat ? (
               <ExecutedWorkflowFlatTableItem

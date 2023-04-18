@@ -1,10 +1,16 @@
-export function makeURLSearchParamsFromObject<T extends (string | number | string[])>(obj: Record<string, T>): URLSearchParams {
+export function makeURLSearchParamsFromObject<T extends string | number | string[] | boolean>(
+  obj: Record<string, T>,
+): URLSearchParams {
   const searchParams = new URLSearchParams();
   const objEntries = Object.entries(obj);
 
-  for (const [key, value] of objEntries) {
-    searchParams.append(key, `${value}`);
-  }
+  objEntries.forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((val) => searchParams.append(key, val));
+    } else {
+      searchParams.append(key, value.toString());
+    }
+  });
 
   return searchParams;
 }
@@ -42,14 +48,11 @@ export const sortDescBy = (key: string) => {
   };
 };
 
-export function flattenObject<T extends object>(
-  obj: T,
-  prefix = ""
-): Record<string, string | string[]> {
+export function flattenObject<T extends object>(obj: T, prefix = ''): Record<string, string | string[]> {
   return Object.entries(obj).reduce((acc, [key, value]) => {
     const fullKey = prefix.length > 0 ? `${prefix}-${key}` : key;
 
-    if (typeof value === "object" && value != null) {
+    if (typeof value === 'object' && value != null) {
       if (Array.isArray(value)) {
         return { ...acc, [fullKey]: value.map((val) => `${val}`) };
       } else {

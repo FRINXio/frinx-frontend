@@ -75,7 +75,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, onWorkflo
               <Checkbox
                 isChecked={selectedWorkflows.includes(item.id)}
                 onChange={() => {
-                  onWorkflowSelect(item.id)
+                  onWorkflowSelect(item.id);
                 }}
               />
             </Td>
@@ -85,7 +85,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, onWorkflo
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
               }}
-              title={item.workflowId ?? "Unknown workflow"}
+              title={item.workflowId ?? 'Unknown workflow'}
               textColor="blue.500"
             >
               {isExpanded ? (
@@ -100,10 +100,12 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, onWorkflo
 
             <Td>{moment(item.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
             <Td>{item.endTime ? moment(item.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
-            <Td><ExecutedWorkflowStatusLabels status={item.status ?? 'UNKNOWN'} /></Td>
+            <Td>
+              <ExecutedWorkflowStatusLabels status={item.status ?? 'UNKNOWN'} />
+            </Td>
           </Tr>
 
-          {isExpanded && <ExecutedSubWorkflowTable subWorkflows={subWorkflows} workflowId={item.workflowId ?? ""} />}
+          {isExpanded && <ExecutedSubWorkflowTable subWorkflows={subWorkflows} workflowId={item.workflowId ?? ''} />}
         </Fragment>
       ))}
     </>

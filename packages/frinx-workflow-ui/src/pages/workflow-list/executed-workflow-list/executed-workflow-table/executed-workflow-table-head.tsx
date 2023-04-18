@@ -10,7 +10,12 @@ type Props = {
   onSelectAllWorkflows: () => void;
 };
 
-const ExecutedWorkflowTableHead: FC<Props> = ({ onSelectAllWorkflows, areAllWorkflowsSelected, onSortPropertyClick, sort }) => (
+const ExecutedWorkflowTableHead: FC<Props> = ({
+  onSelectAllWorkflows,
+  areAllWorkflowsSelected,
+  onSortPropertyClick,
+  sort,
+}) => (
   <Thead>
     <Tr>
       <Th>
