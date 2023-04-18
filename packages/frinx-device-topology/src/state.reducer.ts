@@ -3,20 +3,25 @@ import { getEdgesWithDiff, getNodesWithDiff, GraphEdgeWithDiff, GraphNodeWithDif
 import {
   getDefaultPositionsMap,
   getInterfacesPositions,
+  GrahpNetNodeInterface,
   GraphEdge,
+  GraphNetNode,
   GraphNode,
+  GraphNodeInterface,
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 
+export type TopologyLayer = 'LLDP' | 'BGP-LS';
 export type State = {
+  topologyLayer: TopologyLayer;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
-  interfaceGroupPositions: PositionGroupsMap;
-  selectedNode: GraphNode | null;
+  interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
+  selectedNode: (GraphNode | GraphNetNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -24,9 +29,14 @@ export type State = {
   unconfirmedSelectedNodeIds: string[];
   selectedNodeIds: string[];
   commonNodeIds: string[];
+  netNodes: GraphNetNode[];
+  netEdges: GraphEdgeWithDiff[];
+  netNodePositions: Record<string, Position>;
+  netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
 };
 
 export const initialState: State = {
+  topologyLayer: 'LLDP',
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -40,13 +50,21 @@ export const initialState: State = {
   unconfirmedSelectedNodeIds: [],
   selectedNodeIds: [],
   commonNodeIds: [],
+  netNodes: [],
+  netEdges: [],
+  netNodePositions: {},
+  netInterfaceGroupPositions: {},
 };
 
 export function stateReducer(state: State, action: StateAction): State {
   return produce(state, (acc) => {
     switch (action.type) {
       case 'SET_NODES_AND_EDGES': {
-        const positionsMap = getDefaultPositionsMap(action.payload.nodes, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphNodeInterface, GraphNode>(
+          { nodes: action.payload.nodes, edges: action.payload.edges },
+          (n) => n.device.name,
+          (n) => n.device.deviceSize,
+        );
         acc.nodes = action.payload.nodes.map((n) => ({ ...n, change: 'NONE' }));
         acc.edges = action.payload.edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.nodePositions = positionsMap.nodes;
@@ -55,11 +73,15 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'UPDATE_NODE_POSITION': {
         acc.nodePositions[action.nodeId] = action.position;
-        acc.interfaceGroupPositions = getInterfacesPositions({
-          nodes: acc.nodes,
-          edges: acc.edges,
-          positionMap: acc.nodePositions,
-        });
+        acc.interfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, GraphNode>(
+          {
+            nodes: acc.nodes,
+            edges: acc.edges,
+            positionMap: acc.nodePositions,
+          },
+          (n) => n.device.name,
+          (n) => n.device.deviceSize,
+        );
         return acc;
       }
       case 'SET_SELECTED_NODE': {
@@ -96,7 +118,11 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_BACKUP_NODES_AND_EDGES': {
         const allNodes = getNodesWithDiff(acc.nodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.edges, action.payload.edges);
-        const positionsMap = getDefaultPositionsMap(allNodes, allEdges);
+        const positionsMap = getDefaultPositionsMap<GraphNodeInterface, GraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.device.name,
+          (n) => n.device.deviceSize,
+        );
         acc.nodes = allNodes;
         acc.edges = allEdges;
         acc.nodePositions = positionsMap.nodes;
@@ -123,6 +149,40 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_COMMON_NODE_IDS': {
         acc.commonNodeIds = action.nodeIds;
+        return acc;
+      }
+      case 'SET_NET_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GrahpNetNodeInterface, GraphNetNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.netNodes = nodes;
+        acc.netEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.netNodePositions = positionMap.nodes;
+        acc.netInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_TOPOLOGY_LAYER': {
+        acc.topologyLayer = action.layer;
+        acc.selectedEdge = null;
+        acc.selectedNode = null;
+        acc.connectedNodeIds = [];
+        return acc;
+      }
+      case 'SET_SELECTED_NET_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.netEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
         return acc;
       }
       default:

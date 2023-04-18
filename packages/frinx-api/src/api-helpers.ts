@@ -113,8 +113,10 @@ export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
 
         if (authToken != null) {
           return {
-            ...headers,
-            Authorization: `Bearer ${authToken}`,
+            headers: {
+              ...headers,
+              Authorization: `Bearer ${authToken}`,
+            },
           };
         }
         return {

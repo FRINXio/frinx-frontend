@@ -1,10 +1,13 @@
-import { Box, Container, Flex, Heading } from '@chakra-ui/react';
 import { difference } from 'lodash';
-import React, { useCallback, useEffect, VoidFunctionComponent } from 'react';
-import { gql, useMutation, useQuery } from 'urql';
-import LabelsFilter from '../../components/labels-filter/labels-filter';
-import VersionSelect from '../../components/version-select/version-select';
-import { setCommonNodeIds, setMode, setSelectedNodeIdsToFindCommonNode } from '../../state.actions';
+import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
+import { gql, useClient, useMutation, useQuery } from 'urql';
+import {
+  getBackupNodesAndEdges,
+  getNodesAndEdges,
+  setCommonNodeIds,
+  setMode,
+  setSelectedNodeIdsToFindCommonNode,
+} from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import {
   TopologyCommonNodesQuery,
@@ -32,12 +35,13 @@ const TOPOLOGY_COMMON_NODES = gql`
 `;
 
 const TopologyContainer: VoidFunctionComponent = () => {
+  const client = useClient();
+  const intervalRef = useRef<number>();
   const { state, dispatch } = useStateContext();
-  const { mode, selectedNodeIds, unconfirmedSelectedNodeIds } = state;
+  const { selectedNodeIds, unconfirmedSelectedNodeIds, selectedLabels, selectedVersion, topologyLayer } = state;
   const [, updatePosition] = useMutation<UpdatePositionMutation, UpdatePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
-
   const [{ data: commonNodesData, fetching: isCommonNodesFetching }] = useQuery<
     TopologyCommonNodesQuery,
     TopologyCommonNodesQueryVariables
@@ -48,6 +52,26 @@ const TopologyContainer: VoidFunctionComponent = () => {
     },
     pause: selectedNodeIds.length < 2 && difference(unconfirmedSelectedNodeIds, selectedNodeIds).length > 0,
   });
+
+  useEffect(() => {
+    if (selectedVersion == null) {
+      intervalRef.current = window.setInterval(() => {
+        dispatch(getNodesAndEdges(client, selectedLabels));
+      }, 10000);
+      dispatch(getNodesAndEdges(client, selectedLabels));
+    }
+
+    return () => {
+      window.clearInterval(intervalRef.current);
+    };
+  }, [client, dispatch, selectedLabels, selectedVersion, topologyLayer]);
+
+  useEffect(() => {
+    if (selectedVersion != null) {
+      window.clearInterval(intervalRef.current);
+      dispatch(getBackupNodesAndEdges(client, selectedVersion));
+    }
+  }, [client, dispatch, selectedVersion]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
     updatePosition({
@@ -101,28 +125,11 @@ const TopologyContainer: VoidFunctionComponent = () => {
   }, [commonNodesData, dispatch]);
 
   return (
-    <Container maxWidth={1280} cursor={mode === 'NORMAL' ? 'default' : 'not-allowed'}>
-      <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h1" size="xl">
-          Device topology
-        </Heading>
-      </Flex>
-      <Flex gridGap={4}>
-        <Box flex={1} paddingBottom="24px">
-          <VersionSelect />
-        </Box>
-        <Box flex={1}>
-          <LabelsFilter />
-        </Box>
-      </Flex>
-      <Box>
-        <TopologyGraph
-          onNodePositionUpdate={handleNodePositionUpdate}
-          onCommonNodesSearch={handleCommonNodesSearch}
-          isCommonNodesFetching={isCommonNodesFetching}
-        />
-      </Box>
-    </Container>
+    <TopologyGraph
+      onNodePositionUpdate={handleNodePositionUpdate}
+      onCommonNodesSearch={handleCommonNodesSearch}
+      isCommonNodesFetching={isCommonNodesFetching}
+    />
   );
 };
 

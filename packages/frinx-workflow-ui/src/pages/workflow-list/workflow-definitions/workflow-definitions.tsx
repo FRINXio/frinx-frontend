@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Container, useDisclosure, Box } from '@chakra-ui/react';
 import { jsonParse } from '@frinx/shared/src';
-import { gql, useQuery } from 'urql';
+import { gql, useMutation, useQuery } from 'urql';
 import { debounce } from 'lodash';
 import { Task } from '@frinx/shared';
 import Pagination from '@frinx/inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
@@ -9,13 +9,18 @@ import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
 import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
-import { WorkflowLabelsQuery, WorkflowsQuery } from '../../../__generated__/graphql';
+import {
+  DeleteWorkflowMutation,
+  DeleteWorkflowMutationVariables,
+  WorkflowLabelsQuery,
+  WorkflowsQuery,
+} from '../../../__generated__/graphql';
 import { Workflow } from './workflow-types';
 
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
   keyword: string[] | null;
-  labels: string[] | null;
+  labels: string[] | [];
 };
 
 const WORKFLOWS_QUERY = gql`
@@ -53,13 +58,23 @@ const WORKFLOW_LABELS_QUERY = gql`
   }
 `;
 
+const WORKFLOW_DELETE_MUTATION = gql`
+  mutation DeleteWorkflow($name: String!, $version: Int!) {
+    deleteWorkflow(name: $name, version: $version) {
+      workflow {
+        id
+      }
+    }
+  }
+`;
+
 const WorkflowDefinitions = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
   // TODO: FD-493 this is redundant because we can use the labels from filter state
-  const [labels, setLabels] = useState<string[]>([]);
   const [filter, setFilter] = useState<WorkflowFilter>({
     keyword: null,
-    labels: null,
+    labels: [],
   });
   const [activeWf, setActiveWf] = useState<Workflow>();
 
@@ -77,11 +92,16 @@ const WorkflowDefinitions = () => {
       ...paginationArgs,
       filter,
     },
+    context,
   });
 
   const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
     query: WORKFLOW_LABELS_QUERY,
   });
+
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+    WORKFLOW_DELETE_MUTATION,
+  );
 
   const debouncedKeywordFilter = useMemo(
     () =>
@@ -90,6 +110,14 @@ const WorkflowDefinitions = () => {
       }, 500),
     [],
   );
+
+  const handleDeleteWorkflow = async (workflow: Workflow) => {
+    const { name, version } = workflow;
+    await deleteWorkflow({
+      name,
+      version: version || 1,
+    });
+  };
 
   const updateFavourite = (workflow: Workflow) => {
     let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
@@ -145,11 +173,7 @@ const WorkflowDefinitions = () => {
         executeWorkflowModal={inputParametersModal}
         scheduledWorkflowModal={schedulingModal}
         activeWorkflow={activeWf}
-        getData={() => {
-          // TODO: FD-493 we can remove the getData function
-          // https://github.com/FRINXio/frinx-frontend/blob/main/packages/frinx-resource-manager/src/pages/resource-types-page/resource-types-page.tsx#L53
-          // use context in the useQuery hook provided link can be used as inspiration
-        }}
+        onDeleteWorkflow={handleDeleteWorkflow}
         workflows={workflows}
       />
       <WorkflowDefinitionsHeader
@@ -159,10 +183,9 @@ const WorkflowDefinitions = () => {
           setKeywords(value);
           debouncedKeywordFilter(value);
         }}
-        labels={labels}
+        labels={filter.labels}
         onLabelsChange={(newLabels) => {
           const newLabelsArray = [...new Set(newLabels)];
-          setLabels(newLabelsArray);
           setFilter((f) => ({
             ...f,
             labels: newLabelsArray,
@@ -170,10 +193,9 @@ const WorkflowDefinitions = () => {
         }}
         onClearSearch={() => {
           setKeywords('');
-          setLabels([]);
           setFilter({
             keyword: null,
-            labels: null,
+            labels: [],
           });
         }}
       />
@@ -188,9 +210,7 @@ const WorkflowDefinitions = () => {
         setActiveWorkflow={setActiveWf}
         onFavoriteClick={updateFavourite}
         onLabelClick={(label) => {
-          // TODO: FD-492 we ae handling only the labels state that is redundant and we are not updating the filter labels.
-          // That causes when user clicks on label in table nothing will happen... you need to use setFilter function
-          setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
+          setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}
         allLabels={labelsData.workflowLabels}
       />

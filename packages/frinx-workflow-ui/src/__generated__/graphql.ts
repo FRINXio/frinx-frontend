@@ -831,6 +831,7 @@ export type Query = {
   labels: LabelConnection;
   locations: LocationConnection;
   node: Maybe<Node>;
+  taskDefinitions: Array<TaskDefinition>;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
   topologyVersionData: TopologyVersionData;
@@ -944,6 +945,11 @@ export type ResetConfigPayload = {
   dataStore: DataStore;
 };
 
+export type RetryLogic =
+  | 'EXPONENTIAL_BACKOFF'
+  | 'FIXED'
+  | 'LINEAR_BACKOFF';
+
 export type RevertChangesPayload = {
   __typename?: 'RevertChangesPayload';
   isOk: Scalars['Boolean'];
@@ -985,6 +991,30 @@ export type SyncFromNetworkPayload = {
   dataStore: Maybe<DataStore>;
 };
 
+export type TaskDefinition = {
+  __typename?: 'TaskDefinition';
+  concurrentExecLimit: Maybe<Scalars['Int']>;
+  createdAt: Maybe<Scalars['String']>;
+  createdBy: Maybe<Scalars['String']>;
+  description: Maybe<Scalars['String']>;
+  inputKeys: Maybe<Array<Scalars['String']>>;
+  inputTemplate: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  outputKeys: Maybe<Array<Scalars['String']>>;
+  ownerEmail: Maybe<Scalars['String']>;
+  pollTimeoutSeconds: Maybe<Scalars['Int']>;
+  rateLimitFrequencyInSeconds: Maybe<Scalars['Int']>;
+  rateLimitPerFrequency: Maybe<Scalars['Int']>;
+  responseTimeoutSeconds: Maybe<Scalars['Int']>;
+  retryCount: Maybe<Scalars['Int']>;
+  retryDelaySeconds: Maybe<Scalars['Int']>;
+  retryLogic: Maybe<RetryLogic>;
+  timeoutPolicy: Maybe<TaskTimeoutPolicy>;
+  timeoutSeconds: Scalars['Int'];
+  updatedAt: Maybe<Scalars['String']>;
+  updatedBy: Maybe<Scalars['String']>;
+};
+
 export type TaskInput = {
   asyncComplete?: InputMaybe<Scalars['Boolean']>;
   decisionCases?: InputMaybe<Scalars['String']>;
@@ -1001,6 +1031,11 @@ export type TaskInput = {
   type?: InputMaybe<Scalars['String']>;
   workflowTaskType?: InputMaybe<Array<InputMaybe<WorkflowTaskType>>>;
 };
+
+export type TaskTimeoutPolicy =
+  | 'ALERT_ONLY'
+  | 'RETRY'
+  | 'TIME_OUT_WF';
 
 export type TimeoutPolicy =
   | 'ALERT_ONLY'
@@ -1249,3 +1284,11 @@ export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type WorkflowLabelsQuery = { __typename?: 'Query', workflowLabels: Array<string> };
+
+export type DeleteWorkflowMutationVariables = Exact<{
+  name: Scalars['String'];
+  version: Scalars['Int'];
+}>;
+
+
+export type DeleteWorkflowMutation = { __typename?: 'Mutation', deleteWorkflow: { __typename?: 'DeleteWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };
