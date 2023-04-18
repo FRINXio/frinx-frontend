@@ -82,21 +82,23 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({
           <FormLabel>Workflow Status</FormLabel>
           {values.status != null && values.status.length > 0 && (
             <HStack mb={5}>
-              {values.status.map((s) => {
-                if (
+              {values.status
+                .map((s) => {
+                  if (
                     s === 'PAUSED' ||
                     s === 'TERMINATED' ||
                     s === 'RUNNING' ||
                     s === 'COMPLETED' ||
                     s === 'FAILED' ||
                     s === 'TIMED_OUT'
-                ) {
-                  return s;
-                }
-                return 'UNKNOWN';
-              }).map((status) => (
-                <ExecutedWorkflowStatusLabels status={status} onClick={handleOnStatusClick} key={status} />
-              ))}
+                  ) {
+                    return s;
+                  }
+                  return 'UNKNOWN';
+                })
+                .map((status) => (
+                  <ExecutedWorkflowStatusLabels status={status} onClick={handleOnStatusClick} key={status} />
+                ))}
             </HStack>
           )}
           <Select placeholder="Select option" value="" onChange={handleOnStatusChange}>

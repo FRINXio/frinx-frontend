@@ -1,4 +1,5 @@
 import { Container, Progress, Text, VStack } from '@chakra-ui/react';
+import { useNotifications } from '@frinx/shared/src';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
@@ -106,6 +107,7 @@ const BULK_RESTART_MUTATION = gql`
 const ExecutedWorkflowList = () => {
   const ctx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), []);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { addToastNotification } = useNotifications();
 
   const [filter, setFilter] = useState<ExecutedWorkflowSearchQuery>(makeFilterFromSearchParams(searchParams));
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
@@ -179,6 +181,51 @@ const ExecutedWorkflowList = () => {
     setSearchParams(newSearchParams);
   };
 
+  const handleOnBulkOperation = (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
+    let wasSuccessfull = false;
+
+    if (selectedWorkflows == null || selectedWorkflows.length === 0) {
+      addToastNotification({
+        content: 'You need to selected atleast one workflow',
+        type: 'error',
+      });
+
+      return;
+    }
+
+    switch (action) {
+      case 'pause':
+        onBulkPause(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        break;
+      case 'restart':
+        onBulkRestart(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        break;
+      case 'resume':
+        onBulkResume(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        break;
+      case 'retry':
+        onBulkRetry(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        break;
+      case 'terminate':
+        onBulkTerminate(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        break;
+      default:
+        break;
+    }
+
+    if (wasSuccessfull) {
+      addToastNotification({
+        content: 'Bulk operation executed successfully',
+        type: 'success',
+      });
+    } else {
+      addToastNotification({
+        content: 'We had a problem to execute the bulk operation. Try again please.',
+        type: 'error',
+      });
+    }
+  };
+
   return (
     <Container maxWidth={1200} mx="auto">
       <VStack spacing={10} alignItems="stretch">
@@ -192,11 +239,21 @@ const ExecutedWorkflowList = () => {
         <ExecutedWorkflowBulkOperationsBlock
           amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
           amountOfSelectedWorkflows={selectedWorkflows.length}
-          onPause={() => {}}
-          onRetry={() => {}}
-          onResume={() => {}}
-          onTerminate={() => {}}
-          onRestart={() => {}}
+          onPause={() => {
+            handleOnBulkOperation('pause');
+          }}
+          onRetry={() => {
+            handleOnBulkOperation('retry');
+          }}
+          onResume={() => {
+            handleOnBulkOperation('resume');
+          }}
+          onTerminate={() => {
+            handleOnBulkOperation('terminate');
+          }}
+          onRestart={() => {
+            handleOnBulkOperation('restart');
+          }}
         />
 
         {!isLoadingWorkflows &&
