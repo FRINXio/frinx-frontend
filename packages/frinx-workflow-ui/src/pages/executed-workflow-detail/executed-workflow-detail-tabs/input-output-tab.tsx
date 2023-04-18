@@ -1,8 +1,8 @@
 import React, { VoidFunctionComponent, useState } from 'react';
 import { IconButton, Button, SimpleGrid, Box, Stack, Textarea, Text, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import ExternalStorageModal from './external-storage-modal';
 import unescapeJs from 'unescape-js';
+import ExternalStorageModal from './external-storage-modal';
 
 type Props = {
   isEscaped: boolean;
