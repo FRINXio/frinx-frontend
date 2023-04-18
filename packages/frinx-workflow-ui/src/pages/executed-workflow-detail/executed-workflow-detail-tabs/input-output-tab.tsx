@@ -4,7 +4,6 @@ import FeatherIcon from 'feather-icons-react';
 import ExternalStorageModal from './external-storage-modal';
 import unescapeJs from 'unescape-js';
 
-
 type Props = {
   isEscaped: boolean;
   input: Record<string, string>;
@@ -26,38 +25,38 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
 }) => {
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
 
-    const isJson = (data: string) => {
-      try {
-        JSON.parse(data);
-      } catch (e) {
-        return false;
-      }
-      return true;
-    };
+  const isJson = (data: string) => {
+    try {
+      JSON.parse(data);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  };
 
-    const replaceJsonAndArray = (key: string, value: string) => {
-      if (Number(value)) {
-        return value;
-      }
-      if (isJson(value) || Array.isArray(value)) {
-        return JSON.parse(value);
-      }
+  const replaceJsonAndArray = (key: string, value: string) => {
+    if (Number(value)) {
       return value;
-    };
+    }
+    if (isJson(value) || Array.isArray(value)) {
+      return JSON.parse(value);
+    }
+    return value;
+  };
 
-    const getJSON = (data: Record<string, unknown> | unknown) => {
-      return isEscaped
-        ? JSON.stringify(data, replaceJsonAndArray, 2)
-            .replace(/\\n/g, '\\n')
-            .replace(/\\'/g, "\\'")
-            .replace(/\\"/g, '\\"')
-            .replace(/\\&/g, '\\&')
-            .replace(/\\r/g, '\\r')
-            .replace(/\\t/g, '\\t')
-            .replace(/\\b/g, '\\b')
-            .replace(/\\f/g, '\\f')
-        : unescapeJs(JSON.stringify(data, replaceJsonAndArray, 2));
-    };
+  const getJSON = (data: Record<string, unknown> | unknown) => {
+    return isEscaped
+      ? JSON.stringify(data, replaceJsonAndArray, 2)
+          .replace(/\\n/g, '\\n')
+          .replace(/\\'/g, "\\'")
+          .replace(/\\"/g, '\\"')
+          .replace(/\\&/g, '\\&')
+          .replace(/\\r/g, '\\r')
+          .replace(/\\t/g, '\\t')
+          .replace(/\\b/g, '\\b')
+          .replace(/\\f/g, '\\f')
+      : unescapeJs(JSON.stringify(data, replaceJsonAndArray, 2));
+  };
 
   return (
     <>
