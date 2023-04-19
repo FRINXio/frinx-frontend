@@ -1,13 +1,13 @@
+import { orderBy } from 'lodash';
 import moment from 'moment';
-import { makeArrayFromValue, sortAscBy, sortDescBy } from '../../../helpers/utils.helpers';
-import { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
+import { makeArrayFromValue } from '../../../helpers/utils.helpers';
 import {
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
-  ExecutedWorkflowStatus
+  ExecutedWorkflowStatus,
 } from '../../../__generated__/graphql';
-import { SortProperty } from "./executed-workflow-list";
-import { orderBy } from 'lodash';
+import { SortProperty } from './executed-workflow-list';
+import { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
 
 export function makeSearchQueryVariableFromFilter(
   filter: ExecutedWorkflowSearchQuery,
@@ -43,14 +43,14 @@ export function makeSearchQueryVariableFromFilter(
         }),
         ...(filter.status != null &&
           filter.status.length > 0 && {
-          status: status.reduce((acc, s) => {
-            if (s != null) {
-              acc.push(s);
-            }
+            status: status.reduce((acc, s) => {
+              if (s != null) {
+                acc.push(s);
+              }
 
-            return acc;
-          }, initialStatus),
-        }),
+              return acc;
+            }, initialStatus),
+          }),
         ...(filter.workflowId != null && filter.workflowId.length > 0 && { workflowId: filter.workflowId }),
         ...(filter.workflowType != null && filter.workflowType.length > 0 && { workflowType: filter.workflowType }),
       },
@@ -74,9 +74,12 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
   };
 }
 
-type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>['edges']
+type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>['edges'];
 
-export function sortExecutedWorkflows(workflows: GeneratedExecutedWorkflows, sort: SortProperty): GeneratedExecutedWorkflows {
+export function sortExecutedWorkflows(
+  workflows: GeneratedExecutedWorkflows,
+  sort: SortProperty,
+): GeneratedExecutedWorkflows {
   if (sort.value === 'ASC') {
     switch (sort.key) {
       case 'startTime':

@@ -21,9 +21,7 @@ import {
   ExecutedWorkflowStatus,
 } from '../../../__generated__/graphql';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
-import ExecutedWorkflowSearchBox, {
-  ExecutedWorkflowSearchQuery,
-} from './executed-workflow-searchbox/executed-workflow-searchbox';
+import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';
 import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from './executed-workflow.helpers';
 
@@ -111,7 +109,6 @@ const ExecutedWorkflowList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToastNotification } = useNotifications();
 
-  const [filter, setFilter] = useState<ExecutedWorkflowSearchQuery>(makeFilterFromSearchParams(searchParams));
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
   const [isFlat, setIsFlat] = useState(false);
@@ -121,7 +118,7 @@ const ExecutedWorkflowList = () => {
     ExecutedWorkflowsQueryVariables
   >({
     query: EXECUTED_WORKFLOW_QUERY,
-    variables: makeSearchQueryVariableFromFilter(filter),
+    variables: makeSearchQueryVariableFromFilter(makeFilterFromSearchParams(searchParams)),
     context: executedWorkflowsCtx,
   });
 
@@ -173,13 +170,6 @@ const ExecutedWorkflowList = () => {
     setSort({ key, value: 'DESC' });
   };
 
-  const handleOnSearchBoxSubmit = (searchInput: ExecutedWorkflowSearchQuery) => {
-    setFilter(searchInput);
-
-    const newSearchParams = makeURLSearchParamsFromObject(searchInput);
-    setSearchParams(newSearchParams);
-  };
-
   const handleOnBulkOperation = async (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
     let wasSuccessfull = false;
 
@@ -194,19 +184,34 @@ const ExecutedWorkflowList = () => {
 
     switch (action) {
       case 'pause':
-        wasSuccessfull = await onBulkPause({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkPause(
+          { workflowIds: selectedWorkflows },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
         break;
       case 'restart':
-        wasSuccessfull = await onBulkRestart({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkRestart(
+          { workflowIds: selectedWorkflows },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
         break;
       case 'resume':
-        wasSuccessfull = await onBulkResume({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkResume(
+          { workflowIds: selectedWorkflows },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
         break;
       case 'retry':
-        wasSuccessfull = await onBulkRetry({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkRetry(
+          { workflowIds: selectedWorkflows },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
         break;
       case 'terminate':
-        wasSuccessfull = await onBulkTerminate({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkTerminate(
+          { workflowIds: selectedWorkflows },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
         break;
       default:
         break;
@@ -229,10 +234,10 @@ const ExecutedWorkflowList = () => {
     <Container maxWidth={1200} mx="auto">
       <VStack spacing={10} alignItems="stretch">
         <ExecutedWorkflowSearchBox
-          onSearchBoxSubmit={handleOnSearchBoxSubmit}
+          onSearchBoxSubmit={(searchInput) => setSearchParams(makeURLSearchParamsFromObject(searchInput))}
           onTableTypeChange={() => setIsFlat((prev) => !prev)}
           isFlat={isFlat}
-          initialSearchValues={filter}
+          initialSearchValues={makeFilterFromSearchParams(searchParams)}
         />
 
         <ExecutedWorkflowBulkOperationsBlock

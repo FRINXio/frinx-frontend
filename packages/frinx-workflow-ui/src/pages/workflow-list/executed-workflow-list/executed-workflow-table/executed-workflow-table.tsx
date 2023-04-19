@@ -27,8 +27,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
 }) => {
   const areAllWorkflowsSelected = workflows.executedWorkflows?.edges.length === selectedWorkflows.length;
   const areThereAnyExecutedWorkflows =
-    workflows.executedWorkflows != null &&
-    workflows.executedWorkflows.edges.length > 0;
+    workflows.executedWorkflows != null && workflows.executedWorkflows.edges.length > 0;
 
   return (
     <Box marginBottom={10}>

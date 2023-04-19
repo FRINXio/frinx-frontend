@@ -43,7 +43,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, sort, onW
   >({
     query: WORKFLOW_INSTANCE_DETAIL_QUERY,
     variables: {
-      workflowInstanceDetailId: workflowInstanceDetailId ?? "",
+      workflowInstanceDetailId: workflowInstanceDetailId ?? '',
     },
     context: workflowInstanceDetailCtx,
   });
@@ -52,9 +52,9 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, sort, onW
     if (workflowId !== workflowInstanceDetailId) {
       setWorkflowInstanceDetailId(workflowId);
     } else {
-      setWorkflowInstanceDetailId(null)
+      setWorkflowInstanceDetailId(null);
     }
-  }
+  };
 
   return (
     <>
@@ -62,10 +62,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, sort, onW
         <Fragment key={item.workflowId}>
           <Tr>
             <Td>
-              <Checkbox
-                isChecked={selectedWorkflows.includes(item.id)}
-                onChange={() => onWorkflowSelect(item.id)}
-              />
+              <Checkbox isChecked={selectedWorkflows.includes(item.id)} onChange={() => onWorkflowSelect(item.id)} />
             </Td>
             <Td
               style={{
@@ -75,7 +72,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, sort, onW
               }}
               title={item.workflowId ?? 'Unknown workflow'}
               textColor="blue.500"
-              cursor='pointer'
+              cursor="pointer"
               onClick={() => handleOnShowSubWorkflows(item.id)}
             >
               {item.id === workflowInstanceDetailId ? (
@@ -95,9 +92,13 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, sort, onW
             </Td>
           </Tr>
 
-          {workflowInstanceDetailId != null && workflowInstanceDetailId === item.id && workflowInstanceDetailError != null && (
-            <Tr><Td>We had a problem to load subworkflows of selected workflow</Td></Tr>
-          )}
+          {workflowInstanceDetailId != null &&
+            workflowInstanceDetailId === item.id &&
+            workflowInstanceDetailError != null && (
+              <Tr>
+                <Td>We had a problem to load subworkflows of selected workflow</Td>
+              </Tr>
+            )}
 
           {/* TODO: implement new SubWorkflow view when workflowInstanceDetail Query is finished - not implementing in current PR because of its size */}
           {/* {workflowInstanceDetailError == null && item.id === workflowInstanceDetailId && <ExecutedSubWorkflowTable subWorkflows={workflowInstanceDetail?.workflowInstanceDetail} isLoadingSubWorkflows={isLoadingWorkflowInstanceDetail}  workflowId={item.workflowId ?? ''} />} */}
