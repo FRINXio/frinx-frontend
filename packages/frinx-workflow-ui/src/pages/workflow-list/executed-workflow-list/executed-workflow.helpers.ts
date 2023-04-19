@@ -1,7 +1,13 @@
 import moment from 'moment';
-import { makeArrayFromValue } from '../../../helpers/utils.helpers';
+import { makeArrayFromValue, sortAscBy, sortDescBy } from '../../../helpers/utils.helpers';
 import { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
-import { ExecutedWorkflowsQueryVariables, ExecutedWorkflowStatus } from '../../../__generated__/graphql';
+import {
+  ExecutedWorkflowsQuery,
+  ExecutedWorkflowsQueryVariables,
+  ExecutedWorkflowStatus
+} from '../../../__generated__/graphql';
+import { SortProperty } from "./executed-workflow-list";
+import { orderBy } from 'lodash';
 
 export function makeSearchQueryVariableFromFilter(
   filter: ExecutedWorkflowSearchQuery,
@@ -37,14 +43,14 @@ export function makeSearchQueryVariableFromFilter(
         }),
         ...(filter.status != null &&
           filter.status.length > 0 && {
-            status: status.reduce((acc, s) => {
-              if (s != null) {
-                acc.push(s);
-              }
+          status: status.reduce((acc, s) => {
+            if (s != null) {
+              acc.push(s);
+            }
 
-              return acc;
-            }, initialStatus),
-          }),
+            return acc;
+          }, initialStatus),
+        }),
         ...(filter.workflowId != null && filter.workflowId.length > 0 && { workflowId: filter.workflowId }),
         ...(filter.workflowType != null && filter.workflowType.length > 0 && { workflowType: filter.workflowType }),
       },
@@ -66,4 +72,40 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
     ...(from != null && { from: moment(new Date(from)).format('dd-MM-yyyyThh:mm') }),
     ...(to != null && { to: moment(new Date(to)).format('dd-MM-yyyyThh:mm') }),
   };
+}
+
+type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>['edges']
+
+export function sortExecutedWorkflows(workflows: GeneratedExecutedWorkflows, sort: SortProperty): GeneratedExecutedWorkflows {
+  if (sort.value === 'ASC') {
+    switch (sort.key) {
+      case 'startTime':
+        return orderBy(workflows, ['node.startTime'], ['asc']);
+      case 'endTime':
+        return orderBy(workflows, ['node.endTime'], ['asc']);
+      case 'workflowName':
+        return orderBy(workflows, ['node.workflowName'], ['asc']);
+      case 'workflowId':
+        return orderBy(workflows, ['node.workflowId'], ['asc']);
+      case 'status':
+        return orderBy(workflows, ['node.status'], ['asc']);
+      default:
+        return workflows;
+    }
+  } else {
+    switch (sort.key) {
+      case 'startTime':
+        return orderBy(workflows, ['node.startTime'], ['desc']);
+      case 'endTime':
+        return orderBy(workflows, ['node.endTime'], ['desc']);
+      case 'workflowName':
+        return orderBy(workflows, ['node.workflowName'], ['desc']);
+      case 'workflowId':
+        return orderBy(workflows, ['node.workflowId'], ['desc']);
+      case 'status':
+        return orderBy(workflows, ['node.status'], ['desc']);
+      default:
+        return workflows;
+    }
+  }
 }

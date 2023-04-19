@@ -4,21 +4,27 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { ExecutedWorkflowsQuery } from '../../../../../__generated__/graphql';
 import ExecutedWorkflowStatusLabels from '../executed-workflow-status-labels';
+import { SortProperty } from "../../executed-workflow-list";
+import { sortExecutedWorkflows } from '../../executed-workflow.helpers';
 
 type Props = {
   workflows: ExecutedWorkflowsQuery;
   selectedWorkflows: string[];
+  sort: SortProperty;
   onWorkflowSelect: (workflowId: string) => void;
 };
 
-const ExecutedWorkflowFlatTableItem: FC<Props> = ({ workflows, onWorkflowSelect, selectedWorkflows }) => {
+const ExecutedWorkflowFlatTableItem: FC<Props> = ({ workflows, sort, onWorkflowSelect, selectedWorkflows }) => {
   if (workflows.executedWorkflows?.edges == null || workflows.executedWorkflows?.edges.length === 0) {
     return <Tr>No executed workflows available</Tr>;
   }
 
+  console.log(sort);
+  console.log(sortExecutedWorkflows(workflows.executedWorkflows.edges, sort).map(({ node }) => node.id))
+
   return (
     <>
-      {workflows.executedWorkflows.edges.map(({ node }) => (
+      {sortExecutedWorkflows(workflows.executedWorkflows.edges, sort).map(({ node }) => (
         <Tr key={node.workflowId}>
           <Td>
             <Checkbox

@@ -27,9 +27,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
 }) => {
   const areAllWorkflowsSelected = workflows.executedWorkflows?.edges.length === selectedWorkflows.length;
   const areThereAnyExecutedWorkflows =
-    workflows != null &&
     workflows.executedWorkflows != null &&
-    workflows.executedWorkflows?.edges != null &&
     workflows.executedWorkflows.edges.length > 0;
 
   return (
@@ -43,19 +41,21 @@ const ExecutedWorkflowTable: FC<Props> = ({
         />
         {!areThereAnyExecutedWorkflows && <Text>There no executed workflows</Text>}
 
-        {workflows != null && workflows.executedWorkflows != null && (
+        {workflows.executedWorkflows != null && (
           <Tbody fontSize={13} textAlign="left">
             {isFlat ? (
               <ExecutedWorkflowFlatTableItem
                 onWorkflowSelect={onWorkflowSelect}
                 selectedWorkflows={selectedWorkflows}
                 workflows={workflows}
+                sort={sort}
               />
             ) : (
               <ExecutedWorkflowHierarchicalTableItem
                 onWorkflowSelect={onWorkflowSelect}
                 selectedWorkflows={selectedWorkflows}
                 workflows={workflows.executedWorkflows}
+                sort={sort}
               />
             )}
           </Tbody>

@@ -10,6 +10,8 @@ import {
   WorkflowInstanceDetailQuery,
   WorkflowInstanceDetailQueryVariables,
 } from '../../../../../__generated__/graphql';
+import { SortProperty } from '../../executed-workflow-list';
+import { sortExecutedWorkflows } from '../../executed-workflow.helpers';
 
 const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
   query WorkflowInstanceDetail($workflowInstanceDetailId: String!) {
@@ -27,10 +29,11 @@ const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
 type Props = {
   workflows: NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>;
   selectedWorkflows: string[];
+  sort: SortProperty;
   onWorkflowSelect: (workflowId: string) => void;
 };
 
-const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, onWorkflowSelect, selectedWorkflows }) => {
+const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, sort, onWorkflowSelect, selectedWorkflows }) => {
   const workflowInstanceDetailCtx = useMemo(() => ({ additionalTypenames: ['WorkflowInstanceDetail'] }), []);
   const [workflowInstanceDetailId, setWorkflowInstanceDetailId] = useState<string | null>(null);
 
@@ -55,9 +58,9 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, onWorkflo
 
   return (
     <>
-    {workflows.edges.map(({ node: item }) => (
-      <Fragment key={item.workflowId}>
-        <Tr>
+      {sortExecutedWorkflows(workflows.edges, sort).map(({ node: item }) => (
+        <Fragment key={item.workflowId}>
+          <Tr>
             <Td>
               <Checkbox
                 isChecked={selectedWorkflows.includes(item.id)}
@@ -73,7 +76,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({ workflows, onWorkflo
               title={item.workflowId ?? 'Unknown workflow'}
               textColor="blue.500"
               cursor='pointer'
-              onClick={() => handleOnShowSubWorkflows(item.id) }
+              onClick={() => handleOnShowSubWorkflows(item.id)}
             >
               {item.id === workflowInstanceDetailId ? (
                 <Icon as={FeatherIcon} icon="chevron-up" size={20} w="6" h="6" paddingRight={2} />

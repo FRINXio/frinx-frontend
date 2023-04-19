@@ -255,11 +255,6 @@ const ExecutedWorkflowList = () => {
           }}
         />
 
-        {!isLoadingWorkflows &&
-          (data == null || data.executedWorkflows == null || data.executedWorkflows.edges.length === 0) && (
-            <Text>There are no workflows</Text>
-          )}
-
         {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
 
         {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
