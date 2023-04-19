@@ -1,10 +1,12 @@
-import { omitNullValue } from '@frinx/shared/src';
 import moment from 'moment';
 import { makeArrayFromValue } from '../../../helpers/utils.helpers';
-import { ExecutedWorkflowStatus } from '../../../__generated__/graphql';
 import { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
+import { ExecutedWorkflowsQueryVariables, ExecutedWorkflowStatus } from '../../../__generated__/graphql';
 
-export function makeSearchQueryVariableFromFilter(filter: ExecutedWorkflowSearchQuery) {
+export function makeSearchQueryVariableFromFilter(
+  filter: ExecutedWorkflowSearchQuery,
+): ExecutedWorkflowsQueryVariables {
+  const initialStatus: ExecutedWorkflowStatus[] = [];
   const status = filter.status.map((s) => {
     if (
       s === 'PAUSED' ||
@@ -19,7 +21,7 @@ export function makeSearchQueryVariableFromFilter(filter: ExecutedWorkflowSearch
     return null;
   });
 
-  const result = {
+  return {
     pagination: {
       size: filter?.workflowsPerPage ?? 20,
       start: 0,
@@ -34,14 +36,20 @@ export function makeSearchQueryVariableFromFilter(filter: ExecutedWorkflowSearch
           },
         }),
         ...(filter.status != null &&
-          filter.status.length > 0 && { status: status.filter(omitNullValue<ExecutedWorkflowStatus>) }),
+          filter.status.length > 0 && {
+            status: status.reduce((acc, s) => {
+              if (s != null) {
+                acc.push(s);
+              }
+
+              return acc;
+            }, initialStatus),
+          }),
         ...(filter.workflowId != null && filter.workflowId.length > 0 && { workflowId: filter.workflowId }),
         ...(filter.workflowType != null && filter.workflowType.length > 0 && { workflowType: filter.workflowType }),
       },
     },
   };
-
-  return result;
 }
 
 export function makeFilterFromSearchParams(searchParams: URLSearchParams): ExecutedWorkflowSearchQuery {

@@ -1,4 +1,4 @@
-import { Box, Flex, Spacer } from '@chakra-ui/react';
+import { Box, Spacer } from '@chakra-ui/react';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { VoidFunctionComponent } from 'react';
 import SearchByLabelInput from '../../components/search-by-label-input';

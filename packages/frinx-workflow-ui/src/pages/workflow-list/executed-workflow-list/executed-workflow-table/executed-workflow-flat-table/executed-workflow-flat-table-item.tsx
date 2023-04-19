@@ -12,9 +12,13 @@ type Props = {
 };
 
 const ExecutedWorkflowFlatTableItem: FC<Props> = ({ workflows, onWorkflowSelect, selectedWorkflows }) => {
+  if (workflows.executedWorkflows?.edges == null || workflows.executedWorkflows?.edges.length === 0) {
+    return <Tr>No executed workflows available</Tr>;
+  }
+
   return (
     <>
-      {workflows.executedWorkflows?.edges.map(({ node }) => (
+      {workflows.executedWorkflows.edges.map(({ node }) => (
         <Tr key={node.workflowId}>
           <Td>
             <Checkbox

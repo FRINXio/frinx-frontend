@@ -5,6 +5,16 @@ import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import { makeURLSearchParamsFromObject } from '../../../helpers/utils.helpers';
 import {
+  BulkPauseMutation,
+  BulkPauseMutationVariables,
+  BulkRestartMutation,
+  BulkRestartMutationVariables,
+  BulkResumeMutation,
+  BulkResumeMutationVariables,
+  BulkRetryMutation,
+  BulkRetryMutationVariables,
+  BulkTerminateMutation,
+  BulkTerminateMutationVariables,
   ExecutedWorkflow,
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
@@ -30,29 +40,21 @@ export type ExecutedworkflowsFilter = {
 };
 
 const EXECUTED_WORKFLOW_QUERY = gql`
-  query ExecutedWorkflows($pagination: PaginationArgs, $searchQuery: ExecutedWorkflowSearchInput) {
-    executedWorkflows(pagination: $pagination, searchQuery: $searchQuery) {
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
-      }
+  query ExecutedWorkflows($searchQuery: ExecutedWorkflowSearchInput, $pagination: PaginationArgs) {
+    executedWorkflows(searchQuery: $searchQuery, pagination: $pagination) {
       edges {
         cursor
         node {
+          endTime
           id
-          createdAt
-          updatedAt
-          status
-          parentWorkflowId
           input
           output
           startTime
-          endTime
-          workflowVersion
-          workflowName
+          status
+          variables
           workflowId
+          workflowName
+          workflowVersion
         }
       }
     }
@@ -105,7 +107,7 @@ const BULK_RESTART_MUTATION = gql`
 `;
 
 const ExecutedWorkflowList = () => {
-  const ctx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), []);
+  const executedWorkflowsCtx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), []);
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToastNotification } = useNotifications();
 
@@ -120,14 +122,16 @@ const ExecutedWorkflowList = () => {
   >({
     query: EXECUTED_WORKFLOW_QUERY,
     variables: makeSearchQueryVariableFromFilter(filter),
-    context: ctx,
+    context: executedWorkflowsCtx,
   });
 
-  const [, onBulkPause] = useMutation(BULK_PAUSE_MUTATION);
-  const [, onBulkRetry] = useMutation(BULK_RETRY_MUTATION);
-  const [, onBulkResume] = useMutation(BULK_RESUME_MUTATION);
-  const [, onBulkRestart] = useMutation(BULK_RESTART_MUTATION);
-  const [, onBulkTerminate] = useMutation(BULK_TERMINATE_MUTATION);
+  const [, onBulkPause] = useMutation<BulkPauseMutation, BulkPauseMutationVariables>(BULK_PAUSE_MUTATION);
+  const [, onBulkRetry] = useMutation<BulkRetryMutation, BulkRetryMutationVariables>(BULK_RETRY_MUTATION);
+  const [, onBulkResume] = useMutation<BulkResumeMutation, BulkResumeMutationVariables>(BULK_RESUME_MUTATION);
+  const [, onBulkRestart] = useMutation<BulkRestartMutation, BulkRestartMutationVariables>(BULK_RESTART_MUTATION);
+  const [, onBulkTerminate] = useMutation<BulkTerminateMutation, BulkTerminateMutationVariables>(
+    BULK_TERMINATE_MUTATION,
+  );
 
   const handleOnWorkflowSelect = (workflowId: string) => {
     const isAlreadySelected = selectedWorkflows.includes(workflowId);
@@ -142,12 +146,7 @@ const ExecutedWorkflowList = () => {
   const handleOnAllWorkflowsSelect = () => {
     const areAllWorkflowsSelected = data?.executedWorkflows?.edges.length === selectedWorkflows.length;
 
-    if (
-      data == null ||
-      data.executedWorkflows == null ||
-      data?.executedWorkflows?.edges == null ||
-      data?.executedWorkflows?.edges.length === 0
-    ) {
+    if (data?.executedWorkflows == null || data?.executedWorkflows?.edges.length === 0) {
       setSelectedWorkflows([]);
 
       return;
@@ -195,19 +194,29 @@ const ExecutedWorkflowList = () => {
 
     switch (action) {
       case 'pause':
-        onBulkPause(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        onBulkPause({ workflowIds: selectedWorkflows }).then((res) => {
+          wasSuccessfull = res.error == null;
+        });
         break;
       case 'restart':
-        onBulkRestart(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        onBulkRestart({ workflowIds: selectedWorkflows }).then((res) => {
+          wasSuccessfull = res.error == null;
+        });
         break;
       case 'resume':
-        onBulkResume(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        onBulkResume({ workflowIds: selectedWorkflows }).then((res) => {
+          wasSuccessfull = res.error == null;
+        });
         break;
       case 'retry':
-        onBulkRetry(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        onBulkRetry({ workflowIds: selectedWorkflows }).then((res) => {
+          wasSuccessfull = res.error == null;
+        });
         break;
       case 'terminate':
-        onBulkTerminate(selectedWorkflows).then((res) => (wasSuccessfull = res.error == null));
+        onBulkTerminate({ workflowIds: selectedWorkflows }).then((res) => {
+          wasSuccessfull = res.error == null;
+        });
         break;
       default:
         break;
@@ -277,8 +286,6 @@ const ExecutedWorkflowList = () => {
           />
         )}
       </VStack>
-
-      {/* <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} showPageNumbers /> */}
     </Container>
   );
 };
