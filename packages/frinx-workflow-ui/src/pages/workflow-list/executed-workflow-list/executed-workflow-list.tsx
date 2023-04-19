@@ -194,19 +194,19 @@ const ExecutedWorkflowList = () => {
 
     switch (action) {
       case 'pause':
-        wasSuccessfull = await onBulkPause({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkPause({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
         break;
       case 'restart':
-        wasSuccessfull = await onBulkRestart({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkRestart({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
         break;
       case 'resume':
-        wasSuccessfull = await onBulkResume({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkResume({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
         break;
       case 'retry':
-        wasSuccessfull = await onBulkRetry({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkRetry({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
         break;
       case 'terminate':
-        wasSuccessfull = await onBulkTerminate({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
+        wasSuccessfull = await onBulkTerminate({ workflowIds: selectedWorkflows }, { additionalTypenames: ['ExecutedWorkflows'] }).then((res) => res.error == null);
         break;
       default:
         break;
