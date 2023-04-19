@@ -180,7 +180,7 @@ const ExecutedWorkflowList = () => {
     setSearchParams(newSearchParams);
   };
 
-  const handleOnBulkOperation = (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
+  const handleOnBulkOperation = async (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
     let wasSuccessfull = false;
 
     if (selectedWorkflows == null || selectedWorkflows.length === 0) {
@@ -194,29 +194,19 @@ const ExecutedWorkflowList = () => {
 
     switch (action) {
       case 'pause':
-        onBulkPause({ workflowIds: selectedWorkflows }).then((res) => {
-          wasSuccessfull = res.error == null;
-        });
+        wasSuccessfull = await onBulkPause({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
         break;
       case 'restart':
-        onBulkRestart({ workflowIds: selectedWorkflows }).then((res) => {
-          wasSuccessfull = res.error == null;
-        });
+        wasSuccessfull = await onBulkRestart({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
         break;
       case 'resume':
-        onBulkResume({ workflowIds: selectedWorkflows }).then((res) => {
-          wasSuccessfull = res.error == null;
-        });
+        wasSuccessfull = await onBulkResume({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
         break;
       case 'retry':
-        onBulkRetry({ workflowIds: selectedWorkflows }).then((res) => {
-          wasSuccessfull = res.error == null;
-        });
+        wasSuccessfull = await onBulkRetry({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
         break;
       case 'terminate':
-        onBulkTerminate({ workflowIds: selectedWorkflows }).then((res) => {
-          wasSuccessfull = res.error == null;
-        });
+        wasSuccessfull = await onBulkTerminate({ workflowIds: selectedWorkflows }).then((res) => res.error == null);
         break;
       default:
         break;

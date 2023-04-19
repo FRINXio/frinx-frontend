@@ -50,6 +50,7 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({
   const { values, handleChange, handleReset, submitForm, setFieldValue } = useFormik<ExecutedWorkflowSearchQuery>({
     initialValues: initialSearchValues,
     onSubmit: onSearchBoxSubmit,
+    onReset: onSearchBoxSubmit
   });
 
   const handleOnStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
