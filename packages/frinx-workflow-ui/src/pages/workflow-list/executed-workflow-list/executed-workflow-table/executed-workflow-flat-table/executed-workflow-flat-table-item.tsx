@@ -16,7 +16,7 @@ type Props = {
 
 const ExecutedWorkflowFlatTableItem: FC<Props> = ({ workflows, sort, onWorkflowSelect, selectedWorkflows }) => {
   if (workflows.executedWorkflows?.edges == null || workflows.executedWorkflows?.edges.length === 0) {
-    return <Tr>No executed workflows available</Tr>;
+    return <Tr><Td>No executed workflows available</Td></Tr>;
   }
 
   return (
