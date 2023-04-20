@@ -45,8 +45,6 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
 
   const getJSON = (data: Record<string, unknown> | unknown) => {
-    console.log(data);
-
     return isEscaped
       ? JSON.stringify(data, replaceJsonAndArray, 2)
           .replace(/\\n/g, '\\n')
