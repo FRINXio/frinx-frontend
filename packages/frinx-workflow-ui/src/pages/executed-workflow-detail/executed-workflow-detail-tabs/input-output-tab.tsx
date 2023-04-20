@@ -14,6 +14,25 @@ type Props = {
   externalOutputPayloadStoragePath?: string;
 };
 
+const isJson = (data: string) => {
+  try {
+    JSON.parse(data);
+  } catch (e) {
+    return false;
+  }
+  if (Number.isFinite(Number(data))) {
+    return false;
+  }
+  return true;
+};
+
+const replaceJsonAndArray = (key: string, value: string) => {
+  if (isJson(value) || Array.isArray(value)) {
+    return JSON.parse(value);
+  }
+  return value;
+};
+
 const InputOutputTab: VoidFunctionComponent<Props> = ({
   isEscaped,
   input,
@@ -25,26 +44,9 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
 }) => {
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
 
-  const isJson = (data: string) => {
-    try {
-      JSON.parse(data);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  };
-
-  const replaceJsonAndArray = (key: string, value: string) => {
-    if (Number(value)) {
-      return value;
-    }
-    if (isJson(value) || Array.isArray(value)) {
-      return JSON.parse(value);
-    }
-    return value;
-  };
-
   const getJSON = (data: Record<string, unknown> | unknown) => {
+    console.log(data);
+
     return isEscaped
       ? JSON.stringify(data, replaceJsonAndArray, 2)
           .replace(/\\n/g, '\\n')
