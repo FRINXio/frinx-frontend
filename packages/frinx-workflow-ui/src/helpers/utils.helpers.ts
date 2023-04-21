@@ -22,6 +22,7 @@ export function makeObjectFromSearchParams(searchParams: URLSearchParams): Recor
   return obj;
 }
 
+// TODO: remove these two functions when we have a better solution -> control if used anywhere else
 export const sortAscBy = (key: string) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (x: Record<string, any>, y: Record<string, any>) => {
