@@ -300,7 +300,7 @@ type ExecutedWorkflow implements Node {
   reasonForIncompletion: String
   startTime: String
   status: ExecutedWorkflowStatus
-  tasks: [ExecutedWorkflowTask]
+  tasks: [ExecutedWorkflowTask!]
   updatedAt: String
   updatedBy: String
   variables: String
@@ -498,7 +498,10 @@ type Mutation {
   addZone(input: AddZoneInput!): AddZonePayload!
   applySnapshot(input: ApplySnapshotInput!, transactionId: String!): ApplySnapshotPayload!
   bulkPauseWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkRestartWorkflow(workflowIds: [String!]!): BulkOperationResponse
   bulkResumeWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkRetryWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkTerminateWorkflow(workflowIds: [String!]!): BulkOperationResponse
   closeTransaction(deviceId: String!, transactionId: String!): CloseTransactionPayload!
   commitConfig(input: CommitConfigInput!, transactionId: String!): CommitConfigPayload!
   createLabel(input: CreateLabelInput!): CreateLabelPayload!
@@ -558,6 +561,30 @@ type Mutation {
   updateWorkflow(id: String!, input: UpdateWorkflowInput!): UpdateWorkflowPayload!
 }
 
+type NetInterface {
+  id: String!
+  name: String!
+}
+
+type NetNetwork {
+  coordinates: GraphNodeCoordinates!
+  id: String!
+  subnet: String!
+}
+
+type NetNode {
+  coordinates: GraphNodeCoordinates!
+  id: ID!
+  interfaces: [NetInterface!]!
+  name: String!
+  networks: [NetNetwork!]!
+}
+
+type NetTopology {
+  edges: [GraphEdge!]!
+  nodes: [NetNode!]!
+}
+
 interface Node {
   id: ID!
 }
@@ -590,6 +617,7 @@ type Query {
   executedWorkflows(pagination: PaginationArgs, searchQuery: ExecutedWorkflowSearchInput): ExecutedWorkflowConnection
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
+  netTopology: NetTopology
   node(id: ID!): Node
   taskDefinitions: [TaskDefinition!]!
   topology(filter: FilterTopologyInput): Topology
@@ -598,6 +626,7 @@ type Query {
   topologyVersions: [String!]
   transactions: [Transaction!]!
   uniconfigShellSession: String
+  workflowInstanceDetail(id: String!, shouldIncludeTasks: Boolean): WorkflowInstanceDetail
   workflowLabels: [String!]!
   workflows(after: String, before: String, filter: FilterWorkflowsInput, first: Int, last: Int): WorkflowConnection!
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
@@ -635,6 +664,12 @@ enum SortDirection {
 input StartWorkflowRequestInput {
   workflow: ExecuteNewWorkflowInput!
   workflowDefinition: WorkflowDefinitionInput
+}
+
+type SubWorkflow {
+  executedWorkflowDetail: [Workflow!]
+  taskReferenceName: String!
+  workflowDetail: [Workflow!]
 }
 
 type Subscription {
@@ -844,6 +879,12 @@ input WorkflowInput {
   tasks: String!
   timeoutSeconds: Int!
   version: Int
+}
+
+type WorkflowInstanceDetail {
+  meta: Workflow
+  result: ExecutedWorkflow!
+  subworkflows: [SubWorkflow!]
 }
 
 enum WorkflowTaskType {
