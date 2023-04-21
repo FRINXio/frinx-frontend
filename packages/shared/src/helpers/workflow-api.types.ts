@@ -362,6 +362,7 @@ export type ExecutedWorkflowTask = {
   subWorkflowId: string;
   startTime: number;
   endTime: number;
+  taskId?: string;
   externalOutputPayloadStoragePath?: string;
   externalInputPayloadStoragePath?: string;
 };
