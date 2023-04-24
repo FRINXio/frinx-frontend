@@ -353,7 +353,7 @@ export type ExecutedWorkflow = Node & {
   reasonForIncompletion: Maybe<Scalars['String']>;
   startTime: Maybe<Scalars['String']>;
   status: Maybe<ExecutedWorkflowStatus>;
-  tasks: Maybe<Array<Maybe<ExecutedWorkflowTask>>>;
+  tasks: Maybe<Array<ExecutedWorkflowTask>>;
   updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
   variables: Maybe<Scalars['String']>;
@@ -566,7 +566,10 @@ export type Mutation = {
   addZone: AddZonePayload;
   applySnapshot: ApplySnapshotPayload;
   bulkPauseWorkflow: Maybe<BulkOperationResponse>;
+  bulkRestartWorkflow: Maybe<BulkOperationResponse>;
   bulkResumeWorkflow: Maybe<BulkOperationResponse>;
+  bulkRetryWorkflow: Maybe<BulkOperationResponse>;
+  bulkTerminateWorkflow: Maybe<BulkOperationResponse>;
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
@@ -636,7 +639,22 @@ export type MutationBulkPauseWorkflowArgs = {
 };
 
 
+export type MutationBulkRestartWorkflowArgs = {
+  workflowIds: Array<Scalars['String']>;
+};
+
+
 export type MutationBulkResumeWorkflowArgs = {
+  workflowIds: Array<Scalars['String']>;
+};
+
+
+export type MutationBulkRetryWorkflowArgs = {
+  workflowIds: Array<Scalars['String']>;
+};
+
+
+export type MutationBulkTerminateWorkflowArgs = {
   workflowIds: Array<Scalars['String']>;
 };
 
@@ -803,6 +821,34 @@ export type MutationUpdateWorkflowArgs = {
   input: UpdateWorkflowInput;
 };
 
+export type NetInterface = {
+  __typename?: 'NetInterface';
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type NetNetwork = {
+  __typename?: 'NetNetwork';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['String'];
+  subnet: Scalars['String'];
+};
+
+export type NetNode = {
+  __typename?: 'NetNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID'];
+  interfaces: Array<NetInterface>;
+  name: Scalars['String'];
+  networks: Array<NetNetwork>;
+};
+
+export type NetTopology = {
+  __typename?: 'NetTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<NetNode>;
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -830,6 +876,7 @@ export type Query = {
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
   labels: LabelConnection;
   locations: LocationConnection;
+  netTopology: Maybe<NetTopology>;
   node: Maybe<Node>;
   taskDefinitions: Array<TaskDefinition>;
   topology: Maybe<Topology>;
@@ -838,6 +885,7 @@ export type Query = {
   topologyVersions: Maybe<Array<Scalars['String']>>;
   transactions: Array<Transaction>;
   uniconfigShellSession: Maybe<Scalars['String']>;
+  workflowInstanceDetail: Maybe<WorkflowInstanceDetail>;
   workflowLabels: Array<Scalars['String']>;
   workflows: WorkflowConnection;
   zones: ZonesConnection;
@@ -924,6 +972,12 @@ export type QueryTopologyVersionDataArgs = {
 };
 
 
+export type QueryWorkflowInstanceDetailArgs = {
+  id: Scalars['String'];
+  shouldIncludeTasks?: InputMaybe<Scalars['Boolean']>;
+};
+
+
 export type QueryWorkflowsArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -972,6 +1026,13 @@ export type SortDirection =
 export type StartWorkflowRequestInput = {
   workflow: ExecuteNewWorkflowInput;
   workflowDefinition?: InputMaybe<WorkflowDefinitionInput>;
+};
+
+export type SubWorkflow = {
+  __typename?: 'SubWorkflow';
+  executedWorkflowDetail: Maybe<Array<Workflow>>;
+  taskReferenceName: Scalars['String'];
+  workflowDetail: Maybe<Array<Workflow>>;
 };
 
 export type Subscription = {
@@ -1202,6 +1263,13 @@ export type WorkflowInput = {
   version?: InputMaybe<Scalars['Int']>;
 };
 
+export type WorkflowInstanceDetail = {
+  __typename?: 'WorkflowInstanceDetail';
+  meta: Maybe<Workflow>;
+  result: ExecutedWorkflow;
+  subworkflows: Maybe<Array<SubWorkflow>>;
+};
+
 export type WorkflowTaskType =
   | 'DECISION'
   | 'DO_WHILE'
@@ -1246,6 +1314,56 @@ export type ZonesConnection = {
   pageInfo: PageInfo;
   totalCount: Scalars['Int'];
 };
+
+export type ExecutedWorkflowsQueryVariables = Exact<{
+  searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+  pagination?: InputMaybe<PaginationArgs>;
+}>;
+
+
+export type ExecutedWorkflowsQuery = { __typename?: 'Query', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'ExecutedWorkflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: ExecutedWorkflowStatus | null, variables: string | null, workflowId: string | null, workflowName: string | null, workflowVersion: number | null } }> } | null };
+
+export type WorkflowInstanceDetailQueryVariables = Exact<{
+  workflowInstanceDetailId: Scalars['String'];
+}>;
+
+
+export type WorkflowInstanceDetailQuery = { __typename?: 'Query', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'SubWorkflow', workflowDetail: Array<{ __typename?: 'Workflow', id: string, name: string }> | null }> | null } | null };
+
+export type BulkPauseMutationVariables = Exact<{
+  workflowIds: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type BulkPauseMutation = { __typename?: 'Mutation', bulkPauseWorkflow: { __typename?: 'BulkOperationResponse', bulkErrorResults: string | null, bulkSuccessfulResults: Array<string> | null } | null };
+
+export type BulkResumeMutationVariables = Exact<{
+  workflowIds: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type BulkResumeMutation = { __typename?: 'Mutation', bulkResumeWorkflow: { __typename?: 'BulkOperationResponse', bulkErrorResults: string | null, bulkSuccessfulResults: Array<string> | null } | null };
+
+export type BulkRetryMutationVariables = Exact<{
+  workflowIds: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type BulkRetryMutation = { __typename?: 'Mutation', bulkRetryWorkflow: { __typename?: 'BulkOperationResponse', bulkErrorResults: string | null, bulkSuccessfulResults: Array<string> | null } | null };
+
+export type BulkTerminateMutationVariables = Exact<{
+  workflowIds: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type BulkTerminateMutation = { __typename?: 'Mutation', bulkTerminateWorkflow: { __typename?: 'BulkOperationResponse', bulkErrorResults: string | null, bulkSuccessfulResults: Array<string> | null } | null };
+
+export type BulkRestartMutationVariables = Exact<{
+  workflowIds: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type BulkRestartMutation = { __typename?: 'Mutation', bulkRestartWorkflow: { __typename?: 'BulkOperationResponse', bulkErrorResults: string | null, bulkSuccessfulResults: Array<string> | null } | null };
 
 export type WorkflowsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;

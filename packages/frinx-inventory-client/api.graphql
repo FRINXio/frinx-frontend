@@ -68,6 +68,14 @@ type ApplySnapshotPayload {
   output: String!
 }
 
+interface BaseGraphNode {
+  coordinates: GraphNodeCoordinates!
+  deviceType: String
+  id: ID!
+  interfaces: [GraphNodeInterface!]!
+  softwareVersion: String
+}
+
 type Blueprint implements Node {
   createdAt: String!
   id: ID!
@@ -85,6 +93,11 @@ type BlueprintConnection {
 type BlueprintEdge {
   cursor: String!
   node: Blueprint!
+}
+
+type BulkOperationResponse {
+  bulkErrorResults: String
+  bulkSuccessfulResults: [String!]
 }
 
 type CSVImport {
@@ -160,6 +173,14 @@ type CreateTransactionPayload {
   transactionId: String
 }
 
+input CreateWorkflowInput {
+  workflow: WorkflowInput!
+}
+
+type CreateWorkflowPayload {
+  workflow: Workflow!
+}
+
 type DataStore {
   config: String!
   operational: String!
@@ -188,6 +209,10 @@ type DeleteSnapshotPayload {
   snapshot: Snapshot
 }
 
+type DeleteWorkflowPayload {
+  workflow: Workflow!
+}
+
 type Device implements Node {
   address: String
   blueprint: Blueprint
@@ -200,7 +225,6 @@ type Device implements Node {
   model: String
   mountParameters: String
   name: String!
-  position: Position
   serviceState: DeviceServiceState!
   source: DeviceSource!
   updatedAt: String!
@@ -252,12 +276,120 @@ type EdgeSourceTarget {
   nodeId: String!
 }
 
+input ExecuteNewWorkflowInput {
+  correlationId: String
+  externalInputPayloadStoragePath: String
+  input: String
+  name: String!
+  priority: Int
+  taskToDomain: String
+  version: Int
+}
+
+type ExecutedWorkflow implements Node {
+  createdAt: String
+  createdBy: String
+  endTime: String
+  failedReferenceTaskNames: [String]
+  id: ID!
+  input: String
+  lastRetriedTime: String
+  output: String
+  ownerApp: String
+  parentWorkflowId: String
+  reasonForIncompletion: String
+  startTime: String
+  status: ExecutedWorkflowStatus
+  tasks: [ExecutedWorkflowTask!]
+  updatedAt: String
+  updatedBy: String
+  variables: String
+  workflowDefinition: Workflow
+  workflowId: String
+  workflowName: String
+  workflowVersion: Int
+}
+
+type ExecutedWorkflowConnection {
+  edges: [ExecutedWorkflowEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ExecutedWorkflowEdge {
+  cursor: String!
+  node: ExecutedWorkflow!
+}
+
+input ExecutedWorkflowFilterInput {
+  startTime: ExecutedWorkflowStartTimeRange
+  status: [ExecutedWorkflowStatus!]
+  workflowId: [String!]
+  workflowType: [String!]
+}
+
+input ExecutedWorkflowSearchInput {
+  isRootWorkflow: Boolean
+  query: ExecutedWorkflowFilterInput
+}
+
+input ExecutedWorkflowStartTimeRange {
+  from: String!
+  to: String
+}
+
+enum ExecutedWorkflowStatus {
+  COMPLETED
+  FAILED
+  PAUSED
+  RUNNING
+  TERMINATED
+  TIMED_OUT
+}
+
+type ExecutedWorkflowTask implements Node {
+  endTime: String
+  executed: Boolean
+  id: ID!
+  reasonForIncompletion: String
+  retried: Boolean
+  retryCount: Int
+  scheduledTime: String
+  startTime: String
+  status: ExecutedWorkflowTaskStatus
+  subWorkflowId: String
+  taskDefName: String
+  taskDefinition: String
+  taskId: String
+  taskReferenceName: String
+  taskType: String
+  updateTime: String
+  workflowType: String
+}
+
+enum ExecutedWorkflowTaskStatus {
+  CANCELED
+  COMPLETED
+  COMPLETED_WITH_ERROR
+  FAILED
+  FAILED_WITH_TERMINAL_ERROR
+  IN_PROGRESS
+  SCHEDULED
+  SKIPPED
+  TIMED_OUT
+}
+
 input FilterDevicesInput {
   deviceName: String
   labels: [String!]
 }
 
 input FilterTopologyInput {
+  labels: [String!]
+}
+
+input FilterWorkflowsInput {
+  keyword: String
   labels: [String!]
 }
 
@@ -272,15 +404,30 @@ enum GraphEdgeStatus {
   unknown
 }
 
-type GraphNode {
+type GraphNode implements BaseGraphNode {
+  coordinates: GraphNodeCoordinates!
   device: Device!
+  deviceType: String
   id: ID!
   interfaces: [GraphNodeInterface!]!
+  softwareVersion: String
+}
+
+type GraphNodeCoordinates {
+  x: Float!
+  y: Float!
+}
+
+input GraphNodeCoordinatesInput {
+  deviceName: String!
+  x: Float!
+  y: Float!
 }
 
 type GraphNodeInterface {
   id: String!
-  status: GraphEdgeStatus
+  name: String!
+  status: GraphEdgeStatus!
 }
 
 type GraphVersionEdge {
@@ -289,14 +436,21 @@ type GraphVersionEdge {
   target: EdgeSourceTarget!
 }
 
-type GraphVersionNode {
+type GraphVersionNode implements BaseGraphNode {
+  coordinates: GraphNodeCoordinates!
+  deviceType: String
   id: ID!
-  interfaces: [String!]!
+  interfaces: [GraphNodeInterface!]!
   name: String!
+  softwareVersion: String
 }
 
 type InstallDevicePayload {
   device: Device!
+}
+
+type IsOkResponse {
+  isOk: Boolean!
 }
 
 type Label implements Node {
@@ -343,24 +497,92 @@ type Mutation {
   addSnapshot(input: AddSnapshotInput!, transactionId: String!): AddSnapshotPayload
   addZone(input: AddZoneInput!): AddZonePayload!
   applySnapshot(input: ApplySnapshotInput!, transactionId: String!): ApplySnapshotPayload!
+  bulkPauseWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkRestartWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkResumeWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkRetryWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkTerminateWorkflow(workflowIds: [String!]!): BulkOperationResponse
   closeTransaction(deviceId: String!, transactionId: String!): CloseTransactionPayload!
   commitConfig(input: CommitConfigInput!, transactionId: String!): CommitConfigPayload!
   createLabel(input: CreateLabelInput!): CreateLabelPayload!
   createTransaction(deviceId: String!): CreateTransactionPayload!
+  createWorkflow(input: CreateWorkflowInput!): CreateWorkflowPayload!
   deleteBlueprint(id: String!): DeleteBlueprintPayload!
   deleteDevice(id: String!): DeleteDevicePayload!
   deleteLabel(id: String!): DeleteLabelPayload!
   deleteSnapshot(input: DeleteSnapshotInput!): DeleteSnapshotPayload
+  deleteWorkflow(name: String!, version: Int!): DeleteWorkflowPayload!
+  executeNewWorkflow(input: StartWorkflowRequestInput!): String
+  executeWorkflowByName(
+    correlationId: String
+
+    """
+    JSON string of input parameters
+    """
+    inputParameters: String!
+    priority: Int
+    workflowName: String!
+    workflowVersion: Int
+  ): String
   importCSV(input: CSVImportInput!): CSVImport
   installDevice(id: String!): InstallDevicePayload!
+  pauseWorkflow(workflowId: String!): IsOkResponse
+  removeWorkflow(
+    """
+    Default value is true
+    """
+    shouldArchiveWorkflow: Boolean
+    workflowId: String!
+  ): IsOkResponse
   resetConfig(deviceId: String!, transactionId: String!): ResetConfigPayload!
+  restartWorkflow(
+    """
+    Default value is true
+    """
+    shouldUseLatestDefinitions: Boolean
+    workflowId: String!
+  ): IsOkResponse
+  resumeWorkflow(workflowId: String!): IsOkResponse
+  retryWorkflow(
+    """
+    Default value is true
+    """
+    shouldResumeSubworkflowTasks: Boolean
+    workflowId: String!
+  ): IsOkResponse
   revertChanges(transactionId: String!): RevertChangesPayload!
   syncFromNetwork(deviceId: String!, transactionId: String!): SyncFromNetworkPayload!
+  terminateWorkflow(reason: String, workflowId: String!): IsOkResponse
   uninstallDevice(id: String!): UninstallDevicePayload!
   updateBlueprint(id: String!, input: UpdateBlueprintInput!): UpdateBlueprintPayload!
   updateDataStore(deviceId: String!, input: UpdateDataStoreInput!, transactionId: String!): UpdateDataStorePayload!
   updateDevice(id: String!, input: UpdateDeviceInput!): UpdateDevicePayload!
-  updateDeviceMetadata(input: [PositionInput!]!): UpdateDeviceMetadataPayload!
+  updateGraphNodeCoordinates(input: [GraphNodeCoordinatesInput!]!): UpdateGraphNodeCoordinatesPayload!
+  updateWorkflow(id: String!, input: UpdateWorkflowInput!): UpdateWorkflowPayload!
+}
+
+type NetInterface {
+  id: String!
+  name: String!
+}
+
+type NetNetwork {
+  coordinates: GraphNodeCoordinates!
+  id: String!
+  subnet: String!
+}
+
+type NetNode {
+  coordinates: GraphNodeCoordinates!
+  id: ID!
+  interfaces: [NetInterface!]!
+  name: String!
+  networks: [NetNetwork!]!
+}
+
+type NetTopology {
+  edges: [GraphEdge!]!
+  nodes: [NetNode!]!
 }
 
 interface Node {
@@ -374,19 +596,9 @@ type PageInfo {
   startCursor: String
 }
 
-type Position {
-  x: Float!
-  y: Float!
-}
-
-input PositionInput {
-  deviceId: ID!
-  position: PositionInputField!
-}
-
-input PositionInputField {
-  x: Float!
-  y: Float!
+input PaginationArgs {
+  size: Int!
+  start: Int!
 }
 
 type Query {
@@ -402,20 +614,32 @@ type Query {
     last: Int
     orderBy: DeviceOrderByInput
   ): DeviceConnection!
+  executedWorkflows(pagination: PaginationArgs, searchQuery: ExecutedWorkflowSearchInput): ExecutedWorkflowConnection
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
+  netTopology: NetTopology
   node(id: ID!): Node
+  taskDefinitions: [TaskDefinition!]!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
   topologyVersionData(version: String!): TopologyVersionData!
   topologyVersions: [String!]
   transactions: [Transaction!]!
   uniconfigShellSession: String
+  workflowInstanceDetail(id: String!, shouldIncludeTasks: Boolean): WorkflowInstanceDetail
+  workflowLabels: [String!]!
+  workflows(after: String, before: String, filter: FilterWorkflowsInput, first: Int, last: Int): WorkflowConnection!
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
 }
 
 type ResetConfigPayload {
   dataStore: DataStore!
+}
+
+enum RetryLogic {
+  EXPONENTIAL_BACKOFF
+  FIXED
+  LINEAR_BACKOFF
 }
 
 type RevertChangesPayload {
@@ -437,12 +661,74 @@ enum SortDirection {
   DESC
 }
 
+input StartWorkflowRequestInput {
+  workflow: ExecuteNewWorkflowInput!
+  workflowDefinition: WorkflowDefinitionInput
+}
+
+type SubWorkflow {
+  executedWorkflowDetail: [Workflow!]
+  taskReferenceName: String!
+  workflowDetail: [Workflow!]
+}
+
 type Subscription {
   uniconfigShell(input: String, sessionId: String!, trigger: Int): String
 }
 
 type SyncFromNetworkPayload {
   dataStore: DataStore
+}
+
+type TaskDefinition {
+  concurrentExecLimit: Int
+  createdAt: String
+  createdBy: String
+  description: String
+  inputKeys: [String!]
+  inputTemplate: String
+  name: String!
+  outputKeys: [String!]
+  ownerEmail: String
+  pollTimeoutSeconds: Int
+  rateLimitFrequencyInSeconds: Int
+  rateLimitPerFrequency: Int
+  responseTimeoutSeconds: Int
+  retryCount: Int
+  retryDelaySeconds: Int
+  retryLogic: RetryLogic
+  timeoutPolicy: TaskTimeoutPolicy
+  timeoutSeconds: Int!
+  updatedAt: String
+  updatedBy: String
+}
+
+input TaskInput {
+  asyncComplete: Boolean
+  decisionCases: String
+  defaultCase: String
+  description: String
+  inputParameters: String
+  joinOn: [String]
+  loopCondition: String
+  name: String!
+  optional: Boolean
+  retryCount: Int
+  startDelay: Int
+  taskReferenceName: String!
+  type: String
+  workflowTaskType: [WorkflowTaskType]
+}
+
+enum TaskTimeoutPolicy {
+  ALERT_ONLY
+  RETRY
+  TIME_OUT_WF
+}
+
+enum TimeoutPolicy {
+  ALERT_ONLY
+  TIME_OUT_WF
 }
 
 type Topology {
@@ -522,10 +808,109 @@ type UpdateDevicePayload {
   device: Device
 }
 
+type UpdateGraphNodeCoordinatesPayload {
+  deviceNames: [String!]!
+}
+
+input UpdateWorkflowInput {
+  workflow: WorkflowInput!
+}
+
+type UpdateWorkflowPayload {
+  workflow: Workflow!
+}
+
 """
 The `Upload` scalar type represents a file upload.
 """
 scalar Upload
+
+type Workflow implements Node {
+  createdAt: String
+  createdBy: String
+  description: String
+  hasSchedule: Boolean
+  id: ID!
+  inputParameters: [String!]
+  name: String!
+  tasks: String
+  updatedAt: String
+  updatedBy: String
+  version: Int
+}
+
+type WorkflowConnection {
+  edges: [WorkflowEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+input WorkflowDefinitionInput {
+  createTime: Int
+  createdAt: Int
+  createdBy: String
+  description: String
+  inputParameters: [String]
+  inputTemplate: String
+  name: String!
+  outputParameters: String
+  ownerApp: String
+  ownerEmail: String
+  restartable: Boolean
+  schemaVersion: Int
+  tasks: [TaskInput!]!
+  timeoutPolicy: TimeoutPolicy
+  timeoutSeconds: Int!
+  updateTime: Int
+  updatedAt: Int
+  updatedBy: String
+  variables: String
+  version: Int
+}
+
+type WorkflowEdge {
+  cursor: String!
+  node: Workflow!
+}
+
+input WorkflowInput {
+  description: String
+  name: String!
+  tasks: String!
+  timeoutSeconds: Int!
+  version: Int
+}
+
+type WorkflowInstanceDetail {
+  meta: Workflow
+  result: ExecutedWorkflow!
+  subworkflows: [SubWorkflow!]
+}
+
+enum WorkflowTaskType {
+  DECISION
+  DO_WHILE
+  DYNAMIC
+  EVENT
+  EXCLUSIVE_JOIN
+  FORK_JOIN
+  FORK_JOIN_DYNAMIC
+  HTTP
+  HUMAN
+  INLINE
+  JOIN
+  JSON_JQ_TRANSFORM
+  KAFKA_PUBLISH
+  LAMBDA
+  SET_VARIABLE
+  SIMPLE
+  START_WORKFLOW
+  SUB_WORKFLOW
+  SWITCH
+  TERMINATE
+  USER_DEFINED
+  WAIT
+}
 
 type Zone implements Node {
   createdAt: String!

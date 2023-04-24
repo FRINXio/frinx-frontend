@@ -1,25 +1,25 @@
+// TODO: unfinished SubWorkflow component when workflowInstanceDetail Query is finished - not implementing in current PR because of its size
+
 import React from 'react';
 import { Spinner, Td, Tr, Text } from '@chakra-ui/react';
-import { ExecutedWorkflowTask } from '@frinx/shared/src';
-import { ExecutedWorkflowItem } from '../executed-workflow-item';
+import { WorkflowInstanceDetailQuery } from '../../../../../__generated__/graphql';
 
-type ExecutedSubworkflowTask = ExecutedWorkflowTask & { inputData: Record<string, string> };
-type ExecutedSubWorkflows = {
-  isLoading: boolean;
-  subWorkflows: ExecutedSubworkflowTask[];
-};
 type Props = {
-  workflowId: string;
-  subWorkflows: Map<string, ExecutedSubWorkflows>;
+  workflowInstanceDetail: WorkflowInstanceDetailQuery['workflowInstanceDetail'];
+  isLoadingSubWorkflows: boolean;
 };
-function ExecutedSubWorkflowTable({ workflowId, subWorkflows }: Props) {
-  const workflows = subWorkflows.get(workflowId);
 
-  if (workflows == null) {
-    return null;
+function ExecutedSubWorkflowTable({ workflowInstanceDetail, isLoadingSubWorkflows }: Props) {
+  const subWorkflows = workflowInstanceDetail?.subworkflows;
+
+  if (subWorkflows == null || subWorkflows.length === 0) {
+    return (
+      <Tr>
+        <Td>No subworkflows found for this workflow</Td>
+      </Tr>
+    );
   }
-
-  if (workflows.isLoading) {
+  if (isLoadingSubWorkflows) {
     return (
       <Tr>
         <Td>
@@ -29,7 +29,7 @@ function ExecutedSubWorkflowTable({ workflowId, subWorkflows }: Props) {
     );
   }
 
-  if (workflows.subWorkflows.length === 0) {
+  if (subWorkflows.length === 0) {
     return (
       <Tr>
         <Td />
@@ -42,10 +42,16 @@ function ExecutedSubWorkflowTable({ workflowId, subWorkflows }: Props) {
     );
   }
 
+  // eslint-disable-next-line no-lone-blocks
+  {
+    /* <ExecutedWorkflowItem key={workflowDetail.} workflow={w}/> */
+  }
   return (
     <>
-      {workflows.subWorkflows.map((w) => (
-        <ExecutedWorkflowItem key={w.subWorkflowId} workflow={w} />
+      {subWorkflows.map(() => (
+        <Tr>
+          <Td>Some subworkflow</Td>
+        </Tr>
       ))}
     </>
   );
