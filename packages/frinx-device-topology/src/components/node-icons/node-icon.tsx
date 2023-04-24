@@ -1,19 +1,20 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
-import { PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import { GraphNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
+import NodeIconImage from './node-icon-image';
 import {
   getDeviceNodeTransformProperties,
   getNodeBackgroundColor,
-  getNodeIconColor,
   getNodeInterfaceGroups,
   getNodeTextColor,
 } from './node-icon.helpers';
+import NodeInterface from './node-interface';
 
 type Props = {
-  positions: PositionsWithGroupsMap;
+  positions: PositionsWithGroupsMap<GraphNodeInterface>;
   isSelected: boolean;
   isCommon: boolean;
   isFocused: boolean;
@@ -81,24 +82,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
       >
         {device.name}
       </Text>
-      <G
-        fill="none"
-        stroke={getNodeIconColor({ isSelected, change })}
-        strokeWidth="2px"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        transform={sizeTransform}
-      >
-        <path strokeWidth="1.2" d="M9 21H3v-6M15 3h6v6M21 3l-7 7M3 21l7-7" />
-        <g strokeWidth="1.2">
-          <path transform="rotate(90 12 1)" strokeWidth="1.2" d="M15 3h6v6" />
-          <path strokeWidth="1.2" d="m9.975 3-7 7" transform="rotate(90 6.488 6.513)" />
-        </g>
-        <g strokeWidth="1.2">
-          <path transform="rotate(-90 23.06 12)" strokeWidth="1.2" d="M15 3h6v6" />
-          <path strokeWidth="1.2" d="m9.975 3-7 7" transform="rotate(-90 17.547 6.488)" />
-        </g>
-      </G>
+      <NodeIconImage sizeTransform={sizeTransform} />
       {isSelectedForCommonSearch && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
@@ -118,39 +102,21 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         />
       )}
       <G>
-        {interfaceGroups.map(([groupId, data]) => {
+        {interfaceGroups.map(([, data]) => {
           const iPosition = data.position;
           const sourceInterface = data.interfaces.find((i) => i.id === selectedEdge?.source.interface);
           const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
-          return iPosition ? (
-            <G
-              transform={isFocused ? `translate3d(${iPosition.x - x}px, ${iPosition.y - y}px, 0)` : undefined}
-              opacity={isFocused ? 1 : 0}
-              key={groupId}
-            >
-              {sourceInterface != null && (
-                <Text
-                  data-id={sourceInterface.id}
-                  fontSize="sm"
-                  transform="translate(5px, -5px)"
-                  fill={sourceInterface.status === 'unknown' ? 'red' : 'black'}
-                >
-                  {sourceInterface.name}
-                </Text>
-              )}
-              {targetInterface != null && (
-                <Text
-                  data-id={targetInterface.id}
-                  fontSize="sm"
-                  transform="translate(5px, -5px)"
-                  fill={targetInterface.status === 'unknown' ? 'red' : 'black'}
-                >
-                  {targetInterface.name}
-                </Text>
-              )}
-              <Circle r="4px" fill="purple" key={groupId} />
-            </G>
-          ) : null;
+          return (
+            <NodeInterface
+              position={{
+                x: iPosition.x - x,
+                y: iPosition.y - y,
+              }}
+              sourceInterface={sourceInterface}
+              targetInterface={targetInterface}
+              isFocused={isFocused}
+            />
+          );
         })}
       </G>
     </G>

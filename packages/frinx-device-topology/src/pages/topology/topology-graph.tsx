@@ -1,11 +1,11 @@
 import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared/src';
-import React, { FunctionComponent, useRef } from 'react';
+import React, { useRef, VoidFunctionComponent } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
 import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
-import { height, Position, width } from './graph.helpers';
+import { ensureNodeHasDevice, height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './nodes';
 
@@ -15,7 +15,7 @@ type Props = {
   onCommonNodesSearch: (nodeIds: string[]) => void;
 };
 
-const TopologyGraph: FunctionComponent<Props> = ({
+const TopologyGraph: VoidFunctionComponent<Props> = ({
   isCommonNodesFetching,
   onNodePositionUpdate,
   onCommonNodesSearch,
@@ -72,7 +72,7 @@ const TopologyGraph: FunctionComponent<Props> = ({
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
       </svg>
-      {selectedNode != null && (
+      {selectedNode != null && ensureNodeHasDevice(selectedNode) && (
         <Box
           position="absolute"
           top={2}

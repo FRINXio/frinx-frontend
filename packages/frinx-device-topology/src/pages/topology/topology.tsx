@@ -1,12 +1,56 @@
+import { Box, Container, Flex, FormControl, FormLabel, Heading, Select } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import StateProvider from '../../state.provider';
-import TopologyContainer from './topology-container';
+import LabelsFilter from '../../components/labels-filter/labels-filter';
+import VersionSelect from '../../components/version-select/version-select';
+import { setTopologyLayer } from '../../state.actions';
+import { useStateContext } from '../../state.provider';
+import { TopologyLayer } from '../../state.reducer';
+import NetTopologyContainer from './net-topology.container';
+import TopologyContainer from './topology.container';
 
 const Topology: VoidFunctionComponent = () => {
+  const { state, dispatch } = useStateContext();
+  const { mode, topologyLayer } = state;
+
   return (
-    <StateProvider>
-      <TopologyContainer />
-    </StateProvider>
+    <Container maxWidth={1280} cursor={mode === 'NORMAL' ? 'default' : 'not-allowed'}>
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h1" size="xl">
+          Device topology
+        </Heading>
+      </Flex>
+      <Flex gridGap={4}>
+        <FormControl width="sm" paddingBottom="24px">
+          <FormLabel marginBottom={4}>Select layer:</FormLabel>
+          <Select
+            background="white"
+            onChange={(event) => {
+              dispatch(setTopologyLayer(event.target.value as TopologyLayer));
+            }}
+          >
+            {['LLDP', 'BGP-LS'].map((option) => (
+              <option value={option} key={option}>
+                {option}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+        {topologyLayer === 'LLDP' && (
+          <>
+            <Box flex={1}>
+              <VersionSelect />
+            </Box>
+            <Box flex={1}>
+              <LabelsFilter />
+            </Box>
+          </>
+        )}
+      </Flex>
+      <Box>
+        {topologyLayer === 'LLDP' && <TopologyContainer />}
+        {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
+      </Box>
+    </Container>
   );
 };
 
