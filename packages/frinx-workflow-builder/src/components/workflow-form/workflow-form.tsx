@@ -121,7 +121,7 @@ const WorkflowForm: FC<Props> = ({
   useEffect(() => {
     if (workflow.description) {
       const { labels } = JSON.parse(workflow.description);
-      tagsInput.setSelectedTags(labels);
+      tagsInput.handleOnSelectionChange([...labels]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -134,6 +134,8 @@ const WorkflowForm: FC<Props> = ({
     handleChange(e);
     handleOnChangeNotify();
   };
+  console.log(tagsInput.selectedTags);
+  
 
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
 

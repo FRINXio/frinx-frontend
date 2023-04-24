@@ -4,7 +4,6 @@ export type TagsInputReturnType = {
   selectedTags: string[];
   handleTagCreation: (tag: string) => void;
   handleOnSelectionChange: (tags?: string[]) => void;
-  setSelectedTags: (value: React.SetStateAction<string[]>) => void;
 };
 
 const useTagsInput = (tags: string[] = []): TagsInputReturnType => {
@@ -21,7 +20,6 @@ const useTagsInput = (tags: string[] = []): TagsInputReturnType => {
     selectedTags,
     handleTagCreation,
     handleOnSelectionChange,
-    setSelectedTags,
   };
 };
 
