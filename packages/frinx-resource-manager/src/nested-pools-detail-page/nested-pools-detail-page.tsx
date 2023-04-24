@@ -2,7 +2,7 @@ import { Box, Heading, Progress } from '@chakra-ui/react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { unwrap, useNotifications, useMinisearch, useTags } from '@frinx/shared/src';
+import { unwrap, useNotifications, useMinisearch, useTags, omitNullValue } from '@frinx/shared/src';
 import PageContainer from '../components/page-container';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {
@@ -94,9 +94,10 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
 
     variables: { poolId: unwrap(poolId) },
   });
-  const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) => {
-    return NestedPool;
-  });
+  const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) =>
+    NestedPool !== null ? NestedPool : null,
+  ).filter(omitNullValue);
+
   const { results, searchText, setSearchText } = useMinisearch({ items: resources });
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
 
@@ -108,7 +109,6 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   if (poolId == null) {
     return null;
   }
-  console.log(resources, poolData);
 
   const handleOnClearSearch = () => {
     setSearchText('');
@@ -144,6 +144,8 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     return true;
   });
 
+  console.log(resourcePools);
+
   if (isLoadingPool) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
@@ -163,7 +165,6 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
         setSearchText={setSearchText}
         searchText={searchText}
         selectedTags={selectedTags}
-        selectedResourceType=""
         clearAllTags={clearAllTags}
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
