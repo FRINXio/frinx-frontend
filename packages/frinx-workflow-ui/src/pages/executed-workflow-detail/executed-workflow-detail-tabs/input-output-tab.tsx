@@ -33,6 +33,20 @@ const replaceJsonAndArray = (key: string, value: string) => {
   return value;
 };
 
+const getJSON = (data: Record<string, unknown> | unknown, isEscaped: boolean) => {
+  return isEscaped
+    ? JSON.stringify(data, replaceJsonAndArray, 2)
+        .replace(/\\n/g, '\\n')
+        .replace(/\\'/g, "\\'")
+        .replace(/\\"/g, '\\"')
+        .replace(/\\&/g, '\\&')
+        .replace(/\\r/g, '\\r')
+        .replace(/\\t/g, '\\t')
+        .replace(/\\b/g, '\\b')
+        .replace(/\\f/g, '\\f')
+    : unescapeJs(JSON.stringify(data, replaceJsonAndArray, 2));
+};
+
 const InputOutputTab: VoidFunctionComponent<Props> = ({
   isEscaped,
   input,
@@ -43,20 +57,6 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
   externalOutputPayloadStoragePath,
 }) => {
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
-
-  const getJSON = (data: Record<string, unknown> | unknown) => {
-    return isEscaped
-      ? JSON.stringify(data, replaceJsonAndArray, 2)
-          .replace(/\\n/g, '\\n')
-          .replace(/\\'/g, "\\'")
-          .replace(/\\"/g, '\\"')
-          .replace(/\\&/g, '\\&')
-          .replace(/\\r/g, '\\r')
-          .replace(/\\t/g, '\\t')
-          .replace(/\\b/g, '\\b')
-          .replace(/\\f/g, '\\f')
-      : unescapeJs(JSON.stringify(data, replaceJsonAndArray, 2));
-  };
 
   return (
     <>
@@ -98,7 +98,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getJSON(input)} isReadOnly id="workflowInput" variant="filled" minH={500} />
+          <Textarea value={getJSON(input, isEscaped)} isReadOnly id="workflowInput" variant="filled" minH={500} />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -126,7 +126,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getJSON(output)} isReadOnly id="workflowOutput" variant="filled" minH={500} />
+          <Textarea value={getJSON(output, isEscaped)} isReadOnly id="workflowOutput" variant="filled" minH={500} />
         </Box>
       </SimpleGrid>
     </>
