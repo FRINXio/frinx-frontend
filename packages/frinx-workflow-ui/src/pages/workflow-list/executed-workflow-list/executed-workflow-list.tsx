@@ -1,4 +1,4 @@
-import { Container, Progress, Text, VStack } from '@chakra-ui/react';
+import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -60,8 +60,8 @@ const EXECUTED_WORKFLOW_QUERY = gql`
 `;
 
 const BULK_PAUSE_MUTATION = gql`
-  mutation BulkPause($workflowIds: [String!]!) {
-    bulkPauseWorkflow(workflowIds: $workflowIds) {
+  mutation BulkPause($executedWorkflowIds: [String!]!) {
+    bulkPauseWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -69,8 +69,8 @@ const BULK_PAUSE_MUTATION = gql`
 `;
 
 const BULK_RESUME_MUTATION = gql`
-  mutation BulkResume($workflowIds: [String!]!) {
-    bulkResumeWorkflow(workflowIds: $workflowIds) {
+  mutation BulkResume($executedWorkflowIds: [String!]!) {
+    bulkResumeWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -78,8 +78,8 @@ const BULK_RESUME_MUTATION = gql`
 `;
 
 const BULK_RETRY_MUTATION = gql`
-  mutation BulkRetry($workflowIds: [String!]!) {
-    bulkRetryWorkflow(workflowIds: $workflowIds) {
+  mutation BulkRetry($executedWorkflowIds: [String!]!) {
+    bulkRetryWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -87,8 +87,8 @@ const BULK_RETRY_MUTATION = gql`
 `;
 
 const BULK_TERMINATE_MUTATION = gql`
-  mutation BulkTerminate($workflowIds: [String!]!) {
-    bulkTerminateWorkflow(workflowIds: $workflowIds) {
+  mutation BulkTerminate($executedWorkflowIds: [String!]!) {
+    bulkTerminateWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -96,8 +96,8 @@ const BULK_TERMINATE_MUTATION = gql`
 `;
 
 const BULK_RESTART_MUTATION = gql`
-  mutation BulkRestart($workflowIds: [String!]!) {
-    bulkRestartWorkflow(workflowIds: $workflowIds) {
+  mutation BulkRestart($executedWorkflowIds: [String!]!) {
+    bulkRestartWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -108,6 +108,7 @@ const ExecutedWorkflowList = () => {
   const executedWorkflowsCtx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), []);
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToastNotification } = useNotifications();
+  const toast = useToast();
 
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
@@ -185,31 +186,31 @@ const ExecutedWorkflowList = () => {
     switch (action) {
       case 'pause':
         wasSuccessfull = await onBulkPause(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'restart':
         wasSuccessfull = await onBulkRestart(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'resume':
         wasSuccessfull = await onBulkResume(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'retry':
         wasSuccessfull = await onBulkRetry(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'terminate':
         wasSuccessfull = await onBulkTerminate(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
@@ -273,6 +274,23 @@ const ExecutedWorkflowList = () => {
             onWorkflowSelect={handleOnWorkflowSelect}
             selectedWorkflows={selectedWorkflows}
             isFlat={isFlat}
+            onSubworkflowStatusClick={(status) => {
+              if (status === 'UNKNOWN') {
+                toast({
+                  description: "UNKNOWN status is not supported for filtering of executed workflows.",
+                  status: 'warning',
+                  duration: 4000,
+                  isClosable: true,
+                })
+              } else {
+                setSearchParams(
+                  makeURLSearchParamsFromObject({
+                    ...makeFilterFromSearchParams(searchParams),
+                    status: [...makeFilterFromSearchParams(searchParams).status, status]
+                  }),
+                );
+              }
+            }}
           />
         )}
       </VStack>
