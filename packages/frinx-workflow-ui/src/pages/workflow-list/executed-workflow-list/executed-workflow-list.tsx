@@ -1,4 +1,5 @@
 import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
+import Pagination from '@frinx/inventory-client/src/components/pagination';
 import { useNotifications } from '@frinx/shared/src';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -55,6 +56,10 @@ const EXECUTED_WORKFLOW_QUERY = gql`
           workflowVersion
         }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
     }
   }
 `;
@@ -109,6 +114,7 @@ const ExecutedWorkflowList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToastNotification } = useNotifications();
   const toast = useToast();
+  const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
 
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
@@ -119,7 +125,13 @@ const ExecutedWorkflowList = () => {
     ExecutedWorkflowsQueryVariables
   >({
     query: EXECUTED_WORKFLOW_QUERY,
-    variables: makeSearchQueryVariableFromFilter(makeFilterFromSearchParams(searchParams)),
+    variables: {
+      ...makeSearchQueryVariableFromFilter(makeFilterFromSearchParams(searchParams)),
+      pagination: {
+        size: makeFilterFromSearchParams(searchParams).workflowsPerPage,
+        start: currentStartOfPage
+      },
+    },
     context: executedWorkflowsCtx,
   });
 
@@ -231,11 +243,24 @@ const ExecutedWorkflowList = () => {
     }
   };
 
+  const handleOnNext = () => {
+    const { workflowsPerPage } = makeFilterFromSearchParams(searchParams);
+    setCurrentStartOfPage(currentStartOfPage + workflowsPerPage);
+  }
+
+  const handleOnPrevious = () => {
+    const { workflowsPerPage } = makeFilterFromSearchParams(searchParams);
+    setCurrentStartOfPage(currentStartOfPage - workflowsPerPage);
+  }
+
   return (
     <Container maxWidth={1200} mx="auto">
       <VStack spacing={10} alignItems="stretch">
         <ExecutedWorkflowSearchBox
-          onSearchBoxSubmit={(searchInput) => setSearchParams(makeURLSearchParamsFromObject(searchInput))}
+          onSearchBoxSubmit={(searchInput) => {
+            setCurrentStartOfPage(0);
+            setSearchParams(makeURLSearchParamsFromObject(searchInput));
+          }}
           onTableTypeChange={() => setIsFlat((prev) => !prev)}
           isFlat={isFlat}
           initialSearchValues={makeFilterFromSearchParams(searchParams)}
@@ -293,6 +318,13 @@ const ExecutedWorkflowList = () => {
             }}
           />
         )}
+
+        <Pagination
+          hasNextPage={data?.executedWorkflows?.pageInfo.hasNextPage ?? false}
+          hasPreviousPage={data?.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
+          onNext={handleOnNext}
+          onPrevious={handleOnPrevious}
+        />
       </VStack>
     </Container>
   );
