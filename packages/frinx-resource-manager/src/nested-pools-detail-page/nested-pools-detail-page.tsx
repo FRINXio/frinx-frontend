@@ -144,8 +144,6 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     return true;
   });
 
-  console.log(resourcePools);
-
   if (isLoadingPool) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
