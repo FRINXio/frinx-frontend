@@ -14,11 +14,11 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { sortDescBy, sortAscBy } from '@frinx/workflow-ui/src/helpers/utils.helpers';
 import FeatherIcon from 'feather-icons-react';
 import { callbackUtils, Queue } from '@frinx/shared/src';
 import { usePagination } from '../../../common/pagination-hook';
 import Paginator from '../../../common/pagination';
+import { orderBy } from 'lodash';
 
 function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
   const query = keyword.toUpperCase();
@@ -58,11 +58,8 @@ const PollData = () => {
   }, [keywords, data, setItemList]);
 
   const sortArray = (key: string) => {
-    const sortedArray = data;
-
-    sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
-    setSorted(!sorted);
-    setData(sortedArray);
+    setItemList(sorted ? orderBy(data, [key], ['desc']) : orderBy(data, [key], ['asc']));
+    setSorted((prev) => !prev);
   };
 
   const pollTable = () => {
