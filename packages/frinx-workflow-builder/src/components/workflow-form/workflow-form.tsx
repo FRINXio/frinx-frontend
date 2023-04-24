@@ -135,7 +135,6 @@ const WorkflowForm: FC<Props> = ({
     handleOnChangeNotify();
   };
   console.log(tagsInput.selectedTags);
-  
 
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
 
