@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import {
   callbackUtils,
-  convertToTasks,
+  ClientWorkflow,
   ExecuteWorkflowModal,
   ExtendedTask,
   getElementsFromWorkflow,
@@ -68,14 +68,14 @@ const edgeTypes = {
 };
 
 type Props = {
-  workflow: Workflow<ExtendedTask>;
-  workflows: Workflow[];
+  workflow: ClientWorkflow<ExtendedTask>;
+  workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
   onWorkflowChange: (workflow: WorkflowParam) => void;
   onFileImport: (file: File) => void;
-  onFileExport: (workflow: Workflow) => void;
+  onFileExport: (workflow: Workflow) => void; // eslint-disable-line react/no-unused-prop-types
   onWorkflowDelete: () => void;
-  onWorkflowClone: (workflow: Workflow, name: string) => void;
+  onWorkflowClone: (workflow: Workflow, name: string) => void; // eslint-disable-line react/no-unused-prop-types
 };
 
 const App: VoidFunctionComponent<Props> = ({
@@ -84,9 +84,7 @@ const App: VoidFunctionComponent<Props> = ({
   workflows,
   taskDefinitions,
   onFileImport,
-  onFileExport,
   onWorkflowDelete,
-  onWorkflowClone,
 }) => {
   const { addToastNotification } = useNotifications();
   const workflowDefinitionDisclosure = useDisclosure();
@@ -100,7 +98,7 @@ const App: VoidFunctionComponent<Props> = ({
   );
   const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [workflowToExecute, setWorkflowToExecute] = useState<Workflow<ExtendedTask>>(workflow);
+  const [workflowToExecute] = useState<ClientWorkflow<ExtendedTask>>(workflow);
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => ({
@@ -212,16 +210,18 @@ const App: VoidFunctionComponent<Props> = ({
     setElements(newElements);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleWorkflowClone = (wfName: string) => {
-    const newTasks = convertToTasks(elements);
-    const { tasks, ...rest } = workflow;
-    onWorkflowClone(
-      {
-        ...rest,
-        tasks: newTasks,
-      },
-      wfName,
-    );
+    // TODO: FD-513 do the fix in next PR
+    // const newTasks = convertToTasks(elements);
+    // const { tasks, ...rest } = workflow;
+    // onWorkflowClone(
+    //   {
+    //     ...rest,
+    //     tasks: newTasks,
+    //   },
+    //   wfName,
+    // );
   };
 
   const removeEdgeContextValue = useMemo(
@@ -243,41 +243,41 @@ const App: VoidFunctionComponent<Props> = ({
     setHasUnsavedChanges(isWorkflowChanged);
   };
 
-  const handleOnSaveWorkflow = (editedWorkflow: Workflow<ExtendedTask>, shouldOpenExecuteModal = false) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleOnSaveWorkflow = (editedWorkflow: ClientWorkflow<ExtendedTask>, shouldOpenExecuteModal = false) => {
+    // TODO: FD-513 do the fix in next PR
     try {
-      const { tasks, ...rest } = editedWorkflow;
-      const newTasks = convertToTasks(elements);
-
-      setWorkflowToExecute({
-        ...editedWorkflow,
-        tasks: newTasks,
-      });
-
-      const { putWorkflow } = callbackUtils.getCallbacks;
-      putWorkflow([
-        {
-          ...rest,
-          tasks: newTasks,
-        },
-      ])
-        .then(() => {
-          setHasUnsavedChanges(false);
-          if (shouldOpenExecuteModal) {
-            executeWorkflowModal.onOpen();
-          }
-          addToastNotification({
-            title: 'Workflow Saved',
-            content: 'Workflow was successfully saved',
-            type: 'success',
-          });
-        })
-        .catch((e) => {
-          addToastNotification({
-            title: 'Saving wofklow error',
-            content: `Workflow could not be saved: ${e}`,
-            type: 'error',
-          });
-        });
+      // const { tasks, ...rest } = editedWorkflow;
+      // const newTasks = convertToTasks(elements);
+      // setWorkflowToExecute({
+      //   ...editedWorkflow,
+      //   tasks: newTasks,
+      // });
+      //   const { putWorkflow } = callbackUtils.getCallbacks;
+      //   putWorkflow([
+      //     {
+      //       ...rest,
+      //       tasks: newTasks,
+      //     },
+      //   ])
+      //     .then(() => {
+      //       setHasUnsavedChanges(false);
+      //       if (shouldOpenExecuteModal) {
+      //         executeWorkflowModal.onOpen();
+      //       }
+      //       addToastNotification({
+      //         title: 'Workflow Saved',
+      //         content: 'Workflow was successfully saved',
+      //         type: 'success',
+      //       });
+      //     })
+      //     .catch((e) => {
+      //       addToastNotification({
+      //         title: 'Saving wofklow error',
+      //         content: `Workflow could not be saved: ${e}`,
+      //         type: 'error',
+      //       });
+      //     });
     } catch (e) {
       addToastNotification({
         title: 'Conversion workflow error',
@@ -302,7 +302,7 @@ const App: VoidFunctionComponent<Props> = ({
     return executeWorkflow({
       input: values,
       name: workflow.name,
-      version: workflow.version,
+      version: workflow.version ?? 1,
     })
       .then((res) => {
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
@@ -347,12 +347,14 @@ const App: VoidFunctionComponent<Props> = ({
                   onSaveWorkflowBtnClick={() => handleOnSaveWorkflow(workflow)}
                   onFileImport={onFileImport}
                   onFileExport={() => {
-                    const newTasks = convertToTasks(elements);
-                    const { tasks, ...rest } = workflow;
-                    onFileExport({
-                      ...rest,
-                      tasks: newTasks,
-                    });
+                    // TODO: FD-513 do the fix in next PR
+                    // eslint-disable-next-line no-console
+                    // const newTasks = convertToTasks(elements);
+                    // const { tasks, ...rest } = workflow;
+                    // onFileExport({
+                    //   ...rest,
+                    //   tasks: newTasks,
+                    // });
                   }}
                   onWorkflowDelete={onWorkflowDelete}
                   onWorkflowClone={handleWorkflowClone}
@@ -425,12 +427,15 @@ const App: VoidFunctionComponent<Props> = ({
                 </Heading>
                 <WorkflowForm
                   workflow={workflow}
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   onSubmit={(partialWorkflow) => {
-                    handleOnWorkflowChange({ ...workflow, ...partialWorkflow }, true);
+                    // TODO: FD-513 do the fix in next PR
+                    // handleOnWorkflowChange({ ...workflow, ...partialWorkflow }, true);
                     setIsEditing(false);
                   }}
                   onClose={() => {
-                    handleOnWorkflowChange(workflow, false);
+                    // TODO: FD-513 do the fix in next PR
+                    // handleOnWorkflowChange(workflow, false);
                     setIsEditing(false);
                   }}
                   canEditName={false}

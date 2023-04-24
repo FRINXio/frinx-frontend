@@ -1,6 +1,6 @@
 import { Box, Container, useDisclosure } from '@chakra-ui/react';
 import Pagination from '@frinx/inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
-import { jsonParse, Task } from '@frinx/shared/src';
+import { jsonParse, ClientWorkflow, Task } from '@frinx/shared/src';
 import { debounce } from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -14,7 +14,6 @@ import {
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
-import { Workflow } from './workflow-types';
 
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
@@ -75,7 +74,7 @@ const WorkflowDefinitions = () => {
     keyword: null,
     labels: [],
   });
-  const [activeWf, setActiveWf] = useState<Workflow>();
+  const [activeWf, setActiveWf] = useState<ClientWorkflow>();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -110,7 +109,7 @@ const WorkflowDefinitions = () => {
     [],
   );
 
-  const handleDeleteWorkflow = async (workflow: Workflow) => {
+  const handleDeleteWorkflow = async (workflow: ClientWorkflow) => {
     const { name, version } = workflow;
     await deleteWorkflow({
       name,
@@ -118,7 +117,7 @@ const WorkflowDefinitions = () => {
     });
   };
 
-  const updateFavourite = (workflow: Workflow) => {
+  const updateFavourite = (workflow: ClientWorkflow) => {
     let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
 
     // if workflow doesn't contain description attr. at all
@@ -149,7 +148,7 @@ const WorkflowDefinitions = () => {
     return null;
   }
 
-  const workflows =
+  const workflows: ClientWorkflow[] =
     workflowsData?.workflows.edges.map((e) => {
       const { node } = e;
       const parsedLabels = jsonParse<DescriptionJSON>(e.node.description)?.labels ?? [];

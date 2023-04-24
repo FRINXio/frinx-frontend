@@ -17,7 +17,7 @@ import {
 import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Workflow, GraphqlWorkflow } from '../../helpers/workflow-api.types';
+import { Workflow, GraphqlWorkflow, ClientWorkflow } from '../../helpers/workflow-api.types';
 import {
   getDynamicInputParametersFromWorkflow,
   getInitialValuesFromParsedInputParameters,
@@ -27,7 +27,7 @@ import {
 import ExecuteWorkflowModalFormInput from './execute-workflow-modal-form-input';
 
 type Props = {
-  workflow: Workflow | GraphqlWorkflow;
+  workflow: Workflow | ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

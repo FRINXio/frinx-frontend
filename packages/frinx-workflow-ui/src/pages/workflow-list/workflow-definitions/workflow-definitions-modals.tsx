@@ -1,5 +1,11 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications, callbackUtils, ScheduledWorkflow, ExecuteWorkflowModal } from '@frinx/shared/src';
+import {
+  useNotifications,
+  callbackUtils,
+  ScheduledWorkflow,
+  ExecuteWorkflowModal,
+  ClientWorkflow,
+} from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
@@ -8,18 +14,17 @@ import {
   ScheduledWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
-import { Workflow } from './workflow-types';
 
 type Props = {
-  workflows: Workflow[];
-  activeWorkflow?: Workflow;
+  workflows: ClientWorkflow[];
+  activeWorkflow?: ClientWorkflow;
   definitionModal: UseDisclosureReturn;
   diagramModal: UseDisclosureReturn;
   dependencyModal: UseDisclosureReturn;
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  onDeleteWorkflow: (workflow: Workflow) => Promise<void>;
+  onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
 };
 
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({

@@ -13,11 +13,10 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
-import { jsonParse } from '@frinx/shared/src';
-import { Workflow } from './workflow-types';
+import { ClientWorkflow, jsonParse } from '@frinx/shared/src';
 
 type Props = {
-  workflow: Workflow;
+  workflow: ClientWorkflow;
   onDeleteBtnClick: () => void;
   onFavouriteBtnClick: () => void;
   onDiagramBtnClick: () => void;
@@ -54,7 +53,7 @@ const WorkflowActions: FC<Props> = ({
           size="sm"
           icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
           as={Link}
-          to={`../builder/${workflow.name}/${workflow.version}`}
+          to={`../builder/${workflow.id}`}
         />
         <IconButton
           data-cy={`exec-${workflow.name}-${workflow.version}`}
