@@ -1351,9 +1351,13 @@ export type UpdateWorkflowMutationVariables = Exact<{
 
 export type UpdateWorkflowMutation = { __typename?: 'Mutation', updateWorkflow: { __typename?: 'UpdateWorkflowPayload', workflow: { __typename?: 'Workflow', createdBy: string | null, updatedAt: string | null, tasks: string | null, name: string, description: string | null, version: number | null } } };
 
-export type CreateWorkflowMutationVariables = Exact<{
-  input: CreateWorkflowInput;
+export type ExecuteWorkflowByNameMutationVariables = Exact<{
+  inputParameters: Scalars['String'];
+  workflowName: Scalars['String'];
+  workflowVersion?: InputMaybe<Scalars['Int']>;
+  correlationId?: InputMaybe<Scalars['String']>;
+  priority?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type CreateWorkflowMutation = { __typename?: 'Mutation', createWorkflow: { __typename?: 'CreateWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, createdAt: string | null } } };
+export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };

@@ -106,6 +106,24 @@ const UPDATE_WORKFLOW_MUTATION = gql`
   }
 `;
 
+const EXECUTE_WORKFLOW_MUTATION = gql`
+  mutation ExecuteWorkflowByName(
+    $inputParameters: String!
+    $workflowName: String!
+    $workflowVersion: Int
+    $correlationId: String
+    $priority: Int
+  ) {
+    executeWorkflowByName(
+      inputParameters: $inputParameters
+      workflowName: $workflowName
+      workflowVersion: $workflowVersion
+      correlationId: $correlationId
+      priority: $priority
+    )
+  }
+`;
+
 const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const ctx = useMemo(
     () => ({
@@ -133,6 +151,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
     UPDATE_WORKFLOW_MUTATION,
   );
+
+  const [, executeWorkflow] = useMutation(EXECUTE_WORKFLOW_MUTATION);
 
   const { addToastNotification } = useNotifications();
 
@@ -301,6 +321,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
           onWorkflowDelete={handleWorkflowDelete}
           onWorkflowClone={handleWorkflowClone}
           updateWorkflow={updateWorkflow}
+          executeWorkflow={executeWorkflow}
         />
       </ReactFlowProvider>
     </TaskActionsProvider>

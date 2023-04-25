@@ -2,7 +2,6 @@ import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@
 import { OperationResult } from 'urql';
 import { convertToTasks } from '@frinx/shared';
 import {
-  callbackUtils,
   ClientWorkflow,
   ExecuteWorkflowModal,
   ExtendedTask,
@@ -44,7 +43,12 @@ import StartEndNode from './components/workflow-nodes/start-end-node';
 import { EdgeRemoveContext } from './edge-remove-context';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
-import { UpdateWorkflowMutation, UpdateWorkflowMutationVariables } from './__generated__/graphql';
+import {
+  ExecuteWorkflowByNameMutation,
+  ExecuteWorkflowByNameMutationVariables,
+  UpdateWorkflowMutation,
+  UpdateWorkflowMutationVariables,
+} from './__generated__/graphql';
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -67,6 +71,9 @@ type Props = {
   onWorkflowDelete: () => void;
   onWorkflowClone: (workflow: ClientWorkflow, name: string) => void; // eslint-disable-line react/no-unused-prop-types
   updateWorkflow: (variables: UpdateWorkflowMutationVariables) => Promise<OperationResult<UpdateWorkflowMutation>>;
+  executeWorkflow: (
+    variables: ExecuteWorkflowByNameMutationVariables,
+  ) => Promise<OperationResult<ExecuteWorkflowByNameMutation>>;
 };
 
 const App: VoidFunctionComponent<Props> = ({
@@ -79,6 +86,7 @@ const App: VoidFunctionComponent<Props> = ({
   onWorkflowClone,
   onWorkflowDelete,
   updateWorkflow,
+  executeWorkflow,
 }) => {
   const { addToastNotification } = useNotifications();
   const workflowDefinitionDisclosure = useDisclosure();
@@ -285,7 +293,7 @@ const App: VoidFunctionComponent<Props> = ({
     }
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+  const handleOnExecuteWorkflow = async (values: Record<string, string>): Promise<string | null> => {
     if (workflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
@@ -295,21 +303,18 @@ const App: VoidFunctionComponent<Props> = ({
       return null;
     }
 
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
-    return executeWorkflow({
-      input: values,
-      name: workflow.name,
-      version: workflow.version ?? 1,
-    })
-      .then((res) => {
-        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
-      })
-      .catch(() => {
-        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
-        return null;
+    try {
+      const result = await executeWorkflow({
+        inputParameters: JSON.stringify(values),
+        workflowName: workflow.name,
+        workflowVersion: workflow.version,
       });
+      addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+      return result.data?.executeWorkflowByName ?? null;
+    } catch {
+      addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
+      return null;
+    }
   };
 
   return (
