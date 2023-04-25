@@ -118,7 +118,7 @@ const WorkflowForm: FC<Props> = ({
   };
 
   const tagsInput = useTagsInput(
-    (function () {
+    (function getLabels() {
       try {
         return JSON.parse(workflow.description || '{}').labels || [];
       } catch (e) {
