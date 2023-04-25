@@ -129,7 +129,7 @@ const ExecutedWorkflowList = () => {
       ...makeSearchQueryVariableFromFilter(makeFilterFromSearchParams(searchParams)),
       pagination: {
         size: makeFilterFromSearchParams(searchParams).workflowsPerPage,
-        start: currentStartOfPage
+        start: currentStartOfPage,
       },
     },
     context: executedWorkflowsCtx,
@@ -246,12 +246,12 @@ const ExecutedWorkflowList = () => {
   const handleOnNext = () => {
     const { workflowsPerPage } = makeFilterFromSearchParams(searchParams);
     setCurrentStartOfPage(currentStartOfPage + workflowsPerPage);
-  }
+  };
 
   const handleOnPrevious = () => {
     const { workflowsPerPage } = makeFilterFromSearchParams(searchParams);
     setCurrentStartOfPage(currentStartOfPage - workflowsPerPage);
-  }
+  };
 
   return (
     <Container maxWidth={1200} mx="auto">
@@ -302,16 +302,16 @@ const ExecutedWorkflowList = () => {
             onSubworkflowStatusClick={(status) => {
               if (status === 'UNKNOWN') {
                 toast({
-                  description: "UNKNOWN status is not supported for filtering of executed workflows.",
+                  description: 'UNKNOWN status is not supported for filtering of executed workflows.',
                   status: 'warning',
                   duration: 4000,
                   isClosable: true,
-                })
+                });
               } else {
                 setSearchParams(
                   makeURLSearchParamsFromObject({
                     ...makeFilterFromSearchParams(searchParams),
-                    status: [...makeFilterFromSearchParams(searchParams).status, status]
+                    status: [...makeFilterFromSearchParams(searchParams).status, status],
                   }),
                 );
               }

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, { FC, Fragment, useMemo, useState } from 'react';
 import { Tr, Td, Checkbox, Icon } from '@chakra-ui/react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
 import ExecutedWorkflowStatusLabels from '../executed-workflow-status-labels';
@@ -71,7 +71,8 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
     }
   };
 
-  const hasProblemToLoadSubworkflows = workflowInstanceDetailId != null && workflowInstanceDetailError != null && !fetching;
+  const hasProblemToLoadSubworkflows =
+    workflowInstanceDetailId != null && workflowInstanceDetailError != null && !fetching;
   const canShowSubworkflows = (executedWorkflowId: string) => workflowInstanceDetailId === executedWorkflowId;
 
   return (

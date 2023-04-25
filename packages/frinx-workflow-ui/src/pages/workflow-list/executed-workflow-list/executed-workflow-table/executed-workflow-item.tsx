@@ -17,7 +17,9 @@ export function ExecutedWorkflowItem({ subworkflow, onSubworkflowStatusClick }: 
     <Tr backgroundColor="gray.50">
       <Td />
       <Td>
-        <Text paddingLeft={8} whiteSpace="nowrap">{executedSubworkflow.workflowId}</Text>
+        <Text paddingLeft={8} whiteSpace="nowrap">
+          {executedSubworkflow.workflowId}
+        </Text>
       </Td>
       <Td
         style={{

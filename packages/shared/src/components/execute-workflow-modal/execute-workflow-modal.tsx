@@ -17,7 +17,7 @@ import {
 import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Workflow, GraphqlWorkflow, ClientWorkflow } from '../../helpers/workflow-api.types';
+import { Workflow, ClientWorkflow } from '../../helpers/workflow-api.types';
 import {
   getDynamicInputParametersFromWorkflow,
   getInitialValuesFromParsedInputParameters,

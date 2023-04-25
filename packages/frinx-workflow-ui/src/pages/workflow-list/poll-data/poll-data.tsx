@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import moment from 'moment';
 import {
   Container,
   Icon,
@@ -14,11 +12,13 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import FeatherIcon from 'feather-icons-react';
 import { callbackUtils, Queue } from '@frinx/shared/src';
-import { usePagination } from '../../../common/pagination-hook';
-import Paginator from '../../../common/pagination';
+import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import Paginator from '../../../common/pagination';
+import { usePagination } from '../../../common/pagination-hook';
 
 function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
   const query = keyword.toUpperCase();
