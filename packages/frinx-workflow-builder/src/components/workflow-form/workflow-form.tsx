@@ -110,7 +110,6 @@ const WorkflowForm: FC<Props> = ({
     validateOnBlur: true,
   });
   const [newParam, setNewParam] = useState<string>('');
-  const tagsInput = useTagsInput();
 
   const handleOnChangeNotify = () => {
     if (onChangeNotify) {
@@ -118,13 +117,15 @@ const WorkflowForm: FC<Props> = ({
     }
   };
 
-  useEffect(() => {
-    if (workflow.description) {
-      const { labels } = JSON.parse(workflow.description);
-      tagsInput.handleOnSelectionChange([...labels]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const tagsInput = useTagsInput(
+    (function () {
+      try {
+        return JSON.parse(workflow.description || '{}').labels || [];
+      } catch (e) {
+        return [];
+      }
+    })(),
+  );
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);
