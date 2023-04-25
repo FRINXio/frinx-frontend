@@ -3,17 +3,18 @@ import { Table, Tbody, Box, Text } from '@chakra-ui/react';
 import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table/executed-workflow-flat-table-item';
 import ExecutedWorkflowTableHead from './executed-workflow-table-head';
 import ExecutedWorkflowHierarchicalTableItem from './executed-workflow-hierarchical-table/executed-workflow-hierarchical-table-item';
-import { ExecutedWorkflowsQuery } from '../../../../__generated__/graphql';
+import { ExecutedWorkflowStatus, ExecutedWorkflowsQuery } from '../../../../__generated__/graphql';
 import { SortProperty } from '../executed-workflow-list';
 
 type Props = {
   isFlat: boolean;
   sort: SortProperty;
-  onSortPropertyClick: (sortProperty: SortProperty) => void;
   workflows: ExecutedWorkflowsQuery;
   selectedWorkflows: string[];
+  onSortPropertyClick: (sortProperty: SortProperty) => void;
   onSelectAllWorkflows: () => void;
   onWorkflowSelect: (workflowId: string) => void;
+  onSubworkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowTable: FC<Props> = ({
@@ -22,6 +23,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
   onSelectAllWorkflows,
   onSortPropertyClick,
   onWorkflowSelect,
+  onSubworkflowStatusClick,
   selectedWorkflows,
   sort,
 }) => {
@@ -55,6 +57,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
                 selectedWorkflows={selectedWorkflows}
                 workflows={workflows.executedWorkflows}
                 sort={sort}
+                onSubworkflowStatusClick={onSubworkflowStatusClick}
               />
             )}
           </Tbody>

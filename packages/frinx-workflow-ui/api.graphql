@@ -82,6 +82,7 @@ type Blueprint implements Node {
   name: String!
   template: String!
   updatedAt: String!
+  version: Int
 }
 
 type BlueprintConnection {
@@ -148,6 +149,7 @@ type Country implements Node {
   code: String!
   id: ID!
   name: String!
+  version: Int
 }
 
 type CountryConnection {
@@ -229,6 +231,7 @@ type Device implements Node {
   source: DeviceSource!
   updatedAt: String!
   vendor: String
+  version: Int
   zone: Zone!
 }
 
@@ -304,6 +307,7 @@ type ExecutedWorkflow implements Node {
   updatedAt: String
   updatedBy: String
   variables: String
+  version: Int
   workflowDefinition: Workflow
   workflowId: String
   workflowName: String
@@ -364,6 +368,7 @@ type ExecutedWorkflowTask implements Node {
   taskReferenceName: String
   taskType: String
   updateTime: String
+  version: Int
   workflowType: String
 }
 
@@ -458,6 +463,7 @@ type Label implements Node {
   id: ID!
   name: String!
   updatedAt: String!
+  version: Int
 }
 
 type LabelConnection {
@@ -477,6 +483,7 @@ type Location implements Node {
   id: ID!
   name: String!
   updatedAt: String!
+  version: Int
 }
 
 type LocationConnection {
@@ -587,6 +594,7 @@ type NetTopology {
 
 interface Node {
   id: ID!
+  version: Int
 }
 
 type PageInfo {
@@ -618,7 +626,7 @@ type Query {
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   netTopology: NetTopology
-  node(id: ID!): Node
+  node(id: ID!, version: Int): Node
   taskDefinitions: [TaskDefinition!]!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
@@ -920,6 +928,7 @@ type Zone implements Node {
   id: ID!
   name: String!
   updatedAt: String!
+  version: Int
 }
 
 type ZoneEdge {

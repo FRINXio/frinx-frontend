@@ -1,4 +1,5 @@
-import { Container, Progress, Text, VStack } from '@chakra-ui/react';
+import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
+import Pagination from '@frinx/inventory-client/src/components/pagination';
 import { useNotifications } from '@frinx/shared/src';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -55,13 +56,17 @@ const EXECUTED_WORKFLOW_QUERY = gql`
           workflowVersion
         }
       }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
     }
   }
 `;
 
 const BULK_PAUSE_MUTATION = gql`
-  mutation BulkPause($workflowIds: [String!]!) {
-    bulkPauseWorkflow(executedWorkflowIds: $workflowIds) {
+  mutation BulkPause($executedWorkflowIds: [String!]!) {
+    bulkPauseWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -69,8 +74,8 @@ const BULK_PAUSE_MUTATION = gql`
 `;
 
 const BULK_RESUME_MUTATION = gql`
-  mutation BulkResume($workflowIds: [String!]!) {
-    bulkResumeWorkflow(executedWorkflowIds: $workflowIds) {
+  mutation BulkResume($executedWorkflowIds: [String!]!) {
+    bulkResumeWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -78,8 +83,8 @@ const BULK_RESUME_MUTATION = gql`
 `;
 
 const BULK_RETRY_MUTATION = gql`
-  mutation BulkRetry($workflowIds: [String!]!) {
-    bulkRetryWorkflow(executedWorkflowIds: $workflowIds) {
+  mutation BulkRetry($executedWorkflowIds: [String!]!) {
+    bulkRetryWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -87,8 +92,8 @@ const BULK_RETRY_MUTATION = gql`
 `;
 
 const BULK_TERMINATE_MUTATION = gql`
-  mutation BulkTerminate($workflowIds: [String!]!) {
-    bulkTerminateWorkflow(executedWorkflowIds: $workflowIds) {
+  mutation BulkTerminate($executedWorkflowIds: [String!]!) {
+    bulkTerminateWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -96,8 +101,8 @@ const BULK_TERMINATE_MUTATION = gql`
 `;
 
 const BULK_RESTART_MUTATION = gql`
-  mutation BulkRestart($workflowIds: [String!]!) {
-    bulkRestartWorkflow(executedWorkflowIds: $workflowIds) {
+  mutation BulkRestart($executedWorkflowIds: [String!]!) {
+    bulkRestartWorkflow(executedWorkflowIds: $executedWorkflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -108,6 +113,8 @@ const ExecutedWorkflowList = () => {
   const executedWorkflowsCtx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), []);
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToastNotification } = useNotifications();
+  const toast = useToast();
+  const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
 
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
@@ -118,7 +125,13 @@ const ExecutedWorkflowList = () => {
     ExecutedWorkflowsQueryVariables
   >({
     query: EXECUTED_WORKFLOW_QUERY,
-    variables: makeSearchQueryVariableFromFilter(makeFilterFromSearchParams(searchParams)),
+    variables: {
+      ...makeSearchQueryVariableFromFilter(makeFilterFromSearchParams(searchParams)),
+      pagination: {
+        size: makeFilterFromSearchParams(searchParams).workflowsPerPage,
+        start: currentStartOfPage,
+      },
+    },
     context: executedWorkflowsCtx,
   });
 
@@ -185,31 +198,31 @@ const ExecutedWorkflowList = () => {
     switch (action) {
       case 'pause':
         wasSuccessfull = await onBulkPause(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'restart':
         wasSuccessfull = await onBulkRestart(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'resume':
         wasSuccessfull = await onBulkResume(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'retry':
         wasSuccessfull = await onBulkRetry(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'terminate':
         wasSuccessfull = await onBulkTerminate(
-          { workflowIds: selectedWorkflows },
+          { executedWorkflowIds: selectedWorkflows },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
@@ -230,11 +243,24 @@ const ExecutedWorkflowList = () => {
     }
   };
 
+  const handleOnNext = () => {
+    const { workflowsPerPage } = makeFilterFromSearchParams(searchParams);
+    setCurrentStartOfPage(currentStartOfPage + workflowsPerPage);
+  };
+
+  const handleOnPrevious = () => {
+    const { workflowsPerPage } = makeFilterFromSearchParams(searchParams);
+    setCurrentStartOfPage(currentStartOfPage - workflowsPerPage);
+  };
+
   return (
     <Container maxWidth={1200} mx="auto">
       <VStack spacing={10} alignItems="stretch">
         <ExecutedWorkflowSearchBox
-          onSearchBoxSubmit={(searchInput) => setSearchParams(makeURLSearchParamsFromObject(searchInput))}
+          onSearchBoxSubmit={(searchInput) => {
+            setCurrentStartOfPage(0);
+            setSearchParams(makeURLSearchParamsFromObject(searchInput));
+          }}
           onTableTypeChange={() => setIsFlat((prev) => !prev)}
           isFlat={isFlat}
           initialSearchValues={makeFilterFromSearchParams(searchParams)}
@@ -273,8 +299,32 @@ const ExecutedWorkflowList = () => {
             onWorkflowSelect={handleOnWorkflowSelect}
             selectedWorkflows={selectedWorkflows}
             isFlat={isFlat}
+            onSubworkflowStatusClick={(status) => {
+              if (status === 'UNKNOWN') {
+                toast({
+                  description: 'UNKNOWN status is not supported for filtering of executed workflows.',
+                  status: 'warning',
+                  duration: 4000,
+                  isClosable: true,
+                });
+              } else {
+                setSearchParams(
+                  makeURLSearchParamsFromObject({
+                    ...makeFilterFromSearchParams(searchParams),
+                    status: [...makeFilterFromSearchParams(searchParams).status, status],
+                  }),
+                );
+              }
+            }}
           />
         )}
+
+        <Pagination
+          hasNextPage={data?.executedWorkflows?.pageInfo.hasNextPage ?? false}
+          hasPreviousPage={data?.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
+          onNext={handleOnNext}
+          onPrevious={handleOnPrevious}
+        />
       </VStack>
     </Container>
   );

@@ -22,33 +22,6 @@ export function makeObjectFromSearchParams(searchParams: URLSearchParams): Recor
   return obj;
 }
 
-// TODO: remove these two functions when we have a better solution -> control if used anywhere else
-export const sortAscBy = (key: string) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (x: Record<string, any>, y: Record<string, any>) => {
-    if (x[key] < y[key]) {
-      return -1;
-    }
-    if (x[key] > y[key]) {
-      return 1;
-    }
-    return 0;
-  };
-};
-
-export const sortDescBy = (key: string) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (x: Record<string, any>, y: Record<string, any>) => {
-    if (x[key] > y[key]) {
-      return -1;
-    }
-    if (x[key] < y[key]) {
-      return 1;
-    }
-    return 0;
-  };
-};
-
 export function flattenObject<T extends object>(obj: T, prefix = ''): Record<string, string | string[]> {
   return Object.entries(obj).reduce((acc, [key, value]) => {
     const fullKey = prefix.length > 0 ? `${prefix}-${key}` : key;

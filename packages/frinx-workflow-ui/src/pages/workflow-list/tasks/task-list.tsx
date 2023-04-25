@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import MiniSearch, { SearchResult } from 'minisearch';
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { callbackUtils, TaskDefinition } from '@frinx/shared/src';
-import { sortAscBy, sortDescBy } from '@frinx/workflow-ui/src/helpers/utils.helpers';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import FeatherIcon from 'feather-icons-react';
-import TaskTable from './task-table';
-import TaskConfigModal from './task-modal';
+import { orderBy } from 'lodash';
+import MiniSearch, { SearchResult } from 'minisearch';
+import React, { useEffect, useRef, useState } from 'react';
 import AddTaskModal from './add-task-modal';
+import TaskConfigModal from './task-modal';
+import TaskTable from './task-table';
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -76,11 +76,8 @@ const TaskList = () => {
   };
 
   const sortArray = (key: string) => {
-    const sortedArray = tasks;
-
-    sortedArray.sort(sorted ? sortDescBy(key) : sortAscBy(key));
+    setItemList(sorted ? orderBy(tasks, [key], ['desc']) : orderBy(tasks, [key], ['asc']));
     setSorted(!sorted);
-    setItemList(sortedArray);
   };
 
   const addTask = (tsk: TaskDefinition) => {
