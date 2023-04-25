@@ -2,37 +2,29 @@ import React, { FC, useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  Checkbox,
   Divider,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Heading,
   HStack,
   Input,
+  Textarea,
 } from '@chakra-ui/react';
-import { omit } from 'lodash';
-import { isWorkflowNameAvailable, Workflow, SearchByTagInput, useTagsInput, ClientWorkflow } from '@frinx/shared/src';
+import { isWorkflowNameAvailable, SearchByTagInput, useTagsInput, ClientWorkflow } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
+import { ExtendedTask } from '@frinx/shared';
 
-type PartialWorkflow = Pick<
-  Workflow,
-  | 'name'
-  | 'description'
-  | 'version'
-  | 'restartable'
-  | 'timeoutPolicy'
-  | 'timeoutSeconds'
-  | 'outputParameters'
-  | 'variables'
->;
 type Props = {
-  workflow: ClientWorkflow;
+  workflow: ClientWorkflow<ExtendedTask>;
   canEditName: boolean;
   workflows: ClientWorkflow[];
   isCreatingWorkflow: boolean;
   onClose?: () => void;
-  onSubmit: (workflow: PartialWorkflow) => void;
+  onSubmit: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onChangeNotify?: () => void;
 };
 
@@ -87,18 +79,16 @@ const WorkflowForm: FC<Props> = ({
   const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
     initialValues: getInitialValues(workflow),
     onSubmit: (formValues) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const updatedValues = omit(
-        {
-          ...formValues,
-          description: JSON.stringify({
-            description: formValues.description,
-            labels: formValues.labels,
-          }),
-        },
-        ['labels'],
-      );
-      // onSubmit(updatedValues);
+      const editedWorkflow: ClientWorkflow<ExtendedTask> = {
+        ...workflow,
+        name: formValues.name,
+        description: JSON.stringify({
+          description: formValues.description,
+          labels: formValues.labels,
+        }),
+        version: formValues.version,
+      };
+      onSubmit(editedWorkflow);
     },
     validationSchema: validationSchema(isCreatingWorkflow),
     validateOnBlur: true,
@@ -138,7 +128,7 @@ const WorkflowForm: FC<Props> = ({
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
-        {/* <Textarea name="description" value={values.description} onChange={handleOnChange} /> */}
+        <Textarea name="description" value={values.description || ''} onChange={handleOnChange} />
       </FormControl>
       <FormControl my={6}>
         <SearchByTagInput
@@ -153,7 +143,7 @@ const WorkflowForm: FC<Props> = ({
       </FormControl>
       <FormControl id="version" my={6} isRequired isInvalid={errors.version != null}>
         <FormLabel>Version</FormLabel>
-        {/* <Input name="version" value={values.version} onChange={handleOnChange} /> */}
+        <Input name="version" value={String(values.version)} onChange={handleOnChange} />
         <FormErrorMessage>{errors.version}</FormErrorMessage>
       </FormControl>
       {/* {!isCreatingWorkflow && (
@@ -174,15 +164,20 @@ const WorkflowForm: FC<Props> = ({
           </FormControl>
         </HStack>
       )} */}
-      {/* <FormControl my={6} isInvalid={errors.restartable != null}>
+      <FormControl my={6} isInvalid={errors.restartable != null}>
         <Flex alignItems="center">
-          <Checkbox name="restartable" isChecked={values.restartable} onChange={handleOnChange} id="restartable" />
+          <Checkbox
+            name="restartable"
+            isChecked={values.restartable === null ? undefined : values.restartable}
+            onChange={handleOnChange}
+            id="restartable"
+          />
           <FormLabel htmlFor="restartable" mb={0} ml={2}>
             Restartable
           </FormLabel>
         </Flex>
         <FormErrorMessage>{errors.restartable}</FormErrorMessage>
-      </FormControl> */}
+      </FormControl>
       <Heading as="h3" size="md">
         Output parameters
       </Heading>

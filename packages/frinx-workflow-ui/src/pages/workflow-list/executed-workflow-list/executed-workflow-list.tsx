@@ -61,7 +61,7 @@ const EXECUTED_WORKFLOW_QUERY = gql`
 
 const BULK_PAUSE_MUTATION = gql`
   mutation BulkPause($workflowIds: [String!]!) {
-    bulkPauseWorkflow(workflowIds: $workflowIds) {
+    bulkPauseWorkflow(executedWorkflowIds: $workflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -70,7 +70,7 @@ const BULK_PAUSE_MUTATION = gql`
 
 const BULK_RESUME_MUTATION = gql`
   mutation BulkResume($workflowIds: [String!]!) {
-    bulkResumeWorkflow(workflowIds: $workflowIds) {
+    bulkResumeWorkflow(executedWorkflowIds: $workflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -79,7 +79,7 @@ const BULK_RESUME_MUTATION = gql`
 
 const BULK_RETRY_MUTATION = gql`
   mutation BulkRetry($workflowIds: [String!]!) {
-    bulkRetryWorkflow(workflowIds: $workflowIds) {
+    bulkRetryWorkflow(executedWorkflowIds: $workflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -88,7 +88,7 @@ const BULK_RETRY_MUTATION = gql`
 
 const BULK_TERMINATE_MUTATION = gql`
   mutation BulkTerminate($workflowIds: [String!]!) {
-    bulkTerminateWorkflow(workflowIds: $workflowIds) {
+    bulkTerminateWorkflow(executedWorkflowIds: $workflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -97,7 +97,7 @@ const BULK_TERMINATE_MUTATION = gql`
 
 const BULK_RESTART_MUTATION = gql`
   mutation BulkRestart($workflowIds: [String!]!) {
-    bulkRestartWorkflow(workflowIds: $workflowIds) {
+    bulkRestartWorkflow(executedWorkflowIds: $workflowIds) {
       bulkErrorResults
       bulkSuccessfulResults
     }

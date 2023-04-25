@@ -37,6 +37,9 @@ const WORKFLOWS_QUERY = gql`
           tasks
           hasSchedule
           inputParameters
+          restartable
+          timeoutSeconds
+          timeoutPolicy
         }
       }
       totalCount

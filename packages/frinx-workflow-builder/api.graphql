@@ -82,6 +82,7 @@ type Blueprint implements Node {
   name: String!
   template: String!
   updatedAt: String!
+  version: Int
 }
 
 type BlueprintConnection {
@@ -148,6 +149,7 @@ type Country implements Node {
   code: String!
   id: ID!
   name: String!
+  version: Int
 }
 
 type CountryConnection {
@@ -229,6 +231,7 @@ type Device implements Node {
   source: DeviceSource!
   updatedAt: String!
   vendor: String
+  version: Int
   zone: Zone!
 }
 
@@ -300,10 +303,11 @@ type ExecutedWorkflow implements Node {
   reasonForIncompletion: String
   startTime: String
   status: ExecutedWorkflowStatus
-  tasks: [ExecutedWorkflowTask]
+  tasks: [ExecutedWorkflowTask!]
   updatedAt: String
   updatedBy: String
   variables: String
+  version: Int
   workflowDefinition: Workflow
   workflowId: String
   workflowName: String
@@ -364,6 +368,7 @@ type ExecutedWorkflowTask implements Node {
   taskReferenceName: String
   taskType: String
   updateTime: String
+  version: Int
   workflowType: String
 }
 
@@ -458,6 +463,7 @@ type Label implements Node {
   id: ID!
   name: String!
   updatedAt: String!
+  version: Int
 }
 
 type LabelConnection {
@@ -477,6 +483,7 @@ type Location implements Node {
   id: ID!
   name: String!
   updatedAt: String!
+  version: Int
 }
 
 type LocationConnection {
@@ -497,8 +504,11 @@ type Mutation {
   addSnapshot(input: AddSnapshotInput!, transactionId: String!): AddSnapshotPayload
   addZone(input: AddZoneInput!): AddZonePayload!
   applySnapshot(input: ApplySnapshotInput!, transactionId: String!): ApplySnapshotPayload!
-  bulkPauseWorkflow(workflowIds: [String!]!): BulkOperationResponse
-  bulkResumeWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkPauseWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkRestartWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkResumeWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkRetryWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkTerminateWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
   closeTransaction(deviceId: String!, transactionId: String!): CloseTransactionPayload!
   commitConfig(input: CommitConfigInput!, transactionId: String!): CommitConfigPayload!
   createLabel(input: CreateLabelInput!): CreateLabelPayload!
@@ -558,8 +568,33 @@ type Mutation {
   updateWorkflow(id: String!, input: UpdateWorkflowInput!): UpdateWorkflowPayload!
 }
 
+type NetInterface {
+  id: String!
+  name: String!
+}
+
+type NetNetwork {
+  coordinates: GraphNodeCoordinates!
+  id: String!
+  subnet: String!
+}
+
+type NetNode {
+  coordinates: GraphNodeCoordinates!
+  id: ID!
+  interfaces: [NetInterface!]!
+  name: String!
+  networks: [NetNetwork!]!
+}
+
+type NetTopology {
+  edges: [GraphEdge!]!
+  nodes: [NetNode!]!
+}
+
 interface Node {
   id: ID!
+  version: Int
 }
 
 type PageInfo {
@@ -590,7 +625,8 @@ type Query {
   executedWorkflows(pagination: PaginationArgs, searchQuery: ExecutedWorkflowSearchInput): ExecutedWorkflowConnection
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
-  node(id: ID!): Node
+  netTopology: NetTopology
+  node(id: ID!, version: Int): Node
   taskDefinitions: [TaskDefinition!]!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
@@ -598,6 +634,7 @@ type Query {
   topologyVersions: [String!]
   transactions: [Transaction!]!
   uniconfigShellSession: String
+  workflowInstanceDetail(id: String!, shouldIncludeTasks: Boolean): WorkflowInstanceDetail
   workflowLabels: [String!]!
   workflows(after: String, before: String, filter: FilterWorkflowsInput, first: Int, last: Int): WorkflowConnection!
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
@@ -635,6 +672,12 @@ enum SortDirection {
 input StartWorkflowRequestInput {
   workflow: ExecuteNewWorkflowInput!
   workflowDefinition: WorkflowDefinitionInput
+}
+
+type SubWorkflow {
+  executedWorkflowDetail: ExecutedWorkflow!
+  taskReferenceName: String!
+  workflowDetail: Workflow!
 }
 
 type Subscription {
@@ -798,7 +841,10 @@ type Workflow implements Node {
   id: ID!
   inputParameters: [String!]
   name: String!
+  restartable: Boolean
   tasks: String
+  timeoutPolicy: TimeoutPolicy
+  timeoutSeconds: Int!
   updatedAt: String
   updatedBy: String
   version: Int
@@ -846,6 +892,12 @@ input WorkflowInput {
   version: Int
 }
 
+type WorkflowInstanceDetail {
+  meta: Workflow
+  result: ExecutedWorkflow!
+  subworkflows: [SubWorkflow!]
+}
+
 enum WorkflowTaskType {
   DECISION
   DO_WHILE
@@ -876,6 +928,7 @@ type Zone implements Node {
   id: ID!
   name: String!
   updatedAt: String!
+  version: Int
 }
 
 type ZoneEdge {

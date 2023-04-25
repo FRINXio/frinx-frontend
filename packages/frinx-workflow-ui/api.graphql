@@ -497,11 +497,11 @@ type Mutation {
   addSnapshot(input: AddSnapshotInput!, transactionId: String!): AddSnapshotPayload
   addZone(input: AddZoneInput!): AddZonePayload!
   applySnapshot(input: ApplySnapshotInput!, transactionId: String!): ApplySnapshotPayload!
-  bulkPauseWorkflow(workflowIds: [String!]!): BulkOperationResponse
-  bulkRestartWorkflow(workflowIds: [String!]!): BulkOperationResponse
-  bulkResumeWorkflow(workflowIds: [String!]!): BulkOperationResponse
-  bulkRetryWorkflow(workflowIds: [String!]!): BulkOperationResponse
-  bulkTerminateWorkflow(workflowIds: [String!]!): BulkOperationResponse
+  bulkPauseWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkRestartWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkResumeWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkRetryWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkTerminateWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
   closeTransaction(deviceId: String!, transactionId: String!): CloseTransactionPayload!
   commitConfig(input: CommitConfigInput!, transactionId: String!): CommitConfigPayload!
   createLabel(input: CreateLabelInput!): CreateLabelPayload!
@@ -667,9 +667,9 @@ input StartWorkflowRequestInput {
 }
 
 type SubWorkflow {
-  executedWorkflowDetail: [Workflow!]
+  executedWorkflowDetail: ExecutedWorkflow!
   taskReferenceName: String!
-  workflowDetail: [Workflow!]
+  workflowDetail: Workflow!
 }
 
 type Subscription {
@@ -833,7 +833,10 @@ type Workflow implements Node {
   id: ID!
   inputParameters: [String!]
   name: String!
+  restartable: Boolean
   tasks: String
+  timeoutPolicy: TimeoutPolicy
+  timeoutSeconds: Int!
   updatedAt: String
   updatedBy: String
   version: Int

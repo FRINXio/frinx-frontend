@@ -1,3 +1,4 @@
+import { gql } from 'urql';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
@@ -29,7 +30,7 @@ export const jsonParse = <T = { description: string }>(json?: string | null): T 
   }
 };
 
-export function parseInputParameters(inputParameters?: string[]): InputParameter | null {
+export function parseInputParameters(inputParameters?: string[] | null): InputParameter | null {
   if (inputParameters == null || inputParameters.length === 0) {
     return null;
   }
@@ -96,7 +97,7 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
 }
 
 export function createEmptyWorkflow(): Pick<
-  ClientWorkflow,
+  ClientWorkflow<ExtendedTask>,
   | 'id'
   | 'name'
   | 'description'
@@ -110,9 +111,9 @@ export function createEmptyWorkflow(): Pick<
   | 'inputParameters'
   | 'labels'
   // | 'ownerEmail'
-  // | 'restartable'
-  // | 'timeoutPolicy'
-  // | 'timeoutSeconds'
+  | 'restartable'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds'
   // | 'outputParameters'
   // | 'variables'
 > {
@@ -130,9 +131,9 @@ export function createEmptyWorkflow(): Pick<
     inputParameters: [],
     labels: [],
     // ownerEmail: '',
-    // restartable: true,
-    // timeoutPolicy: 'ALERT_ONLY',
-    // timeoutSeconds: 0,
+    restartable: true,
+    timeoutPolicy: 'ALERT_ONLY',
+    timeoutSeconds: 0,
     // outputParameters: {},
     // variables: {},
   };

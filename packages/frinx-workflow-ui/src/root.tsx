@@ -59,7 +59,7 @@ const Root: VoidFunctionComponent = () => {
           }
         />
         <Route
-          path=":workflowId"
+          path=":workflowId/:version"
           element={
             <Box marginTop={-10}>
               <WorkflowBuilder
