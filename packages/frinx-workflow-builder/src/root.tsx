@@ -43,6 +43,10 @@ export const WorkflowFragment = gql`
     tasks
     hasSchedule
     inputParameters
+    outputParameters {
+      key
+      value
+    }
     restartable
     timeoutSeconds
     timeoutPolicy
@@ -101,6 +105,10 @@ const UPDATE_WORKFLOW_MUTATION = gql`
         name
         description
         version
+        outputParameters {
+          key
+          value
+        }
       }
     }
   }

@@ -261,6 +261,8 @@ const App: VoidFunctionComponent<Props> = ({
             tasks: JSON.stringify(newTasks),
             timeoutSeconds: 0,
             version: editedWorkflow.version,
+            restartable: editedWorkflow.restartable,
+            outputParameters: editedWorkflow.outputParameters,
           },
         },
       });

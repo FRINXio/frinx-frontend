@@ -295,6 +295,11 @@ export type ExtendedTask =
   | ExtendedJsonJQTask
   | ExtendedSetVariableTask;
 
+type OutputParameter = {
+  key: string;
+  value: string;
+};
+
 export type ClientWorkflow<T = Task> = {
   id: string;
   name: string;
@@ -309,6 +314,7 @@ export type ClientWorkflow<T = Task> = {
   hasSchedule: boolean;
   labels: string[];
   inputParameters: string[] | null;
+  outputParameters: OutputParameter[] | null;
   restartable: boolean | null;
   timeoutPolicy: TimeoutPolicy | null;
 };

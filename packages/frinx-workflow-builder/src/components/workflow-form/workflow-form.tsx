@@ -10,9 +10,13 @@ import {
   FormLabel,
   Heading,
   HStack,
+  Icon,
+  IconButton,
   Input,
+  Select,
   Textarea,
 } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import { isWorkflowNameAvailable, SearchByTagInput, useTagsInput, ClientWorkflow } from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
@@ -32,7 +36,7 @@ type FormValues = ClientWorkflow & { labels?: string[] };
 
 const getInitialValues = (initialWorkflow: ClientWorkflow): FormValues => {
   const { description, labels } = JSON.parse(initialWorkflow.description || '{}');
-  let initialValues: FormValues = initialWorkflow;
+  let initialValues = initialWorkflow;
 
   if (description != null) {
     initialValues = {
@@ -87,6 +91,8 @@ const WorkflowForm: FC<Props> = ({
           labels: formValues.labels,
         }),
         version: formValues.version,
+        restartable: formValues.restartable,
+        outputParameters: formValues.outputParameters,
       };
       onSubmit(editedWorkflow);
     },
@@ -113,6 +119,7 @@ const WorkflowForm: FC<Props> = ({
   };
 
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
+  const outputParameters = values.outputParameters ?? [];
 
   return (
     <form
@@ -146,12 +153,11 @@ const WorkflowForm: FC<Props> = ({
         <Input name="version" value={String(values.version)} onChange={handleOnChange} />
         <FormErrorMessage>{errors.version}</FormErrorMessage>
       </FormControl>
-      {/* {!isCreatingWorkflow && (
+      {!isCreatingWorkflow && (
         <HStack spacing={2} my={6} alignItems="start">
           <FormControl id="timeoutPolicy" isRequired isInvalid={errors.timeoutPolicy != null}>
             <FormLabel>Timeout policy</FormLabel>
-            <Select name="timeoutPolicy" value={values.timeoutPolicy} onChange={handleOnChange}>
-              <option value="RETRY">RETRY</option>
+            <Select name="timeoutPolicy" value={values.timeoutPolicy ?? undefined} onChange={handleOnChange}>
               <option value="TIME_OUT_WF">TIME_OUT_WF</option>
               <option value="ALERT_ONLY">ALERT_ONLY</option>
             </Select>
@@ -163,7 +169,7 @@ const WorkflowForm: FC<Props> = ({
             <FormErrorMessage>{errors.timeoutSeconds}</FormErrorMessage>
           </FormControl>
         </HStack>
-      )} */}
+      )}
       <FormControl my={6} isInvalid={errors.restartable != null}>
         <Flex alignItems="center">
           <Checkbox
@@ -196,38 +202,39 @@ const WorkflowForm: FC<Props> = ({
                 handleOnChangeNotify();
               }}
             />
-            {/* <IconButton
+            <IconButton
               size="sm"
               isDisabled={newParam === ''}
               aria-label="add param"
               colorScheme="blue"
               icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
-                setFieldValue('outputParameters', {
-                  ...values.outputParameters,
-                  [newParam]: '',
-                });
+                const newParams = [...outputParameters, { key: newParam, value: newParam }];
+                setFieldValue('outputParameters', newParams);
                 setNewParam('');
                 handleOnChangeNotify();
               }}
-            /> */}
+            />
           </HStack>
         </FormControl>
       </Box>
-      {/* <Box width="50%">
-        {Object.keys(values.outputParameters).map((key) => (
-          <FormControl id="param" my={2} key={key}>
-            <FormLabel>{key}</FormLabel>
+      <Box width="50%">
+        {outputParameters.map((param) => (
+          <FormControl id="param" my={2} key={param.key}>
+            <FormLabel>{param.key}</FormLabel>
             <HStack spacing={2}>
               <Input
                 name="param"
                 variant="filled"
-                value={values.outputParameters[key]}
+                value={param.value}
                 onChange={(event) => {
-                  setFieldValue('outputParameters', {
-                    ...values.outputParameters,
-                    [key]: event.target.value,
+                  const newParams = outputParameters.map((p) => {
+                    if (p.key === param.key) {
+                      return { ...p, value: event.target.value };
+                    }
+                    return p;
                   });
+                  setFieldValue('outputParameters', newParams);
                   handleOnChangeNotify();
                 }}
               />
@@ -236,17 +243,15 @@ const WorkflowForm: FC<Props> = ({
                 colorScheme="red"
                 icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
                 onClick={() => {
-                  setFieldValue(
-                    'outputParameters',
-                    omitBy(values.outputParameters, (_, k) => k === key),
-                  );
+                  const newParams = outputParameters.filter((p) => p.key !== param.key);
+                  setFieldValue('outputParameters', newParams);
                   handleOnChangeNotify();
                 }}
               />
             </HStack>
           </FormControl>
         ))}
-      </Box> */}
+      </Box>
       <Divider my={6} />
       <HStack spacing={2} align="center">
         <Button type="submit" colorScheme="blue" isDisabled={isNameInvalid && values.name.trim().length === 0}>

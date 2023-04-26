@@ -597,6 +597,16 @@ interface Node {
   version: Int
 }
 
+type OutputParameter {
+  key: String!
+  value: String!
+}
+
+input OutputParameterInput {
+  key: String!
+  value: String!
+}
+
 type PageInfo {
   endCursor: String
   hasNextPage: Boolean!
@@ -841,6 +851,7 @@ type Workflow implements Node {
   id: ID!
   inputParameters: [String!]
   name: String!
+  outputParameters: [OutputParameter!]
   restartable: Boolean
   tasks: String
   timeoutPolicy: TimeoutPolicy
@@ -887,6 +898,8 @@ type WorkflowEdge {
 input WorkflowInput {
   description: String
   name: String!
+  outputParameters: [OutputParameterInput!]
+  restartable: Boolean
   tasks: String!
   timeoutSeconds: Int!
   version: Int

@@ -114,7 +114,7 @@ export function createEmptyWorkflow(): Pick<
   | 'restartable'
   | 'timeoutPolicy'
   | 'timeoutSeconds'
-  // | 'outputParameters'
+  | 'outputParameters'
   // | 'variables'
 > {
   return {
@@ -134,7 +134,7 @@ export function createEmptyWorkflow(): Pick<
     restartable: true,
     timeoutPolicy: 'ALERT_ONLY',
     timeoutSeconds: 0,
-    // outputParameters: {},
+    outputParameters: [],
     // variables: {},
   };
 }

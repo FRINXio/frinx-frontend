@@ -37,6 +37,10 @@ const WORKFLOWS_QUERY = gql`
           tasks
           hasSchedule
           inputParameters
+          outputParameters {
+            key
+            value
+          }
           restartable
           timeoutSeconds
           timeoutPolicy
