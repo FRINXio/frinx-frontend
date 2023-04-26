@@ -14,7 +14,7 @@ type Props = {
   onSortPropertyClick: (sortProperty: SortProperty) => void;
   onSelectAllWorkflows: () => void;
   onWorkflowSelect: (workflowId: string) => void;
-  onSubworkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
+  onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowTable: FC<Props> = ({
@@ -23,7 +23,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
   onSelectAllWorkflows,
   onSortPropertyClick,
   onWorkflowSelect,
-  onSubworkflowStatusClick,
+  onWorkflowStatusClick,
   selectedWorkflows,
   sort,
 }) => {
@@ -47,6 +47,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
             {isFlat ? (
               <ExecutedWorkflowFlatTableItem
                 onWorkflowSelect={onWorkflowSelect}
+                onWorkflowStatusClick={onWorkflowStatusClick}
                 selectedWorkflows={selectedWorkflows}
                 workflows={workflows}
                 sort={sort}
@@ -57,7 +58,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
                 selectedWorkflows={selectedWorkflows}
                 workflows={workflows.executedWorkflows}
                 sort={sort}
-                onSubworkflowStatusClick={onSubworkflowStatusClick}
+                onWorkflowStatusClick={onWorkflowStatusClick}
               />
             )}
           </Tbody>

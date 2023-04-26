@@ -39,7 +39,7 @@ type Props = {
   selectedWorkflows: string[];
   sort: SortProperty;
   onWorkflowSelect: (workflowId: string) => void;
-  onSubworkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
+  onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
@@ -47,7 +47,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
   sort,
   selectedWorkflows,
   onWorkflowSelect,
-  onSubworkflowStatusClick,
+  onWorkflowStatusClick,
 }) => {
   const workflowInstanceDetailCtx = useMemo(() => ({ additionalTypenames: ['WorkflowInstanceDetail'] }), []);
   const [workflowInstanceDetailId, setWorkflowInstanceDetailId] = useState<string | null>(null);
@@ -107,7 +107,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
             <Td>{moment(item.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
             <Td>{item.endTime ? moment(item.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
             <Td>
-              <ExecutedWorkflowStatusLabels status={item.status ?? 'UNKNOWN'} />
+              <ExecutedWorkflowStatusLabels status={item.status ?? 'UNKNOWN'} onClick={onWorkflowStatusClick} />
             </Td>
           </Tr>
 
@@ -121,7 +121,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
             <ExecutedSubWorkflowTable
               workflowInstanceDetail={data?.workflowInstanceDetail}
               isLoadingSubWorkflows={fetching}
-              onSubworkflowStatusClick={onSubworkflowStatusClick}
+              onSubworkflowStatusClick={onWorkflowStatusClick}
             />
           )}
         </Fragment>

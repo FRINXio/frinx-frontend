@@ -1,6 +1,6 @@
 import { orderBy } from 'lodash';
 import moment from 'moment';
-import { makeArrayFromValue } from '../../../helpers/utils.helpers';
+import { makeArrayFromValue, parseBoolean } from '../../../helpers/utils.helpers';
 import {
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
@@ -62,11 +62,9 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
   const from = searchParams.get('from');
   const to = searchParams.get('to');
   const workflowsPerPage = Number(searchParams.get('workflowsPerPage'));
-  const isRootWorkflow = searchParams.get('isRootWorkflow');
-  const boolIsRootWorkflow: boolean = isRootWorkflow === 'false';
 
   return {
-    isRootWorkflow: boolIsRootWorkflow,
+    isRootWorkflow: parseBoolean(searchParams.get('isRootWorkflow')),
     status: makeArrayFromValue(searchParams.getAll('status')),
     workflowId: makeArrayFromValue(searchParams.getAll('workflowId')),
     workflowType: makeArrayFromValue(searchParams.getAll('workflowType')),

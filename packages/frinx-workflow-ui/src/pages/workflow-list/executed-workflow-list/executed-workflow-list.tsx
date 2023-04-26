@@ -339,7 +339,7 @@ const ExecutedWorkflowList = () => {
             onWorkflowSelect={handleOnWorkflowSelect}
             selectedWorkflows={selectedWorkflows}
             isFlat={isFlat}
-            onSubworkflowStatusClick={(status) => {
+            onWorkflowStatusClick={(status) => {
               if (status === 'UNKNOWN') {
                 toast({
                   description: 'UNKNOWN status is not supported for filtering of executed workflows.',
