@@ -62,15 +62,17 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
   const from = searchParams.get('from');
   const to = searchParams.get('to');
   const workflowsPerPage = Number(searchParams.get('workflowsPerPage'));
+  const isRootWorkflow = searchParams.get('isRootWorkflow');
+  const boolIsRootWorkflow: boolean = isRootWorkflow === 'false';
 
   return {
-    isRootWorkflow: Boolean(searchParams.get('isRootWorkflow')) ?? false,
+    isRootWorkflow: boolIsRootWorkflow,
     status: makeArrayFromValue(searchParams.getAll('status')),
     workflowId: makeArrayFromValue(searchParams.getAll('workflowId')),
     workflowType: makeArrayFromValue(searchParams.getAll('workflowType')),
     workflowsPerPage: workflowsPerPage > 0 ? workflowsPerPage : 20,
-    ...(from != null && { from: moment(new Date(from)).format('dd-MM-yyyyThh:mm') }),
-    ...(to != null && { to: moment(new Date(to)).format('dd-MM-yyyyThh:mm') }),
+    ...(from != null && { from: moment(new Date(from)).format('yyyy-MM-DDThh:mm:ss.SSSZ') }),
+    ...(to != null && { to: moment(new Date(to)).format('yyyy-MM-DDThh:mm:ss.SSSZ') }),
   };
 }
 

@@ -183,64 +183,114 @@ const ExecutedWorkflowList = () => {
     setSort({ key, value: 'DESC' });
   };
 
-  const handleOnBulkOperation = async (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
-    let wasSuccessfull = false;
+  const handleOnBulkPause = () => {
+    onBulkPause({ executedWorkflowIds: selectedWorkflows })
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
 
-    if (selectedWorkflows == null || selectedWorkflows.length === 0) {
-      addToastNotification({
-        content: 'You need to selected atleast one workflow',
-        type: 'error',
+        addToastNotification({
+          title: 'Bulk Pause',
+          content: 'Successfully paused selected workflows',
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          title: 'Bulk Pause',
+          content: 'Failed to pause selected workflows',
+          type: 'error',
+        });
       });
+  };
 
-      return;
-    }
+  const handleOnBulkResume = () => {
+    onBulkResume({ executedWorkflowIds: selectedWorkflows })
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
 
-    switch (action) {
-      case 'pause':
-        wasSuccessfull = await onBulkPause(
-          { executedWorkflowIds: selectedWorkflows },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
-        break;
-      case 'restart':
-        wasSuccessfull = await onBulkRestart(
-          { executedWorkflowIds: selectedWorkflows },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
-        break;
-      case 'resume':
-        wasSuccessfull = await onBulkResume(
-          { executedWorkflowIds: selectedWorkflows },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
-        break;
-      case 'retry':
-        wasSuccessfull = await onBulkRetry(
-          { executedWorkflowIds: selectedWorkflows },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
-        break;
-      case 'terminate':
-        wasSuccessfull = await onBulkTerminate(
-          { executedWorkflowIds: selectedWorkflows },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
-        break;
-      default:
-        break;
-    }
-
-    if (wasSuccessfull) {
-      addToastNotification({
-        content: 'Bulk operation executed successfully',
-        type: 'success',
+        addToastNotification({
+          title: 'Bulk Resume',
+          content: 'Successfully resumed selected workflows',
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          title: 'Bulk Resume',
+          content: 'Failed to resume selected workflows',
+          type: 'error',
+        });
       });
-    } else {
-      addToastNotification({
-        content: 'We had a problem to execute the bulk operation. Try again please.',
-        type: 'error',
+  };
+
+  const handleOnBulkRetry = () => {
+    onBulkRetry({ executedWorkflowIds: selectedWorkflows })
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
+        addToastNotification({
+          title: 'Bulk Retry',
+          content: 'Successfully retried selected workflows',
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          title: 'Bulk Retry',
+          content: 'Failed to retry selected workflows',
+          type: 'error',
+        });
       });
-    }
+  };
+
+  const handleOnBulkRestart = () => {
+    onBulkRestart({ executedWorkflowIds: selectedWorkflows })
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
+        addToastNotification({
+          title: 'Bulk Restart',
+          content: 'Successfully restarted selected workflows',
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          title: 'Bulk Restart',
+          content: 'Failed to restart selected workflows',
+          type: 'error',
+        });
+      });
+  };
+
+  const handleOnBulkTerminate = () => {
+    onBulkTerminate({ executedWorkflowIds: selectedWorkflows })
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
+        addToastNotification({
+          title: 'Bulk Terminate',
+          content: 'Successfully terminated selected workflows',
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          title: 'Bulk Terminate',
+          content: 'Failed to terminate selected workflows',
+          type: 'error',
+        });
+      });
   };
 
   const handleOnNext = () => {
@@ -269,21 +319,11 @@ const ExecutedWorkflowList = () => {
         <ExecutedWorkflowBulkOperationsBlock
           amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
           amountOfSelectedWorkflows={selectedWorkflows.length}
-          onPause={() => {
-            handleOnBulkOperation('pause');
-          }}
-          onRetry={() => {
-            handleOnBulkOperation('retry');
-          }}
-          onResume={() => {
-            handleOnBulkOperation('resume');
-          }}
-          onTerminate={() => {
-            handleOnBulkOperation('terminate');
-          }}
-          onRestart={() => {
-            handleOnBulkOperation('restart');
-          }}
+          onPause={handleOnBulkPause}
+          onRetry={handleOnBulkRetry}
+          onRestart={handleOnBulkRestart}
+          onTerminate={handleOnBulkTerminate}
+          onResume={handleOnBulkResume}
         />
 
         {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}

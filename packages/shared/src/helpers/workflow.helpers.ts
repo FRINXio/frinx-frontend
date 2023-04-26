@@ -29,7 +29,7 @@ export const jsonParse = <T = { description: string }>(json?: string | null): T 
   }
 };
 
-export function parseInputParameters(inputParameters?: string[]): InputParameter | null {
+export function parseInputParameters(inputParameters?: string[] | null): InputParameter | null {
   if (inputParameters == null || inputParameters.length === 0) {
     return null;
   }

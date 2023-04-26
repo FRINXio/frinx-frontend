@@ -30,21 +30,17 @@ type Props = {
   workflow: Workflow | ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSubmit: (inputParameters: Record<string, any>) => Promise<string | null> | null;
+  onSubmit: (inputParameters: Record<string, unknown>) => Promise<string | null> | null;
 };
 
 const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const { name, description } = workflow;
-  // TODO: FD-493 better would be to handle null/undefined values in the function parseInputParameters
-  // then sent default value in nullish case
-  const parsedInputParameters = parseInputParameters(workflow?.inputParameters || []);
+  const parsedInputParameters = parseInputParameters(workflow.inputParameters);
   const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
   const { values, handleSubmit, submitForm, isSubmitting, setSubmitting, setFieldValue } = useFormik<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Record<string, any>
+    Record<string, unknown>
   >({
     enableReinitialize: true,
     initialValues: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
