@@ -670,3 +670,20 @@ export type Queue = {
   queueName: string;
   workerId: string;
 };
+
+// https://github.com/FRINXio/schellar#api
+export type ScheduleWorkflowInput = {
+  name: string;
+  enabled: boolean;
+  parallelRuns?: boolean;
+  workflowName: string;
+  workflowVersion: string;
+  cronString: string;
+  workflowContext: Record<string, string>;
+  fromDate?: string;
+  toDate?: string;
+  correlationId?: string;
+  taskToDomain?: {
+    '*': string;
+  };
+};

@@ -1,4 +1,4 @@
-import { Box, Container, useDisclosure } from '@chakra-ui/react';
+import { Box, Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
 import Pagination from '@frinx/inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
 import { jsonParse, ClientWorkflow, Task } from '@frinx/shared/src';
 import { debounce } from 'lodash';
@@ -84,14 +84,15 @@ const WorkflowDefinitions = () => {
   const confirmDeleteModal = useDisclosure();
   const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
 
-  const [{ data: workflowsData }] = useQuery<WorkflowsQuery>({
-    query: WORKFLOWS_QUERY,
-    variables: {
-      ...paginationArgs,
-      filter,
-    },
-    context,
-  });
+  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] =
+    useQuery<WorkflowsQuery>({
+      query: WORKFLOWS_QUERY,
+      variables: {
+        ...paginationArgs,
+        filter,
+      },
+      context,
+    });
 
   const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
     query: WORKFLOW_LABELS_QUERY,
@@ -144,8 +145,16 @@ const WorkflowDefinitions = () => {
     }
   };
 
-  if (workflowsData == null || labelsData == null) {
-    return null;
+  if (isLoadingWorkflowDefinitions) {
+    return (
+      <Container maxWidth={1280}>
+        <Progress size="xs" isIndeterminate />
+      </Container>
+    );
+  }
+
+  if (workflowDefinitionsError) {
+    return <Text>We are sorry, but something went wrong when we were loading workflow definitions.</Text>;
   }
 
   const workflows: ClientWorkflow[] =
@@ -175,7 +184,7 @@ const WorkflowDefinitions = () => {
         workflows={workflows}
       />
       <WorkflowDefinitionsHeader
-        allLabels={labelsData.workflowLabels}
+        allLabels={labelsData?.workflowLabels ?? []}
         keywords={keywords}
         onKeywordsChange={(value) => {
           setKeywords(value);
@@ -210,7 +219,7 @@ const WorkflowDefinitions = () => {
         onLabelClick={(label) => {
           setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}
-        allLabels={labelsData.workflowLabels}
+        allLabels={labelsData?.workflowLabels ?? []}
       />
       {workflowsData && (
         <Box marginTop={4} paddingX={4}>

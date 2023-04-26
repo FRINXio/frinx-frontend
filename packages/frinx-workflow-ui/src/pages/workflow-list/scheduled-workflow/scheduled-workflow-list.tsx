@@ -25,13 +25,50 @@ import FeatherIcon from 'feather-icons-react';
 import { ScheduleWorkflowModal } from '@frinx/workflow-ui/src/common/modals';
 import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import Paginator from '@frinx/workflow-ui/src/common/pagination';
-import { useNotifications, callbackUtils, ScheduledWorkflow, StatusType } from '@frinx/shared/src';
+import {
+  useNotifications,
+  callbackUtils,
+  ScheduledWorkflow,
+  StatusType,
+  ClientWorkflow,
+  DescriptionJSON,
+  jsonParse,
+  Task,
+} from '@frinx/shared/src';
+import { gql, useQuery } from 'urql';
+import { WorkflowListQuery, WorkflowListQueryVariables } from '../../../__generated__/graphql';
+
+const WORKFLOWS_QUERY = gql`
+  query WorkflowList {
+    workflows {
+      edges {
+        node {
+          id
+          name
+          description
+          version
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          tasks
+          hasSchedule
+          inputParameters
+        }
+      }
+    }
+  }
+`;
 
 function ScheduledWorkflowList() {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<ScheduledWorkflow>();
   const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
+
+  const [{ data: workflows, fetching: isLoadingWorkflows }] = useQuery<WorkflowListQuery, WorkflowListQueryVariables>({
+    query: WORKFLOWS_QUERY,
+  });
 
   const getData = useCallback(() => {
     const { getSchedules } = callbackUtils.getCallbacks;
@@ -120,7 +157,7 @@ function ScheduledWorkflowList() {
     }
   }
 
-  if (!pageItems == null) {
+  if (!pageItems == null || isLoadingWorkflows) {
     return <Progress isIndeterminate size="xs" marginTop={-10} />;
   }
 
@@ -134,11 +171,26 @@ function ScheduledWorkflowList() {
     );
   }
 
+  const clientWorkflows: ClientWorkflow[] =
+    workflows?.workflows.edges.map(({ node }) => {
+      const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
+      const tasks = jsonParse<Task[]>(node.tasks) ?? [];
+      return {
+        ...node,
+        labels: parsedLabels,
+        tasks,
+        hasSchedule: node.hasSchedule ?? false,
+      };
+    }) ?? [];
+
+  const selectedClientWorkflow = clientWorkflows.find((wf) => wf.name === selectedWorkflow?.workflowName);
+
   return (
     <Container maxWidth={1200} mx="auto">
-      {selectedWorkflow != null && (
+      {selectedWorkflow != null && selectedClientWorkflow != null && (
         <ScheduleWorkflowModal
-          workflow={selectedWorkflow}
+          workflow={selectedClientWorkflow}
+          scheduledWorkflow={selectedWorkflow}
           isOpen={isOpen}
           onClose={() => {
             onClose();

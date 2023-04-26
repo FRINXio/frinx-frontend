@@ -85,7 +85,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     confirmDeleteModal.onClose();
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
     if (activeWorkflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
@@ -98,7 +98,13 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     const { executeWorkflow } = callbackUtils.getCallbacks;
 
     return executeWorkflow({
-      input: values,
+      input: Object.keys(values).reduce((acc: Record<string, string>, key) => {
+        const value = values[key];
+        if (value != null) {
+          acc[key] = value.toString();
+        }
+        return acc;
+      }, {}),
       name: activeWorkflow.name,
       version: activeWorkflow.version || 1,
     })
@@ -127,10 +133,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
         workflows={workflows}
       />
       <ScheduleWorkflowModal
-        workflow={{
-          workflowName: activeWorkflow.name,
-          workflowVersion: String(activeWorkflow.version),
-        }}
+        workflow={activeWorkflow}
         onClose={scheduledWorkflowModal.onClose}
         isOpen={scheduledWorkflowModal.isOpen}
         onSubmit={handleWorkflowSchedule}

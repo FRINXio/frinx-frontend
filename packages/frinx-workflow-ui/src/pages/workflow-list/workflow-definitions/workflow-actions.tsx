@@ -38,30 +38,40 @@ const WorkflowActions: FC<Props> = ({
 
   return (
     <Stack direction="row" spacing={4}>
-      <ButtonGroup>
+      <ButtonGroup size="sm" variant="solid">
         <IconButton
-          data-cy={`del-${workflow.name}-${workflow.version}`}
-          aria-label="delete-workflow"
-          size="sm"
-          colorScheme="red"
-          icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
-          onClick={onDeleteBtnClick}
+          data-cy={`exec-${workflow.name}-${workflow.version}`}
+          aria-label="execute-workflow"
+          title="Execute workflow"
+          colorScheme="blue"
+          icon={<Icon size={12} as={FeatherIcon} icon="play" />}
+          onClick={onExecuteBtnClick}
         />
+
+        <IconButton
+          data-cy={`exec-${workflow.name}-${workflow.version}`}
+          aria-label="schedule-workflow"
+          title={workflow.hasSchedule ? 'Edit schedule' : 'Create schedule'}
+          colorScheme="blue"
+          variant="outline"
+          icon={<Icon size={12} as={FeatherIcon} icon="clock" />}
+          onClick={onScheduleBtnClick}
+        />
+
         <IconButton
           data-cy={`edit-${workflow.name}-${workflow.version}`}
           aria-label="edit-workflow"
-          size="sm"
           icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
           as={Link}
           to={`../builder/${workflow.id}`}
         />
+
         <IconButton
-          data-cy={`exec-${workflow.name}-${workflow.version}`}
-          aria-label="execute-workflow"
-          size="sm"
-          colorScheme="blue"
-          icon={<Icon size={12} as={FeatherIcon} icon="play" />}
-          onClick={onExecuteBtnClick}
+          data-cy={`del-${workflow.name}-${workflow.version}`}
+          aria-label="delete-workflow"
+          colorScheme="red"
+          icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
+          onClick={onDeleteBtnClick}
         />
 
         <Menu>
@@ -101,12 +111,6 @@ const WorkflowActions: FC<Props> = ({
                 <Box as={FeatherIcon} size="1em" icon="code" flexShrink={0} lineHeight={4} verticalAlign="middle" />
               </Box>
               Show definition
-            </MenuItem>
-            <MenuItem onClick={onScheduleBtnClick} data-cy={`sched-${workflow.name}-${workflow.version}`}>
-              <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
-                <Box as={FeatherIcon} size="1em" icon="clock" flexShrink={0} lineHeight={4} verticalAlign="middle" />
-              </Box>
-              {workflow.hasSchedule ? 'Edit schedule' : 'Create schedule'}
             </MenuItem>
           </MenuList>
         </Menu>

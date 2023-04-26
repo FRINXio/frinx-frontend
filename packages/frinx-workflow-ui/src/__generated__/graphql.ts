@@ -1365,6 +1365,11 @@ export type WorkflowInstanceDetailQueryVariables = Exact<{
 
 export type WorkflowInstanceDetailQuery = { __typename?: 'Query', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'SubWorkflow', executedWorkflowDetail: { __typename?: 'ExecutedWorkflow', id: string, endTime: string | null, startTime: string | null, reasonForIncompletion: string | null, status: ExecutedWorkflowStatus | null, workflowId: string | null, workflowName: string | null, workflowVersion: number | null } }> | null } | null };
 
+export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WorkflowListQuery = { __typename?: 'Query', workflows: { __typename?: 'WorkflowConnection', edges: Array<{ __typename?: 'WorkflowEdge', node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null } }> } };
+
 export type WorkflowsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['String']>;
