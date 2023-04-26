@@ -35,7 +35,7 @@ type Props = {
   onSubmit: (workflow: Partial<ScheduledWorkflow>) => void;
 };
 
-const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
+const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const { getSchedule } = callbackUtils.getCallbacks;
 
   const { values, handleChange, handleSubmit, submitForm, setFieldValue } = useFormik({
@@ -134,4 +134,4 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
   );
 };
 
-export default SchedulingModal;
+export default ScheduleWorkflowModal;

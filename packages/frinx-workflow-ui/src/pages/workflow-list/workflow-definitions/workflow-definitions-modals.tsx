@@ -11,7 +11,7 @@ import {
   DefinitionModal,
   DiagramModal,
   DependencyModal,
-  ScheduledWorkflowModal,
+  ScheduleWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
 
@@ -126,7 +126,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
         isOpen={dependencyModal.isOpen}
         workflows={workflows}
       />
-      <ScheduledWorkflowModal
+      <ScheduleWorkflowModal
         workflow={{
           workflowName: activeWorkflow.name,
           workflowVersion: String(activeWorkflow.version),
