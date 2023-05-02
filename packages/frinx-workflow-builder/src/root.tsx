@@ -1,7 +1,6 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import { convertTaskToExtendedTask, jsonParse } from '@frinx/shared';
 import {
-  callbackUtils,
   createEmptyWorkflow,
   ExtendedTask,
   unwrap,
@@ -19,6 +18,8 @@ import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
 import {
+  DeleteWorkflowMutation,
+  DeleteWorkflowMutationVariables,
   UpdateWorkflowMutation,
   UpdateWorkflowMutationVariables,
   WorkflowListQuery,
@@ -132,6 +133,16 @@ const EXECUTE_WORKFLOW_MUTATION = gql`
   }
 `;
 
+const WORKFLOW_DELETE_MUTATION = gql`
+  mutation DeleteWorkflow($name: String!, $version: Int!) {
+    deleteWorkflow(name: $name, version: $version) {
+      workflow {
+        id
+      }
+    }
+  }
+`;
+
 const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const ctx = useMemo(
     () => ({
@@ -158,6 +169,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
     UPDATE_WORKFLOW_MUTATION,
+  );
+
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+    WORKFLOW_DELETE_MUTATION,
   );
 
   const [, executeWorkflow] = useMutation(EXECUTE_WORKFLOW_MUTATION);
@@ -228,29 +243,33 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     });
   };
 
-  const handleWorkflowDelete = () => {
-    const { getWorkflows } = callbackUtils.getCallbacks;
-    getWorkflows().then((wfs) => {
-      const isWorkflow = wfs.find((wf) => wf.name === workflow?.name);
+  const handleWorkflowDelete = async () => {
+    const workflowToDelete = unwrap(workflow);
+    const { id, name, version: workflowVersion } = workflowToDelete;
+    // if we are in create mode, workflow is not saved on server yet, no delete needed
+    if (!id) {
+      onClose();
+      addToastNotification({
+        content: 'No workflow definition to be deleted',
+        type: 'error',
+      });
+      return;
+    }
 
-      if (isWorkflow != null && workflow != null) {
-        const { deleteWorkflow } = callbackUtils.getCallbacks;
-        deleteWorkflow(workflow.name, (workflow?.version ?? 1).toString()).then(() => {
-          onClose();
-          addToastNotification({
-            content: 'Workflow deleted',
-            type: 'success',
-          });
-        });
-      }
+    const result = await deleteWorkflow({ name, version: workflowVersion || 1 });
 
-      if (!isWorkflow) {
-        addToastNotification({
-          content: 'No workflow definition to be deleted',
-          type: 'error',
-        });
-      }
-    });
+    if (result.data) {
+      onClose();
+      addToastNotification({
+        content: 'Workflow deleted',
+        type: 'success',
+      });
+    } else {
+      addToastNotification({
+        content: `Workflow delete failed: ${result.error}`,
+        type: 'error',
+      });
+    }
   };
 
   const handleWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>) => {

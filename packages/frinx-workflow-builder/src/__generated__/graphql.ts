@@ -1377,3 +1377,11 @@ export type ExecuteWorkflowByNameMutationVariables = Exact<{
 
 
 export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };
+
+export type DeleteWorkflowMutationVariables = Exact<{
+  name: Scalars['String'];
+  version: Scalars['Int'];
+}>;
+
+
+export type DeleteWorkflowMutation = { __typename?: 'Mutation', deleteWorkflow: { __typename?: 'DeleteWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };

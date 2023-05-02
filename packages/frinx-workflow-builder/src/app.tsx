@@ -68,7 +68,7 @@ type Props = {
   onWorkflowChange: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onFileImport: (file: File) => void;
   onFileExport: (workflow: ClientWorkflow) => void; // eslint-disable-line react/no-unused-prop-types
-  onWorkflowDelete: () => void;
+  onWorkflowDelete: (name: string, version?: number | null) => void;
   onWorkflowClone: (workflow: ClientWorkflow, name: string) => void; // eslint-disable-line react/no-unused-prop-types
   updateWorkflow: (variables: UpdateWorkflowMutationVariables) => Promise<OperationResult<UpdateWorkflowMutation>>;
   executeWorkflow: (
@@ -368,6 +368,7 @@ const App: VoidFunctionComponent<Props> = ({
                   onWorkflowDelete={onWorkflowDelete}
                   onWorkflowClone={handleWorkflowClone}
                   workflows={workflows}
+                  workflow={workflow}
                 />
               </Box>
               <HStack>
