@@ -187,6 +187,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
     setWorkflow({
       ...workflowDetail,
+      description: description?.description ?? null,
       labels: description?.labels || [],
       tasks: extendedTasks,
       hasSchedule: workflowDetail.hasSchedule ?? false,
@@ -291,17 +292,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
                 // schemaVersion: 2,
                 ...wf,
                 id: '',
-                description: '',
-                createdAt: '',
+                createdAt: new Date().toISOString(),
                 updatedAt: '',
                 createdBy: '',
                 updatedBy: '',
-                labels: [],
-                tasks: [],
                 // updateTime: 0,
                 hasSchedule: false,
                 // correlationId: '',
-                inputParameters: [],
               });
               setShouldCreateWorkflow(false);
             }}

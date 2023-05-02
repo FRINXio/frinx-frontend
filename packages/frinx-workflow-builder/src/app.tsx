@@ -252,17 +252,23 @@ const App: VoidFunctionComponent<Props> = ({
         tasks: newTasks,
       });
 
+      const description = JSON.stringify({
+        description: editedWorkflow.description,
+        labels: editedWorkflow.labels,
+      });
+
       const result = await updateWorkflow({
         updateWorkflowId: workflow.id,
         input: {
           workflow: {
-            description: editedWorkflow.description,
+            description,
             name: editedWorkflow.name,
             tasks: JSON.stringify(newTasks),
             timeoutSeconds: 0,
             version: editedWorkflow.version,
             restartable: editedWorkflow.restartable,
             outputParameters: editedWorkflow.outputParameters,
+            updatedAt: new Date().toISOString(),
           },
         },
       });

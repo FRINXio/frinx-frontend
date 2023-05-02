@@ -34,27 +34,6 @@ type Props = {
 
 type FormValues = ClientWorkflow & { labels?: string[] };
 
-const getInitialValues = (initialWorkflow: ClientWorkflow): FormValues => {
-  const { description, labels } = JSON.parse(initialWorkflow.description || '{}');
-  let initialValues = initialWorkflow;
-
-  if (description != null) {
-    initialValues = {
-      ...initialValues,
-      description,
-    };
-  }
-
-  if (labels != null) {
-    initialValues = {
-      ...initialValues,
-      labels,
-    };
-  }
-
-  return initialValues;
-};
-
 const validationSchema = (isCreatingWorkflow: boolean) =>
   yup.object({
     name: yup.string().required('Name is required field and must be unique'),
@@ -81,15 +60,13 @@ const WorkflowForm: FC<Props> = ({
   onChangeNotify,
 }) => {
   const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
-    initialValues: getInitialValues(workflow),
+    initialValues: workflow,
     onSubmit: (formValues) => {
       const editedWorkflow: ClientWorkflow<ExtendedTask> = {
         ...workflow,
         name: formValues.name,
-        description: JSON.stringify({
-          description: formValues.description,
-          labels: formValues.labels,
-        }),
+        description: formValues.description,
+        labels: formValues.labels,
         version: formValues.version,
         restartable: formValues.restartable,
         outputParameters: formValues.outputParameters,
@@ -107,15 +84,7 @@ const WorkflowForm: FC<Props> = ({
     }
   };
 
-  const tagsInput = useTagsInput(
-    (function getLabels() {
-      try {
-        return JSON.parse(workflow.description || '{}').labels || [];
-      } catch (e) {
-        return [];
-      }
-    })(),
-  );
+  const tagsInput = useTagsInput(values.labels);
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);

@@ -896,12 +896,14 @@ type WorkflowEdge {
 }
 
 input WorkflowInput {
+  createdAt: String
   description: String
   name: String!
   outputParameters: [OutputParameterInput!]
   restartable: Boolean
   tasks: String!
   timeoutSeconds: Int!
+  updatedAt: String
   version: Int
 }
 

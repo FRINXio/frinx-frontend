@@ -1280,12 +1280,14 @@ export type WorkflowEdge = {
 };
 
 export type WorkflowInput = {
+  createdAt?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   outputParameters?: InputMaybe<Array<OutputParameterInput>>;
   restartable?: InputMaybe<Scalars['Boolean']>;
   tasks: Scalars['String'];
   timeoutSeconds: Scalars['Int'];
+  updatedAt?: InputMaybe<Scalars['String']>;
   version?: InputMaybe<Scalars['Int']>;
 };
 
