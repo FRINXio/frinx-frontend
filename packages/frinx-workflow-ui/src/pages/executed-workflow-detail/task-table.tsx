@@ -24,7 +24,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => (
     </Thead>
     <Tbody>
       {tasks.map((task) => (
-        <Tr key={task.referenceTaskName}>
+        <Tr key={task.taskId}>
           <Td>{task.seq}</Td>
           <Td
             onClick={() => {
