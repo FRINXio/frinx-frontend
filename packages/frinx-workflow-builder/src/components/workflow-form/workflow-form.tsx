@@ -67,7 +67,7 @@ const WorkflowForm: FC<Props> = ({
         name: formValues.name,
         description: formValues.description,
         labels: formValues.labels,
-        version: formValues.version,
+        version: Number(formValues.version),
         restartable: formValues.restartable,
         outputParameters: formValues.outputParameters,
       };
