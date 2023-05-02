@@ -253,7 +253,6 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
                   input={result.input}
                   output={result.output}
                   onEscapeChange={() => setIsEscaped(!isEscaped)}
-                  getUnescapedJSON={getUnescapedJSON}
                   externalInputPayloadStoragePath={result.externalInputPayloadStoragePath}
                   externalOutputPayloadStoragePath={result.externalOutputPayloadStoragePath}
                 />
