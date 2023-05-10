@@ -141,11 +141,13 @@ export function decodeSiteDevicesOutput(value: unknown): SiteDevicesOutput {
 }
 
 const MaximumRoutesValidator = t.type({
-  'address-family': t.array(
-    t.type({
-      af: t.union([t.literal('ipv4'), t.literal('ipv6')]),
-      'maximum-routes': optional(t.number),
-    }),
+  'address-family': optional(
+    t.array(
+      t.type({
+        af: t.union([t.literal('ipv4'), t.literal('ipv6')]),
+        'maximum-routes': optional(t.number),
+      }),
+    ),
   ),
 });
 
