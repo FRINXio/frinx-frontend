@@ -27,7 +27,7 @@ const isJson = (data: string) => {
 };
 
 const replaceJsonAndArray = (key: string, value: string) => {
-  if (isJson(value) || Array.isArray(value)) {
+  if (isJson(value)) {
     return JSON.parse(value);
   }
   return value;
