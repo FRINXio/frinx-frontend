@@ -64,8 +64,8 @@ const WORKFLOW_LABELS_QUERY = gql`
 `;
 
 const WORKFLOW_DELETE_MUTATION = gql`
-  mutation DeleteWorkflow($name: String!, $version: Int!) {
-    deleteWorkflow(name: $name, version: $version) {
+  mutation DeleteWorkflow($input: DeleteWorkflowInput!) {
+    deleteWorkflow(input: $input) {
       workflow {
         id
       }
@@ -119,8 +119,10 @@ const WorkflowDefinitions = () => {
   const handleDeleteWorkflow = async (workflow: ClientWorkflow) => {
     const { name, version } = workflow;
     await deleteWorkflow({
-      name,
-      version: version || 1,
+      input: {
+        name,
+        version: version || 1,
+      },
     });
   };
 

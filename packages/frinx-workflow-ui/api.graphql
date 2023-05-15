@@ -96,6 +96,10 @@ type BlueprintEdge {
   node: Blueprint!
 }
 
+input BulkOperationInput {
+  executedWorkflowIds: [String!]!
+}
+
 type BulkOperationResponse {
   bulkErrorResults: String
   bulkSuccessfulResults: [String!]
@@ -171,6 +175,18 @@ type CreateLabelPayload {
   label: Label
 }
 
+input CreateScheduleInput {
+  cronString: String!
+  isEnabled: Boolean
+  name: String!
+  parallelRuns: Boolean
+  performFromDate: String
+  performTillDate: String
+  workflowContext: String
+  workflowName: String!
+  workflowVersion: String!
+}
+
 type CreateTransactionPayload {
   transactionId: String
 }
@@ -209,6 +225,11 @@ input DeleteSnapshotInput {
 
 type DeleteSnapshotPayload {
   snapshot: Snapshot
+}
+
+input DeleteWorkflowInput {
+  name: String!
+  version: Int!
 }
 
 type DeleteWorkflowPayload {
@@ -279,6 +300,17 @@ type EdgeSourceTarget {
   nodeId: String!
 }
 
+input EditWorkflowScheduleInput {
+  cronString: String
+  isEnabled: Boolean
+  parallelRuns: Boolean
+  performFromDate: String
+  performTillDate: String
+  workflowContext: String
+  workflowName: String
+  workflowVersion: String
+}
+
 input ExecuteNewWorkflowInput {
   correlationId: String
   externalInputPayloadStoragePath: String
@@ -287,6 +319,18 @@ input ExecuteNewWorkflowInput {
   priority: Int
   taskToDomain: String
   version: Int
+}
+
+input ExecuteWorkflowByName {
+  correlationId: String
+
+  """
+  JSON string of input parameters
+  """
+  inputParameters: String!
+  priority: Int
+  workflowName: String!
+  workflowVersion: Int
 }
 
 type ExecutedWorkflow implements Node {
@@ -504,11 +548,11 @@ type Mutation {
   addSnapshot(input: AddSnapshotInput!, transactionId: String!): AddSnapshotPayload
   addZone(input: AddZoneInput!): AddZonePayload!
   applySnapshot(input: ApplySnapshotInput!, transactionId: String!): ApplySnapshotPayload!
-  bulkPauseWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
-  bulkRestartWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
-  bulkResumeWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
-  bulkRetryWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
-  bulkTerminateWorkflow(executedWorkflowIds: [String!]!): BulkOperationResponse
+  bulkPauseWorkflow(input: BulkOperationInput!): BulkOperationResponse
+  bulkRestartWorkflow(input: BulkOperationInput!): BulkOperationResponse
+  bulkResumeWorkflow(input: BulkOperationInput!): BulkOperationResponse
+  bulkRetryWorkflow(input: BulkOperationInput!): BulkOperationResponse
+  bulkTerminateWorkflow(input: BulkOperationInput!): BulkOperationResponse
   closeTransaction(deviceId: String!, transactionId: String!): CloseTransactionPayload!
   commitConfig(input: CommitConfigInput!, transactionId: String!): CommitConfigPayload!
   createLabel(input: CreateLabelInput!): CreateLabelPayload!
@@ -517,49 +561,24 @@ type Mutation {
   deleteBlueprint(id: String!): DeleteBlueprintPayload!
   deleteDevice(id: String!): DeleteDevicePayload!
   deleteLabel(id: String!): DeleteLabelPayload!
+  deleteSchedule(id: String!): IsOkResponse
   deleteSnapshot(input: DeleteSnapshotInput!): DeleteSnapshotPayload
-  deleteWorkflow(name: String!, version: Int!): DeleteWorkflowPayload!
+  deleteWorkflow(input: DeleteWorkflowInput!): DeleteWorkflowPayload!
+  editWorkflowSchedule(id: String!, input: EditWorkflowScheduleInput!): Schedule
   executeNewWorkflow(input: StartWorkflowRequestInput!): String
-  executeWorkflowByName(
-    correlationId: String
-
-    """
-    JSON string of input parameters
-    """
-    inputParameters: String!
-    priority: Int
-    workflowName: String!
-    workflowVersion: Int
-  ): String
+  executeWorkflowByName(input: ExecuteWorkflowByName!): String
   importCSV(input: CSVImportInput!): CSVImport
   installDevice(id: String!): InstallDevicePayload!
-  pauseWorkflow(workflowId: String!): IsOkResponse
-  removeWorkflow(
-    """
-    Default value is true
-    """
-    shouldArchiveWorkflow: Boolean
-    workflowId: String!
-  ): IsOkResponse
+  pauseWorkflow(id: String!): IsOkResponse
+  removeWorkflow(id: String!, input: RemoveWorkflowInput): IsOkResponse
   resetConfig(deviceId: String!, transactionId: String!): ResetConfigPayload!
-  restartWorkflow(
-    """
-    Default value is true
-    """
-    shouldUseLatestDefinitions: Boolean
-    workflowId: String!
-  ): IsOkResponse
-  resumeWorkflow(workflowId: String!): IsOkResponse
-  retryWorkflow(
-    """
-    Default value is true
-    """
-    shouldResumeSubworkflowTasks: Boolean
-    workflowId: String!
-  ): IsOkResponse
+  restartWorkflow(id: String!, input: RestartWorkflowInput): IsOkResponse
+  resumeWorkflow(id: String!): IsOkResponse
+  retryWorkflow(id: String!, input: RetryWorkflowInput): IsOkResponse
   revertChanges(transactionId: String!): RevertChangesPayload!
+  scheduleWorkflow(input: CreateScheduleInput!): Schedule
   syncFromNetwork(deviceId: String!, transactionId: String!): SyncFromNetworkPayload!
-  terminateWorkflow(reason: String, workflowId: String!): IsOkResponse
+  terminateWorkflow(id: String!, input: TerminateWorkflowInput): IsOkResponse
   uninstallDevice(id: String!): UninstallDevicePayload!
   updateBlueprint(id: String!, input: UpdateBlueprintInput!): UpdateBlueprintPayload!
   updateDataStore(deviceId: String!, input: UpdateDataStoreInput!, transactionId: String!): UpdateDataStorePayload!
@@ -637,6 +656,7 @@ type Query {
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   netTopology: NetTopology
   node(id: ID!, version: Int): Node
+  schedules(after: String, before: String, filter: ScheduleFilterInput, first: Int, last: Int): ScheduleConnection!
   taskDefinitions: [TaskDefinition!]!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
@@ -650,8 +670,22 @@ type Query {
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
 }
 
+input RemoveWorkflowInput {
+  """
+  Default value is true
+  """
+  shouldArchiveWorkflow: Boolean
+}
+
 type ResetConfigPayload {
   dataStore: DataStore!
+}
+
+input RestartWorkflowInput {
+  """
+  Default value is true
+  """
+  shouldUseLatestDefinitions: Boolean
 }
 
 enum RetryLogic {
@@ -660,8 +694,45 @@ enum RetryLogic {
   LINEAR_BACKOFF
 }
 
+input RetryWorkflowInput {
+  """
+  Default value is true
+  """
+  shouldResumeSubworkflowTasks: Boolean
+}
+
 type RevertChangesPayload {
   isOk: Boolean!
+}
+
+type Schedule implements Node {
+  cronString: String!
+  id: ID!
+  isEnabled: Boolean!
+  name: String!
+  parallelRuns: Boolean!
+  performFromDate: String!
+  performTillDate: String!
+  version: Int
+  workflowContext: String!
+  workflowName: String!
+  workflowVersion: String!
+}
+
+type ScheduleConnection {
+  edges: [ScheduleEdge]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ScheduleEdge {
+  cursor: String!
+  node: Schedule!
+}
+
+input ScheduleFilterInput {
+  workflowName: String!
+  workflowVersion: String!
 }
 
 type Snapshot {
@@ -742,6 +813,10 @@ enum TaskTimeoutPolicy {
   ALERT_ONLY
   RETRY
   TIME_OUT_WF
+}
+
+input TerminateWorkflowInput {
+  reason: String
 }
 
 enum TimeoutPolicy {
@@ -896,12 +971,14 @@ type WorkflowEdge {
 }
 
 input WorkflowInput {
+  createdAt: String
   description: String
   name: String!
   outputParameters: [OutputParameterInput!]
   restartable: Boolean
   tasks: String!
   timeoutSeconds: Int!
+  updatedAt: String
   version: Int
 }
 

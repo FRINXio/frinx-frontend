@@ -6,16 +6,16 @@ import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import { makeURLSearchParamsFromObject } from '../../../helpers/utils.helpers';
 import {
-  BulkPauseMutation,
-  BulkPauseMutationVariables,
-  BulkRestartMutation,
-  BulkRestartMutationVariables,
-  BulkResumeMutation,
-  BulkResumeMutationVariables,
-  BulkRetryMutation,
-  BulkRetryMutationVariables,
-  BulkTerminateMutation,
-  BulkTerminateMutationVariables,
+  BulkPauseWorkflowMutation,
+  BulkPauseWorkflowMutationVariables,
+  BulkRestartWorkflowMutation,
+  BulkRestartWorkflowMutationVariables,
+  BulkResumeWorkflowMutation,
+  BulkResumeWorkflowMutationVariables,
+  BulkRetryWorkflowMutation,
+  BulkRetryWorkflowMutationVariables,
+  BulkTerminateWorkflowMutation,
+  BulkTerminateWorkflowMutationVariables,
   ExecutedWorkflow,
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
@@ -65,8 +65,8 @@ const EXECUTED_WORKFLOW_QUERY = gql`
 `;
 
 const BULK_PAUSE_MUTATION = gql`
-  mutation BulkPause($executedWorkflowIds: [String!]!) {
-    bulkPauseWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkPauseWorkflow($input: BulkOperationInput!) {
+    bulkPauseWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -74,8 +74,8 @@ const BULK_PAUSE_MUTATION = gql`
 `;
 
 const BULK_RESUME_MUTATION = gql`
-  mutation BulkResume($executedWorkflowIds: [String!]!) {
-    bulkResumeWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkResumeWorkflow($input: BulkOperationInput!) {
+    bulkResumeWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -83,8 +83,8 @@ const BULK_RESUME_MUTATION = gql`
 `;
 
 const BULK_RETRY_MUTATION = gql`
-  mutation BulkRetry($executedWorkflowIds: [String!]!) {
-    bulkRetryWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkRetryWorkflow($input: BulkOperationInput!) {
+    bulkRetryWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -92,8 +92,8 @@ const BULK_RETRY_MUTATION = gql`
 `;
 
 const BULK_TERMINATE_MUTATION = gql`
-  mutation BulkTerminate($executedWorkflowIds: [String!]!) {
-    bulkTerminateWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkTerminateWorkflow($input: BulkOperationInput!) {
+    bulkTerminateWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -101,8 +101,8 @@ const BULK_TERMINATE_MUTATION = gql`
 `;
 
 const BULK_RESTART_MUTATION = gql`
-  mutation BulkRestart($executedWorkflowIds: [String!]!) {
-    bulkRestartWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkRestartWorkflow($input: BulkOperationInput!) {
+    bulkRestartWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -135,11 +135,19 @@ const ExecutedWorkflowList = () => {
     context: executedWorkflowsCtx,
   });
 
-  const [, onBulkPause] = useMutation<BulkPauseMutation, BulkPauseMutationVariables>(BULK_PAUSE_MUTATION);
-  const [, onBulkRetry] = useMutation<BulkRetryMutation, BulkRetryMutationVariables>(BULK_RETRY_MUTATION);
-  const [, onBulkResume] = useMutation<BulkResumeMutation, BulkResumeMutationVariables>(BULK_RESUME_MUTATION);
-  const [, onBulkRestart] = useMutation<BulkRestartMutation, BulkRestartMutationVariables>(BULK_RESTART_MUTATION);
-  const [, onBulkTerminate] = useMutation<BulkTerminateMutation, BulkTerminateMutationVariables>(
+  const [, onBulkPause] = useMutation<BulkPauseWorkflowMutation, BulkPauseWorkflowMutationVariables>(
+    BULK_PAUSE_MUTATION,
+  );
+  const [, onBulkRetry] = useMutation<BulkRetryWorkflowMutation, BulkRetryWorkflowMutationVariables>(
+    BULK_RETRY_MUTATION,
+  );
+  const [, onBulkResume] = useMutation<BulkResumeWorkflowMutation, BulkResumeWorkflowMutationVariables>(
+    BULK_RESUME_MUTATION,
+  );
+  const [, onBulkRestart] = useMutation<BulkRestartWorkflowMutation, BulkRestartWorkflowMutationVariables>(
+    BULK_RESTART_MUTATION,
+  );
+  const [, onBulkTerminate] = useMutation<BulkTerminateWorkflowMutation, BulkTerminateWorkflowMutationVariables>(
     BULK_TERMINATE_MUTATION,
   );
 
@@ -198,31 +206,31 @@ const ExecutedWorkflowList = () => {
     switch (action) {
       case 'pause':
         wasSuccessfull = await onBulkPause(
-          { executedWorkflowIds: selectedWorkflows },
+          { input: { executedWorkflowIds: selectedWorkflows } },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'restart':
         wasSuccessfull = await onBulkRestart(
-          { executedWorkflowIds: selectedWorkflows },
+          { input: { executedWorkflowIds: selectedWorkflows } },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'resume':
         wasSuccessfull = await onBulkResume(
-          { executedWorkflowIds: selectedWorkflows },
+          { input: { executedWorkflowIds: selectedWorkflows } },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'retry':
         wasSuccessfull = await onBulkRetry(
-          { executedWorkflowIds: selectedWorkflows },
+          { input: { executedWorkflowIds: selectedWorkflows } },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;
       case 'terminate':
         wasSuccessfull = await onBulkTerminate(
-          { executedWorkflowIds: selectedWorkflows },
+          { input: { executedWorkflowIds: selectedWorkflows } },
           { additionalTypenames: ['ExecutedWorkflows'] },
         ).then((res) => res.error == null);
         break;

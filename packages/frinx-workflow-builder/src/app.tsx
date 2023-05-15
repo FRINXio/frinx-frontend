@@ -313,9 +313,11 @@ const App: VoidFunctionComponent<Props> = ({
 
     try {
       const result = await executeWorkflow({
-        inputParameters: JSON.stringify(values),
-        workflowName: workflow.name,
-        workflowVersion: workflow.version,
+        input: {
+          inputParameters: JSON.stringify(values),
+          workflowName: workflow.name,
+          workflowVersion: workflow.version,
+        },
       });
       addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
       return result.data?.executeWorkflowByName ?? null;

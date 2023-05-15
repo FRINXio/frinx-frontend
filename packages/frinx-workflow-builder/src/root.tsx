@@ -116,26 +116,14 @@ const UPDATE_WORKFLOW_MUTATION = gql`
 `;
 
 const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByName(
-    $inputParameters: String!
-    $workflowName: String!
-    $workflowVersion: Int
-    $correlationId: String
-    $priority: Int
-  ) {
-    executeWorkflowByName(
-      inputParameters: $inputParameters
-      workflowName: $workflowName
-      workflowVersion: $workflowVersion
-      correlationId: $correlationId
-      priority: $priority
-    )
+  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
+    executeWorkflowByName(input: $input)
   }
 `;
 
 const WORKFLOW_DELETE_MUTATION = gql`
-  mutation DeleteWorkflow($name: String!, $version: Int!) {
-    deleteWorkflow(name: $name, version: $version) {
+  mutation DeleteWorkflow($input: DeleteWorkflowInput!) {
+    deleteWorkflow(input: $input) {
       workflow {
         id
       }
@@ -256,7 +244,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       return;
     }
 
-    const result = await deleteWorkflow({ name, version: workflowVersion || 1 });
+    const result = await deleteWorkflow({ input: { name, version: workflowVersion || 1 } });
 
     if (result.data) {
       onClose();
