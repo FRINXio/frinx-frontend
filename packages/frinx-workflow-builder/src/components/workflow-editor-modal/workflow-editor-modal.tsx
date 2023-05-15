@@ -9,13 +9,13 @@ import {
   ModalOverlay,
   Button,
 } from '@chakra-ui/react';
-import { ClientWorkflow, Editor, ExtendedTask, Workflow } from '@frinx/shared/src';
+import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared/src';
 
 type Props = {
   isOpen: boolean;
   workflow: ClientWorkflow<ExtendedTask>;
   onClose: () => void;
-  onSave: (workflow: Workflow<ExtendedTask>) => void;
+  onSave: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onChangeNotify: () => void;
 };
 

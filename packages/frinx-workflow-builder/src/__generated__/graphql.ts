@@ -1461,9 +1461,39 @@ export type ZonesConnection = {
   totalCount: Scalars['Int'];
 };
 
+export type WorkflowFragmentFragment = { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null };
+
 export type WorkflowQueryVariables = Exact<{
   nodeId: Scalars['ID'];
+  version?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type WorkflowQuery = { __typename?: 'Query', workflow: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow' } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Schedule' } | { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null } | { __typename?: 'Zone' } | null, workflows: { __typename?: 'WorkflowConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowEdge', cursor: string, node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null } }, taskDefinitions: Array<{ __typename?: 'TaskDefinition', name: string, description: string | null, createdAt: string | null, retryCount: number | null, timeoutSeconds: number, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, ownerEmail: string | null }> };
+export type WorkflowQuery = { __typename?: 'Query', workflow: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow' } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Schedule' } | { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | { __typename?: 'Zone' } | null };
+
+export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WorkflowListQuery = { __typename?: 'Query', workflows: { __typename?: 'WorkflowConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowEdge', cursor: string, node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null } }, taskDefinitions: Array<{ __typename?: 'TaskDefinition', name: string, description: string | null, createdAt: string | null, retryCount: number | null, timeoutSeconds: number, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, ownerEmail: string | null }> };
+
+export type UpdateWorkflowMutationVariables = Exact<{
+  updateWorkflowId: Scalars['String'];
+  input: UpdateWorkflowInput;
+}>;
+
+
+export type UpdateWorkflowMutation = { __typename?: 'Mutation', updateWorkflow: { __typename?: 'UpdateWorkflowPayload', workflow: { __typename?: 'Workflow', createdBy: string | null, updatedAt: string | null, tasks: string | null, name: string, description: string | null, version: number | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } } };
+
+export type ExecuteWorkflowByNameMutationVariables = Exact<{
+  input: ExecuteWorkflowByName;
+}>;
+
+
+export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };
+
+export type DeleteWorkflowMutationVariables = Exact<{
+  input: DeleteWorkflowInput;
+}>;
+
+
+export type DeleteWorkflowMutation = { __typename?: 'Mutation', deleteWorkflow: { __typename?: 'DeleteWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };
