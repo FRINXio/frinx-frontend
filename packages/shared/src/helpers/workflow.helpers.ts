@@ -1,4 +1,3 @@
-import { gql } from 'urql';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
