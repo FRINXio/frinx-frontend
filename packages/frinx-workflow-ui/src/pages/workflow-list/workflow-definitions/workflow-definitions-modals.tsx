@@ -2,10 +2,12 @@ import { UseDisclosureReturn } from '@chakra-ui/react';
 import {
   useNotifications,
   callbackUtils,
-  ScheduledWorkflow,
   ExecuteWorkflowModal,
   ClientWorkflow,
+  CreateScheduledWorkflow,
 } from '@frinx/shared/src';
+import { gql, useMutation } from 'urql';
+
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
@@ -14,6 +16,7 @@ import {
   ScheduleWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
+import { ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables } from '../../../__generated__/graphql';
 
 type Props = {
   workflows: ClientWorkflow[];
@@ -27,6 +30,21 @@ type Props = {
   onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
 };
 
+const CREATE_SCHEDULE_MUTATION = gql`
+  mutation ScheduleWorkflow($input: CreateScheduleInput!) {
+    scheduleWorkflow(input: $input) {
+      name
+      isEnabled
+      workflowName
+      workflowVersion
+      cronString
+      workflowContext
+      performFromDate
+      performTillDate
+    }
+  }
+`;
+
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,
   activeWorkflow,
@@ -38,21 +56,35 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   scheduledWorkflowModal,
   onDeleteWorkflow,
 }) => {
+  const [, onCreate] = useMutation<ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables>(
+    CREATE_SCHEDULE_MUTATION,
+  );
+
   const { addToastNotification } = useNotifications();
 
-  const handleWorkflowSchedule = (scheduledWf: Partial<ScheduledWorkflow>) => {
-    const { registerSchedule } = callbackUtils.getCallbacks;
+  const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
+    const scheduleInput = {
+      ...scheduledWf,
+      workflowContext: JSON.stringify(scheduledWf.workflowContext),
+    };
+
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
-        ...scheduledWf,
-        workflowVersion: String(scheduledWf.workflowVersion),
-      })
-        .then(() => {
-          addToastNotification({
-            type: 'success',
-            title: 'Success',
-            content: 'Successfully scheduled',
-          });
+      onCreate({ input: scheduleInput })
+        .then((res) => {
+          if (!res.data?.scheduleWorkflow) {
+            addToastNotification({
+              type: 'error',
+              title: 'Error',
+              content: res.error?.message,
+            });
+          }
+          if (res.data?.scheduleWorkflow || !res.error) {
+            addToastNotification({
+              content: 'Successfully scheduled',
+              title: 'Success',
+              type: 'success',
+            });
+          }
         })
         .catch(() => {
           addToastNotification({

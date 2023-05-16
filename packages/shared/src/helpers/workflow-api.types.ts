@@ -411,19 +411,39 @@ export enum SerializerEnum {
   StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
 }
 
-export type StatusType = 'COMPLETED' | 'RUNNING' | 'FAILED';
+export type StatusType = 'COMPLETED' | 'FAILED' | 'PAUSED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT' | 'UNKNOWN';
 
 export type ScheduledWorkflow = {
-  correlationId: string;
-  cronString: string;
-  lastUpdate: string;
+  id: string;
+  correlationId?: string;
+  cronString: string | undefined;
+  lastUpdate?: string;
+  performFromDate?: string | undefined;
+  performTillDate?: string;
   name: string;
-  taskToDomain: Record<string, string>;
+  parallelRuns?: boolean | undefined;
+  taskToDomain?: Record<string, string>;
   workflowName: string;
   workflowVersion: string;
-  workflowContext: Record<string, any>;
-  enabled: boolean;
-  status: StatusType;
+  workflowContext: string | Record<string, string>;
+  isEnabled: boolean;
+  status?: StatusType;
+};
+
+export type CreateScheduledWorkflow = {
+  correlationId?: string;
+  cronString: string | undefined;
+  lastUpdate?: string;
+  performFromDate?: string | undefined;
+  performTillDate?: string;
+  name: string;
+  parallelRuns?: boolean | undefined;
+  taskToDomain?: Record<string, string>;
+  workflowName: string;
+  workflowVersion: string;
+  workflowContext: string | Record<string, string>;
+  isEnabled: boolean;
+  status?: StatusType;
 };
 
 export type ExecutedWorkflow = {
@@ -623,7 +643,7 @@ export type WorkflowExecutionResult = {
 };
 
 export type WorkflowPayload = {
-  input: Record<string, string>;
+  input: Record<string, unknown>;
   name: string;
   version: number;
 };
@@ -674,15 +694,16 @@ export type Queue = {
 // https://github.com/FRINXio/schellar#api
 export type ScheduleWorkflowInput = {
   name: string;
-  enabled: boolean;
+  isEnabled: boolean;
   parallelRuns?: boolean;
   workflowName: string;
   workflowVersion: string;
   cronString: string;
-  workflowContext: Record<string, string>;
-  fromDate?: string;
-  toDate?: string;
+  workflowContext: Record<string, string> | string;
+  performFromDate?: string;
+  performTillDate?: string;
   correlationId?: string;
+  status?: StatusType;
   taskToDomain?: {
     '*': string;
   };
