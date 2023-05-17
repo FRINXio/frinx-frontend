@@ -20,7 +20,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Progress,
   Spacer,
   Text,
   useBoolean,
@@ -38,20 +37,7 @@ import * as Yup from 'yup';
 import moment from 'moment';
 import ExecuteWorkflowModalFormInput from '@frinx/shared/src/components/execute-workflow-modal/execute-workflow-modal-form-input';
 import FeatherIcon from 'feather-icons-react';
-import { gql, useQuery } from 'urql';
-import { SchedulesQuery, SchedulesQueryVariables } from '../../__generated__/graphql';
 
-const SCHEDULED_WORKFLOWS_QUERY = gql`
-  query Schedules {
-    schedules {
-      edges {
-        node {
-          name
-        }
-      }
-    }
-  }
-`;
 
 const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
@@ -69,32 +55,12 @@ const resetDateFormat = (dateTime: string | undefined): string => {
 };
 
 const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen, onClose, onSubmit }) => {
-  const [{ data: scheduledWorkflows, fetching: isLoadingScheduledWorkflows }] = useQuery<
-    SchedulesQuery,
-    SchedulesQueryVariables
-  >({
-    query: SCHEDULED_WORKFLOWS_QUERY,
-  });
+
 
   const validationSchema = Yup.object().shape({
     workflowName: Yup.string().required('Workflow name is required'),
     workflowVersion: Yup.number().required('Workflow version is required'),
-    name: Yup.string()
-      .required('Schedule name is required')
-      .test({
-        name: 'name',
-        message: 'Schedule name must be unique',
-        test: (value) => {
-          const scheduleNames = scheduledWorkflows?.schedules.edges.map(({ node }) => {
-            return node?.name;
-          });
-          const isNameUnique = !scheduleNames?.some((wfName) => wfName === value);
-          if (!isNameUnique) {
-            return false;
-          }
-          return true;
-        },
-      }),
+    name: Yup.string().required('Schedule name is required'),
     cronString: Yup.string()
       .required('Cron expression is required')
       .test({
@@ -164,10 +130,6 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
       </Link>
     );
   };
-
-  if (isLoadingScheduledWorkflows) {
-    return <Progress size="xs" isIndeterminate />;
-  }
 
   const inputParametersKeys = Object.keys(values.workflowContext);
 
