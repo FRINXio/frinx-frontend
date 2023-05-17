@@ -1,6 +1,7 @@
 import React, { VoidFunctionComponent, useState } from 'react';
 import { IconButton, Button, SimpleGrid, Box, Stack, Textarea, Text, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
+import unescapeJs from 'unescape-js';
 import ExternalStorageModal from './external-storage-modal';
 
 type Props = {
@@ -8,23 +9,55 @@ type Props = {
   input: Record<string, string>;
   output: Record<string, string>;
   copyToClipBoard: (value: Record<string, string>) => void;
-  getUnescapedJSON: (value: Record<string, string>) => string;
   onEscapeChange: (isEscaped: boolean) => void;
   externalInputPayloadStoragePath?: string;
   externalOutputPayloadStoragePath?: string;
+};
+
+const isJson = (data: string) => {
+  try {
+    JSON.parse(data);
+  } catch (e) {
+    return false;
+  }
+  if (Number.isFinite(Number(data))) {
+    return false;
+  }
+  return true;
+};
+
+const replaceJsonAndArray = (key: string, value: string) => {
+  if (isJson(value)) {
+    return JSON.parse(value);
+  }
+  return value;
+};
+
+const getJSON = (data: Record<string, unknown> | unknown, isEscaped: boolean) => {
+  return isEscaped
+    ? JSON.stringify(data, replaceJsonAndArray, 2)
+        .replace(/\\n/g, '\\n')
+        .replace(/\\'/g, "\\'")
+        .replace(/\\"/g, '\\"')
+        .replace(/\\&/g, '\\&')
+        .replace(/\\r/g, '\\r')
+        .replace(/\\t/g, '\\t')
+        .replace(/\\b/g, '\\b')
+        .replace(/\\f/g, '\\f')
+    : unescapeJs(JSON.stringify(data, replaceJsonAndArray, 2));
 };
 
 const InputOutputTab: VoidFunctionComponent<Props> = ({
   isEscaped,
   input,
   output,
-  getUnescapedJSON,
   copyToClipBoard,
   onEscapeChange,
   externalInputPayloadStoragePath,
   externalOutputPayloadStoragePath,
 }) => {
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
+
   return (
     <>
       {payload && (
@@ -65,7 +98,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getUnescapedJSON(input)} isReadOnly id="workflowInput" variant="filled" minH={500} />
+          <Textarea value={getJSON(input, isEscaped)} isReadOnly id="workflowInput" variant="filled" minH={500} />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -93,7 +126,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getUnescapedJSON(output)} isReadOnly id="workflowOutput" variant="filled" minH={500} />
+          <Textarea value={getJSON(output, isEscaped)} isReadOnly id="workflowOutput" variant="filled" minH={500} />
         </Box>
       </SimpleGrid>
     </>

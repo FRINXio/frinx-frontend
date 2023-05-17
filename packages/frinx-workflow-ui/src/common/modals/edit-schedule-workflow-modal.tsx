@@ -38,7 +38,6 @@ import moment from 'moment';
 import ExecuteWorkflowModalFormInput from '@frinx/shared/src/components/execute-workflow-modal/execute-workflow-modal-form-input';
 import FeatherIcon from 'feather-icons-react';
 
-
 const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
 
@@ -55,8 +54,6 @@ const resetDateFormat = (dateTime: string | undefined): string => {
 };
 
 const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen, onClose, onSubmit }) => {
-
-
   const validationSchema = Yup.object().shape({
     workflowName: Yup.string().required('Workflow name is required'),
     workflowVersion: Yup.number().required('Workflow version is required'),
@@ -92,9 +89,9 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
     initialValues: {
       workflowName: scheduledWorkflow?.workflowName ?? workflow.name,
       workflowVersion: scheduledWorkflow?.workflowVersion ?? workflow.version?.toString() ?? '',
-      workflowContext:
-        scheduledWorkflow?.workflowContext ??
-        getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
+      workflowContext: scheduledWorkflow?.workflowContext
+        ? JSON.parse(scheduledWorkflow.workflowContext)
+        : getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
       name: scheduledWorkflow?.name || '',
       cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
       isEnabled: scheduledWorkflow?.isEnabled ?? false,

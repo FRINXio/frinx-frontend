@@ -29,10 +29,11 @@ type Props = {
   onSaveWorkflowBtnClick: () => void;
   onFileImport: (file: File) => void;
   onFileExport: () => void;
-  onWorkflowDelete: () => void;
+  onWorkflowDelete: (name: string, version?: number | null) => void;
   onWorkflowClone: (name: string) => void;
   onWorkflowEditorBtnClick: () => void;
   workflows: ClientWorkflow[];
+  workflow: ClientWorkflow;
 };
 
 const ActionsMenu: FC<Props> = ({
@@ -46,6 +47,7 @@ const ActionsMenu: FC<Props> = ({
   onWorkflowClone,
   onWorkflowEditorBtnClick,
   workflows,
+  workflow,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const cancelRef = useRef<HTMLDivElement>();
@@ -84,7 +86,7 @@ const ActionsMenu: FC<Props> = ({
               >
                 Cancel
               </Button>
-              <Button colorScheme="red" onClick={onWorkflowDelete} ml={3}>
+              <Button colorScheme="red" onClick={() => onWorkflowDelete(workflow.name, workflow.version)} ml={3}>
                 Delete
               </Button>
             </AlertDialogFooter>

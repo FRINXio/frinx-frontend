@@ -6,16 +6,16 @@ import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import { makeURLSearchParamsFromObject } from '../../../helpers/utils.helpers';
 import {
-  BulkPauseMutation,
-  BulkPauseMutationVariables,
-  BulkRestartMutation,
-  BulkRestartMutationVariables,
-  BulkResumeMutation,
-  BulkResumeMutationVariables,
-  BulkRetryMutation,
-  BulkRetryMutationVariables,
-  BulkTerminateMutation,
-  BulkTerminateMutationVariables,
+  BulkPauseWorkflowMutation,
+  BulkPauseWorkflowMutationVariables,
+  BulkRestartWorkflowMutation,
+  BulkRestartWorkflowMutationVariables,
+  BulkResumeWorkflowMutation,
+  BulkResumeWorkflowMutationVariables,
+  BulkRetryWorkflowMutation,
+  BulkRetryWorkflowMutationVariables,
+  BulkTerminateWorkflowMutation,
+  BulkTerminateWorkflowMutationVariables,
   ExecutedWorkflow,
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
@@ -65,8 +65,8 @@ const EXECUTED_WORKFLOW_QUERY = gql`
 `;
 
 const BULK_PAUSE_MUTATION = gql`
-  mutation BulkPause($executedWorkflowIds: [String!]!) {
-    bulkPauseWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkPauseWorkflow($input: BulkOperationInput!) {
+    bulkPauseWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -74,8 +74,8 @@ const BULK_PAUSE_MUTATION = gql`
 `;
 
 const BULK_RESUME_MUTATION = gql`
-  mutation BulkResume($executedWorkflowIds: [String!]!) {
-    bulkResumeWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkResumeWorkflow($input: BulkOperationInput!) {
+    bulkResumeWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -83,8 +83,8 @@ const BULK_RESUME_MUTATION = gql`
 `;
 
 const BULK_RETRY_MUTATION = gql`
-  mutation BulkRetry($executedWorkflowIds: [String!]!) {
-    bulkRetryWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkRetryWorkflow($input: BulkOperationInput!) {
+    bulkRetryWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -92,8 +92,8 @@ const BULK_RETRY_MUTATION = gql`
 `;
 
 const BULK_TERMINATE_MUTATION = gql`
-  mutation BulkTerminate($executedWorkflowIds: [String!]!) {
-    bulkTerminateWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkTerminateWorkflow($input: BulkOperationInput!) {
+    bulkTerminateWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -101,8 +101,8 @@ const BULK_TERMINATE_MUTATION = gql`
 `;
 
 const BULK_RESTART_MUTATION = gql`
-  mutation BulkRestart($executedWorkflowIds: [String!]!) {
-    bulkRestartWorkflow(executedWorkflowIds: $executedWorkflowIds) {
+  mutation BulkRestartWorkflow($input: BulkOperationInput!) {
+    bulkRestartWorkflow(input: $input) {
       bulkErrorResults
       bulkSuccessfulResults
     }
@@ -135,11 +135,19 @@ const ExecutedWorkflowList = () => {
     context: executedWorkflowsCtx,
   });
 
-  const [, onBulkPause] = useMutation<BulkPauseMutation, BulkPauseMutationVariables>(BULK_PAUSE_MUTATION);
-  const [, onBulkRetry] = useMutation<BulkRetryMutation, BulkRetryMutationVariables>(BULK_RETRY_MUTATION);
-  const [, onBulkResume] = useMutation<BulkResumeMutation, BulkResumeMutationVariables>(BULK_RESUME_MUTATION);
-  const [, onBulkRestart] = useMutation<BulkRestartMutation, BulkRestartMutationVariables>(BULK_RESTART_MUTATION);
-  const [, onBulkTerminate] = useMutation<BulkTerminateMutation, BulkTerminateMutationVariables>(
+  const [, onBulkPause] = useMutation<BulkPauseWorkflowMutation, BulkPauseWorkflowMutationVariables>(
+    BULK_PAUSE_MUTATION,
+  );
+  const [, onBulkRetry] = useMutation<BulkRetryWorkflowMutation, BulkRetryWorkflowMutationVariables>(
+    BULK_RETRY_MUTATION,
+  );
+  const [, onBulkResume] = useMutation<BulkResumeWorkflowMutation, BulkResumeWorkflowMutationVariables>(
+    BULK_RESUME_MUTATION,
+  );
+  const [, onBulkRestart] = useMutation<BulkRestartWorkflowMutation, BulkRestartWorkflowMutationVariables>(
+    BULK_RESTART_MUTATION,
+  );
+  const [, onBulkTerminate] = useMutation<BulkTerminateWorkflowMutation, BulkTerminateWorkflowMutationVariables>(
     BULK_TERMINATE_MUTATION,
   );
 
@@ -183,114 +191,64 @@ const ExecutedWorkflowList = () => {
     setSort({ key, value: 'DESC' });
   };
 
-  const handleOnBulkPause = () => {
-    onBulkPause({ executedWorkflowIds: selectedWorkflows })
-      .then((res) => {
-        if (res.error != null) {
-          throw new Error(res.error.message);
-        }
+  const handleOnBulkOperation = async (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
+    let wasSuccessfull = false;
 
-        addToastNotification({
-          title: 'Bulk Pause',
-          content: 'Successfully paused selected workflows',
-          type: 'success',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          title: 'Bulk Pause',
-          content: 'Failed to pause selected workflows',
-          type: 'error',
-        });
+    if (selectedWorkflows == null || selectedWorkflows.length === 0) {
+      addToastNotification({
+        content: 'You need to selected atleast one workflow',
+        type: 'error',
       });
-  };
 
-  const handleOnBulkResume = () => {
-    onBulkResume({ executedWorkflowIds: selectedWorkflows })
-      .then((res) => {
-        if (res.error != null) {
-          throw new Error(res.error.message);
-        }
+      return;
+    }
 
-        addToastNotification({
-          title: 'Bulk Resume',
-          content: 'Successfully resumed selected workflows',
-          type: 'success',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          title: 'Bulk Resume',
-          content: 'Failed to resume selected workflows',
-          type: 'error',
-        });
+    switch (action) {
+      case 'pause':
+        wasSuccessfull = await onBulkPause(
+          { input: { executedWorkflowIds: selectedWorkflows } },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
+        break;
+      case 'restart':
+        wasSuccessfull = await onBulkRestart(
+          { input: { executedWorkflowIds: selectedWorkflows } },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
+        break;
+      case 'resume':
+        wasSuccessfull = await onBulkResume(
+          { input: { executedWorkflowIds: selectedWorkflows } },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
+        break;
+      case 'retry':
+        wasSuccessfull = await onBulkRetry(
+          { input: { executedWorkflowIds: selectedWorkflows } },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
+        break;
+      case 'terminate':
+        wasSuccessfull = await onBulkTerminate(
+          { input: { executedWorkflowIds: selectedWorkflows } },
+          { additionalTypenames: ['ExecutedWorkflows'] },
+        ).then((res) => res.error == null);
+        break;
+      default:
+        break;
+    }
+
+    if (wasSuccessfull) {
+      addToastNotification({
+        content: 'Bulk operation executed successfully',
+        type: 'success',
       });
-  };
-
-  const handleOnBulkRetry = () => {
-    onBulkRetry({ executedWorkflowIds: selectedWorkflows })
-      .then((res) => {
-        if (res.error != null) {
-          throw new Error(res.error.message);
-        }
-
-        addToastNotification({
-          title: 'Bulk Retry',
-          content: 'Successfully retried selected workflows',
-          type: 'success',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          title: 'Bulk Retry',
-          content: 'Failed to retry selected workflows',
-          type: 'error',
-        });
+    } else {
+      addToastNotification({
+        content: 'We had a problem to execute the bulk operation. Try again please.',
+        type: 'error',
       });
-  };
-
-  const handleOnBulkRestart = () => {
-    onBulkRestart({ executedWorkflowIds: selectedWorkflows })
-      .then((res) => {
-        if (res.error != null) {
-          throw new Error(res.error.message);
-        }
-
-        addToastNotification({
-          title: 'Bulk Restart',
-          content: 'Successfully restarted selected workflows',
-          type: 'success',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          title: 'Bulk Restart',
-          content: 'Failed to restart selected workflows',
-          type: 'error',
-        });
-      });
-  };
-
-  const handleOnBulkTerminate = () => {
-    onBulkTerminate({ executedWorkflowIds: selectedWorkflows })
-      .then((res) => {
-        if (res.error != null) {
-          throw new Error(res.error.message);
-        }
-
-        addToastNotification({
-          title: 'Bulk Terminate',
-          content: 'Successfully terminated selected workflows',
-          type: 'success',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          title: 'Bulk Terminate',
-          content: 'Failed to terminate selected workflows',
-          type: 'error',
-        });
-      });
+    }
   };
 
   const handleOnNext = () => {
@@ -319,11 +277,11 @@ const ExecutedWorkflowList = () => {
         <ExecutedWorkflowBulkOperationsBlock
           amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
           amountOfSelectedWorkflows={selectedWorkflows.length}
-          onPause={handleOnBulkPause}
-          onRetry={handleOnBulkRetry}
-          onRestart={handleOnBulkRestart}
-          onTerminate={handleOnBulkTerminate}
-          onResume={handleOnBulkResume}
+          onPause={() => handleOnBulkOperation('pause')}
+          onRetry={() => handleOnBulkOperation('retry')}
+          onRestart={() => handleOnBulkOperation('restart')}
+          onTerminate={() => handleOnBulkOperation('terminate')}
+          onResume={() => handleOnBulkOperation('resume')}
         />
 
         {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}

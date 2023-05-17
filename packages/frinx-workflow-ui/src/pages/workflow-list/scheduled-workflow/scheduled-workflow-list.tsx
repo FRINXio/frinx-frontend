@@ -33,6 +33,7 @@ import {
 } from '@frinx/shared/src';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
+import { omitNullValue } from '@frinx/shared';
 import {
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
@@ -240,12 +241,13 @@ function ScheduledWorkflowList() {
   }
 
   const schedules =
-    scheduledWorkflows?.schedules.edges.map(({ node }) => {
-      const workflowContext = JSON.parse(node.workflowContext);
+    scheduledWorkflows?.schedules.edges.filter(omitNullValue).map((edge) => {
+      const node = edge?.node;
+      const workflowContext = JSON.parse(node?.workflowContext || '{}');
       return { ...node, workflowContext };
     }) ?? [];
 
-  const sortedSchedules = sortBy(schedules, [(u) => u.name.toLowerCase()]);
+  const sortedSchedules = sortBy(schedules, [(u) => u.name?.toLowerCase()]);
 
   if (sortedSchedules?.length === 0) {
     return (
@@ -298,7 +300,7 @@ function ScheduledWorkflowList() {
         {!sortedSchedules.length ? null : (
           <>
             <Tbody>
-              {sortedSchedules.map((item: ScheduledWorkflow) => (
+              {sortedSchedules.map((item) => (
                 <Tr key={item.id} role="group">
                   <Td>
                     <FormControl display="flex" alignItems="center">

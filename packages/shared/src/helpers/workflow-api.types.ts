@@ -295,10 +295,16 @@ export type ExtendedTask =
   | ExtendedJsonJQTask
   | ExtendedSetVariableTask;
 
+type OutputParameter = {
+  key: string;
+  value: string;
+};
+
 export type ClientWorkflow<T = Task> = {
   id: string;
   name: string;
   description: string | null;
+  timeoutSeconds: number;
   version: number | null;
   createdAt: string | null;
   updatedAt: string | null;
@@ -308,24 +314,9 @@ export type ClientWorkflow<T = Task> = {
   hasSchedule: boolean;
   labels: string[];
   inputParameters: string[] | null;
-};
-
-// TODO: FD-493 why are you defining the same type as in the workflow-types.ts file?
-// This can cause types conflicts and other developers will not be sure what type to use and when...
-// What is the difference between those two?
-export type GraphqlWorkflow = {
-  id: string;
-  name: string;
-  description: string | null;
-  version: number | null;
-  createdAt: string | null;
-  updatedAt: string | null;
-  createdBy: string | null;
-  updatedBy: string | null;
-  tasks: string;
-  hasSchedule: boolean;
-  // labels: string[];
-  inputParameters: string[] | null;
+  outputParameters: OutputParameter[] | null;
+  restartable: boolean | null;
+  timeoutPolicy: TimeoutPolicy | null;
 };
 
 export type DescriptionJSON = { labels: string[]; description: string };
@@ -400,6 +391,7 @@ export type ExecutedWorkflowTask = {
   subWorkflowId: string;
   startTime: number;
   endTime: number;
+  taskId?: string;
   externalOutputPayloadStoragePath?: string;
   externalInputPayloadStoragePath?: string;
 };
@@ -416,16 +408,16 @@ export type StatusType = 'COMPLETED' | 'FAILED' | 'PAUSED' | 'RUNNING' | 'TERMIN
 export type ScheduledWorkflow = {
   id: string;
   correlationId?: string;
-  cronString: string | undefined;
+  cronString: string;
   lastUpdate?: string;
-  performFromDate?: string | undefined;
+  performFromDate?: string;
   performTillDate?: string;
   name: string;
   parallelRuns?: boolean | undefined;
   taskToDomain?: Record<string, string>;
   workflowName: string;
   workflowVersion: string;
-  workflowContext: string | Record<string, string>;
+  workflowContext: string;
   isEnabled: boolean;
   status?: StatusType;
 };
@@ -559,10 +551,11 @@ export enum WorkflowTaskType {
 }
 
 // eslint-disable-next-line no-shadow
-enum TimeoutPolicy {
-  TIME_OUT_WF,
-  ALERT_ONLY,
-}
+// enum TimeoutPolicy {
+//   TIME_OUT_WF,
+//   ALERT_ONLY,
+// }
+export type TimeoutPolicy = 'TIME_OUT_WF' | 'ALERT_ONLY';
 
 // export type WorkflowTask = {
 //   name: string;
@@ -699,7 +692,7 @@ export type ScheduleWorkflowInput = {
   workflowName: string;
   workflowVersion: string;
   cronString: string;
-  workflowContext: Record<string, string> | string;
+  workflowContext: string;
   performFromDate?: string;
   performTillDate?: string;
   correlationId?: string;

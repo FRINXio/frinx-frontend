@@ -63,7 +63,7 @@ const WorkflowActions: FC<Props> = ({
           aria-label="edit-workflow"
           icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
           as={Link}
-          to={`../builder/${workflow.id}`}
+          to={`../builder/${workflow.id}/${workflow.version}`}
         />
 
         <IconButton

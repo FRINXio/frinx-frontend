@@ -41,8 +41,12 @@ import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
 import { SchedulesQuery, SchedulesQueryVariables } from '../../__generated__/graphql';
 
+type ClientScheduleWorkflowInput = Omit<ScheduleWorkflowInput, 'workflowContext'> & {
+  workflowContext: Record<string, string>;
+};
+
 const SCHEDULED_WORKFLOWS_QUERY = gql`
-  query Schedules {
+  query GetSchedules {
     schedules {
       edges {
         node {
@@ -80,8 +84,8 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
         name: 'name',
         message: 'Schedule name must be unique',
         test: (value) => {
-          const scheduleNames = scheduledWorkflows?.schedules.edges.map(({ node }) => {
-            return node?.name;
+          const scheduleNames = scheduledWorkflows?.schedules.edges.map((edge) => {
+            return edge?.node.name;
           });
           const isNameUnique = !scheduleNames?.some((wfName) => wfName === value);
           if (!isNameUnique) {
@@ -114,37 +118,39 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
 
   const [shouldShowInputParams, { toggle: toggleShouldShowInputParams }] = useBoolean(false);
 
-  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<ScheduleWorkflowInput>({
-    enableReinitialize: true,
-    validationSchema,
-    validateOnMount: false,
-    initialValues: {
-      workflowName: workflow.name,
-      workflowVersion: workflow.version?.toString() ?? '',
-      workflowContext: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
-      name: '',
-      cronString: DEFAULT_CRON_STRING,
-      isEnabled: false,
-      performFromDate: undefined,
-      performTillDate: undefined,
+  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<ClientScheduleWorkflowInput>(
+    {
+      enableReinitialize: true,
+      validationSchema,
+      validateOnMount: false,
+      initialValues: {
+        workflowName: workflow.name,
+        workflowVersion: workflow.version?.toString() ?? '',
+        workflowContext: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
+        name: '',
+        cronString: DEFAULT_CRON_STRING,
+        isEnabled: false,
+        performFromDate: undefined,
+        performTillDate: undefined,
+      },
+      onSubmit: (formValues) => {
+        const formattedValues = {
+          ...formValues,
+          ...(formValues.performFromDate && {
+            performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+          }),
+          ...(formValues.performTillDate && {
+            performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+          }),
+          ...(formValues.workflowContext && {
+            workflowContext: JSON.stringify(formValues.workflowContext),
+          }),
+        };
+        onSubmit(formattedValues);
+        onClose();
+      },
     },
-    onSubmit: (formValues) => {
-      const formattedValues = {
-        ...formValues,
-        ...(formValues.performFromDate && {
-          performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-        }),
-        ...(formValues.performTillDate && {
-          performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-        }),
-        ...(formValues.workflowContext && {
-          workflowContext: JSON.stringify(formValues.workflowContext),
-        }),
-      };
-      onSubmit(formattedValues);
-      onClose();
-    },
-  });
+  );
 
   const getCrontabGuruUrl = () => {
     const cronString = values.cronString || DEFAULT_CRON_STRING;

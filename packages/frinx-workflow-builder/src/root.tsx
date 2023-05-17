@@ -1,62 +1,75 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
 import { convertTaskToExtendedTask, jsonParse } from '@frinx/shared';
 import {
-  callbackUtils,
   createEmptyWorkflow,
   ExtendedTask,
   unwrap,
-  Workflow,
   useNotifications,
   Task,
   ClientWorkflow,
   DescriptionJSON,
 } from '@frinx/shared/src';
 import { saveAs } from 'file-saver';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
-import { gql, useQuery } from 'urql';
+import { gql, useMutation, useQuery } from 'urql';
 import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
-import { WorkflowQuery, WorkflowQueryVariables } from './__generated__/graphql';
+import {
+  DeleteWorkflowMutation,
+  DeleteWorkflowMutationVariables,
+  UpdateWorkflowMutation,
+  UpdateWorkflowMutationVariables,
+  WorkflowListQuery,
+  WorkflowQuery,
+  WorkflowQueryVariables,
+} from './__generated__/graphql';
 
 type Props = {
   onClose: () => void;
 };
 
-const WORKFLOW_DETAIL_QUERY = gql`
-  query Workflow($nodeId: ID!) {
-    workflow: node(id: $nodeId) {
-      ... on Workflow {
-        id
-        name
-        description
-        version
-        createdAt
-        updatedAt
-        createdBy
-        updatedBy
-        tasks
-        hasSchedule
-        inputParameters
-      }
+export const WorkflowFragment = gql`
+  fragment WorkflowFragment on Workflow {
+    id
+    name
+    description
+    version
+    createdAt
+    updatedAt
+    createdBy
+    updatedBy
+    tasks
+    hasSchedule
+    inputParameters
+    outputParameters {
+      key
+      value
     }
+    restartable
+    timeoutSeconds
+    timeoutPolicy
+  }
+`;
+
+const WORKFLOW_DETAIL_QUERY = gql`
+  query Workflow($nodeId: ID!, $version: Int) {
+    workflow: node(id: $nodeId, version: $version) {
+      ...WorkflowFragment
+    }
+  }
+  ${WorkflowFragment}
+`;
+
+const WORKFLOW_LIST_QUERY = gql`
+  query WorkflowList {
     workflows {
       edges {
         cursor
         node {
-          id
-          name
-          description
-          version
-          createdAt
-          updatedAt
-          createdBy
-          updatedBy
-          tasks
-          hasSchedule
-          inputParameters
+          ...WorkflowFragment
         }
       }
       pageInfo {
@@ -80,20 +93,85 @@ const WORKFLOW_DETAIL_QUERY = gql`
       ownerEmail
     }
   }
+  ${WorkflowFragment}
+`;
+
+const UPDATE_WORKFLOW_MUTATION = gql`
+  mutation UpdateWorkflow($updateWorkflowId: String!, $input: UpdateWorkflowInput!) {
+    updateWorkflow(id: $updateWorkflowId, input: $input) {
+      workflow {
+        createdBy
+        updatedAt
+        tasks
+        name
+        description
+        version
+        outputParameters {
+          key
+          value
+        }
+      }
+    }
+  }
+`;
+
+const EXECUTE_WORKFLOW_MUTATION = gql`
+  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
+    executeWorkflowByName(input: $input)
+  }
+`;
+
+const WORKFLOW_DELETE_MUTATION = gql`
+  mutation DeleteWorkflow($input: DeleteWorkflowInput!) {
+    deleteWorkflow(input: $input) {
+      workflow {
+        id
+      }
+    }
+  }
 `;
 
 const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
-  const { workflowId } = useParams<{ workflowId: string }>();
+  const ctx = useMemo(
+    () => ({
+      additionalTypenames: ['Workflow'],
+    }),
+    [],
+  );
+  const { workflowId, version } = useParams<{ workflowId: string; version: string }>();
   const [workflow, setWorkflow] = useState<ClientWorkflow<ExtendedTask> | null>(null);
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
+
+  const [{ data: workflowListData }] = useQuery<WorkflowListQuery>({
+    query: WORKFLOW_LIST_QUERY,
+  });
+
   const [{ data: workflowData }] = useQuery<WorkflowQuery, WorkflowQueryVariables>({
     query: WORKFLOW_DETAIL_QUERY,
     variables: {
-      nodeId: unwrap(workflowId),
+      nodeId: workflowId ?? '', // query with empty string nodeId wont be called, because query is paused in that case
     },
+    context: ctx,
+    pause: workflowId == null,
   });
 
+  const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
+    UPDATE_WORKFLOW_MUTATION,
+  );
+
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+    WORKFLOW_DELETE_MUTATION,
+  );
+
+  const [, executeWorkflow] = useMutation(EXECUTE_WORKFLOW_MUTATION);
+
   const { addToastNotification } = useNotifications();
+
+  useEffect(() => {
+    if (workflowId == null || version == null) {
+      setShouldCreateWorkflow(true);
+    }
+  }, [workflowId, version]);
 
   useEffect(() => {
     if (workflowData?.workflow == null) {
@@ -108,11 +186,12 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
     const tasks = jsonParse<Task[]>(workflowDetail.tasks);
     const extendedTasks = tasks.map(convertTaskToExtendedTask);
-    const { labels } = jsonParse<DescriptionJSON>(workflowDetail.description);
+    const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
 
     setWorkflow({
       ...workflowDetail,
-      labels,
+      description: description?.description ?? null,
+      labels: description?.labels || [],
       tasks: extendedTasks,
       hasSchedule: workflowDetail.hasSchedule ?? false,
     });
@@ -134,7 +213,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     fileReader.readAsText(file);
   };
 
-  const handleFileExport = (wf: Workflow) => {
+  const handleFileExport = (wf: ClientWorkflow) => {
     const parsedWf = JSON.stringify(wf, null, 2);
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
@@ -142,62 +221,57 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     saveAs(file, `${wf.name}.json`);
   };
 
-  const handleWorkflowClone = (wf: Workflow, wfName: string) => {
-    const updatedWorkflow: Workflow = { ...wf, name: wfName };
-    const { putWorkflow } = callbackUtils.getCallbacks;
-
-    putWorkflow([updatedWorkflow]);
-  };
-
-  const handleWorkflowDelete = () => {
-    const { getWorkflows } = callbackUtils.getCallbacks;
-    getWorkflows().then((wfs) => {
-      const isWorkflow = wfs.find((wf) => wf.name === workflow?.name);
-
-      if (isWorkflow != null && workflow != null) {
-        const { deleteWorkflow } = callbackUtils.getCallbacks;
-        deleteWorkflow(workflow.name, (workflow?.version ?? 1).toString()).then(() => {
-          onClose();
-          addToastNotification({
-            content: 'Workflow deleted',
-            type: 'success',
-          });
-        });
-      }
-
-      if (!isWorkflow) {
-        addToastNotification({
-          content: 'No workflow definition to be deleted',
-          type: 'error',
-        });
-      }
+  const handleWorkflowClone = async (wf: ClientWorkflow, wfName: string) => {
+    const updatedWorkflow = { ...wf, name: wfName, tasks: JSON.stringify(wf.tasks) };
+    await updateWorkflow({
+      updateWorkflowId: wf.id,
+      input: {
+        workflow: updatedWorkflow,
+      },
     });
   };
 
-  const handleWorkflowChange = (
-    editedWorkflow: Pick<
-      Workflow,
-      | 'name'
-      | 'description'
-      | 'version'
-      | 'restartable'
-      | 'timeoutPolicy'
-      | 'timeoutSeconds'
-      | 'outputParameters'
-      | 'variables'
-    >,
-  ) => {
+  const handleWorkflowDelete = async () => {
+    const workflowToDelete = unwrap(workflow);
+    const { id, name, version: workflowVersion } = workflowToDelete;
+    // if we are in create mode, workflow is not saved on server yet, no delete needed
+    if (!id) {
+      onClose();
+      addToastNotification({
+        content: 'No workflow definition to be deleted',
+        type: 'error',
+      });
+      return;
+    }
+
+    const result = await deleteWorkflow({ input: { name, version: workflowVersion || 1 } });
+
+    if (result.data) {
+      onClose();
+      addToastNotification({
+        content: 'Workflow deleted',
+        type: 'success',
+      });
+    } else {
+      addToastNotification({
+        content: `Workflow delete failed: ${result.error}`,
+        type: 'error',
+      });
+    }
+  };
+
+  const handleWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>) => {
     setWorkflow((wf) => ({
       ...unwrap(wf),
       ...editedWorkflow,
     }));
   };
 
-  if (!workflowData) {
+  if (!workflowListData) {
     return null;
   }
 
-  const clientWorkflowList: ClientWorkflow[] = workflowData.workflows.edges.map((e) => {
+  const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
     const { node } = e;
     const parsedTasks = jsonParse<Task[]>(node.tasks);
     const description = jsonParse<DescriptionJSON | null>(node.description);
@@ -225,17 +299,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
                 // schemaVersion: 2,
                 ...wf,
                 id: '',
-                description: '',
-                createdAt: '',
+                createdAt: new Date().toISOString(),
                 updatedAt: '',
                 createdBy: '',
                 updatedBy: '',
-                labels: [],
-                tasks: [],
                 // updateTime: 0,
                 hasSchedule: false,
                 // correlationId: '',
-                inputParameters: [],
               });
               setShouldCreateWorkflow(false);
             }}
@@ -247,7 +317,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     );
   }
 
-  const { taskDefinitions } = workflowData;
+  const { taskDefinitions } = workflowListData;
 
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
@@ -262,6 +332,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}
           onWorkflowClone={handleWorkflowClone}
+          updateWorkflow={updateWorkflow}
+          executeWorkflow={executeWorkflow}
         />
       </ReactFlowProvider>
     </TaskActionsProvider>

@@ -58,7 +58,7 @@ export function isWorkflowNameAvailable(workflows: ClientWorkflow[], name: strin
 export function getInitialValuesFromParsedInputParameters(
   parsedInputParameters?: InputParameter | null,
   dynamicInputParameters?: string[] | null,
-) {
+): Record<string, string> {
   let initialValues = {};
   if (parsedInputParameters != null) {
     initialValues = Object.keys(parsedInputParameters).reduce(
@@ -96,7 +96,7 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
 }
 
 export function createEmptyWorkflow(): Pick<
-  ClientWorkflow,
+  ClientWorkflow<ExtendedTask>,
   | 'id'
   | 'name'
   | 'description'
@@ -110,10 +110,10 @@ export function createEmptyWorkflow(): Pick<
   | 'inputParameters'
   | 'labels'
   // | 'ownerEmail'
-  // | 'restartable'
-  // | 'timeoutPolicy'
-  // | 'timeoutSeconds'
-  // | 'outputParameters'
+  | 'restartable'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds'
+  | 'outputParameters'
   // | 'variables'
 > {
   return {
@@ -130,10 +130,10 @@ export function createEmptyWorkflow(): Pick<
     inputParameters: [],
     labels: [],
     // ownerEmail: '',
-    // restartable: true,
-    // timeoutPolicy: 'ALERT_ONLY',
-    // timeoutSeconds: 0,
-    // outputParameters: {},
+    restartable: true,
+    timeoutPolicy: 'ALERT_ONLY',
+    timeoutSeconds: 0,
+    outputParameters: [],
     // variables: {},
   };
 }

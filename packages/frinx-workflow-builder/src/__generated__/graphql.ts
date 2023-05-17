@@ -102,6 +102,7 @@ export type Blueprint = Node & {
   name: Scalars['String'];
   template: Scalars['String'];
   updatedAt: Scalars['String'];
+  version: Maybe<Scalars['Int']>;
 };
 
 export type BlueprintConnection = {
@@ -115,6 +116,10 @@ export type BlueprintEdge = {
   __typename?: 'BlueprintEdge';
   cursor: Scalars['String'];
   node: Blueprint;
+};
+
+export type BulkOperationInput = {
+  executedWorkflowIds: Array<Scalars['String']>;
 };
 
 export type BulkOperationResponse = {
@@ -179,6 +184,7 @@ export type Country = Node & {
   code: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
+  version: Maybe<Scalars['Int']>;
 };
 
 export type CountryConnection = {
@@ -201,6 +207,18 @@ export type CreateLabelInput = {
 export type CreateLabelPayload = {
   __typename?: 'CreateLabelPayload';
   label: Maybe<Label>;
+};
+
+export type CreateScheduleInput = {
+  cronString: Scalars['String'];
+  isEnabled?: InputMaybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+  parallelRuns?: InputMaybe<Scalars['Boolean']>;
+  performFromDate?: InputMaybe<Scalars['String']>;
+  performTillDate?: InputMaybe<Scalars['String']>;
+  workflowContext?: InputMaybe<Scalars['String']>;
+  workflowName: Scalars['String'];
+  workflowVersion: Scalars['String'];
 };
 
 export type CreateTransactionPayload = {
@@ -250,6 +268,11 @@ export type DeleteSnapshotPayload = {
   snapshot: Maybe<Snapshot>;
 };
 
+export type DeleteWorkflowInput = {
+  name: Scalars['String'];
+  version: Scalars['Int'];
+};
+
 export type DeleteWorkflowPayload = {
   __typename?: 'DeleteWorkflowPayload';
   workflow: Workflow;
@@ -272,6 +295,7 @@ export type Device = Node & {
   source: DeviceSource;
   updatedAt: Scalars['String'];
   vendor: Maybe<Scalars['String']>;
+  version: Maybe<Scalars['Int']>;
   zone: Zone;
 };
 
@@ -328,6 +352,17 @@ export type EdgeSourceTarget = {
   nodeId: Scalars['String'];
 };
 
+export type EditWorkflowScheduleInput = {
+  cronString?: InputMaybe<Scalars['String']>;
+  isEnabled?: InputMaybe<Scalars['Boolean']>;
+  parallelRuns?: InputMaybe<Scalars['Boolean']>;
+  performFromDate?: InputMaybe<Scalars['String']>;
+  performTillDate?: InputMaybe<Scalars['String']>;
+  workflowContext?: InputMaybe<Scalars['String']>;
+  workflowName?: InputMaybe<Scalars['String']>;
+  workflowVersion?: InputMaybe<Scalars['String']>;
+};
+
 export type ExecuteNewWorkflowInput = {
   correlationId?: InputMaybe<Scalars['String']>;
   externalInputPayloadStoragePath?: InputMaybe<Scalars['String']>;
@@ -336,6 +371,15 @@ export type ExecuteNewWorkflowInput = {
   priority?: InputMaybe<Scalars['Int']>;
   taskToDomain?: InputMaybe<Scalars['String']>;
   version?: InputMaybe<Scalars['Int']>;
+};
+
+export type ExecuteWorkflowByName = {
+  correlationId?: InputMaybe<Scalars['String']>;
+  /** JSON string of input parameters */
+  inputParameters: Scalars['String'];
+  priority?: InputMaybe<Scalars['Int']>;
+  workflowName: Scalars['String'];
+  workflowVersion?: InputMaybe<Scalars['Int']>;
 };
 
 export type ExecutedWorkflow = Node & {
@@ -353,10 +397,11 @@ export type ExecutedWorkflow = Node & {
   reasonForIncompletion: Maybe<Scalars['String']>;
   startTime: Maybe<Scalars['String']>;
   status: Maybe<ExecutedWorkflowStatus>;
-  tasks: Maybe<Array<Maybe<ExecutedWorkflowTask>>>;
+  tasks: Maybe<Array<ExecutedWorkflowTask>>;
   updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
   variables: Maybe<Scalars['String']>;
+  version: Maybe<Scalars['Int']>;
   workflowDefinition: Maybe<Workflow>;
   workflowId: Maybe<Scalars['String']>;
   workflowName: Maybe<Scalars['String']>;
@@ -419,6 +464,7 @@ export type ExecutedWorkflowTask = Node & {
   taskReferenceName: Maybe<Scalars['String']>;
   taskType: Maybe<Scalars['String']>;
   updateTime: Maybe<Scalars['String']>;
+  version: Maybe<Scalars['Int']>;
   workflowType: Maybe<Scalars['String']>;
 };
 
@@ -520,6 +566,7 @@ export type Label = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
+  version: Maybe<Scalars['Int']>;
 };
 
 export type LabelConnection = {
@@ -542,6 +589,7 @@ export type Location = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
+  version: Maybe<Scalars['Int']>;
 };
 
 export type LocationConnection = {
@@ -566,7 +614,10 @@ export type Mutation = {
   addZone: AddZonePayload;
   applySnapshot: ApplySnapshotPayload;
   bulkPauseWorkflow: Maybe<BulkOperationResponse>;
+  bulkRestartWorkflow: Maybe<BulkOperationResponse>;
   bulkResumeWorkflow: Maybe<BulkOperationResponse>;
+  bulkRetryWorkflow: Maybe<BulkOperationResponse>;
+  bulkTerminateWorkflow: Maybe<BulkOperationResponse>;
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
@@ -575,8 +626,10 @@ export type Mutation = {
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
+  deleteSchedule: Maybe<IsOkResponse>;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
   deleteWorkflow: DeleteWorkflowPayload;
+  editWorkflowSchedule: Maybe<Schedule>;
   executeNewWorkflow: Maybe<Scalars['String']>;
   executeWorkflowByName: Maybe<Scalars['String']>;
   importCSV: Maybe<CsvImport>;
@@ -588,6 +641,7 @@ export type Mutation = {
   resumeWorkflow: Maybe<IsOkResponse>;
   retryWorkflow: Maybe<IsOkResponse>;
   revertChanges: RevertChangesPayload;
+  scheduleWorkflow: Maybe<Schedule>;
   syncFromNetwork: SyncFromNetworkPayload;
   terminateWorkflow: Maybe<IsOkResponse>;
   uninstallDevice: UninstallDevicePayload;
@@ -632,12 +686,27 @@ export type MutationApplySnapshotArgs = {
 
 
 export type MutationBulkPauseWorkflowArgs = {
-  workflowIds: Array<Scalars['String']>;
+  input: BulkOperationInput;
+};
+
+
+export type MutationBulkRestartWorkflowArgs = {
+  input: BulkOperationInput;
 };
 
 
 export type MutationBulkResumeWorkflowArgs = {
-  workflowIds: Array<Scalars['String']>;
+  input: BulkOperationInput;
+};
+
+
+export type MutationBulkRetryWorkflowArgs = {
+  input: BulkOperationInput;
+};
+
+
+export type MutationBulkTerminateWorkflowArgs = {
+  input: BulkOperationInput;
 };
 
 
@@ -683,14 +752,24 @@ export type MutationDeleteLabelArgs = {
 };
 
 
+export type MutationDeleteScheduleArgs = {
+  id: Scalars['String'];
+};
+
+
 export type MutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
 };
 
 
 export type MutationDeleteWorkflowArgs = {
-  name: Scalars['String'];
-  version: Scalars['Int'];
+  input: DeleteWorkflowInput;
+};
+
+
+export type MutationEditWorkflowScheduleArgs = {
+  id: Scalars['String'];
+  input: EditWorkflowScheduleInput;
 };
 
 
@@ -700,11 +779,7 @@ export type MutationExecuteNewWorkflowArgs = {
 
 
 export type MutationExecuteWorkflowByNameArgs = {
-  correlationId?: InputMaybe<Scalars['String']>;
-  inputParameters: Scalars['String'];
-  priority?: InputMaybe<Scalars['Int']>;
-  workflowName: Scalars['String'];
-  workflowVersion?: InputMaybe<Scalars['Int']>;
+  input: ExecuteWorkflowByName;
 };
 
 
@@ -719,13 +794,13 @@ export type MutationInstallDeviceArgs = {
 
 
 export type MutationPauseWorkflowArgs = {
-  workflowId: Scalars['String'];
+  id: Scalars['String'];
 };
 
 
 export type MutationRemoveWorkflowArgs = {
-  shouldArchiveWorkflow?: InputMaybe<Scalars['Boolean']>;
-  workflowId: Scalars['String'];
+  id: Scalars['String'];
+  input?: InputMaybe<RemoveWorkflowInput>;
 };
 
 
@@ -736,24 +811,29 @@ export type MutationResetConfigArgs = {
 
 
 export type MutationRestartWorkflowArgs = {
-  shouldUseLatestDefinitions?: InputMaybe<Scalars['Boolean']>;
-  workflowId: Scalars['String'];
+  id: Scalars['String'];
+  input?: InputMaybe<RestartWorkflowInput>;
 };
 
 
 export type MutationResumeWorkflowArgs = {
-  workflowId: Scalars['String'];
+  id: Scalars['String'];
 };
 
 
 export type MutationRetryWorkflowArgs = {
-  shouldResumeSubworkflowTasks?: InputMaybe<Scalars['Boolean']>;
-  workflowId: Scalars['String'];
+  id: Scalars['String'];
+  input?: InputMaybe<RetryWorkflowInput>;
 };
 
 
 export type MutationRevertChangesArgs = {
   transactionId: Scalars['String'];
+};
+
+
+export type MutationScheduleWorkflowArgs = {
+  input: CreateScheduleInput;
 };
 
 
@@ -764,8 +844,8 @@ export type MutationSyncFromNetworkArgs = {
 
 
 export type MutationTerminateWorkflowArgs = {
-  reason?: InputMaybe<Scalars['String']>;
-  workflowId: Scalars['String'];
+  id: Scalars['String'];
+  input?: InputMaybe<TerminateWorkflowInput>;
 };
 
 
@@ -803,8 +883,48 @@ export type MutationUpdateWorkflowArgs = {
   input: UpdateWorkflowInput;
 };
 
+export type NetInterface = {
+  __typename?: 'NetInterface';
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type NetNetwork = {
+  __typename?: 'NetNetwork';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['String'];
+  subnet: Scalars['String'];
+};
+
+export type NetNode = {
+  __typename?: 'NetNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID'];
+  interfaces: Array<NetInterface>;
+  name: Scalars['String'];
+  networks: Array<NetNetwork>;
+};
+
+export type NetTopology = {
+  __typename?: 'NetTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<NetNode>;
+};
+
 export type Node = {
   id: Scalars['ID'];
+  version: Maybe<Scalars['Int']>;
+};
+
+export type OutputParameter = {
+  __typename?: 'OutputParameter';
+  key: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type OutputParameterInput = {
+  key: Scalars['String'];
+  value: Scalars['String'];
 };
 
 export type PageInfo = {
@@ -830,7 +950,9 @@ export type Query = {
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
   labels: LabelConnection;
   locations: LocationConnection;
+  netTopology: Maybe<NetTopology>;
   node: Maybe<Node>;
+  schedules: ScheduleConnection;
   taskDefinitions: Array<TaskDefinition>;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -838,6 +960,7 @@ export type Query = {
   topologyVersions: Maybe<Array<Scalars['String']>>;
   transactions: Array<Transaction>;
   uniconfigShellSession: Maybe<Scalars['String']>;
+  workflowInstanceDetail: Maybe<WorkflowInstanceDetail>;
   workflowLabels: Array<Scalars['String']>;
   workflows: WorkflowConnection;
   zones: ZonesConnection;
@@ -906,6 +1029,16 @@ export type QueryLocationsArgs = {
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
+  version?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QuerySchedulesArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<ScheduleFilterInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -921,6 +1054,12 @@ export type QueryTopologyCommonNodesArgs = {
 
 export type QueryTopologyVersionDataArgs = {
   version: Scalars['String'];
+};
+
+
+export type QueryWorkflowInstanceDetailArgs = {
+  id: Scalars['String'];
+  shouldIncludeTasks?: InputMaybe<Scalars['Boolean']>;
 };
 
 
@@ -940,9 +1079,19 @@ export type QueryZonesArgs = {
   last?: InputMaybe<Scalars['Int']>;
 };
 
+export type RemoveWorkflowInput = {
+  /** Default value is true */
+  shouldArchiveWorkflow?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type ResetConfigPayload = {
   __typename?: 'ResetConfigPayload';
   dataStore: DataStore;
+};
+
+export type RestartWorkflowInput = {
+  /** Default value is true */
+  shouldUseLatestDefinitions?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type RetryLogic =
@@ -950,9 +1099,47 @@ export type RetryLogic =
   | 'FIXED'
   | 'LINEAR_BACKOFF';
 
+export type RetryWorkflowInput = {
+  /** Default value is true */
+  shouldResumeSubworkflowTasks?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type RevertChangesPayload = {
   __typename?: 'RevertChangesPayload';
   isOk: Scalars['Boolean'];
+};
+
+export type Schedule = Node & {
+  __typename?: 'Schedule';
+  cronString: Scalars['String'];
+  id: Scalars['ID'];
+  isEnabled: Scalars['Boolean'];
+  name: Scalars['String'];
+  parallelRuns: Scalars['Boolean'];
+  performFromDate: Scalars['String'];
+  performTillDate: Scalars['String'];
+  version: Maybe<Scalars['Int']>;
+  workflowContext: Scalars['String'];
+  workflowName: Scalars['String'];
+  workflowVersion: Scalars['String'];
+};
+
+export type ScheduleConnection = {
+  __typename?: 'ScheduleConnection';
+  edges: Array<Maybe<ScheduleEdge>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
+};
+
+export type ScheduleEdge = {
+  __typename?: 'ScheduleEdge';
+  cursor: Scalars['String'];
+  node: Schedule;
+};
+
+export type ScheduleFilterInput = {
+  workflowName: Scalars['String'];
+  workflowVersion: Scalars['String'];
 };
 
 export type Snapshot = {
@@ -972,6 +1159,13 @@ export type SortDirection =
 export type StartWorkflowRequestInput = {
   workflow: ExecuteNewWorkflowInput;
   workflowDefinition?: InputMaybe<WorkflowDefinitionInput>;
+};
+
+export type SubWorkflow = {
+  __typename?: 'SubWorkflow';
+  executedWorkflowDetail: ExecutedWorkflow;
+  taskReferenceName: Scalars['String'];
+  workflowDetail: Workflow;
 };
 
 export type Subscription = {
@@ -1036,6 +1230,10 @@ export type TaskTimeoutPolicy =
   | 'ALERT_ONLY'
   | 'RETRY'
   | 'TIME_OUT_WF';
+
+export type TerminateWorkflowInput = {
+  reason?: InputMaybe<Scalars['String']>;
+};
 
 export type TimeoutPolicy =
   | 'ALERT_ONLY'
@@ -1152,7 +1350,11 @@ export type Workflow = Node & {
   id: Scalars['ID'];
   inputParameters: Maybe<Array<Scalars['String']>>;
   name: Scalars['String'];
+  outputParameters: Maybe<Array<OutputParameter>>;
+  restartable: Maybe<Scalars['Boolean']>;
   tasks: Maybe<Scalars['String']>;
+  timeoutPolicy: Maybe<TimeoutPolicy>;
+  timeoutSeconds: Scalars['Int'];
   updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
   version: Maybe<Scalars['Int']>;
@@ -1195,11 +1397,22 @@ export type WorkflowEdge = {
 };
 
 export type WorkflowInput = {
+  createdAt?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+  outputParameters?: InputMaybe<Array<OutputParameterInput>>;
+  restartable?: InputMaybe<Scalars['Boolean']>;
   tasks: Scalars['String'];
   timeoutSeconds: Scalars['Int'];
+  updatedAt?: InputMaybe<Scalars['String']>;
   version?: InputMaybe<Scalars['Int']>;
+};
+
+export type WorkflowInstanceDetail = {
+  __typename?: 'WorkflowInstanceDetail';
+  meta: Maybe<Workflow>;
+  result: ExecutedWorkflow;
+  subworkflows: Maybe<Array<SubWorkflow>>;
 };
 
 export type WorkflowTaskType =
@@ -1232,6 +1445,7 @@ export type Zone = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
+  version: Maybe<Scalars['Int']>;
 };
 
 export type ZoneEdge = {
@@ -1247,9 +1461,39 @@ export type ZonesConnection = {
   totalCount: Scalars['Int'];
 };
 
+export type WorkflowFragmentFragment = { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null };
+
 export type WorkflowQueryVariables = Exact<{
   nodeId: Scalars['ID'];
+  version?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type WorkflowQuery = { __typename?: 'Query', workflow: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow' } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null } | { __typename?: 'Zone' } | null, workflows: { __typename?: 'WorkflowConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowEdge', cursor: string, node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null } }, taskDefinitions: Array<{ __typename?: 'TaskDefinition', name: string, description: string | null, createdAt: string | null, retryCount: number | null, timeoutSeconds: number, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, ownerEmail: string | null }> };
+export type WorkflowQuery = { __typename?: 'Query', workflow: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow' } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Schedule' } | { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | { __typename?: 'Zone' } | null };
+
+export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WorkflowListQuery = { __typename?: 'Query', workflows: { __typename?: 'WorkflowConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowEdge', cursor: string, node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null } }, taskDefinitions: Array<{ __typename?: 'TaskDefinition', name: string, description: string | null, createdAt: string | null, retryCount: number | null, timeoutSeconds: number, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, ownerEmail: string | null }> };
+
+export type UpdateWorkflowMutationVariables = Exact<{
+  updateWorkflowId: Scalars['String'];
+  input: UpdateWorkflowInput;
+}>;
+
+
+export type UpdateWorkflowMutation = { __typename?: 'Mutation', updateWorkflow: { __typename?: 'UpdateWorkflowPayload', workflow: { __typename?: 'Workflow', createdBy: string | null, updatedAt: string | null, tasks: string | null, name: string, description: string | null, version: number | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } } };
+
+export type ExecuteWorkflowByNameMutationVariables = Exact<{
+  input: ExecuteWorkflowByName;
+}>;
+
+
+export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };
+
+export type DeleteWorkflowMutationVariables = Exact<{
+  input: DeleteWorkflowInput;
+}>;
+
+
+export type DeleteWorkflowMutation = { __typename?: 'Mutation', deleteWorkflow: { __typename?: 'DeleteWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };

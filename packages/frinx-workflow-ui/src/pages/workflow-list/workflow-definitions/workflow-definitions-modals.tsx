@@ -5,6 +5,7 @@ import {
   ExecuteWorkflowModal,
   ClientWorkflow,
   CreateScheduledWorkflow,
+  unwrap,
 } from '@frinx/shared/src';
 import { gql, useMutation } from 'urql';
 
@@ -65,6 +66,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
     const scheduleInput = {
       ...scheduledWf,
+      cronString: unwrap(scheduledWf.cronString),
       workflowContext: JSON.stringify(scheduledWf.workflowContext),
     };
 
