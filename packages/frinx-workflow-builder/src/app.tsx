@@ -287,7 +287,7 @@ const App: VoidFunctionComponent<Props> = ({
     }
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
     if (workflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
