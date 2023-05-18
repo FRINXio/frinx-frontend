@@ -405,6 +405,18 @@ export enum SerializerEnum {
 
 export type StatusType = 'COMPLETED' | 'FAILED' | 'PAUSED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT' | 'UNKNOWN';
 
+export type ScheduleWorkflowInput = {
+  name: string;
+  workflowName: string;
+  workflowVersion: string;
+  workflowContext: string;
+  cornString: string;
+  isEnabled: boolean;
+  performFromDate: string;
+  performTillDate: string;
+  parallelRuns?: boolean;
+};
+
 export type ScheduledWorkflow = {
   id: string;
   correlationId?: string;
