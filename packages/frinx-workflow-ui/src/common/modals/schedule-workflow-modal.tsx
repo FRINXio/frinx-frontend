@@ -26,7 +26,6 @@ import {
   useBoolean,
 } from '@chakra-ui/react';
 import {
-  ScheduleWorkflowInput,
   parseInputParameters,
   getDynamicInputParametersFromWorkflow,
   ClientWorkflow,
@@ -40,10 +39,6 @@ import ExecuteWorkflowModalFormInput from '@frinx/shared/src/components/execute-
 import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
 import { SchedulesQuery, SchedulesQueryVariables } from '../../__generated__/graphql';
-
-type ClientScheduleWorkflowInput = Omit<ScheduleWorkflowInput, 'workflowContext'> & {
-  workflowContext: Record<string, string>;
-};
 
 const SCHEDULED_WORKFLOWS_QUERY = gql`
   query GetSchedules {
@@ -118,39 +113,38 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
 
   const [shouldShowInputParams, { toggle: toggleShouldShowInputParams }] = useBoolean(false);
 
-  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<ClientScheduleWorkflowInput>(
-    {
-      enableReinitialize: true,
-      validationSchema,
-      validateOnMount: false,
-      initialValues: {
-        workflowName: workflow.name,
-        workflowVersion: workflow.version?.toString() ?? '',
-        workflowContext: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
-        name: '',
-        cronString: DEFAULT_CRON_STRING,
-        isEnabled: false,
-        performFromDate: undefined,
-        performTillDate: undefined,
-      },
-      onSubmit: (formValues) => {
-        const formattedValues = {
-          ...formValues,
-          ...(formValues.performFromDate && {
-            performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-          }),
-          ...(formValues.performTillDate && {
-            performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-          }),
-          ...(formValues.workflowContext && {
-            workflowContext: JSON.stringify(formValues.workflowContext),
-          }),
-        };
-        onSubmit(formattedValues);
-        onClose();
-      },
+  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<CreateScheduledWorkflow>({
+    enableReinitialize: true,
+    validationSchema,
+    validateOnMount: false,
+    initialValues: {
+      workflowName: workflow.name,
+      workflowVersion: workflow.version?.toString() ?? '',
+      workflowContext: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
+      name: '',
+      cronString: DEFAULT_CRON_STRING,
+      isEnabled: false,
+      performFromDate: undefined,
+      performTillDate: undefined,
     },
-  );
+    onSubmit: (formValues) => {
+      const formattedValues = {
+        ...formValues,
+        cronString: formValues.cronString || DEFAULT_CRON_STRING,
+        ...(formValues.performFromDate && {
+          performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        }),
+        ...(formValues.performTillDate && {
+          performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        }),
+        ...(formValues.workflowContext && {
+          workflowContext: formValues.workflowContext,
+        }),
+      };
+      onSubmit(formattedValues);
+      onClose();
+    },
+  });
 
   const getCrontabGuruUrl = () => {
     const cronString = values.cronString || DEFAULT_CRON_STRING;

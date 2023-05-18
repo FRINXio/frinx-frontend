@@ -30,6 +30,7 @@ import {
   DescriptionJSON,
   jsonParse,
   Task,
+  EditScheduledWorkflow,
 } from '@frinx/shared/src';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
@@ -123,7 +124,7 @@ const UPDATE_SCHEDULE_MUTATION = gql`
 
 function ScheduledWorkflowList() {
   const context = useMemo(() => ({ additionalTypenames: ['Schedule'] }), []);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<ScheduledWorkflow | null>();
+  const [selectedWorkflow, setSelectedWorkflow] = useState<EditScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
   const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
@@ -142,19 +143,19 @@ function ScheduledWorkflowList() {
     UPDATE_SCHEDULE_MUTATION,
   );
 
-  const onEdit = (workflow: ScheduledWorkflow) => {
+  const onEdit = (workflow: EditScheduledWorkflow) => {
     setSelectedWorkflow(workflow);
     onOpen();
   };
 
-  const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: ScheduledWorkflow) => {
+  const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: EditScheduledWorkflow) => {
     const { cronString, isEnabled, performFromDate, performTillDate, workflowContext } = scheduledWf;
     const input = {
       cronString,
       isEnabled,
       performFromDate,
       performTillDate,
-      workflowContext,
+      workflowContext: JSON.stringify(workflowContext),
       workflowName,
       workflowVersion,
     };
@@ -309,7 +310,6 @@ function ScheduledWorkflowList() {
                         onChange={() => {
                           const editedWorkflow = {
                             ...item,
-                            workflowContext: JSON.stringify(item.workflowContext),
                             isEnabled: !item.isEnabled,
                           };
                           handleWorkflowUpdate(editedWorkflow);

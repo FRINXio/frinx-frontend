@@ -25,12 +25,12 @@ import {
   useBoolean,
 } from '@chakra-ui/react';
 import {
-  ScheduledWorkflow,
-  ScheduleWorkflowInput,
   parseInputParameters,
   getDynamicInputParametersFromWorkflow,
   ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
+  CreateScheduledWorkflow,
+  EditScheduledWorkflow,
 } from '@frinx/shared/src';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -42,11 +42,11 @@ const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
 
 type Props = {
-  scheduledWorkflow: ScheduledWorkflow;
+  scheduledWorkflow: EditScheduledWorkflow;
   workflow: ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (workflow: ScheduledWorkflow) => void;
+  onSubmit: (workflow: EditScheduledWorkflow) => void;
 };
 
 const resetDateFormat = (dateTime: string | undefined): string => {
@@ -82,7 +82,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
 
   const [shouldShowInputParams, { toggle: toggleShouldShowInputParams }] = useBoolean(false);
 
-  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<ScheduleWorkflowInput>({
+  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<CreateScheduledWorkflow>({
     enableReinitialize: true,
     validationSchema,
     validateOnMount: false,
@@ -90,7 +90,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
       workflowName: scheduledWorkflow?.workflowName ?? workflow.name,
       workflowVersion: scheduledWorkflow?.workflowVersion ?? workflow.version?.toString() ?? '',
       workflowContext: scheduledWorkflow?.workflowContext
-        ? JSON.parse(scheduledWorkflow.workflowContext)
+        ? scheduledWorkflow.workflowContext
         : getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
       name: scheduledWorkflow?.name || '',
       cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
@@ -102,6 +102,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
       const formattedValues = {
         ...formValues,
         id: scheduledWorkflow?.id,
+        cronString: formValues.cronString || DEFAULT_CRON_STRING,
         ...(formValues.performFromDate && {
           performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
@@ -109,7 +110,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
           performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
         ...(formValues.workflowContext && {
-          workflowContext: JSON.stringify(formValues.workflowContext),
+          workflowContext: formValues.workflowContext,
         }),
       };
 

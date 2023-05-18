@@ -414,7 +414,7 @@ export type ScheduledWorkflow = {
   performTillDate?: string;
   name: string;
   parallelRuns?: boolean | undefined;
-  taskToDomain?: Record<string, string>;
+  taskToDomain?: string;
   workflowName: string;
   workflowVersion: string;
   workflowContext: string;
@@ -430,12 +430,16 @@ export type CreateScheduledWorkflow = {
   performTillDate?: string;
   name: string;
   parallelRuns?: boolean | undefined;
-  taskToDomain?: Record<string, string>;
+  taskToDomain?: string;
   workflowName: string;
   workflowVersion: string;
-  workflowContext: string | Record<string, string>;
+  workflowContext: Record<string, string>;
   isEnabled: boolean;
   status?: StatusType;
+};
+
+export type EditScheduledWorkflow = CreateScheduledWorkflow & {
+  id: string;
 };
 
 export type ExecutedWorkflow = {
@@ -682,22 +686,4 @@ export type Queue = {
   qsize: number;
   queueName: string;
   workerId: string;
-};
-
-// https://github.com/FRINXio/schellar#api
-export type ScheduleWorkflowInput = {
-  name: string;
-  isEnabled: boolean;
-  parallelRuns?: boolean;
-  workflowName: string;
-  workflowVersion: string;
-  cronString: string;
-  workflowContext: string;
-  performFromDate?: string;
-  performTillDate?: string;
-  correlationId?: string;
-  status?: StatusType;
-  taskToDomain?: {
-    '*': string;
-  };
 };
