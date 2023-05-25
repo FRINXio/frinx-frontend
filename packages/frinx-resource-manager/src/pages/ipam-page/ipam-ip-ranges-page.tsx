@@ -1,4 +1,4 @@
-import { Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
+import { Box, Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
@@ -13,35 +13,66 @@ import {
 } from '../../__generated__/graphql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import IpRangesTable from './ip-ranges-table';
+import Pagination from '../../components/pagination';
+import { usePagination } from '../../hooks/use-pagination';
 
 const GET_POOLS_QUERY = gql`
-  query GetPoolIpRanges {
-    QueryRootResourcePools {
-      id
-      Name
-      Tags {
-        id
-        Tag
-      }
-      ResourceType {
-        id
-        Name
-      }
-      PoolProperties
-      Resources {
-        id
-        NestedPool {
+  query GetPoolIpRanges(
+    $first: Int
+    $last: Int
+    $before: Cursor
+    $after: Cursor
+    $resourceTypeId: ID
+    $filterByResources: Map
+  ) {
+    QueryRootResourcePools(
+      first: $first
+      last: $last
+      before: $before
+      after: $after
+      resourceTypeId: $resourceTypeId
+      filterByResources: $filterByResources
+    ) {
+      edges {
+        node {
           id
+          Name
+          Tags {
+            id
+            Tag
+          }
           ResourceType {
             id
             Name
           }
+          PoolProperties
+          Resources {
+            id
+            NestedPool {
+              id
+              ResourceType {
+                id
+                Name
+              }
+            }
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
         }
       }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
+      pageInfo {
+        endCursor {
+          ID
+        }
+        hasNextPage
+        hasPreviousPage
+        startCursor {
+          ID
+        }
       }
+      totalCount
     }
   }
 `;
@@ -67,8 +98,16 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
 
 const IpamIpRangesPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+
   const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
     query: GET_POOLS_QUERY,
+    variables: {
+      ...(paginationArgs?.first !== null && { first: paginationArgs.first }),
+      ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
+      ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
+      ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+    },
     context,
   });
 
@@ -76,12 +115,21 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
     DELETE_POOL_MUTATION,
   );
 
+  const filterIpamIpRanges = data?.QueryRootResourcePools.edges || [];
+
+  const allIpamIpRanges =
+    filterIpamIpRanges?.map((e) => {
+      return e?.node;
+    }) ?? [];
+
+  const filteredIpamIpRanges = allIpamIpRanges?.filter(
+    (pool) => pool?.ResourceType.Name === 'ipv4_prefix' || pool?.ResourceType.Name === 'ipv6_prefix',
+  );
+
   const { addToastNotification } = useNotifications();
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
-    items: data?.QueryRootResourcePools.filter(
-      (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
-    ),
+    items: filteredIpamIpRanges,
     searchFields: ['Name', 'PoolProperties'],
     extractField: (document, fieldName) => {
       if (fieldName === 'PoolProperties') {
@@ -135,7 +183,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
 
   const ipRanges = results
     .filter((result) =>
-      selectedTags.length > 0 ? result.Tags.some(({ Tag: tag }) => selectedTags.includes(tag)) : true,
+      selectedTags.length > 0 ? result.Tags.some(({ Tag: tag }: { Tag: string }) => selectedTags.includes(tag)) : true,
     )
     .map(({ Capacity, Name, PoolProperties, Tags, id, ResourceType, Resources }) => {
       const { network, broadcast } = getAddressesFromCIDR(
@@ -192,6 +240,20 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         onClearSearch={handleOnClearSearch}
       />
       <IpRangesTable ipRanges={ipRanges} onTagClick={handleOnTagClick} onDeleteBtnClick={handleOnDeletePool} />
+      {data && (
+        <Box marginTop={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(
+              data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
+            )}
+            onNext={nextPage(
+              data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
+            )}
+            hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+            hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+          />
+        </Box>
+      )}
     </>
   );
 };

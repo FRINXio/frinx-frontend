@@ -18,10 +18,35 @@ import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-modal';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
-import { GetPoolsQuery, Tag as TagType } from '../../__generated__/graphql';
+import { PoolCapacityPayload, Tag as TagType,  } from '../../__generated__/graphql';
+
+type PoolType = 'set' | 'allocating' | 'singleton';
+
+type NestedPool = {
+  id: string;
+  Name: string;
+};
+
+type Resource = {
+  id: string;
+  NestedPool: NestedPool | null ;
+};
+
+type Pools = {
+  id: string;
+  Name: string;
+  AllocationStrategy: Record<string, string> | null;
+  Capacity: PoolCapacityPayload | null;
+  PoolProperties: Record<string, string | number | boolean>;
+  PoolType: PoolType;
+  ResourceType: Record<string, string>;
+  Resources: Resource[];
+  Tags: Omit<TagType, 'Pools'>[];
+  allocatedResources?: Record<string, number | string> | null;
+};
 
 type Props = {
-  pools: GetPoolsQuery['QueryRootResourcePools'];
+  pools: Pools[];
   isLoading: boolean;
   isNestedShown?: boolean;
   onStrategyClick?: (name?: string) => void;
@@ -37,6 +62,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
   isNestedShown = true,
   onTagClick,
 }) => {
+
   return (
     <Table data-cy="pool-details-nested" background="white" size="sm">
       <Thead bgColor="gray.200">
@@ -139,7 +165,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                           colorScheme="red"
                           aria-label="delete"
                           icon={<Icon size={20} as={FeatherIcon} icon="trash-2" color="red" />}
-                          isDisabled={pool.Resources.length > 0}
+                          isDisabled={pool.Resources && pool.Resources.length > 0}
                         />
                       </DeletePoolPopover>
                     </HStack>

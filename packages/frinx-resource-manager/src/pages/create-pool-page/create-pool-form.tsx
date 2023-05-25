@@ -67,7 +67,7 @@ type Props = {
   requiredPoolProperties?: RequiredPoolPropertiesQuery['QueryRequiredPoolProperties'];
   isLoadingRequiredPoolProperties: boolean;
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
-  resourcePools: SelectPoolsQuery;
+  resourcePools: SelectPoolsQuery | undefined;
   allocStrategies: AllocStrategy[];
 };
 
@@ -134,6 +134,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
 
+  const poolsData = resourcePools?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node;
+  });
+
   useEffect(() => {
     setValidationSchema(getSchemaForCreatePoolForm(values.poolType, isNested));
     if (!isNested) {
@@ -166,15 +170,14 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     }
   }, [values.poolProperties, setFieldValue]);
 
-  const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
-  const parentResourceTypeName = pools.find((pool) => pool.id === parentPoolId)?.ResourceType.Name ?? null;
-  const availableResourceTypes = getAvailableResourceTypes(resourceTypes, pools, parentPoolId);
-  const availableAllocatedResources = getAvailableAllocatedResources(pools, parentPoolId);
+  const parentResourceTypeName = poolsData?.find((pool) => pool?.id === parentPoolId)?.ResourceType.Name ?? null;
+  const availableResourceTypes = getAvailableResourceTypes(resourceTypes, resourcePools, parentPoolId);
+  const availableAllocatedResources = getAvailableAllocatedResources(resourcePools, parentPoolId);
   const derivedFromAvailableResourceTypes = deriveResourceTypesFromAvailableResourceTypes(
     resourceTypes,
     availableResourceTypes,
-  );
+  );  
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
   const initialResourceNameType = new URLSearchParams(window.location.search).get('type') || 'default';
@@ -215,7 +218,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           handleChange={handleChange}
           parentPoolId={parentPoolId}
           parentResourceId={parentResourceId}
-          pools={pools}
+          pools={resourcePools}
         />
       )}
       <HStack spacing={2} marginY={5}>

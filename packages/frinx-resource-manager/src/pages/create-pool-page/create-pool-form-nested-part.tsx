@@ -7,11 +7,11 @@ import { FormValues } from './create-pool-form';
 
 type Props = {
   errors: FormikErrors<FormValues>;
-  pools: SelectPoolsQuery['QueryResourcePools'];
+  pools: SelectPoolsQuery | undefined;
   parentPoolId?: string;
   parentResourceId?: string;
   handleChange: FormikHandlers['handleChange'];
-  availableAllocatedResources: AvailableAllocatedResource[];
+  availableAllocatedResources: AvailableAllocatedResource[] | undefined;
 };
 
 const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
@@ -22,6 +22,10 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
   availableAllocatedResources,
   parentResourceId,
 }) => {
+
+  const poolsData = pools?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node
+  })
   return (
     <HStack spacing={2} marginY={5}>
       <FormControl id="parentPoolId" isInvalid={errors.parentPoolId !== undefined} isRequired>
@@ -34,10 +38,9 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
           value={parentPoolId}
           placeholder="Select parent resource type"
         >
-          {pools
-            .filter(
+          {poolsData?.filter(
               (pool) =>
-                pool.Resources.length > 0 &&
+                pool?.Resources.length && pool?.Resources !== undefined &&
                 isSpecificResourceTypeName(pool.ResourceType.Name, [
                   'ipv4_prefix',
                   'ipv6_prefix',
@@ -46,8 +49,8 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
                 ]),
             )
             .map((pool) => (
-              <option value={pool.id} key={pool.id}>
-                {pool.Name}
+              <option value={pool?.id} key={pool?.id}>
+                {pool?.Name}
               </option>
             ))}
         </Select>
@@ -64,9 +67,9 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
           value={parentResourceId}
           placeholder="Select parent resource type"
         >
-          {availableAllocatedResources.map((pool) => (
-            <option value={pool.id} key={pool.id}>
-              {pool.Name}
+          {availableAllocatedResources?.map((pool) => (
+            <option value={pool?.id} key={pool?.id}>
+              {pool?.Name}
             </option>
           ))}
         </Select>

@@ -5,48 +5,83 @@ import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
+import Pagination from '../../components/pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
+import { usePagination } from '../../hooks/use-pagination';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
   GetAllIpPoolsQuery,
+  GetAllIpPoolsQueryVariables,
   GetResourceTypesQuery,
   GetResourceTypesQueryVariables,
 } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 
 const POOLS_QUERY = gql`
-  query GetAllIPPools {
-    QueryRootResourcePools {
-      id
-      Name
-      PoolType
-      Tags {
-        id
-        Tag
-      }
-      PoolProperties
-      AllocationStrategy {
-        id
-        Name
-        Lang
-        Script
-      }
-      ResourceType {
-        id
-        Name
-      }
-      Resources {
-        id
-        NestedPool {
+  query GetAllIPPools(
+    $first: Int
+    $last: Int
+    $before: Cursor
+    $after: Cursor
+    $resourceTypeId: ID
+    $filterByResources: Map
+  ) {
+    QueryRootResourcePools(
+      first: $first
+      last: $last
+      before: $before
+      after: $after
+      resourceTypeId: $resourceTypeId
+      filterByResources: $filterByResources
+    ) {
+      edges {
+        node {
           id
           Name
+          PoolType
+          Tags {
+            id
+            Tag
+          }
+          PoolProperties
+          AllocationStrategy {
+            id
+            Name
+            Lang
+            Script
+          }
+          ResourceType {
+            id
+            Name
+          }
+          allocatedResources {
+            totalCount
+          }
+          Resources {
+            id
+            NestedPool {
+              id
+              Name
+            }
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
         }
       }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
+      pageInfo {
+        endCursor {
+          ID
+        }
+        hasNextPage
+        hasPreviousPage
+        startCursor {
+          ID
+        }
       }
+      totalCount
     }
   }
 `;
@@ -70,8 +105,16 @@ const GET_RESOURCE_TYPES = gql`
 const IpamPoolPage: VoidFunctionComponent = () => {
   const [selectedResourceType, setSelectedResourceType] = React.useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllIpPoolsQuery>({
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+
+  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllIpPoolsQuery, GetAllIpPoolsQueryVariables>({
     query: POOLS_QUERY,
+    variables: {
+      ...(paginationArgs?.first !== null && { first: paginationArgs.first }),
+      ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
+      ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
+      ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+    },
     context,
   });
   const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
@@ -81,11 +124,18 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     DeletePoolMutation,
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
+
+  const allResourcePools = data?.QueryRootResourcePools.edges?.map((e) => {
+    return e?.node
+  });
+
+  const filteredResourcePools = allResourcePools?.filter(
+    (pool) => pool?.ResourceType.Name === 'ipv4_prefix' || pool?.ResourceType.Name === 'ipv6_prefix',
+  );
+
   const { addToastNotification } = useNotifications();
   const { searchText, setSearchText, results } = useMinisearch({
-    items: data?.QueryRootResourcePools.filter(
-      (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
-    ),
+    items: filteredResourcePools,
   });
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
 
@@ -174,6 +224,20 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           onStrategyClick={handleOnStrategyClick}
         />
       </Box>
+      {data && (
+        <Box marginTop={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(
+              data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
+            )}
+            onNext={nextPage(
+              data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
+            )}
+            hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+            hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+          />
+        </Box>
+      )}
     </>
   );
 };

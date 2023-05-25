@@ -116,8 +116,8 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
         <Pagination
           after={paginationArgs.after}
           before={paginationArgs.before}
-          onNext={onNext(allocatedResources.pageInfo.startCursor.ID)}
-          onPrevious={onPrevious(allocatedResources.pageInfo.endCursor.ID)}
+          onNext={onNext(allocatedResources.pageInfo.startCursor && allocatedResources.pageInfo.startCursor.ID)}
+          onPrevious={onPrevious(allocatedResources.pageInfo.endCursor && allocatedResources.pageInfo.endCursor.ID)}
           hasNextPage={allocatedResources.pageInfo.hasNextPage}
           hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
         />

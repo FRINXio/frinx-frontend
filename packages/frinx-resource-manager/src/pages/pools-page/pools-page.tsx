@@ -8,46 +8,82 @@ import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
-  GetPoolsQuery,
-  GetPoolsQueryVariables,
+  GetAllPoolsQuery,
+  GetAllPoolsQueryVariables,
   GetResourceTypesQuery,
   GetResourceTypesQueryVariables,
+  Scalars,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
+import { usePagination as graphlUsePagination } from '../../hooks/use-pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
+import Pagination from '../../components/pagination';
 
 const ALL_POOLS_QUERY = gql`
-  query GetPools($resourceTypeId: ID) {
-    QueryRootResourcePools(resourceTypeId: $resourceTypeId) {
-      id
-      Name
-      PoolType
-      Tags {
-        id
-        Tag
-      }
-      PoolProperties
-      AllocationStrategy {
-        id
-        Name
-        Lang
-        Script
-      }
-      ResourceType {
-        id
-        Name
-      }
-      Resources {
-        id
-        NestedPool {
+  query GetAllPools(
+    $first: Int
+    $last: Int
+    $before: Cursor
+    $after: Cursor
+    $resourceTypeId: ID
+    $filterByResources: Map
+  ) {
+    QueryRootResourcePools(
+      first: $first
+      last: $last
+      before: $before
+      after: $after
+      resourceTypeId: $resourceTypeId
+      filterByResources: $filterByResources
+    ) {
+      edges {
+        node {
           id
           Name
+          PoolType
+          ParentResource {
+            id
+          }
+          allocatedResources {
+            totalCount
+          }
+          Tags {
+            id
+            Tag
+          }
+          PoolProperties
+          AllocationStrategy {
+            id
+            Name
+          }
+          ResourceType {
+            id
+            Name
+          }
+          Resources {
+            id
+            NestedPool {
+              id
+              Name
+            }
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
         }
       }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
+      pageInfo {
+        endCursor {
+          ID
+        }
+        hasNextPage
+        hasPreviousPage
+        startCursor {
+          ID
+        }
       }
+      totalCount
     }
   }
 `;
@@ -71,10 +107,19 @@ const GET_RESOURCE_TYPES = gql`
 
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
-  const [selectedResourceType, setSelectedResourceType] = useState<string>('');
+  const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetPoolsQuery, GetPoolsQueryVariables>({
+  const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
+
+  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery, GetAllPoolsQueryVariables>({
     query: ALL_POOLS_QUERY,
+    variables: {
+      ...(paginationArgs?.first !== null && { first: paginationArgs.first }),
+      ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
+      ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
+      ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+      filterByResources: selectedResourceType,
+    },
     context,
   });
   const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
@@ -84,8 +129,17 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutation,
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
+
+  
+    const filteredPools = (data?.QueryRootResourcePools.edges ?? [])?.map((e) => {
+      return e?.node
+    });
+  
+
   const { addToastNotification } = useNotifications();
-  const { results, searchText, setSearchText } = useMinisearch({ items: data?.QueryRootResourcePools });
+  const { results, searchText, setSearchText } = useMinisearch({
+    items: filteredPools,
+  });
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -143,7 +197,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
 
     return true;
-  });
+  });    
 
   return (
     <>
@@ -190,6 +244,20 @@ const PoolsPage: VoidFunctionComponent = () => {
           onStrategyClick={handleOnStrategyClick}
         />
       </Box>
+      {data && (
+        <Box marginTop={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(
+              data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
+            )}
+            onNext={nextPage(
+              data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
+            )}
+            hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+            hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+          />
+        </Box>
+      )}
     </>
   );
 };
