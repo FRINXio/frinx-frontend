@@ -30,8 +30,7 @@ type Props = {
   workflow: Workflow | ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSubmit: (inputParameters: Record<string, any>) => Promise<string | null> | null;
+  onSubmit: (inputParameters: Record<string, unknown>) => Promise<string | null> | null;
 };
 
 const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
@@ -41,8 +40,7 @@ const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }
   const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
   const { values, handleSubmit, submitForm, isSubmitting, setSubmitting, setFieldValue } = useFormik<
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Record<string, any>
+    Record<string, unknown>
   >({
     enableReinitialize: true,
     initialValues: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),

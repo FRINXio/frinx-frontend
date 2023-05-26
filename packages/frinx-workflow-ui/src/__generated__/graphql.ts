@@ -1118,6 +1118,7 @@ export type Schedule = Node & {
   parallelRuns: Scalars['Boolean'];
   performFromDate: Scalars['String'];
   performTillDate: Scalars['String'];
+  status: ScheduleStatus;
   version: Maybe<Scalars['Int']>;
   workflowContext: Scalars['String'];
   workflowName: Scalars['String'];
@@ -1141,6 +1142,15 @@ export type ScheduleFilterInput = {
   workflowName: Scalars['String'];
   workflowVersion: Scalars['String'];
 };
+
+export type ScheduleStatus =
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'PAUSED'
+  | 'RUNNING'
+  | 'TERMINATED'
+  | 'TIMED_OUT'
+  | 'UNKNOWN';
 
 export type Snapshot = {
   __typename?: 'Snapshot';
@@ -1461,6 +1471,11 @@ export type ZonesConnection = {
   totalCount: Scalars['Int'];
 };
 
+export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSchedulesQuery = { __typename?: 'Query', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } };
+
 export type ExecutedWorkflowsQueryVariables = Exact<{
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
   pagination?: InputMaybe<PaginationArgs>;
@@ -1510,6 +1525,38 @@ export type WorkflowInstanceDetailQueryVariables = Exact<{
 
 
 export type WorkflowInstanceDetailQuery = { __typename?: 'Query', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'SubWorkflow', executedWorkflowDetail: { __typename?: 'ExecutedWorkflow', id: string, endTime: string | null, startTime: string | null, reasonForIncompletion: string | null, status: ExecutedWorkflowStatus | null, workflowId: string | null, workflowName: string | null, workflowVersion: number | null } }> | null } | null };
+
+export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WorkflowListQuery = { __typename?: 'Query', workflows: { __typename?: 'WorkflowConnection', edges: Array<{ __typename?: 'WorkflowEdge', node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null } }> } };
+
+export type SchedulesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SchedulesQuery = { __typename?: 'Query', schedules: { __typename?: 'ScheduleConnection', totalCount: number, edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', id: string, name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, isEnabled: boolean, performFromDate: string, performTillDate: string, parallelRuns: boolean, status: ScheduleStatus } } | null>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
+export type DeleteScheduleMutationVariables = Exact<{
+  deleteScheduleId: Scalars['String'];
+}>;
+
+
+export type DeleteScheduleMutation = { __typename?: 'Mutation', deleteSchedule: { __typename?: 'IsOkResponse', isOk: boolean } | null };
+
+export type EditWorkflowScheduleMutationVariables = Exact<{
+  input: EditWorkflowScheduleInput;
+  editWorkflowScheduleId: Scalars['String'];
+}>;
+
+
+export type EditWorkflowScheduleMutation = { __typename?: 'Mutation', editWorkflowSchedule: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, isEnabled: boolean, performFromDate: string, performTillDate: string, parallelRuns: boolean } | null };
+
+export type ScheduleWorkflowMutationVariables = Exact<{
+  input: CreateScheduleInput;
+}>;
+
+
+export type ScheduleWorkflowMutation = { __typename?: 'Mutation', scheduleWorkflow: { __typename?: 'Schedule', name: string, isEnabled: boolean, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, performFromDate: string, performTillDate: string } | null };
 
 export type WorkflowsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;

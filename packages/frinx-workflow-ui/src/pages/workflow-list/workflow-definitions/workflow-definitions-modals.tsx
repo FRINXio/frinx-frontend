@@ -2,18 +2,22 @@ import { UseDisclosureReturn } from '@chakra-ui/react';
 import {
   useNotifications,
   callbackUtils,
-  ScheduledWorkflow,
   ExecuteWorkflowModal,
   ClientWorkflow,
+  unwrap,
+  CreateScheduledWorkflow,
 } from '@frinx/shared/src';
+import { gql, useMutation } from 'urql';
+
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
   DiagramModal,
   DependencyModal,
-  ScheduledWorkflowModal,
+  ScheduleWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
+import { ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables } from '../../../__generated__/graphql';
 
 type Props = {
   workflows: ClientWorkflow[];
@@ -27,6 +31,21 @@ type Props = {
   onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
 };
 
+const CREATE_SCHEDULE_MUTATION = gql`
+  mutation ScheduleWorkflow($input: CreateScheduleInput!) {
+    scheduleWorkflow(input: $input) {
+      name
+      isEnabled
+      workflowName
+      workflowVersion
+      cronString
+      workflowContext
+      performFromDate
+      performTillDate
+    }
+  }
+`;
+
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,
   activeWorkflow,
@@ -38,21 +57,36 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   scheduledWorkflowModal,
   onDeleteWorkflow,
 }) => {
+  const [, onCreate] = useMutation<ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables>(
+    CREATE_SCHEDULE_MUTATION,
+  );
+
   const { addToastNotification } = useNotifications();
 
-  const handleWorkflowSchedule = (scheduledWf: Partial<ScheduledWorkflow>) => {
-    const { registerSchedule } = callbackUtils.getCallbacks;
+  const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
+    const scheduleInput = {
+      ...scheduledWf,
+      cronString: unwrap(scheduledWf.cronString),
+      workflowContext: JSON.stringify(scheduledWf.workflowContext),
+    };
+
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
-        ...scheduledWf,
-        workflowVersion: String(scheduledWf.workflowVersion),
-      })
-        .then(() => {
-          addToastNotification({
-            type: 'success',
-            title: 'Success',
-            content: 'Successfully scheduled',
-          });
+      onCreate({ input: scheduleInput })
+        .then((res) => {
+          if (!res.data?.scheduleWorkflow) {
+            addToastNotification({
+              type: 'error',
+              title: 'Error',
+              content: res.error?.message,
+            });
+          }
+          if (res.data?.scheduleWorkflow || !res.error) {
+            addToastNotification({
+              content: 'Successfully scheduled',
+              title: 'Success',
+              type: 'success',
+            });
+          }
         })
         .catch(() => {
           addToastNotification({
@@ -85,7 +119,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     confirmDeleteModal.onClose();
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
     if (activeWorkflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
@@ -98,7 +132,13 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     const { executeWorkflow } = callbackUtils.getCallbacks;
 
     return executeWorkflow({
-      input: values,
+      input: Object.keys(values).reduce((acc: Record<string, string>, key) => {
+        const value = values[key];
+        if (value != null) {
+          acc[key] = value.toString();
+        }
+        return acc;
+      }, {}),
       name: activeWorkflow.name,
       version: activeWorkflow.version || 1,
     })
@@ -126,11 +166,8 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
         isOpen={dependencyModal.isOpen}
         workflows={workflows}
       />
-      <ScheduledWorkflowModal
-        workflow={{
-          workflowName: activeWorkflow.name,
-          workflowVersion: String(activeWorkflow.version),
-        }}
+      <ScheduleWorkflowModal
+        workflow={activeWorkflow}
         onClose={scheduledWorkflowModal.onClose}
         isOpen={scheduledWorkflowModal.isOpen}
         onSubmit={handleWorkflowSchedule}
