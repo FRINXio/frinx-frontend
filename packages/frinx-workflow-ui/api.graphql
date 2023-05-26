@@ -664,7 +664,7 @@ type Query {
   topologyVersions: [String!]
   transactions: [Transaction!]!
   uniconfigShellSession: String
-  workflowInstanceDetail(id: String!, shouldIncludeTasks: Boolean): WorkflowInstanceDetail
+  workflowInstanceDetail(shouldIncludeTasks: Boolean, workflowId: String!): WorkflowInstanceDetail
   workflowLabels: [String!]!
   workflows(after: String, before: String, filter: FilterWorkflowsInput, first: Int, last: Int): WorkflowConnection!
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
@@ -713,6 +713,7 @@ type Schedule implements Node {
   parallelRuns: Boolean!
   performFromDate: String!
   performTillDate: String!
+  status: ScheduleStatus!
   version: Int
   workflowContext: String!
   workflowName: String!
@@ -733,6 +734,16 @@ type ScheduleEdge {
 input ScheduleFilterInput {
   workflowName: String!
   workflowVersion: String!
+}
+
+enum ScheduleStatus {
+  COMPLETED
+  FAILED
+  PAUSED
+  RUNNING
+  TERMINATED
+  TIMED_OUT
+  UNKNOWN
 }
 
 type Snapshot {
@@ -762,6 +773,7 @@ type SubWorkflow {
 }
 
 type Subscription {
+  controlExecutedWorkflow(id: String!): ExecutedWorkflow
   uniconfigShell(input: String, sessionId: String!, trigger: Int): String
 }
 

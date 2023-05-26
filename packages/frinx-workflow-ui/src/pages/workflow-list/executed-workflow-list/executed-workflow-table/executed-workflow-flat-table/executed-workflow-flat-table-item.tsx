@@ -26,7 +26,7 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({ workflows, sort, onWorkflowS
   return (
     <>
       {sortExecutedWorkflows(workflows.executedWorkflows.edges, sort).map(({ node }) => (
-        <Tr key={node.workflowId}>
+        <Tr key={node.id}>
           <Td>
             <Checkbox
               isChecked={selectedWorkflows.includes(node.id)}
@@ -44,7 +44,7 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({ workflows, sort, onWorkflowS
             title={node.workflowId ?? 'UNKNOWN workflow'}
             textColor="blue.500"
           >
-            <Link to={`../executed/${node.workflowId}`}>{node.workflowId}</Link>
+            <Link to={`../executed/${node.id}`}>{node.workflowId}</Link>
           </Td>
           <Td>{node.workflowName}</Td>
           <Td>{moment(node.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>

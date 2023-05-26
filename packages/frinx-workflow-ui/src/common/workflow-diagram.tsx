@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactFlow, { Edge, Node } from 'react-flow-renderer';
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import {
   WorkflowInstanceDetail,
-  Workflow,
-  WorkflowDefinition,
   ExtendedTask,
-  ExecutedWorkflowTask,
   convertWorkflowTaskToExtendedTask,
   getElementsFromWorkflow,
+  Workflow,
 } from '@frinx/shared/src';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './components';
@@ -22,12 +20,8 @@ const nodeTypes = {
 };
 
 type Props = {
-  meta: Workflow;
-  result: WorkflowInstanceDetail;
-};
-
-type ExtedendedTaskWithExecutionData = ExtendedTask & {
-  execution?: ExecutedWorkflowTask;
+  result?: WorkflowInstanceDetail | null;
+  meta?: Workflow | null;
 };
 
 type NodeData = {
@@ -39,8 +33,15 @@ type NodeData = {
 };
 
 const WorkflowDiagram = ({ meta, result }: Props) => {
-  useState<WorkflowDefinition<ExtedendedTaskWithExecutionData> | null>(null);
   const navigate = useNavigate();
+
+  if (meta == null || result == null) {
+    return (
+      <Box height="600">
+        <Text>No workflow found</Text>
+      </Box>
+    );
+  }
 
   const taskMap = new Map(result.tasks.map((t) => [t.referenceTaskName, t]));
   const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(

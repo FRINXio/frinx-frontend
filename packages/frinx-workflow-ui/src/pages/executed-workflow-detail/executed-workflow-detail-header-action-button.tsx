@@ -1,10 +1,11 @@
 import React, { FC } from 'react';
 import { Button, ButtonGroup } from '@chakra-ui/react';
-import { callbackUtils, WorkflowStatus } from '@frinx/shared/src';
+import { callbackUtils } from '@frinx/shared/src';
+import { ExecutedWorkflowStatus } from '../../__generated__/graphql';
 
 type Props = {
   workflowId: string;
-  status: WorkflowStatus | undefined;
+  status: ExecutedWorkflowStatus | null;
   restartWorkflows: () => void;
   onWorkflowActionExecution: (workflowId: string) => void;
   isVisibleRestartButton: boolean;

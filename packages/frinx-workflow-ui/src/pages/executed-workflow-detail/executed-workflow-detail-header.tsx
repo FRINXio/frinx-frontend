@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import { Box, Grid } from '@chakra-ui/react';
-import { Status } from '@frinx/shared/src';
 import { isEmpty } from 'lodash';
 import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-action-button';
+import { ExecutedWorkflowStatus } from '../../__generated__/graphql';
 
 type Props = {
   startTime: string;
   endTime: string;
-  status: Status;
+  status: ExecutedWorkflowStatus | null;
   restartWorkflows: () => void;
   onWorkflowActionExecution: (workflowId: string) => void;
   workflowId: string;
