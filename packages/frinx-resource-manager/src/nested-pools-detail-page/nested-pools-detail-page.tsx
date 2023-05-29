@@ -1,5 +1,5 @@
 import { Box, Heading, Progress } from '@chakra-ui/react';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import { unwrap, useNotifications, useMinisearch, useTags, omitNullValue } from '@frinx/shared/src';
@@ -85,6 +85,7 @@ const DELETE_POOL_MUTATION = gql`
 `;
 
 const NestedPoolsDetailPage: VoidFunctionComponent = () => {
+  const [allocatedResources, setAllocatedResources] = useState({});
   const { poolId } = useParams<{ poolId: string }>();
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<
     GetNestedPoolsDetailQuery,
@@ -94,9 +95,11 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
 
     variables: { poolId: unwrap(poolId) },
   });
-  const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) =>
-    NestedPool !== null ? NestedPool : null,
-  ).filter(omitNullValue);
+  const resources = (poolData?.QueryResourcePool.Resources || [])
+    .map(({ NestedPool }) => {
+      return NestedPool ?? null;
+    })
+    .filter(omitNullValue);
 
   const { results, searchText, setSearchText } = useMinisearch({ items: resources });
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
@@ -160,6 +163,8 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
         Nested pools
       </Heading>
       <SearchFilterPoolsBar
+        allocatedResources={allocatedResources}
+        setAllocatedResources={setAllocatedResources}
         setSearchText={setSearchText}
         searchText={searchText}
         selectedTags={selectedTags}

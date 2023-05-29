@@ -22,10 +22,9 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
   availableAllocatedResources,
   parentResourceId,
 }) => {
-
   const poolsData = pools?.QueryRootResourcePools.edges.map((e) => {
-    return e?.node
-  })
+    return e?.node;
+  });
   return (
     <HStack spacing={2} marginY={5}>
       <FormControl id="parentPoolId" isInvalid={errors.parentPoolId !== undefined} isRequired>
@@ -38,9 +37,11 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
           value={parentPoolId}
           placeholder="Select parent resource type"
         >
-          {poolsData?.filter(
+          {poolsData
+            ?.filter(
               (pool) =>
-                pool?.Resources.length && pool?.Resources !== undefined &&
+                pool?.Resources.length &&
+                pool?.Resources !== undefined &&
                 isSpecificResourceTypeName(pool.ResourceType.Name, [
                   'ipv4_prefix',
                   'ipv6_prefix',

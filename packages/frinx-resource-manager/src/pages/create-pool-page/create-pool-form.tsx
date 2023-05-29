@@ -177,7 +177,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   const derivedFromAvailableResourceTypes = deriveResourceTypesFromAvailableResourceTypes(
     resourceTypes,
     availableResourceTypes,
-  );  
+  );
   const availablePoolProperties = getAvailablePoolProperties(resourcePools, parentPoolId, parentResourceId);
   const formattedSuggestedProperties = formatSuggestedProperties(parentResourceTypeName, availablePoolProperties);
   const initialResourceNameType = new URLSearchParams(window.location.search).get('type') || 'default';

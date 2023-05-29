@@ -1,7 +1,7 @@
 import { Heading, Progress } from '@chakra-ui/react';
 import { IPv4, IPv6 } from 'ipaddr.js';
 import { compact } from 'lodash';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMinisearch, useTags } from '@frinx/shared/src';
 import SearchFilterPoolsBar from '../../../components/search-filter-pools-bar';
@@ -23,6 +23,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
   const { id } = useParams();
 
   const [{ poolDetail }, { deleteResourcePool }] = useResourcePoolActions({ poolId: id });
+  const [allocatedResources, setAllocatedResources] = useState({});
 
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, searchText, setSearchText } = useMinisearch({
@@ -90,6 +91,8 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
         IP Ranges of {poolDetail.data?.QueryResourcePool.Name}
       </Heading>
       <SearchFilterPoolsBar
+        allocatedResources={allocatedResources}
+        setAllocatedResources={setAllocatedResources}
         searchText={searchText}
         setSearchText={setSearchText}
         clearAllTags={clearAllTags}

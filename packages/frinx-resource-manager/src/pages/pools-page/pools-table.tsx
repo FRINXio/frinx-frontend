@@ -18,7 +18,7 @@ import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-modal';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
-import { PoolCapacityPayload, Tag as TagType,  } from '../../__generated__/graphql';
+import { PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 
@@ -29,7 +29,7 @@ type NestedPool = {
 
 type Resource = {
   id: string;
-  NestedPool: NestedPool | null ;
+  NestedPool: NestedPool | null;
 };
 
 type Pools = {
@@ -62,7 +62,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
   isNestedShown = true,
   onTagClick,
 }) => {
-
   return (
     <Table data-cy="pool-details-nested" background="white" size="sm">
       <Thead bgColor="gray.200">

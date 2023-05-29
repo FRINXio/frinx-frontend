@@ -1,8 +1,8 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
-import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
 import Pagination from '../../components/pagination';
@@ -103,7 +103,8 @@ const GET_RESOURCE_TYPES = gql`
 `;
 
 const IpamPoolPage: VoidFunctionComponent = () => {
-  const [selectedResourceType, setSelectedResourceType] = React.useState<string>('');
+  const [selectedResourceType, setSelectedResourceType] = useState<string>('');
+  const [allocatedResources, setAllocatedResources] = useState({});
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
@@ -114,6 +115,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+      filterByResources: Object.keys(allocatedResources).length ? allocatedResources : null,
     },
     context,
   });
@@ -125,9 +127,11 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
 
-  const allResourcePools = data?.QueryRootResourcePools.edges?.map((e) => {
-    return e?.node
-  });
+  const allResourcePools = (data?.QueryRootResourcePools.edges ?? [])
+    ?.map((e) => {
+      return e?.node ?? null;
+    })
+    .filter(omitNullValue);
 
   const filteredResourcePools = allResourcePools?.filter(
     (pool) => pool?.ResourceType.Name === 'ipv4_prefix' || pool?.ResourceType.Name === 'ipv6_prefix',
@@ -173,10 +177,6 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     return <div>{error?.message}</div>;
   }
 
-  if (isQueryLoading) {
-    return <Progress isIndeterminate size="lg" />;
-  }
-
   const ipPools = results.filter((pool) =>
     selectedTags.length > 0 ? pool.Tags.some(({ Tag }) => selectedTags.includes(Tag)) : true,
   );
@@ -205,6 +205,8 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <SearchFilterPoolsBar
+          allocatedResources={allocatedResources}
+          setAllocatedResources={setAllocatedResources}
           setSearchText={setSearchText}
           searchText={searchText}
           selectedTags={selectedTags}
@@ -215,6 +217,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           resourceTypes={resourceTypes?.QueryResourceTypes}
           selectedResourceType={selectedResourceType}
           setSelectedResourceType={handleOnStrategyClick}
+          canFilterByAllocatedResources
         />
         <PoolsTable
           pools={ipPools}

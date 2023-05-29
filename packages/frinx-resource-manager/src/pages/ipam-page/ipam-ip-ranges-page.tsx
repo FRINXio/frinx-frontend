@@ -1,8 +1,8 @@
 import { Box, Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
-import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import {
@@ -98,6 +98,8 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
 
 const IpamIpRangesPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
+  const [allocatedResources, setAllocatedResources] = useState({});
+
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
   const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
@@ -117,10 +119,11 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
 
   const filterIpamIpRanges = data?.QueryRootResourcePools.edges || [];
 
-  const allIpamIpRanges =
-    filterIpamIpRanges?.map((e) => {
-      return e?.node;
-    }) ?? [];
+  const allIpamIpRanges = filterIpamIpRanges
+    ?.map((e) => {
+      return e?.node ?? null;
+    })
+    .filter(omitNullValue);
 
   const filteredIpamIpRanges = allIpamIpRanges?.filter(
     (pool) => pool?.ResourceType.Name === 'ipv4_prefix' || pool?.ResourceType.Name === 'ipv6_prefix',
@@ -232,6 +235,8 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         </Button>
       </HStack>
       <SearchFilterPoolsBar
+        allocatedResources={allocatedResources}
+        setAllocatedResources={setAllocatedResources}
         searchText={searchText}
         setSearchText={setSearchText}
         clearAllTags={clearAllTags}

@@ -1,8 +1,8 @@
 import { Box, Heading, Progress, Text } from '@chakra-ui/react';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
-import { useMinisearch, useTags, useNotifications } from '@frinx/shared/src';
+import { useMinisearch, useTags, useNotifications, omitNullValue } from '@frinx/shared/src';
 import {
   DeleteIpPoolMutation,
   DeleteIpPoolMutationVariables,
@@ -86,8 +86,10 @@ const DELETE_POOL_MUTATION = gql`
 const isIpv4 = (name: string) => name === 'ipv4_prefix';
 
 const IpamAggregatesPage: VoidFunctionComponent = () => {
+  const [allocatedResources, setAllocatedResources] = useState({});
+
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-      const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
   const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
     query: GET_IP_POOLS,
@@ -101,9 +103,11 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
   });
   const [, deletePoolMutation] = useMutation<DeleteIpPoolMutation, DeleteIpPoolMutationVariables>(DELETE_POOL_MUTATION);
 
-    const allAggregates = data?.QueryRootResourcePools.edges.map((e) => {
-      return e?.node;
-    });
+  const allAggregates = (data?.QueryRootResourcePools.edges ?? [])
+    ?.map((e) => {
+      return e?.node ?? null;
+    })
+    .filter(omitNullValue);
 
   const { addToastNotification } = useNotifications();
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
@@ -175,14 +179,14 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         prefixes: aggregate.Resources.filter((resource) => resource.NestedPool != null).length,
         freeCapacity: aggregate.Capacity?.freeCapacity,
         utilizedCapacity: aggregate.Capacity?.utilizedCapacity,
-        tags: aggregate.Tags.map(({ id, Tag: tagName }: ({id: string, Tag: string})) => ({ tag: tagName, id })),
+        tags: aggregate.Tags.map(({ id, Tag: tagName }: { id: string; Tag: string }) => ({ tag: tagName, id })),
       };
     });
 
   const filteredAggregates =
     selectedTags.length === 0
       ? aggregates
-      : aggregates.filter(({ tags }) => tags.some(({ tag }: ({tag: string})) => selectedTags.includes(tag)));
+      : aggregates.filter(({ tags }) => tags.some(({ tag }: { tag: string }) => selectedTags.includes(tag)));
 
   return (
     <>
@@ -190,6 +194,8 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         Aggregates
       </Heading>
       <SearchFilterPoolsBar
+        allocatedResources={allocatedResources}
+        setAllocatedResources={setAllocatedResources}
         clearAllTags={clearAllTags}
         onTagClick={handleOnTagClick}
         searchText={searchText}

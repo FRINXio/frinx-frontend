@@ -36,25 +36,26 @@ const NestedPoolsList: FC = () => {
     query,
   });
 
- const pools = nestedPools?.QueryRootResourcePools.edges.map((e) => {
-   return e?.node
- });
+  const pools = nestedPools?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node;
+  });
 
   return (
     <div>
       NESTED
       <ul>
-        {pools !== undefined && pools?.map((pool) => (
-          <li key={pool?.id}>
-            {pool?.Name} : {pool?.id}
-            {pool?.Resources.length}
-            {pool?.Resources.map((resource) => (
-              <Box key={resource.id} marginLeft={15}>
-                {resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}
-              </Box>
-            ))}
-          </li>
-        ))}
+        {pools !== undefined &&
+          pools?.map((pool) => (
+            <li key={pool?.id}>
+              {pool?.Name} : {pool?.id}
+              {pool?.Resources.length}
+              {pool?.Resources.map((resource) => (
+                <Box key={resource.id} marginLeft={15}>
+                  {resource.NestedPool ? <NestedPool pool={resource.NestedPool} /> : null}
+                </Box>
+              ))}
+            </li>
+          ))}
       </ul>
     </div>
   );

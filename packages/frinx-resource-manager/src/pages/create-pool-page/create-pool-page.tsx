@@ -133,7 +133,7 @@ const SELECT_POOLS_QUERY = gql`
             }
           }
           Resources {
-            NestedPool{
+            NestedPool {
               id
             }
             Description

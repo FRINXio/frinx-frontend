@@ -19,7 +19,7 @@ const useMinisearch = <T>({
   searchFields = ['Name'],
   extractField,
 }: {
-  items: Item<T>[] ;
+  items: Item<T>[];
   searchFields?: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   extractField?: (document: any, fieldName: string) => string;
@@ -28,8 +28,7 @@ const useMinisearch = <T>({
   const { current: minisearch } = useRef(
     new MiniSearch({ fields: searchFields, idField: 'Name', ...(extractField != null && { extractField }) }),
   );
-  console.log(items);
-  
+
   const searchFn = () =>
     throttle(() => {
       if (searchText != null) {

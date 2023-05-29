@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -62,6 +62,7 @@ const ALL_POOLS_QUERY = gql`
           }
           Resources {
             id
+            Properties
             NestedPool {
               id
               Name
@@ -107,6 +108,7 @@ const GET_RESOURCE_TYPES = gql`
 
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
+  const [allocatedResources, setAllocatedResources] = useState({});
   const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
@@ -118,7 +120,7 @@ const PoolsPage: VoidFunctionComponent = () => {
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
-      filterByResources: selectedResourceType,
+      filterByResources: Object.keys(allocatedResources).length ? allocatedResources : null,
     },
     context,
   });
@@ -130,11 +132,11 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
 
-  
-    const filteredPools = (data?.QueryRootResourcePools.edges ?? [])?.map((e) => {
-      return e?.node
-    });
-  
+  const filteredPools = (data?.QueryRootResourcePools.edges ?? [])
+    ?.map((e) => {
+      return e?.node ?? null;
+    })
+    .filter(omitNullValue);
 
   const { addToastNotification } = useNotifications();
   const { results, searchText, setSearchText } = useMinisearch({
@@ -163,17 +165,14 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSearchText('');
     clearAllTags();
     setSelectedResourceType('');
+    setAllocatedResources({})
   };
 
   const handleOnStrategyClick = (id?: string) => {
     if (id != null) {
       setSelectedResourceType(id);
     }
-  };
-
-  if (isQueryLoading) {
-    return <Progress isIndeterminate size="sm" mt={-10} />;
-  }
+  };  
 
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
@@ -197,7 +196,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
 
     return true;
-  });    
+  });
 
   return (
     <>
@@ -222,6 +221,8 @@ const PoolsPage: VoidFunctionComponent = () => {
       <SearchFilterPoolsBar
         setSearchText={setSearchText}
         searchText={searchText}
+        allocatedResources={allocatedResources}
+        setAllocatedResources={setAllocatedResources}
         selectedTags={selectedTags}
         selectedResourceType={selectedResourceType}
         setSelectedResourceType={setSelectedResourceType}
@@ -230,6 +231,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         onClearSearch={handleOnClearSearch}
         resourceTypes={resourceTypes?.QueryResourceTypes}
         canFilterByResourceType
+        canFilterByAllocatedResources
       />
 
       <Box position="relative" marginBottom={5}>
