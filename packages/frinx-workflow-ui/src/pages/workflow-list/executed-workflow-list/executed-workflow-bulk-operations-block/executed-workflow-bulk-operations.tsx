@@ -1,9 +1,22 @@
 import React, { FC } from 'react';
 
-import { Button, Card, HStack, Heading, Menu, MenuButton, MenuItem, MenuList, Spacer } from '@chakra-ui/react';
+import {
+  Button,
+  Card,
+  HStack,
+  Heading,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Spacer,
+  Spinner,
+  Text,
+} from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 
 type Props = {
+  isExecutingBulkOperation: boolean;
   amountOfVisibleWorkflows: number;
   amountOfSelectedWorkflows: number;
   onRestart: () => void;
@@ -14,6 +27,7 @@ type Props = {
 };
 
 const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
+  isExecutingBulkOperation,
   amountOfVisibleWorkflows,
   amountOfSelectedWorkflows,
   onPause,
@@ -39,16 +53,31 @@ const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
           <Spacer />
 
           <Menu>
-            <MenuButton as={Button} rightIcon={<ChevronDownIcon />} colorScheme="blue">
-              Bulk actions
-            </MenuButton>
-            <MenuList>
-              <MenuItem onClick={onRestart}>Restart</MenuItem>
-              <MenuItem onClick={onRetry}>Retry</MenuItem>
-              <MenuItem onClick={onResume}>Resume</MenuItem>
-              <MenuItem onClick={onPause}>Pause</MenuItem>
-              <MenuItem onClick={onTerminate}>Terminate</MenuItem>
-            </MenuList>
+            {({ isOpen }) => (
+              <>
+                <MenuButton
+                  as={Button}
+                  rightIcon={<ChevronDownIcon />}
+                  colorScheme="blue"
+                  cursor={isExecutingBulkOperation ? 'not-allowed' : 'pointer'}
+                  disabled={isExecutingBulkOperation}
+                >
+                  <HStack>
+                    {isExecutingBulkOperation && <Spinner />}
+                    <Text>Bulk actions</Text>
+                  </HStack>
+                </MenuButton>
+                {isOpen && !isExecutingBulkOperation && (
+                  <MenuList>
+                    <MenuItem onClick={onRestart}>Restart</MenuItem>
+                    <MenuItem onClick={onRetry}>Retry</MenuItem>
+                    <MenuItem onClick={onResume}>Resume</MenuItem>
+                    <MenuItem onClick={onPause}>Pause</MenuItem>
+                    <MenuItem onClick={onTerminate}>Terminate</MenuItem>
+                  </MenuList>
+                )}
+              </>
+            )}
           </Menu>
         </HStack>
       </Card>
