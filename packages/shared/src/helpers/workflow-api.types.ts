@@ -403,19 +403,55 @@ export enum SerializerEnum {
   StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
 }
 
-export type StatusType = 'COMPLETED' | 'RUNNING' | 'FAILED';
+export type StatusType = 'COMPLETED' | 'FAILED' | 'PAUSED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT' | 'UNKNOWN';
 
-export type ScheduledWorkflow = {
-  correlationId: string;
-  cronString: string;
-  lastUpdate: string;
+export type ScheduleWorkflowInput = {
   name: string;
-  taskToDomain: Record<string, string>;
   workflowName: string;
   workflowVersion: string;
-  workflowContext: Record<string, any>;
-  enabled: boolean;
-  status: StatusType;
+  workflowContext: string;
+  cornString: string;
+  isEnabled: boolean;
+  performFromDate: string;
+  performTillDate: string;
+  parallelRuns?: boolean;
+};
+
+export type ScheduledWorkflow = {
+  id: string;
+  correlationId?: string;
+  cronString: string;
+  lastUpdate?: string;
+  performFromDate?: string;
+  performTillDate?: string;
+  name: string;
+  parallelRuns?: boolean | undefined;
+  taskToDomain?: string;
+  workflowName: string;
+  workflowVersion: string;
+  workflowContext: string;
+  isEnabled: boolean;
+  status?: StatusType;
+};
+
+export type CreateScheduledWorkflow = {
+  correlationId?: string;
+  cronString: string | undefined;
+  lastUpdate?: string;
+  performFromDate?: string | undefined;
+  performTillDate?: string;
+  name: string;
+  parallelRuns?: boolean | undefined;
+  taskToDomain?: string;
+  workflowName: string;
+  workflowVersion: string;
+  workflowContext: Record<string, string>;
+  isEnabled: boolean;
+  status?: StatusType;
+};
+
+export type EditScheduledWorkflow = CreateScheduledWorkflow & {
+  id: string;
 };
 
 export type ExecutedWorkflow = {
@@ -616,7 +652,7 @@ export type WorkflowExecutionResult = {
 };
 
 export type WorkflowPayload = {
-  input: Record<string, string>;
+  input: Record<string, unknown>;
   name: string;
   version: number;
 };

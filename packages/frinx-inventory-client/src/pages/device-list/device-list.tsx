@@ -402,7 +402,7 @@ const DeviceList: VoidFunctionComponent = () => {
     setSelectedWorkflow(wf);
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
     if (selectedWorkflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',

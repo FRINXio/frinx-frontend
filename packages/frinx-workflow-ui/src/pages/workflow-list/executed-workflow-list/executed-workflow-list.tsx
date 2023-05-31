@@ -283,21 +283,11 @@ const ExecutedWorkflowList = () => {
           isExecutingBulkOperation={isExecutingBulkOperation}
           amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
           amountOfSelectedWorkflows={selectedWorkflows.length}
-          onPause={() => {
-            handleOnBulkOperation('pause');
-          }}
-          onRetry={() => {
-            handleOnBulkOperation('retry');
-          }}
-          onResume={() => {
-            handleOnBulkOperation('resume');
-          }}
-          onTerminate={() => {
-            handleOnBulkOperation('terminate');
-          }}
-          onRestart={() => {
-            handleOnBulkOperation('restart');
-          }}
+          onPause={() => handleOnBulkOperation('pause')}
+          onRetry={() => handleOnBulkOperation('retry')}
+          onRestart={() => handleOnBulkOperation('restart')}
+          onTerminate={() => handleOnBulkOperation('terminate')}
+          onResume={() => handleOnBulkOperation('resume')}
         />
 
         {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
@@ -313,7 +303,7 @@ const ExecutedWorkflowList = () => {
             onWorkflowSelect={handleOnWorkflowSelect}
             selectedWorkflows={selectedWorkflows}
             isFlat={isFlat}
-            onSubworkflowStatusClick={(status) => {
+            onWorkflowStatusClick={(status) => {
               if (status === 'UNKNOWN') {
                 toast({
                   description: 'UNKNOWN status is not supported for filtering of executed workflows.',

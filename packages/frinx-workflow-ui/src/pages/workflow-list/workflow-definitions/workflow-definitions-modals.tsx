@@ -1,23 +1,25 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
 import {
   useNotifications,
-  callbackUtils,
-  ScheduledWorkflow,
   ExecuteWorkflowModal,
   ClientWorkflow,
+  unwrap,
+  CreateScheduledWorkflow,
 } from '@frinx/shared/src';
-import React, { VoidFunctionComponent } from 'react';
 import { gql, useMutation } from 'urql';
+import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
   DiagramModal,
   DependencyModal,
-  ScheduledWorkflowModal,
+  ScheduleWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
 import {
+  ExecuteWorkflowByItsNameMutationVariables,
   ExecuteWorkflowDefinitionMutation,
-  ExecuteWorkflowDefinitionMutationVariables,
+  ScheduleWorkflowMutation,
+  ScheduleWorkflowMutationVariables,
 } from '../../../__generated__/graphql';
 
 const EXECUTE_WORKFLOW_MUTATION = gql`
@@ -38,6 +40,21 @@ type Props = {
   onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
 };
 
+const CREATE_SCHEDULE_MUTATION = gql`
+  mutation ScheduleWorkflow($input: CreateScheduleInput!) {
+    scheduleWorkflow(input: $input) {
+      name
+      isEnabled
+      workflowName
+      workflowVersion
+      cronString
+      workflowContext
+      performFromDate
+      performTillDate
+    }
+  }
+`;
+
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,
   activeWorkflow,
@@ -49,25 +66,39 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   scheduledWorkflowModal,
   onDeleteWorkflow,
 }) => {
-  const { addToastNotification } = useNotifications();
-  const [, executeWorkflow] = useMutation<
-    ExecuteWorkflowDefinitionMutation,
-    ExecuteWorkflowDefinitionMutationVariables
-  >(EXECUTE_WORKFLOW_MUTATION);
+  const [, onCreate] = useMutation<ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables>(
+    CREATE_SCHEDULE_MUTATION,
+  );
 
-  const handleWorkflowSchedule = (scheduledWf: Partial<ScheduledWorkflow>) => {
-    const { registerSchedule } = callbackUtils.getCallbacks;
+  const { addToastNotification } = useNotifications();
+  const [, executeWorkflow] = useMutation<ExecuteWorkflowDefinitionMutation, ExecuteWorkflowByItsNameMutationVariables>(
+    EXECUTE_WORKFLOW_MUTATION,
+  );
+
+  const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
+    const scheduleInput = {
+      ...scheduledWf,
+      cronString: unwrap(scheduledWf.cronString),
+      workflowContext: JSON.stringify(scheduledWf.workflowContext),
+    };
+
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      registerSchedule(scheduledWf.workflowName, scheduledWf.workflowVersion, {
-        ...scheduledWf,
-        workflowVersion: String(scheduledWf.workflowVersion),
-      })
-        .then(() => {
-          addToastNotification({
-            type: 'success',
-            title: 'Success',
-            content: 'Successfully scheduled',
-          });
+      onCreate({ input: scheduleInput })
+        .then((res) => {
+          if (!res.data?.scheduleWorkflow) {
+            addToastNotification({
+              type: 'error',
+              title: 'Error',
+              content: res.error?.message,
+            });
+          }
+          if (res.data?.scheduleWorkflow || !res.error) {
+            addToastNotification({
+              content: 'Successfully scheduled',
+              title: 'Success',
+              type: 'success',
+            });
+          }
         })
         .catch(() => {
           addToastNotification({
@@ -100,7 +131,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     confirmDeleteModal.onClose();
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, string>): Promise<string | null> | null => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>): Promise<string | null> | null => {
     if (activeWorkflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
@@ -146,11 +177,8 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
         isOpen={dependencyModal.isOpen}
         workflows={workflows}
       />
-      <ScheduledWorkflowModal
-        workflow={{
-          workflowName: activeWorkflow.name,
-          workflowVersion: String(activeWorkflow.version),
-        }}
+      <ScheduleWorkflowModal
+        workflow={activeWorkflow}
         onClose={scheduledWorkflowModal.onClose}
         isOpen={scheduledWorkflowModal.isOpen}
         onSubmit={handleWorkflowSchedule}

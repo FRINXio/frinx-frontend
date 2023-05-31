@@ -58,7 +58,7 @@ export function isWorkflowNameAvailable(workflows: ClientWorkflow[], name: strin
 export function getInitialValuesFromParsedInputParameters(
   parsedInputParameters?: InputParameter | null,
   dynamicInputParameters?: string[] | null,
-) {
+): Record<string, string> {
   let initialValues = {};
   if (parsedInputParameters != null) {
     initialValues = Object.keys(parsedInputParameters).reduce(

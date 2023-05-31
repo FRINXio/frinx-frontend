@@ -50,7 +50,6 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({
   const { values, handleChange, handleReset, submitForm, setFieldValue } = useFormik<ExecutedWorkflowSearchQuery>({
     initialValues: initialSearchValues,
     onSubmit: onSearchBoxSubmit,
-    onReset: onSearchBoxSubmit,
   });
 
   const handleOnStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -173,7 +172,21 @@ const ExecutedWorkflowSearchBox: FC<Props> = ({
         <Spacer />
 
         <ButtonGroup>
-          <Button onClick={handleReset}>Clear</Button>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              handleReset(e);
+              onSearchBoxSubmit({
+                isRootWorkflow: false,
+                workflowsPerPage: values.workflowsPerPage,
+                status: [],
+                workflowId: [],
+                workflowType: [],
+              });
+            }}
+          >
+            Clear
+          </Button>
           <Button colorScheme="blue" onClick={submitForm}>
             Search
           </Button>
