@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
 import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
 import moment from 'moment';
 import unescapeJs from 'unescape-js';
@@ -23,6 +23,16 @@ import {
   ControlExecutedWorkflowSubscriptionVariables,
   ExecuteWorkflowByItsNameMutation,
   ExecuteWorkflowByItsNameMutationVariables,
+  PauseWorkflowMutation,
+  PauseWorkflowMutationVariables,
+  RestartWorkflowMutation,
+  RestartWorkflowMutationVariables,
+  ResumeWorkflowMutation,
+  ResumeWorkflowMutationVariables,
+  RetryWorkflowMutation,
+  RetryWorkflowMutationVariables,
+  TerminateWorkflowMutation,
+  TerminateWorkflowMutationVariables,
 } from '../../__generated__/graphql';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
@@ -79,7 +89,7 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
         id
         version
         taskType
-        taskReferenceName
+        referenceTaskName
         status
         retryCount
         startTime
@@ -114,8 +124,40 @@ const EXECUTE_WORKFLOW_MUTATION = gql`
 `;
 
 const RESTART_WORKFLOW_MUTATION = gql`
-  mutation RestartWorkflow($restartWorkflowId: String!, $resumeWorkflowId: String!, $pauseWorkflowId: String!) {
+  mutation RestartWorkflow($restartWorkflowId: String!) {
     restartWorkflow(id: $restartWorkflowId) {
+      isOk
+    }
+  }
+`;
+
+const RETRY_WORKFLOW_MUTATION = gql`
+  mutation RetryWorkflow($retryWorkflowId: String!, $retryWorkflowInput: RetryWorkflowInput) {
+    retryWorkflow(id: $retryWorkflowId, input: $retryWorkflowInput) {
+      isOk
+    }
+  }
+`;
+
+const PAUSE_WORKFLOW_MUTATION = gql`
+  mutation PauseWorkflow($pauseWorkflowId: String!) {
+    pauseWorkflow(id: $pauseWorkflowId) {
+      isOk
+    }
+  }
+`;
+
+const RESUME_WORKFLOW_MUTATION = gql`
+  mutation ResumeWorkflow($resumeWorkflowId: String!) {
+    resumeWorkflow(id: $resumeWorkflowId) {
+      isOk
+    }
+  }
+`;
+
+const TERMINATE_WORKFLOW_MUTATION = gql`
+  mutation TerminateWorkflow($terminateWorkflowId: String!) {
+    terminateWorkflow(id: $terminateWorkflowId) {
       isOk
     }
   }
@@ -171,7 +213,8 @@ type Props = {
   onExecutedOperation: (workflowId: string) => void;
 };
 
-const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
+const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
+  const ctx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflow'] }), []);
   const { workflowId } = useParams<{ workflowId: string }>();
   const taskModalDisclosure = useDisclosure();
   const [openedTaskId, setOpenedTaskId] = useState<string | null>(null);
@@ -182,23 +225,30 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   const toast = useToast();
   const [apiExecutedWorkflow, setApiExecutedWorkflow] = useState<ExecutedWorkflowResponse | null>(null);
 
+  const [{ data, error }, reexecute] = useSubscription<
+    ControlExecutedWorkflowSubscription,
+    ControlExecutedWorkflowSubscription,
+    ControlExecutedWorkflowSubscriptionVariables
+  >({
+    query: EXECUTED_WORKFLOW_SUBSCRIPTION,
+    variables: { controlExecutedWorkflowId: workflowId || '' },
+  });
+
+  const [, restartWorkflow] = useMutation<RestartWorkflowMutation, RestartWorkflowMutationVariables>(
+    RESTART_WORKFLOW_MUTATION,
+  );
+  const [, retryWorkflow] = useMutation<RetryWorkflowMutation, RetryWorkflowMutationVariables>(RETRY_WORKFLOW_MUTATION);
+  const [, pauseWorkflow] = useMutation<PauseWorkflowMutation, PauseWorkflowMutationVariables>(PAUSE_WORKFLOW_MUTATION);
+  const [, resumeWorkflow] = useMutation<ResumeWorkflowMutation, ResumeWorkflowMutationVariables>(
+    RESUME_WORKFLOW_MUTATION,
+  );
+  const [, terminateWorkflow] = useMutation<TerminateWorkflowMutation, TerminateWorkflowMutationVariables>(
+    TERMINATE_WORKFLOW_MUTATION,
+  );
   const [, executeWorkflowByName] = useMutation<
     ExecuteWorkflowByItsNameMutation,
     ExecuteWorkflowByItsNameMutationVariables
   >(EXECUTE_WORKFLOW_MUTATION);
-  const [{ data, error }] = useSubscription<
-    ControlExecutedWorkflowSubscription,
-    ControlExecutedWorkflowSubscription,
-    ControlExecutedWorkflowSubscriptionVariables
-  >(
-    {
-      query: EXECUTED_WORKFLOW_SUBSCRIPTION,
-      variables: { controlExecutedWorkflowId: workflowId || '' },
-    },
-    (_, curr) => curr,
-  );
-
-  const [, restartWorkflow] = useMutation(RESTART_WORKFLOW_MUTATION);
 
   useEffect(() => {
     const { getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
@@ -247,12 +297,11 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
           throw new Error(result.error?.message);
         }
 
-        addToastNotification({
-          title: 'Workflow started',
-          content: `Workflow ${executedWorkflow.workflowName} started`,
-          type: 'success',
-          timeout: 2500,
-        });
+        if (result.data?.executeWorkflowByName == null) {
+          throw new Error('Something went wrong');
+        }
+
+        onExecutedOperation(result.data?.executeWorkflowByName || '');
       })
       .catch((err) => {
         addToastNotification({
@@ -333,6 +382,133 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
     }
   };
 
+  const handleOnRestartWorkflow = () => {
+    restartWorkflow(
+      {
+        restartWorkflowId: workflowId,
+      },
+      ctx,
+    ).then(() => {
+      reexecute({ requestPolicy: 'network-only' });
+    });
+  };
+
+  const handleOnTerminateWorkflow = () => {
+    terminateWorkflow(
+      {
+        terminateWorkflowId: workflowId,
+      },
+      ctx,
+    )
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
+        addToastNotification({
+          title: 'Workflow terminated',
+          content: `Workflow ${executedWorkflow.workflowName} terminated`,
+          type: 'success',
+          timeout: 2500,
+        });
+      })
+      .catch((err) => {
+        addToastNotification({
+          title: 'Error',
+          content: err.message,
+          type: 'error',
+          timeout: 2500,
+        });
+      });
+  };
+
+  const handleOnRetryWorkflow = () => {
+    retryWorkflow(
+      {
+        retryWorkflowId: workflowId,
+      },
+      ctx,
+    )
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
+        addToastNotification({
+          title: 'Workflow retried',
+          content: `Workflow ${executedWorkflow.workflowName} retried`,
+          type: 'success',
+          timeout: 2500,
+        });
+      })
+      .catch((err) => {
+        addToastNotification({
+          title: 'Error',
+          content: err.message,
+          type: 'error',
+          timeout: 2500,
+        });
+      });
+  };
+
+  const handleOnPauseWorkflow = () => {
+    pauseWorkflow(
+      {
+        pauseWorkflowId: workflowId,
+      },
+      ctx,
+    )
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
+        addToastNotification({
+          title: 'Workflow paused',
+          content: `Workflow ${executedWorkflow.workflowName} paused`,
+          type: 'success',
+          timeout: 2500,
+        });
+      })
+      .catch((err) => {
+        addToastNotification({
+          title: 'Error',
+          content: err.message,
+          type: 'error',
+          timeout: 2500,
+        });
+      });
+  };
+
+  const handleOnResumeWorkflow = () => {
+    resumeWorkflow(
+      {
+        resumeWorkflowId: workflowId,
+      },
+      ctx,
+    )
+      .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
+        addToastNotification({
+          title: 'Workflow resumed',
+          content: `Workflow ${executedWorkflow.workflowName} resumed`,
+          type: 'success',
+          timeout: 2500,
+        });
+      })
+      .catch((err) => {
+        addToastNotification({
+          title: 'Error',
+          content: err.message,
+          type: 'error',
+          timeout: 2500,
+        });
+      });
+  };
+
   return (
     <Container maxWidth={1280}>
       {openedTaskId != null && (
@@ -354,17 +530,15 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
         )}
       </Box>
       <DetailsModalHeader
-        workflowId={workflowId}
-        onWorkflowActionExecution={onExecutedOperation}
         endTime={formatDate(executedWorkflow.endTime)}
         startTime={formatDate(executedWorkflow.startTime)}
-        restartWorkflows={() => {
-          restartWorkflow({
-            restartWorkflowId: workflowId,
-          });
-        }}
         status={executedWorkflow.status}
         visibleRestartButton={executedWorkflow.workflowDefinition?.restartable ?? false}
+        onRestartWorkflow={handleOnRestartWorkflow}
+        onTerminateWorkflow={handleOnTerminateWorkflow}
+        onRetryWorkflow={handleOnRetryWorkflow}
+        onPauseWorkflow={handleOnPauseWorkflow}
+        onResumeWorkflow={handleOnResumeWorkflow}
       />
       <Box background="white" borderRadius={4} mb={5}>
         <Tabs index={tabIndex} onChange={setTabIndex}>
@@ -432,4 +606,4 @@ const DetailsModal: FC<Props> = ({ onExecutedOperation }) => {
   );
 };
 
-export default DetailsModal;
+export default ExecutedWorkflowDetail;

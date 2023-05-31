@@ -64,8 +64,8 @@ const TaskTable: FC<Props> = ({ executedWorkflow, onTaskClick, formatDate }) => 
                 }}
                 cursor="pointer"
               >
-                <Tooltip label={task.taskReferenceName}>
-                  <Text>{task.taskReferenceName}</Text>
+                <Tooltip label={task.referenceTaskName}>
+                  <Text>{task.referenceTaskName}</Text>
                 </Tooltip>
               </Td>
               <Td>

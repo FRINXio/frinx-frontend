@@ -1,54 +1,34 @@
 import React, { FC } from 'react';
 import { Button, ButtonGroup } from '@chakra-ui/react';
-import { callbackUtils } from '@frinx/shared/src';
 import { ExecutedWorkflowStatus } from '../../__generated__/graphql';
 
 type Props = {
-  workflowId: string;
   status: ExecutedWorkflowStatus | null;
-  restartWorkflows: () => void;
-  onWorkflowActionExecution: (workflowId: string) => void;
+  onRestartWorkflow: () => void;
+  onTerminateWorkflow: () => void;
+  onRetryWorkflow: () => void;
+  onPauseWorkflow: () => void;
+  onResumeWorkflow: () => void;
   isVisibleRestartButton: boolean;
 };
 
 const DetailsModalHeaderActionButtons: FC<Props> = ({
   status,
-  onWorkflowActionExecution,
-  restartWorkflows,
-  workflowId,
   isVisibleRestartButton,
+  onRestartWorkflow,
+  onTerminateWorkflow,
+  onRetryWorkflow,
+  onPauseWorkflow,
+  onResumeWorkflow,
 }) => {
-  const handleOnTerminateWorkflow = async () => {
-    const { terminateWorkflows } = callbackUtils.getCallbacks;
-
-    terminateWorkflows([workflowId]).then(() => onWorkflowActionExecution(workflowId));
-  };
-  const handleOnPauseWorkflow = () => {
-    const { pauseWorkflows } = callbackUtils.getCallbacks;
-
-    pauseWorkflows([workflowId]).then(() => onWorkflowActionExecution(workflowId));
-  };
-
-  const handleOnResumeWorkflow = () => {
-    const { resumeWorkflows } = callbackUtils.getCallbacks;
-
-    resumeWorkflows([workflowId]).then(() => onWorkflowActionExecution(workflowId));
-  };
-
-  const handleOnRetryWorkflow = () => {
-    const { retryWorkflows } = callbackUtils.getCallbacks;
-
-    retryWorkflows([workflowId]).then(() => onWorkflowActionExecution(workflowId));
-  };
-
   if (status === 'FAILED' || status === 'TERMINATED' || status === 'TIMED_OUT') {
     return (
       <ButtonGroup float="right">
-        <Button isDisabled={!isVisibleRestartButton} onClick={restartWorkflows} colorScheme="blue">
+        <Button isDisabled={!isVisibleRestartButton} onClick={onRestartWorkflow} colorScheme="blue">
           <i className="fas fa-redo" />
           &nbsp;&nbsp;Restart
         </Button>
-        <Button onClick={handleOnRetryWorkflow} colorScheme="blue">
+        <Button onClick={onRetryWorkflow} colorScheme="blue">
           <i className="fas fa-history" />
           &nbsp;&nbsp;Retry
         </Button>
@@ -59,11 +39,11 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   if (status === 'RUNNING') {
     return (
       <ButtonGroup float="right">
-        <Button onClick={handleOnTerminateWorkflow} colorScheme="blue">
+        <Button onClick={onTerminateWorkflow} colorScheme="blue">
           <i className="fas fa-times" />
           &nbsp;&nbsp;Terminate
         </Button>
-        <Button onClick={handleOnPauseWorkflow} colorScheme="blue">
+        <Button onClick={onPauseWorkflow} colorScheme="blue">
           <i className="fas fa-pause" />
           &nbsp;&nbsp;Pause
         </Button>
@@ -73,7 +53,7 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
 
   return (
     <ButtonGroup float="right">
-      <Button onClick={handleOnResumeWorkflow} colorScheme="blue">
+      <Button onClick={onResumeWorkflow} colorScheme="blue">
         <i className="fas fa-play" />
         &nbsp;&nbsp;Resume
       </Button>
