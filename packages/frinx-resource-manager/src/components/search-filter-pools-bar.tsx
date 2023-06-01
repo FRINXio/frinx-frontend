@@ -1,7 +1,8 @@
-import { HStack, Select, Spacer, Button, Flex, Heading } from '@chakra-ui/react';
+import { HStack, Select, Spacer, Button } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { SearchByTag } from '@frinx/shared/src';
 import { Searchbar } from './searchbar';
+import SearchByAllocatedResources from './search-by-allocated-resources';
 
 type InputValues = { [key: string]: string };
 
@@ -11,7 +12,9 @@ type Props = {
   selectedResourceType?: string;
   allocatedResources: { [key: string]: string };
   selectedTags: string[];
+  pageItemsCount?: number;
   canFilterByResourceType?: boolean;
+  setPageItemsCount?: (value: number) => void;
   setSearchText: (text: string) => void;
   setAllocatedResources: React.Dispatch<React.SetStateAction<InputValues>>;
   setSelectedResourceType?: (value: string) => void;
@@ -26,6 +29,8 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
   allocatedResources,
   setAllocatedResources,
   setSearchText,
+  pageItemsCount,
+  setPageItemsCount,
   selectedTags,
   resourceTypes,
   clearAllTags,
@@ -36,33 +41,14 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
   canFilterByResourceType = false,
   canFilterByAllocatedResources = false,
 }) => {
-  const handleInputChange = (propertyName: string, value: string) => {
-    setAllocatedResources((prevInputValues: Record<string, string>) => {
-      const updatedInputValues = { ...prevInputValues };
-      if (value === '') {
-        delete updatedInputValues[propertyName];
-      } else {
-        updatedInputValues[propertyName] = value;
-      }
-      return updatedInputValues;
-    });
-  };
-
   const onClearSearchClick = () => {
     if (onClearSearch) {
       onClearSearch();
     }
-    const resourcesCopy = { ...allocatedResources };
-    delete resourcesCopy.address;
-    delete resourcesCopy.prefix;
-    delete resourcesCopy.subnet;
-    delete resourcesCopy.from;
-    delete resourcesCopy.to;
-
-    setAllocatedResources(resourcesCopy);
+    setAllocatedResources({});
   };
 
-  const properties = ['address', 'prefix', 'subnet', 'from', 'to'];
+  const itemCountOptions = [5, 10, 20, 50, 100];
 
   return (
     <>
@@ -89,25 +75,31 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
             ))}
           </Select>
         )}
+        {canFilterByResourceType && resourceTypes != null && (
+          <Select
+            data-cy="select-page-items-count"
+            value={pageItemsCount}
+            onChange={(e) => setPageItemsCount && setPageItemsCount(Number(e.target.value))}
+            variant="outline"
+            bgColor="white"
+          >
+            <option value={10}>Select number of pools per page</option>
+            {itemCountOptions.map((option) => {
+              return (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              );
+            })}
+          </Select>
+        )}
       </HStack>
-      <Heading as="h3" size="l" mb={3}>
-        Search by allocated resources
-      </Heading>
-      <Flex gap={1}>
-        {canFilterByAllocatedResources &&
-          properties.map((property) => {
-            return (
-              <Searchbar
-                key={property}
-                mb={5}
-                placeholder={property}
-                data-cy={`search-by-${property}`}
-                value={allocatedResources[property] || ''}
-                onChange={(e) => handleInputChange(property, e.target.value)}
-              />
-            );
-          })}
-      </Flex>
+      {canFilterByAllocatedResources && (
+        <SearchByAllocatedResources
+          allocatedResources={allocatedResources}
+          setAllocatedResources={setAllocatedResources}
+        />
+      )}
       <HStack mb={5}>
         <SearchByTag selectedTags={selectedTags} onTagClick={onTagClick} clearAllTags={clearAllTags} />
         <Spacer />

@@ -11,25 +11,23 @@ export type CallbackFunctions = {
   nextPage: (cursor: string | null) => () => void;
   previousPage: (cursor: string | null) => () => void;
   firstPage: () => void;
+  setItemsCount: (value: number) => void;
 };
 
-export function usePagination(devicesPerPage = 10): [PaginationArgs, CallbackFunctions] {
+export function usePagination(devicesPerPage = 5): [PaginationArgs, CallbackFunctions] {
   const [state, setState] = useState<PaginationArgs>({
     first: devicesPerPage,
     after: undefined,
     last: undefined,
     before: undefined,
   });
-  const firstPage = useCallback(
-    () =>
-      setState({
-        first: devicesPerPage,
-        after: undefined,
-        last: undefined,
-        before: undefined,
-      }),
-    [devicesPerPage],
-  );
+  const firstPage = () =>
+    setState({
+      first: devicesPerPage,
+      after: undefined,
+      last: undefined,
+      before: undefined,
+    });
   const nextPage = useCallback(
     (cursor: string | null) => () =>
       setState({
@@ -50,5 +48,13 @@ export function usePagination(devicesPerPage = 10): [PaginationArgs, CallbackFun
       }),
     [devicesPerPage],
   );
-  return [state, { nextPage, previousPage, firstPage }];
+  const setItemsCount = (devices: number) => {
+    if (state.first) {
+      setState((prevState) => ({ ...prevState, first: devices }));
+    }
+    if (state.last) {
+      setState((prevState) => ({ ...prevState, last: devices }));
+    }
+  };
+  return [state, { setItemsCount, nextPage, previousPage, firstPage }];
 }

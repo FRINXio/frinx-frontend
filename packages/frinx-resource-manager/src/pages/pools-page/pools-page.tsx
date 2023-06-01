@@ -15,9 +15,11 @@ import {
   Scalars,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
-import { usePagination as graphlUsePagination } from '../../hooks/use-pagination';
+import { usePagination } from '../../hooks/use-pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import Pagination from '../../components/pagination';
+
+type InputValues = { [key: string]: string };
 
 const ALL_POOLS_QUERY = gql`
   query GetAllPools(
@@ -108,10 +110,10 @@ const GET_RESOURCE_TYPES = gql`
 
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
-  const [allocatedResources, setAllocatedResources] = useState({});
+  const [allocatedResources, setAllocatedResources] = useState<InputValues>({});
   const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
+  const [paginationArgs, { nextPage, previousPage, setItemsCount }] = usePagination();
 
   const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery, GetAllPoolsQueryVariables>({
     query: ALL_POOLS_QUERY,
@@ -165,14 +167,14 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSearchText('');
     clearAllTags();
     setSelectedResourceType('');
-    setAllocatedResources({})
+    setAllocatedResources({});
   };
 
   const handleOnStrategyClick = (id?: string) => {
     if (id != null) {
       setSelectedResourceType(id);
     }
-  };  
+  };
 
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
@@ -219,6 +221,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         </Box>
       </HStack>
       <SearchFilterPoolsBar
+        setPageItemsCount={setItemsCount}
         setSearchText={setSearchText}
         searchText={searchText}
         allocatedResources={allocatedResources}
@@ -246,15 +249,11 @@ const PoolsPage: VoidFunctionComponent = () => {
           onStrategyClick={handleOnStrategyClick}
         />
       </Box>
-      {data && (
+      {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
         <Box marginTop={4} paddingX={4}>
           <Pagination
-            onPrevious={previousPage(
-              data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
-            )}
-            onNext={nextPage(
-              data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
-            )}
+            onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
+            onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
             hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
             hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
           />
