@@ -63,7 +63,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, isO
       : unescapeJs(jsonString);
   };
 
-  const task = executedWorkflow.tasks?.find((t) => t.id === taskId);
+  const task = executedWorkflow.result.tasks?.find((t) => t.id === taskId);
 
   return (
     <>

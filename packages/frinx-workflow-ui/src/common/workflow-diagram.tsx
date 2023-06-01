@@ -3,14 +3,15 @@ import ReactFlow, { Edge, Node } from 'react-flow-renderer';
 import { Box, Text } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import {
-  WorkflowInstanceDetail,
   ExtendedTask,
+  Task,
   convertWorkflowTaskToExtendedTask,
   getElementsFromWorkflow,
-  Workflow,
+  jsonParse,
 } from '@frinx/shared/src';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './components';
+import { ControlExecutedWorkflowSubscription } from '../__generated__/graphql';
 
 const nodeTypes = {
   base: BaseNode,
@@ -20,8 +21,7 @@ const nodeTypes = {
 };
 
 type Props = {
-  result?: WorkflowInstanceDetail | null;
-  meta?: Workflow | null;
+  executedWorkflow: NonNullable<ControlExecutedWorkflowSubscription['controlExecutedWorkflow']>;
 };
 
 type NodeData = {
@@ -32,8 +32,9 @@ type NodeData = {
   handles?: string[];
 };
 
-const WorkflowDiagram = ({ meta, result }: Props) => {
+const WorkflowDiagram = ({ executedWorkflow }: Props) => {
   const navigate = useNavigate();
+  const { meta, result } = executedWorkflow;
 
   if (meta == null || result == null) {
     return (
@@ -43,9 +44,12 @@ const WorkflowDiagram = ({ meta, result }: Props) => {
     );
   }
 
-  const taskMap = new Map(result.tasks.map((t) => [t.referenceTaskName, t]));
+  const resultTasks = result.tasks || [];
+  const metaTasks = jsonParse<Task[]>(meta.tasks) || [];
+
+  const taskMap = new Map(resultTasks.map((t) => [t.taskReferenceName, t]));
   const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(
-    getElementsFromWorkflow(meta.tasks.map(convertWorkflowTaskToExtendedTask), true),
+    getElementsFromWorkflow(metaTasks.map(convertWorkflowTaskToExtendedTask), true),
     'TB',
   );
   const nodesWithExecutionState = elements.nodes.map((n) => {

@@ -379,11 +379,12 @@ export type ExecuteWorkflowByName = {
   inputParameters: Scalars['String'];
   priority?: InputMaybe<Scalars['Int']>;
   workflowName: Scalars['String'];
-  workflowVersion?: InputMaybe<Scalars['Int']>;
+  workflowVersion?: InputMaybe<Scalars['String']>;
 };
 
 export type ExecutedWorkflow = Node & {
   __typename?: 'ExecutedWorkflow';
+  correlationId: Maybe<Scalars['String']>;
   createdAt: Maybe<Scalars['String']>;
   createdBy: Maybe<Scalars['String']>;
   endTime: Maybe<Scalars['String']>;
@@ -403,7 +404,7 @@ export type ExecutedWorkflow = Node & {
   variables: Maybe<Scalars['String']>;
   version: Maybe<Scalars['Int']>;
   workflowDefinition: Maybe<Workflow>;
-  workflowId: Maybe<Scalars['String']>;
+  workflowId: Scalars['String'];
   workflowName: Maybe<Scalars['String']>;
   workflowVersion: Maybe<Scalars['Int']>;
 };
@@ -448,13 +449,20 @@ export type ExecutedWorkflowStatus =
 
 export type ExecutedWorkflowTask = Node & {
   __typename?: 'ExecutedWorkflowTask';
+  callbackAfterSeconds: Maybe<Scalars['Int']>;
   endTime: Maybe<Scalars['String']>;
   executed: Maybe<Scalars['Boolean']>;
+  externalInputPayloadStoragePath: Maybe<Scalars['String']>;
+  externalOutputPayloadStoragePath: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  inputData: Maybe<Scalars['String']>;
+  outputData: Maybe<Scalars['String']>;
+  pollCount: Maybe<Scalars['Int']>;
   reasonForIncompletion: Maybe<Scalars['String']>;
   retried: Maybe<Scalars['Boolean']>;
   retryCount: Maybe<Scalars['Int']>;
   scheduledTime: Maybe<Scalars['String']>;
+  seq: Maybe<Scalars['Int']>;
   startTime: Maybe<Scalars['String']>;
   status: Maybe<ExecutedWorkflowTaskStatus>;
   subWorkflowId: Maybe<Scalars['String']>;
@@ -1058,8 +1066,8 @@ export type QueryTopologyVersionDataArgs = {
 
 
 export type QueryWorkflowInstanceDetailArgs = {
-  id: Scalars['String'];
   shouldIncludeTasks?: InputMaybe<Scalars['Boolean']>;
+  workflowId: Scalars['String'];
 };
 
 
@@ -1118,6 +1126,7 @@ export type Schedule = Node & {
   parallelRuns: Scalars['Boolean'];
   performFromDate: Scalars['String'];
   performTillDate: Scalars['String'];
+  status: ScheduleStatus;
   version: Maybe<Scalars['Int']>;
   workflowContext: Scalars['String'];
   workflowName: Scalars['String'];
@@ -1141,6 +1150,15 @@ export type ScheduleFilterInput = {
   workflowName: Scalars['String'];
   workflowVersion: Scalars['String'];
 };
+
+export type ScheduleStatus =
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'PAUSED'
+  | 'RUNNING'
+  | 'TERMINATED'
+  | 'TIMED_OUT'
+  | 'UNKNOWN';
 
 export type Snapshot = {
   __typename?: 'Snapshot';
@@ -1170,7 +1188,14 @@ export type SubWorkflow = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  controlExecutedWorkflow: Maybe<WorkflowInstanceDetail>;
   uniconfigShell: Maybe<Scalars['String']>;
+};
+
+
+export type SubscriptionControlExecutedWorkflowArgs = {
+  id: Scalars['String'];
+  shouldIncludeTasks?: InputMaybe<Scalars['Boolean']>;
 };
 
 

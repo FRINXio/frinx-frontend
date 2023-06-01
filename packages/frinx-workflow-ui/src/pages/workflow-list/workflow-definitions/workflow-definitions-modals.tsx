@@ -113,7 +113,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     return executeWorkflow({
       input: {
         workflowName: activeWorkflow.name,
-        workflowVersion: activeWorkflow.version,
+        workflowVersion: activeWorkflow.version ? String(activeWorkflow.version) : undefined,
         priority: 0,
         inputParameters: JSON.stringify(values),
       },

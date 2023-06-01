@@ -11,7 +11,7 @@ type Props = {
 };
 
 const TaskTable: FC<Props> = ({ executedWorkflow, onTaskClick, formatDate }) => {
-  const { tasks } = executedWorkflow;
+  const tasks = executedWorkflow.result.tasks || [];
 
   return (
     <Table size="sm">
