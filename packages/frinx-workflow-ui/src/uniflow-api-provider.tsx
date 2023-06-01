@@ -29,10 +29,12 @@ export function getUniflowApiProvider(callbacks: Callbacks): FC {
 }
 
 export const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
-  const wsClient = createWSClient({
-    url: wsUrl,
-    lazy: true,
-  });
+  const { current: wsClient } = useRef(
+    createWSClient({
+      url: wsUrl,
+      lazy: true,
+    }),
+  );
 
   const { current: urqlClient } = useRef(
     createClient({

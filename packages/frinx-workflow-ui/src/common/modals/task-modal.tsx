@@ -26,10 +26,10 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import unescapeJs from 'unescape-js';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 import ExternalStorageModal from '../../pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
-import { ControlExecutedWorkflowSubscription } from '../../__generated__/graphql';
+import { ExecutedWorkflowDetailQuery } from '../../__generated__/graphql';
 
 type Props = {
-  executedWorkflow: NonNullable<ControlExecutedWorkflowSubscription['controlExecutedWorkflow']>;
+  executedWorkflow: NonNullable<ExecutedWorkflowDetailQuery['node']>;
   taskId: string;
   isOpen: boolean;
   onClose: () => void;
@@ -62,6 +62,10 @@ const TaskModal: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, isO
           .replace(/\\f/g, '\\f')
       : unescapeJs(jsonString);
   };
+
+  if (executedWorkflow.__typename !== 'ExecutedWorkflow') {
+    return <Text>Workflow not found</Text>;
+  }
 
   const task = executedWorkflow.tasks?.find((t) => t.id === taskId);
 
@@ -100,7 +104,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, isO
                       <SimpleGrid columns={2} spacing={4} mb={4}>
                         <Box>
                           <b>Task Ref. Name: </b>
-                          {task.taskReferenceName}
+                          {task.referenceTaskName}
                         </Box>
                         <Box>
                           <b>Callback After: </b>

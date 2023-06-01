@@ -2,17 +2,24 @@ import React, { FC } from 'react';
 import { Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
-import { ControlExecutedWorkflowSubscription } from '../../__generated__/graphql';
+
+type ExecutedWorkflowTask = {
+  id: string;
+  taskType: string | null;
+  referenceTaskName: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  status: string | null;
+  subWorkflowId: string | null;
+};
 
 type Props = {
-  executedWorkflow: NonNullable<ControlExecutedWorkflowSubscription['controlExecutedWorkflow']>;
+  tasks?: ExecutedWorkflowTask[] | null;
   onTaskClick: (id: string) => void;
   formatDate: (date: Date | number | undefined | null | string) => string;
 };
 
-const TaskTable: FC<Props> = ({ executedWorkflow, onTaskClick, formatDate }) => {
-  const { tasks } = executedWorkflow;
-
+const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
   return (
     <Table size="sm">
       <Thead>

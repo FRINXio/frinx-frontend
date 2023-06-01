@@ -14,13 +14,18 @@ import {
   Tabs,
   useToast,
   useDisclosure,
+  Text,
+  Progress,
+  VStack,
 } from '@chakra-ui/react';
 import { callbackUtils, ExecutedWorkflowResponse, useNotifications } from '@frinx/shared/src';
 import { Link, useParams } from 'react-router-dom';
-import { gql, useMutation, useSubscription } from 'urql';
+import { gql, useMutation, useSubscription, useQuery } from 'urql';
 import {
   ControlExecutedWorkflowSubscription,
   ControlExecutedWorkflowSubscriptionVariables,
+  ExecutedWorkflowDetailQuery,
+  ExecutedWorkflowDetailQueryVariables,
   ExecuteWorkflowByItsNameMutation,
   ExecuteWorkflowByItsNameMutationVariables,
   PauseWorkflowMutation,
@@ -42,77 +47,96 @@ import DetailsModalHeader from './executed-workflow-detail-header';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 import WorkflowDiagram from '../../common/workflow-diagram';
 
-const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
-  subscription ControlExecutedWorkflow($controlExecutedWorkflowId: String!) {
-    controlExecutedWorkflow(id: $controlExecutedWorkflowId) {
-      id
-      version
-      createdBy
-      updatedBy
-      createdAt
-      updatedAt
-      status
-      parentWorkflowId
-      ownerApp
-      input
-      output
-      reasonForIncompletion
-      failedReferenceTaskNames
-      workflowDefinition {
+const EXECUTED_WORKFLOW_QUERY = gql`
+  query ExecutedWorkflowDetail($nodeId: ID!) {
+    node(id: $nodeId) {
+      ... on ExecutedWorkflow {
         id
         version
-        timeoutSeconds
-        name
-        description
         createdBy
         updatedBy
         createdAt
         updatedAt
-        tasks
-        inputParameters
-        outputParameters {
-          key
-          value
-        }
-        hasSchedule
-        restartable
-        timeoutPolicy
-      }
-      variables
-      lastRetriedTime
-      startTime
-      endTime
-      workflowVersion
-      workflowName
-      workflowId
-      tasks {
-        id
-        version
-        taskType
-        referenceTaskName
         status
-        retryCount
+        parentWorkflowId
+        ownerApp
+        input
+        output
+        reasonForIncompletion
+        failedReferenceTaskNames
+        workflowDefinition {
+          id
+          version
+          timeoutSeconds
+          name
+          description
+          createdBy
+          updatedBy
+          createdAt
+          updatedAt
+          tasks
+          inputParameters
+          outputParameters {
+            key
+            value
+          }
+          hasSchedule
+          restartable
+          timeoutPolicy
+        }
+        variables
+        lastRetriedTime
         startTime
         endTime
-        updateTime
-        scheduledTime
-        taskDefName
-        workflowType
-        retried
-        executed
-        taskId
-        reasonForIncompletion
-        taskDefinition
-        subWorkflowId
-        inputData
-        outputData
-        externalOutputPayloadStoragePath
-        externalInputPayloadStoragePath
-        callbackAfterSeconds
-        seq
-        pollCount
+        workflowVersion
+        workflowName
+        workflowId
+        tasks {
+          id
+          version
+          taskType
+          referenceTaskName
+          status
+          retryCount
+          startTime
+          endTime
+          updateTime
+          scheduledTime
+          taskDefName
+          workflowType
+          retried
+          executed
+          taskId
+          reasonForIncompletion
+          taskDefinition
+          subWorkflowId
+          inputData
+          outputData
+          externalOutputPayloadStoragePath
+          externalInputPayloadStoragePath
+          callbackAfterSeconds
+          seq
+          pollCount
+        }
+        correlationId
       }
-      correlationId
+    }
+  }
+`;
+
+const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
+  subscription ControlExecutedWorkflow($controlExecutedWorkflowId: String!) {
+    controlExecutedWorkflow(id: $controlExecutedWorkflowId) {
+      endTime
+      startTime
+      status
+      tasks {
+        id
+        endTime
+        startTime
+        updateTime
+        status
+      }
     }
   }
 `;
@@ -223,9 +247,15 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const { addToastNotification } = useNotifications();
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
-  const [apiExecutedWorkflow, setApiExecutedWorkflow] = useState<ExecutedWorkflowResponse | null>(null);
 
-  const [{ data, error }, reexecute] = useSubscription<
+  const [
+    { data: executedWorkflowDetail, fetching: isLoadingExecutedWorkflow, error: executedWorkflowDetailError },
+    reexecuteQuery,
+  ] = useQuery<ExecutedWorkflowDetailQuery, ExecutedWorkflowDetailQueryVariables>({
+    query: EXECUTED_WORKFLOW_QUERY,
+    variables: { nodeId: workflowId || '' },
+  });
+  const [{ data, error }, reexecuteSubscription] = useSubscription<
     ControlExecutedWorkflowSubscription,
     ControlExecutedWorkflowSubscription,
     ControlExecutedWorkflowSubscriptionVariables
@@ -251,32 +281,43 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   >(EXECUTE_WORKFLOW_MUTATION);
 
   useEffect(() => {
-    const { getWorkflowInstanceDetail } = callbackUtils.getCallbacks;
-
-    if (getWorkflowInstanceDetail != null && workflowId != null) {
-      getWorkflowInstanceDetail(workflowId).then((result) => {
-        setApiExecutedWorkflow(result);
-      });
+    if (data?.controlExecutedWorkflow?.status !== 'RUNNING') {
+      reexecuteQuery();
     }
-
-    return () => {
-      setApiExecutedWorkflow(null);
-    };
-  }, [workflowId]);
+  }, [data?.controlExecutedWorkflow?.status, reexecuteQuery]);
 
   if (workflowId == null) {
-    return null;
+    return <Text>Workflow id is not defined</Text>;
   }
 
-  if (error || data == null) {
-    return <Container maxWidth={1280}>We had problem to find executed workflow</Container>;
+  if (isLoadingExecutedWorkflow) {
+    return <Progress size="xs" mt={-10} isIndeterminate />;
   }
 
-  const executedWorkflow = data.controlExecutedWorkflow;
-
-  if (executedWorkflow == null) {
-    return <Container maxWidth={1280}>We had problem to find executed workflow</Container>;
+  if (executedWorkflowDetailError != null) {
+    return <Text>{executedWorkflowDetailError.message}</Text>;
   }
+
+  if (error != null) {
+    return <Text>{error.message}</Text>;
+  }
+
+  if (
+    executedWorkflowDetail == null ||
+    executedWorkflowDetail.node == null ||
+    executedWorkflowDetail.node.__typename !== 'ExecutedWorkflow'
+  ) {
+    return <Text>Workflow not found</Text>;
+  }
+
+  const executedWorkflow = {
+    ...executedWorkflowDetail.node,
+    ...data?.controlExecutedWorkflow,
+    tasks: executedWorkflowDetail.node.tasks?.map((task) => ({
+      ...task,
+      ...data?.controlExecutedWorkflow?.tasks?.find((t) => t.id === task.id),
+    })),
+  };
 
   const handleOnRerunClick = () => {
     if (workflowVariables == null) {
@@ -389,7 +430,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
       },
       ctx,
     ).then(() => {
-      reexecute({ requestPolicy: 'network-only' });
+      reexecuteQuery();
+      reexecuteSubscription();
     });
   };
 
@@ -514,7 +556,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
       {openedTaskId != null && (
         <TaskModal
           taskId={openedTaskId}
-          executedWorkflow={executedWorkflow}
+          executedWorkflow={executedWorkflowDetail.node}
           isOpen={taskModalDisclosure.isOpen}
           onClose={handleOnCloseTaskModal}
         />
@@ -541,66 +583,69 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         onResumeWorkflow={handleOnResumeWorkflow}
       />
       <Box background="white" borderRadius={4} mb={5}>
-        <Tabs index={tabIndex} onChange={setTabIndex}>
-          <TabList>
-            <Tab>Task Details</Tab>
-            <Tab>Input/Output</Tab>
-            <Tab>JSON</Tab>
-            <Tab
-              value="editRerun"
-              onClick={() =>
-                setWorkflowVariables(executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {})
-              }
-            >
-              Edit & Rerun
-            </Tab>
-            <Tab>Execution Flow</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <TaskTable
-                executedWorkflow={executedWorkflow}
-                onTaskClick={handleOnOpenTaskModal}
-                formatDate={formatDate}
-              />
-            </TabPanel>
-            <TabPanel>
-              <InputOutputTab
-                copyToClipBoard={handleCopyToClipborad}
-                isEscaped={isEscaped}
-                input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
-                output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
-                onEscapeChange={() => setIsEscaped(!isEscaped)}
-              />
-            </TabPanel>
-            <TabPanel>
-              {executedWorkflow != null && (
-                <WorkflowJsonTab
+        {executedWorkflow.status === 'RUNNING' ? (
+          <VStack>
+            <Progress isIndeterminate />
+
+            <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} formatDate={formatDate} />
+          </VStack>
+        ) : (
+          <Tabs index={tabIndex} onChange={setTabIndex}>
+            <TabList>
+              <Tab>Task Details</Tab>
+              <Tab>Input/Output</Tab>
+              <Tab>JSON</Tab>
+              <Tab
+                value="editRerun"
+                onClick={() =>
+                  setWorkflowVariables(executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {})
+                }
+              >
+                Edit & Rerun
+              </Tab>
+              <Tab>Execution Flow</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} formatDate={formatDate} />
+              </TabPanel>
+              <TabPanel>
+                <InputOutputTab
                   copyToClipBoard={handleCopyToClipborad}
                   isEscaped={isEscaped}
-                  result={executedWorkflow}
+                  input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
+                  output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
                   onEscapeChange={() => setIsEscaped(!isEscaped)}
-                  getUnescapedJSON={getUnescapedJSON}
                 />
-              )}
-            </TabPanel>
-            <TabPanel>
-              <EditRerunTab
-                onInputChange={handleInputChange}
-                inputs={convertWorkflowVariablesToFormFormat(
-                  JSON.stringify(executedWorkflow),
-                  JSON.parse(executedWorkflow.input || '{}'),
-                  executedWorkflow.workflowDefinition?.inputParameters ?? [],
+              </TabPanel>
+              <TabPanel>
+                {executedWorkflow != null && (
+                  <WorkflowJsonTab
+                    copyToClipBoard={handleCopyToClipborad}
+                    isEscaped={isEscaped}
+                    result={executedWorkflowDetail.node}
+                    onEscapeChange={() => setIsEscaped(!isEscaped)}
+                    getUnescapedJSON={getUnescapedJSON}
+                  />
                 )}
-                isExecuting={executedWorkflow.status === 'RUNNING'}
-                onRerunClick={handleOnRerunClick}
-              />
-            </TabPanel>
-            <TabPanel>
-              <WorkflowDiagram meta={apiExecutedWorkflow?.meta} result={apiExecutedWorkflow?.result} />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+              </TabPanel>
+              <TabPanel>
+                <EditRerunTab
+                  onInputChange={handleInputChange}
+                  inputs={convertWorkflowVariablesToFormFormat(
+                    JSON.stringify(executedWorkflow),
+                    JSON.parse(executedWorkflow.input || '{}'),
+                    executedWorkflow.workflowDefinition?.inputParameters ?? [],
+                  )}
+                  onRerunClick={handleOnRerunClick}
+                />
+              </TabPanel>
+              <TabPanel>
+                <WorkflowDiagram meta={executedWorkflow.workflowDefinition} result={executedWorkflow} />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        )}
       </Box>
     </Container>
   );

@@ -2,11 +2,11 @@ import React, { FC } from 'react';
 import { Box, Stack, IconButton, Button, Text, Textarea, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { omit } from 'lodash';
-import { ControlExecutedWorkflowSubscription } from '../../../__generated__/graphql';
+import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
 
 type Props = {
   isEscaped: boolean;
-  result: NonNullable<ControlExecutedWorkflowSubscription['controlExecutedWorkflow']>;
+  result: NonNullable<ExecutedWorkflowDetailQuery['node']>;
   copyToClipBoard: (value: Record<string, unknown>) => void;
   getUnescapedJSON: (value: Record<string, unknown>) => string;
   onEscapeChange: (isEscaped: boolean) => void;
