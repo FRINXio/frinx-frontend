@@ -18,7 +18,7 @@ import {
   Progress,
   VStack,
 } from '@chakra-ui/react';
-import { callbackUtils, ExecutedWorkflowResponse, useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared/src';
 import { Link, useParams } from 'react-router-dom';
 import { gql, useMutation, useSubscription, useQuery } from 'urql';
 import {
@@ -136,6 +136,8 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
         startTime
         updateTime
         status
+        taskType
+        subWorkflowId
       }
     }
   }
@@ -641,7 +643,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                 />
               </TabPanel>
               <TabPanel>
-                <WorkflowDiagram meta={executedWorkflow.workflowDefinition} result={executedWorkflow} />
+                <WorkflowDiagram meta={executedWorkflow.workflowDefinition} result={data?.controlExecutedWorkflow} />
               </TabPanel>
             </TabPanels>
           </Tabs>

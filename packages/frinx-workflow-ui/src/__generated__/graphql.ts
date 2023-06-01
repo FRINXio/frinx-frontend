@@ -1501,7 +1501,7 @@ export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
 }>;
 
 
-export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', controlExecutedWorkflow: { __typename?: 'ExecutedWorkflow', endTime: string | null, startTime: string | null, status: ExecutedWorkflowStatus | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, endTime: string | null, startTime: string | null, updateTime: string | null, status: ExecutedWorkflowTaskStatus | null }> | null } | null };
+export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', controlExecutedWorkflow: { __typename?: 'ExecutedWorkflow', endTime: string | null, startTime: string | null, status: ExecutedWorkflowStatus | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, endTime: string | null, startTime: string | null, updateTime: string | null, status: ExecutedWorkflowTaskStatus | null, taskType: string | null, subWorkflowId: string | null }> | null } | null };
 
 export type ExecuteWorkflowByItsNameMutationVariables = Exact<{
   input: ExecuteWorkflowByName;

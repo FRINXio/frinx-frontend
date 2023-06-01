@@ -3,14 +3,16 @@ import ReactFlow, { Edge, Node } from 'react-flow-renderer';
 import { Box, Text } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import {
-  WorkflowInstanceDetail,
   ExtendedTask,
+  Task,
   convertWorkflowTaskToExtendedTask,
   getElementsFromWorkflow,
-  Workflow,
+  jsonParse,
+  unwrap,
 } from '@frinx/shared/src';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './components';
+import { ControlExecutedWorkflowSubscription, Workflow } from '../__generated__/graphql';
 
 const nodeTypes = {
   base: BaseNode,
@@ -20,7 +22,7 @@ const nodeTypes = {
 };
 
 type Props = {
-  result?: WorkflowInstanceDetail | null;
+  result?: ControlExecutedWorkflowSubscription['controlExecutedWorkflow'] | null;
   meta?: Workflow | null;
 };
 
@@ -43,9 +45,10 @@ const WorkflowDiagram = ({ meta, result }: Props) => {
     );
   }
 
-  const taskMap = new Map(result.tasks.map((t) => [t.referenceTaskName, t]));
+  const tasks = jsonParse<Task[]>(meta.tasks) || [];
+  const taskMap = new Map(unwrap(result.tasks).map((t) => [t.id, t]));
   const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(
-    getElementsFromWorkflow(meta.tasks.map(convertWorkflowTaskToExtendedTask), true),
+    getElementsFromWorkflow(tasks.map(convertWorkflowTaskToExtendedTask), true),
     'TB',
   );
   const nodesWithExecutionState = elements.nodes.map((n) => {
