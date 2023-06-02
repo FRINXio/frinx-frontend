@@ -23,8 +23,8 @@ import {
 import { jsonParse } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
-import unescapeJs from 'unescape-js';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
+import { unescapedJSON } from '../../helpers/utils.helpers';
 import ExternalStorageModal from '../../pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
 import { ExecutedWorkflowDetailQuery } from '../../__generated__/graphql';
 
@@ -42,26 +42,6 @@ function renderTaskDescription<T extends { taskDefinition: string | null }>(task
 const TaskModal: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, isOpen, onClose }) => {
   const [isEscaped, setIsEscaped] = useState(true);
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
-
-  const getUnescapedJSON = (data?: Record<string, unknown> | null) => {
-    const jsonString = JSON.stringify(data, null, 2);
-
-    if (jsonString == null) {
-      return undefined;
-    }
-
-    return isEscaped
-      ? jsonString
-          .replace(/\\n/g, '\\n')
-          .replace(/\\'/g, "\\'")
-          .replace(/\\"/g, '\\"')
-          .replace(/\\&/g, '\\&')
-          .replace(/\\r/g, '\\r')
-          .replace(/\\t/g, '\\t')
-          .replace(/\\b/g, '\\b')
-          .replace(/\\f/g, '\\f')
-      : unescapeJs(jsonString);
-  };
 
   if (executedWorkflow.__typename !== 'ExecutedWorkflow') {
     return <Text>Workflow not found</Text>;
@@ -148,7 +128,10 @@ const TaskModal: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, isO
                         </Stack>
                         <Textarea
                           fontFamily="monospace"
-                          value={getUnescapedJSON(task.inputData != null ? JSON.parse(task.inputData) : undefined)}
+                          value={unescapedJSON(
+                            isEscaped,
+                            task.inputData != null ? JSON.parse(task.inputData) : undefined,
+                          )}
                           isReadOnly
                           id="t_input"
                           variant="filled"
@@ -183,7 +166,10 @@ const TaskModal: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, isO
                         </Stack>
                         <Textarea
                           fontFamily="monospace"
-                          value={getUnescapedJSON(task.outputData != null ? JSON.parse(task.outputData) : undefined)}
+                          value={unescapedJSON(
+                            isEscaped,
+                            task.outputData != null ? JSON.parse(task.outputData) : undefined,
+                          )}
                           isReadOnly
                           id="t_output"
                           variant="filled"
@@ -211,7 +197,7 @@ const TaskModal: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, isO
                         </Stack>
                         <Textarea
                           fontFamily="monospace"
-                          value={getUnescapedJSON(task)}
+                          value={unescapedJSON(isEscaped, task)}
                           isReadOnly
                           id="t_json"
                           variant="filled"

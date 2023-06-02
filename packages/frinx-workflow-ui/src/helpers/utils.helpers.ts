@@ -1,3 +1,7 @@
+import unescapeJs from 'unescape-js';
+import { format } from 'date-fns';
+import { getLocalDateFromUTC } from '@frinx/shared/src';
+
 export function makeURLSearchParamsFromObject<T extends string | number | string[] | boolean>(
   obj: Record<string, T>,
 ): URLSearchParams {
@@ -63,3 +67,34 @@ export function parseBoolean(value?: string | null): boolean {
     return false;
   }
 }
+
+export const unescapedJSON = (isEscaped: boolean, data?: Record<string, unknown> | unknown | null) => {
+  const jsonString = JSON.stringify(data, null, 2);
+
+  if (jsonString == null) {
+    return undefined;
+  }
+
+  return isEscaped
+    ? jsonString
+        .replace(/\\n/g, '\\n')
+        .replace(/\\'/g, "\\'")
+        .replace(/\\"/g, '\\"')
+        .replace(/\\&/g, '\\&')
+        .replace(/\\r/g, '\\r')
+        .replace(/\\t/g, '\\t')
+        .replace(/\\b/g, '\\b')
+        .replace(/\\f/g, '\\f')
+    : unescapeJs(jsonString);
+};
+
+export const formatDate = (date: Date | number | undefined | null | string) => {
+  if (date == null || date === 0) {
+    return '-';
+  }
+
+  const utcString = new Date(date).toISOString();
+  const localDate = getLocalDateFromUTC(utcString);
+
+  return format(localDate, 'dd/MM/yyyy, k:mm');
+};

@@ -1,7 +1,5 @@
 import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
 import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
-import moment from 'moment';
-import unescapeJs from 'unescape-js';
 import {
   Box,
   Button,
@@ -46,6 +44,7 @@ import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import DetailsModalHeader from './executed-workflow-detail-header';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 import WorkflowDiagram from '../../common/workflow-diagram';
+import { formatDate } from '../../helpers/utils.helpers';
 
 const EXECUTED_WORKFLOW_QUERY = gql`
   query ExecutedWorkflowDetail($nodeId: ID!) {
@@ -356,32 +355,10 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
       });
   };
 
-  const getUnescapedJSON = (item: Record<string, unknown> | unknown) => {
-    return isEscaped
-      ? JSON.stringify(item, null, 2)
-          .replace(/\\n/g, '\\n')
-          .replace(/\\'/g, "\\'")
-          .replace(/\\"/g, '\\"')
-          .replace(/\\&/g, '\\&')
-          .replace(/\\r/g, '\\r')
-          .replace(/\\t/g, '\\t')
-          .replace(/\\b/g, '\\b')
-          .replace(/\\f/g, '\\f')
-      : unescapeJs(JSON.stringify(item, null, 2));
-  };
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
     const workflowForm = executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {};
     workflowForm[key] = e.target.value;
     setWorkflowVariables((prev) => ({ ...prev, ...workflowForm }));
-  };
-
-  const formatDate = (date: Date | number | undefined | null | string) => {
-    if (date == null || date === 0) {
-      return '-';
-    }
-
-    return moment(date).format('MM/DD/YYYY, HH:mm:ss');
   };
 
   const handleOnOpenTaskModal = (id: string) => {
@@ -589,7 +566,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           <VStack>
             <Progress isIndeterminate />
 
-            <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} formatDate={formatDate} />
+            <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} />
           </VStack>
         ) : (
           <Tabs index={tabIndex} onChange={setTabIndex}>
@@ -609,7 +586,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
             </TabList>
             <TabPanels>
               <TabPanel>
-                <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} formatDate={formatDate} />
+                <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} />
               </TabPanel>
               <TabPanel>
                 <InputOutputTab
@@ -627,7 +604,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                     isEscaped={isEscaped}
                     result={executedWorkflowDetail.node}
                     onEscapeChange={() => setIsEscaped(!isEscaped)}
-                    getUnescapedJSON={getUnescapedJSON}
                   />
                 )}
               </TabPanel>

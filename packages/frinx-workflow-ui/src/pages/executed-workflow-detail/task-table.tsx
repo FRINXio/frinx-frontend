@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
+import { formatDate } from '../../helpers/utils.helpers';
 
 type ExecutedWorkflowTask = {
   id: string;
@@ -16,10 +17,9 @@ type ExecutedWorkflowTask = {
 type Props = {
   tasks?: ExecutedWorkflowTask[] | null;
   onTaskClick: (id: string) => void;
-  formatDate: (date: Date | number | undefined | null | string) => string;
 };
 
-const TaskTable: FC<Props> = ({ tasks, onTaskClick, formatDate }) => {
+const TaskTable: FC<Props> = ({ tasks, onTaskClick }) => {
   return (
     <Table size="sm">
       <Thead>

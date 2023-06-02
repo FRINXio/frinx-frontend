@@ -36,7 +36,7 @@
     "start": "webpack-dev-server --mode development",
     "build": "NODE_ENV=production webpack --mode production",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
-    "codegen": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen --config codegen.yml",
+    "codegen": "NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit"
@@ -53,7 +53,6 @@
     "@graphql-codegen/typescript-operations": "2.5.13",
     "babel-loader": "8.3.0",
     "babel-preset-env": "1.7.0",
-    "cross-env": "^7.0.3",
     "eslint": "8.36.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
