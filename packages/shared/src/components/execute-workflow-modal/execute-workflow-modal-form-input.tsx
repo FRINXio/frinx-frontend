@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { InputParameter } from '../../helpers/workflow.helpers';
+import Editor from '../editor/editor';
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,7 +34,9 @@ const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
   const isTextarea = parsedInputParameters?.[inputParameterKey]?.type === 'textarea';
   const isSelect = parsedInputParameters?.[inputParameterKey]?.type === 'select';
   const isNumber = parsedInputParameters?.[inputParameterKey]?.type === 'int';
-  const isInput = !isToggle && !isTextarea && !isSelect && !isNumber;
+  const isJson = parsedInputParameters?.[inputParameterKey]?.type === 'json';
+
+  const isInput = !isToggle && !isTextarea && !isSelect && !isNumber && !isJson;
 
   return (
     <FormControl>
@@ -51,6 +54,14 @@ const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
           name={inputParameterKey}
           value={values[inputParameterKey]}
           onChange={(e) => onChange(inputParameterKey, e.target.value)}
+        />
+      )}
+
+      {isJson && (
+        <Editor
+          name={inputParameterKey}
+          value={values[inputParameterKey]}
+          onChange={(e) => onChange(inputParameterKey, e)}
         />
       )}
 

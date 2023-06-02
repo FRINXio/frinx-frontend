@@ -1058,8 +1058,8 @@ export type QueryTopologyVersionDataArgs = {
 
 
 export type QueryWorkflowInstanceDetailArgs = {
-  id: Scalars['String'];
   shouldIncludeTasks?: InputMaybe<Scalars['Boolean']>;
+  workflowId: Scalars['String'];
 };
 
 
@@ -1180,7 +1180,13 @@ export type SubWorkflow = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  controlExecutedWorkflow: Maybe<ExecutedWorkflow>;
   uniconfigShell: Maybe<Scalars['String']>;
+};
+
+
+export type SubscriptionControlExecutedWorkflowArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -1520,7 +1526,7 @@ export type BulkRestartWorkflowMutationVariables = Exact<{
 export type BulkRestartWorkflowMutation = { __typename?: 'Mutation', bulkRestartWorkflow: { __typename?: 'BulkOperationResponse', bulkErrorResults: string | null, bulkSuccessfulResults: Array<string> | null } | null };
 
 export type WorkflowInstanceDetailQueryVariables = Exact<{
-  workflowInstanceDetailId: Scalars['String'];
+  workflowId: Scalars['String'];
 }>;
 
 
@@ -1557,6 +1563,13 @@ export type ScheduleWorkflowMutationVariables = Exact<{
 
 
 export type ScheduleWorkflowMutation = { __typename?: 'Mutation', scheduleWorkflow: { __typename?: 'Schedule', name: string, isEnabled: boolean, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, performFromDate: string, performTillDate: string } | null };
+
+export type ExecuteWorkflowByNameMutationVariables = Exact<{
+  input: ExecuteWorkflowByName;
+}>;
+
+
+export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };
 
 export type WorkflowsQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;

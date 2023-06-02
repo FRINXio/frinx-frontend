@@ -1,7 +1,6 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
 import {
   useNotifications,
-  callbackUtils,
   ExecuteWorkflowModal,
   ClientWorkflow,
   unwrap,
@@ -17,7 +16,12 @@ import {
   ScheduleWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
-import { ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables } from '../../../__generated__/graphql';
+import {
+  ExecuteWorkflowByNameMutation,
+  ExecuteWorkflowByNameMutationVariables,
+  ScheduleWorkflowMutation,
+  ScheduleWorkflowMutationVariables,
+} from '../../../__generated__/graphql';
 
 type Props = {
   workflows: ClientWorkflow[];
@@ -46,6 +50,12 @@ const CREATE_SCHEDULE_MUTATION = gql`
   }
 `;
 
+const EXECUTE_WORKFLOW_MUTATION = gql`
+  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
+    executeWorkflowByName(input: $input)
+  }
+`;
+
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,
   activeWorkflow,
@@ -59,6 +69,10 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
 }) => {
   const [, onCreate] = useMutation<ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables>(
     CREATE_SCHEDULE_MUTATION,
+  );
+
+  const [, onExecute] = useMutation<ExecuteWorkflowByNameMutation, ExecuteWorkflowByNameMutationVariables>(
+    EXECUTE_WORKFLOW_MUTATION,
   );
 
   const { addToastNotification } = useNotifications();
@@ -129,22 +143,14 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       return null;
     }
 
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
-    return executeWorkflow({
-      input: Object.keys(values).reduce((acc: Record<string, string>, key) => {
-        const value = values[key];
-        if (value != null) {
-          acc[key] = value.toString();
-        }
-        return acc;
-      }, {}),
-      name: activeWorkflow.name,
-      version: activeWorkflow.version || 1,
+    return onExecute({
+      input: {
+        inputParameters: JSON.stringify(values),
+        workflowName: activeWorkflow.name,
+      },
     })
-      .then((res) => {
+      .then(() => {
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
