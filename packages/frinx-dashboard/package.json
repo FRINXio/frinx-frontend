@@ -19,7 +19,7 @@
     "@frinx/shared": "workspace:^",
     "@frinx/workflow-builder": "workspace:^",
     "@frinx/workflow-ui": "workspace:^",
-    "@frinxio/gamma": "0.0.29",
+    "@frinxio/gamma": "0.0.30",
     "@types/node": "16.18.14",
     "@types/react": "17.0.53",
     "@types/react-dom": "18.0.11",
