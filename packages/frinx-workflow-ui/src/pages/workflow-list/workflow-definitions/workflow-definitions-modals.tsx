@@ -1,14 +1,12 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
 import {
   useNotifications,
-  callbackUtils,
   ExecuteWorkflowModal,
   ClientWorkflow,
   unwrap,
   CreateScheduledWorkflow,
 } from '@frinx/shared/src';
 import { gql, useMutation } from 'urql';
-
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
@@ -17,7 +15,18 @@ import {
   ScheduleWorkflowModal,
   ConfirmDeleteModal,
 } from '../../../common/modals';
-import { ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables } from '../../../__generated__/graphql';
+import {
+  ExecuteWorkflowByItsNameMutationVariables,
+  ExecuteWorkflowDefinitionMutation,
+  ScheduleWorkflowMutation,
+  ScheduleWorkflowMutationVariables,
+} from '../../../__generated__/graphql';
+
+const EXECUTE_WORKFLOW_MUTATION = gql`
+  mutation ExecuteWorkflowDefinition($input: ExecuteWorkflowByName!) {
+    executeWorkflowByName(input: $input)
+  }
+`;
 
 type Props = {
   workflows: ClientWorkflow[];
@@ -62,6 +71,9 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   );
 
   const { addToastNotification } = useNotifications();
+  const [, executeWorkflow] = useMutation<ExecuteWorkflowDefinitionMutation, ExecuteWorkflowByItsNameMutationVariables>(
+    EXECUTE_WORKFLOW_MUTATION,
+  );
 
   const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
     const scheduleInput = {
@@ -119,7 +131,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     confirmDeleteModal.onClose();
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>): Promise<string | null> | null => {
     if (activeWorkflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
@@ -129,22 +141,21 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       return null;
     }
 
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
     return executeWorkflow({
-      input: Object.keys(values).reduce((acc: Record<string, string>, key) => {
-        const value = values[key];
-        if (value != null) {
-          acc[key] = value.toString();
-        }
-        return acc;
-      }, {}),
-      name: activeWorkflow.name,
-      version: activeWorkflow.version || 1,
+      input: {
+        workflowName: activeWorkflow.name,
+        workflowVersion: activeWorkflow.version,
+        priority: 0,
+        inputParameters: JSON.stringify(values),
+      },
     })
       .then((res) => {
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
+        return res.data?.executeWorkflowByName ?? null;
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });

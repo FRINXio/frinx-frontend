@@ -1,6 +1,7 @@
 import React, { createContext, FC, useRef } from 'react';
 import { callbackUtils, Callbacks, CustomToastProvider } from '@frinx/shared/src';
-import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
+import { cacheExchange, ClientOptions, createClient, dedupExchange, subscriptionExchange, Provider } from 'urql';
+import { createClient as createWSClient } from 'graphql-ws';
 import { retryExchange } from '@urql/exchange-retry';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 
@@ -11,6 +12,7 @@ export type InventoryApiClient = {
 
 export type Props = {
   client: InventoryApiClient;
+  wsUrl: string;
 };
 
 export const UniflowApiContext = createContext(false);
@@ -26,7 +28,14 @@ export function getUniflowApiProvider(callbacks: Callbacks): FC {
   return UniflowApiProvider;
 }
 
-export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
+export const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
+  const { current: wsClient } = useRef(
+    createWSClient({
+      url: wsUrl,
+      lazy: true,
+    }),
+  );
+
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
@@ -42,6 +51,13 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
           },
         }),
         multipartFetchExchange,
+        subscriptionExchange({
+          forwardSubscription: (operation) => ({
+            subscribe: (sink) => ({
+              unsubscribe: wsClient.subscribe(operation, sink),
+            }),
+          }),
+        }),
       ],
     }),
   );

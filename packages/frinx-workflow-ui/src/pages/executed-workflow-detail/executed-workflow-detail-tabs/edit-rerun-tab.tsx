@@ -2,7 +2,6 @@ import React, { ChangeEvent, FC } from 'react';
 import { Box, Button, FormControl, FormHelperText, FormLabel, Input } from '@chakra-ui/react';
 
 type Props = {
-  isExecuting: boolean;
   inputs: {
     descriptions: string[];
     values: string[];
@@ -20,7 +19,7 @@ const getValue = (i: number, values: string[]) => {
   return '';
 };
 
-const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inputs }) => {
+const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, inputs }) => {
   const { descriptions, labels, values } = inputs;
 
   return (
@@ -39,15 +38,7 @@ const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, isExecuting, inp
           </FormControl>
         </Box>
       ))}
-      <Button
-        float="right"
-        marginRight={4}
-        marginY={10}
-        colorScheme="blue"
-        isDisabled={isExecuting}
-        isLoading={isExecuting}
-        onClick={onRerunClick}
-      >
+      <Button float="right" marginRight={4} marginY={10} colorScheme="blue" onClick={onRerunClick}>
         Execute
       </Button>
     </>
