@@ -1,3 +1,4 @@
+import { utcToZonedTime } from 'date-fns-tz';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
@@ -136,4 +137,8 @@ export function createEmptyWorkflow(): Pick<
     outputParameters: [],
     // variables: {},
   };
+}
+
+export function getLocalDateFromUTC(date: string): Date {
+  return utcToZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
 }

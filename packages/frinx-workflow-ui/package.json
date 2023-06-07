@@ -22,6 +22,7 @@
     "feather-icons-react": "^0.6.0",
     "file-saver": "^2.0.5",
     "formik": "^2.2.9",
+    "graphql-ws": "^5.13.1",
     "jszip": "^3.2.2",
     "lodash": "^4.17.20",
     "match-sorter": "^6.3.0",
@@ -35,7 +36,7 @@
     "start": "webpack-dev-server --mode development",
     "build": "NODE_ENV=production webpack --mode production",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
-    "codegen": "cp ../../../frinx-inventory-server/src/schema/api.graphql ./ && graphql-codegen --config codegen.yml",
+    "codegen": "NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit"

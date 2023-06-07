@@ -55,7 +55,6 @@
     "@urql/exchange-retry": "1.0.0",
     "chakra-ui-autocomplete": "^1.4.5",
     "date-fns": "^2.29.2",
-    "date-fns-tz": "^2.0.0",
     "feather-icons-react": "0.6.2",
     "graphql": "15.8.0",
     "immer": "^9.0.15",

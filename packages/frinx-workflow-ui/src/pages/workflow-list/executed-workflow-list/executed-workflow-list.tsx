@@ -1,6 +1,6 @@
 import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
 import Pagination from '@frinx/inventory-client/src/components/pagination';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
@@ -110,11 +110,15 @@ const BULK_RESTART_MUTATION = gql`
 `;
 
 const ExecutedWorkflowList = () => {
-  const executedWorkflowsCtx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflows'] }), []);
+  const ctx = useMemo(
+    () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
+    [],
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToastNotification } = useNotifications();
   const toast = useToast();
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
+  const [isExecutingBulkOperation, setIsExecutingBulkOperation] = useState(false);
 
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
@@ -132,7 +136,7 @@ const ExecutedWorkflowList = () => {
         start: currentStartOfPage,
       },
     },
-    context: executedWorkflowsCtx,
+    context: ctx,
   });
 
   const [, onBulkPause] = useMutation<BulkPauseWorkflowMutation, BulkPauseWorkflowMutationVariables>(
@@ -203,46 +207,47 @@ const ExecutedWorkflowList = () => {
       return;
     }
 
+    setIsExecutingBulkOperation(true);
+
     switch (action) {
       case 'pause':
-        wasSuccessfull = await onBulkPause(
-          { input: { executedWorkflowIds: selectedWorkflows } },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
+        wasSuccessfull = await onBulkPause({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
+          (res) => res.error == null,
+        );
         break;
       case 'restart':
-        wasSuccessfull = await onBulkRestart(
-          { input: { executedWorkflowIds: selectedWorkflows } },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
+        wasSuccessfull = await onBulkRestart({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
+          (res) => res.error == null,
+        );
         break;
       case 'resume':
-        wasSuccessfull = await onBulkResume(
-          { input: { executedWorkflowIds: selectedWorkflows } },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
+        wasSuccessfull = await onBulkResume({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
+          (res) => res.error == null,
+        );
         break;
       case 'retry':
-        wasSuccessfull = await onBulkRetry(
-          { input: { executedWorkflowIds: selectedWorkflows } },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
+        wasSuccessfull = await onBulkRetry({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
+          (res) => res.error == null,
+        );
         break;
       case 'terminate':
-        wasSuccessfull = await onBulkTerminate(
-          { input: { executedWorkflowIds: selectedWorkflows } },
-          { additionalTypenames: ['ExecutedWorkflows'] },
-        ).then((res) => res.error == null);
+        wasSuccessfull = await onBulkTerminate({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
+          (res) => res.error == null,
+        );
         break;
       default:
         break;
     }
+
+    setIsExecutingBulkOperation(false);
 
     if (wasSuccessfull) {
       addToastNotification({
         content: 'Bulk operation executed successfully',
         type: 'success',
       });
+
+      setSelectedWorkflows([]);
     } else {
       addToastNotification({
         content: 'We had a problem to execute the bulk operation. Try again please.',
@@ -275,6 +280,7 @@ const ExecutedWorkflowList = () => {
         />
 
         <ExecutedWorkflowBulkOperationsBlock
+          isExecutingBulkOperation={isExecutingBulkOperation}
           amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
           amountOfSelectedWorkflows={selectedWorkflows.length}
           onPause={() => handleOnBulkOperation('pause')}

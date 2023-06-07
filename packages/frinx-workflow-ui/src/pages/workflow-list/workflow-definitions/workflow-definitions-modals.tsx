@@ -7,7 +7,6 @@ import {
   CreateScheduledWorkflow,
 } from '@frinx/shared/src';
 import { gql, useMutation } from 'urql';
-
 import React, { VoidFunctionComponent } from 'react';
 import {
   DefinitionModal,
@@ -76,6 +75,9 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   );
 
   const { addToastNotification } = useNotifications();
+  const [, executeWorkflow] = useMutation<ExecuteWorkflowDefinitionMutation, ExecuteWorkflowByItsNameMutationVariables>(
+    EXECUTE_WORKFLOW_MUTATION,
+  );
 
   const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
     const scheduleInput = {
@@ -133,7 +135,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     confirmDeleteModal.onClose();
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>): Promise<string | null> | null => {
     if (activeWorkflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',

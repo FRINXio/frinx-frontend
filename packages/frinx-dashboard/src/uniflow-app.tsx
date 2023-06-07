@@ -39,7 +39,10 @@ const UniflowApp: FC = () => {
   const { UniflowApiProvider, UniflowApp: App, BuilderApiProvider, InventoryAPIProvider } = components;
 
   return (
-    <InventoryAPIProvider client={InventoryApi.create({ authContext, url: window.__CONFIG__.inventoryApiURL }).client}>
+    <InventoryAPIProvider
+      client={InventoryApi.create({ authContext, url: window.__CONFIG__.inventoryApiURL }).client}
+      wsUrl={window.__CONFIG__.inventoryWsURL}
+    >
       <UniflowApiProvider>
         <BuilderApiProvider>
           <App />

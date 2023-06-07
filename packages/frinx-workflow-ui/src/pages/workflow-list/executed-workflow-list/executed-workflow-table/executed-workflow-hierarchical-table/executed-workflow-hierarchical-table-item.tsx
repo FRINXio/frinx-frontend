@@ -78,7 +78,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
   return (
     <>
       {sortExecutedWorkflows(workflows.edges, sort).map(({ node: item }) => (
-        <Fragment key={item.workflowId}>
+        <Fragment key={item.id}>
           <Tr>
             <Td>
               <Checkbox isChecked={selectedWorkflows.includes(item.id)} onChange={() => onWorkflowSelect(item.id)} />
@@ -99,7 +99,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
               ) : (
                 <Icon as={FeatherIcon} icon="chevron-down" size={20} w="6" h="6" paddingRight={2} />
               )}
-              <Link to={`../executed/${item.workflowId}`}>{item.workflowId ?? '-'}</Link>
+              <Link to={`../executed/${item.id}`}>{item.workflowId ?? '-'}</Link>
             </Td>
 
             <Td>{item.workflowName}</Td>
