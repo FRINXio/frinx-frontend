@@ -909,6 +909,26 @@ export type CreateAllocationStrategyAndResourceTypeMutationVariables = Exact<{
 
 export type CreateAllocationStrategyAndResourceTypeMutation = { __typename?: 'Mutation', createStrat: { __typename?: 'CreateAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string } | null }, createResourceType: { __typename?: 'CreateResourceTypePayload', resourceType: { __typename?: 'ResourceType', id: string, Name: string } } };
 
+export type GetPoolAggregatesQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['Cursor']>;
+  after?: InputMaybe<Scalars['Cursor']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  filterByResources?: InputMaybe<Scalars['Map']>;
+  tags?: InputMaybe<TagOr>;
+}>;
+
+
+export type GetPoolAggregatesQuery = { __typename?: 'Query', QueryRootResourcePools: { __typename?: 'ResourcePoolConnection', totalCount: number, edges: Array<{ __typename?: 'ResourcePoolEdge', node: { __typename?: 'ResourcePool', id: string, Name: string, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, ResourceType: { __typename?: 'ResourceType', id: string, Name: string } } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor: { __typename?: 'OutputCursor', ID: string } | null, startCursor: { __typename?: 'OutputCursor', ID: string } | null } } };
+
+export type DeleteIpPoolMutationVariables = Exact<{
+  input: DeleteResourcePoolInput;
+}>;
+
+
+export type DeleteIpPoolMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
+
 export type GetPoolIpRangesQueryVariables = Exact<{
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
@@ -920,13 +940,6 @@ export type GetPoolIpRangesQueryVariables = Exact<{
 
 
 export type GetPoolIpRangesQuery = { __typename?: 'Query', QueryRootResourcePools: { __typename?: 'ResourcePoolConnection', totalCount: number, edges: Array<{ __typename?: 'ResourcePoolEdge', node: { __typename?: 'ResourcePool', id: string, Name: string, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, ResourceType: { __typename?: 'ResourceType', id: string, Name: string } } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor: { __typename?: 'OutputCursor', ID: string } | null, startCursor: { __typename?: 'OutputCursor', ID: string } | null } } };
-
-export type DeleteIpPoolMutationVariables = Exact<{
-  input: DeleteResourcePoolInput;
-}>;
-
-
-export type DeleteIpPoolMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
 
 export type DeleteResourcePoolMutationVariables = Exact<{
   input: DeleteResourcePoolInput;
@@ -942,6 +955,7 @@ export type GetAllIpPoolsQueryVariables = Exact<{
   after?: InputMaybe<Scalars['Cursor']>;
   resourceTypeId?: InputMaybe<Scalars['ID']>;
   filterByResources?: InputMaybe<Scalars['Map']>;
+  tags?: InputMaybe<TagOr>;
 }>;
 
 
@@ -959,6 +973,7 @@ export type GetAllPoolsQueryVariables = Exact<{
   after?: InputMaybe<Scalars['Cursor']>;
   resourceTypeId?: InputMaybe<Scalars['ID']>;
   filterByResources?: InputMaybe<Scalars['Map']>;
+  tags?: InputMaybe<TagOr>;
 }>;
 
 

@@ -23,10 +23,10 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
   const { id } = useParams();
 
   const [{ poolDetail }, { deleteResourcePool }] = useResourcePoolActions({ poolId: id });
-  const [allocatedResources, setAllocatedResources] = useState({});
-
+  const [searchName, setSearchName] = useState<string>('');
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
-  const { results, searchText, setSearchText } = useMinisearch({
+
+  const { results, setSearchText } = useMinisearch({
     items: compact(
       poolDetail.data?.QueryResourcePool.Resources.map((resource) => resource.NestedPool).filter(
         (resource) => resource?.ResourceType.Name === 'ipv4_prefix' || resource?.ResourceType.Name === 'ipv6_prefix',
@@ -85,22 +85,30 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
       };
     });
 
+  const onSearchClick = () => {
+    setSearchText(searchName);
+  };
+
   return (
     <>
       <Heading as="h1" size="lg" mb={5}>
         IP Ranges of {poolDetail.data?.QueryResourcePool.Name}
       </Heading>
       <SearchFilterPoolsBar
-        allocatedResources={allocatedResources}
-        setAllocatedResources={setAllocatedResources}
-        searchText={searchText}
-        setSearchText={setSearchText}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        onSearchClick={onSearchClick}
         clearAllTags={clearAllTags}
         selectedTags={selectedTags}
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
       />
-      <IpRangesTable ipRanges={nestedIpRanges} onTagClick={handleOnTagClick} onDeleteBtnClick={deleteResourcePool} />
+      <IpRangesTable
+        ipRanges={nestedIpRanges}
+        fetching={poolDetail.fetching}
+        onTagClick={handleOnTagClick}
+        onDeleteBtnClick={deleteResourcePool}
+      />
     </>
   );
 };

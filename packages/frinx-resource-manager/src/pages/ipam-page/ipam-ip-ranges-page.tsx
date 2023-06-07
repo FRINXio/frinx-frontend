@@ -1,4 +1,4 @@
-import { Box, Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormLabel, Heading, HStack, Icon, Spacer, Switch } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
@@ -96,11 +96,14 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
     : IPv6.broadcastAddressFromCIDR(cidr).toString(),
 });
 
+const ipv4PrefixId = '25769803776';
+const ipv6PrefixId = '25769803780';
+
 const IpamIpRangesPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [allocatedResources, setAllocatedResources] = useState({});
-
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [searchName, setSearchName] = useState<string>('');
+  const [isIpv4Prefix, setIsIpv4Prefix] = useState<boolean>(true);
+  const [paginationArgs, { nextPage, previousPage, firstPage, setItemsCount }] = usePagination();
 
   const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
     query: GET_POOLS_QUERY,
@@ -109,6 +112,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+      resourceTypeId: isIpv4Prefix ? ipv4PrefixId : ipv6PrefixId,
     },
     context,
   });
@@ -117,22 +121,16 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
     DELETE_POOL_MUTATION,
   );
 
-  const filterIpamIpRanges = data?.QueryRootResourcePools.edges || [];
-
-  const allIpamIpRanges = filterIpamIpRanges
+  const allIpamIpRanges = (data?.QueryRootResourcePools.edges || [])
     ?.map((e) => {
       return e?.node ?? null;
     })
     .filter(omitNullValue);
 
-  const filteredIpamIpRanges = allIpamIpRanges?.filter(
-    (pool) => pool?.ResourceType.Name === 'ipv4_prefix' || pool?.ResourceType.Name === 'ipv6_prefix',
-  );
-
   const { addToastNotification } = useNotifications();
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
-  const { results, searchText, setSearchText } = useMinisearch({
-    items: filteredIpamIpRanges,
+  const { results, setSearchText } = useMinisearch({
+    items: allIpamIpRanges,
     searchFields: ['Name', 'PoolProperties'],
     extractField: (document, fieldName) => {
       if (fieldName === 'PoolProperties') {
@@ -146,6 +144,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
   const handleOnClearSearch = () => {
     clearAllTags();
     setSearchText('');
+    firstPage();
   };
 
   const handleOnDeletePool = (resourcePoolId: string) => {
@@ -175,10 +174,6 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         });
       });
   };
-
-  if (fetching) {
-    return <Progress isIndeterminate size="sm" mt={-10} />;
-  }
 
   if (error != null) {
     return <Heading>There was problem with loading of ip ranges</Heading>;
@@ -216,6 +211,16 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
       };
     });
 
+  const onSearchClick = () => {
+    setSearchText(searchName);
+  };
+
+  const handleSwitch = () => {
+    clearAllTags();
+    setIsIpv4Prefix((prevState) => !prevState);
+    firstPage();
+  };
+
   return (
     <>
       <HStack mb={5}>
@@ -235,16 +240,35 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         </Button>
       </HStack>
       <SearchFilterPoolsBar
-        allocatedResources={allocatedResources}
-        setAllocatedResources={setAllocatedResources}
-        searchText={searchText}
-        setSearchText={setSearchText}
+        setPageItemsCount={setItemsCount}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        onSearchClick={onSearchClick}
         clearAllTags={clearAllTags}
         selectedTags={selectedTags}
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
+        canSetItemsPerPage
       />
-      <IpRangesTable ipRanges={ipRanges} onTagClick={handleOnTagClick} onDeleteBtnClick={handleOnDeletePool} />
+      <FormControl mb={5}>
+        <Flex align="center">
+          <FormLabel m={0}>{isIpv4Prefix ? 'Resource type - ipv4_prefix' : 'Resource type - ipv6_prefix'}</FormLabel>
+          <Switch
+            size="md"
+            ml={5}
+            onChange={handleSwitch}
+            data-cy="ipv4-ipv6-switch"
+            name="isNested"
+            isChecked={isIpv4Prefix}
+          />
+        </Flex>
+      </FormControl>
+      <IpRangesTable
+        fetching={fetching}
+        ipRanges={ipRanges}
+        onTagClick={handleOnTagClick}
+        onDeleteBtnClick={handleOnDeletePool}
+      />
       {data && (
         <Box marginTop={4} paddingX={4}>
           <Pagination

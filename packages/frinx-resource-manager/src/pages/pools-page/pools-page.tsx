@@ -21,6 +21,13 @@ import Pagination from '../../components/pagination';
 
 type InputValues = { [key: string]: string };
 
+type PoolsFilter =
+  | {
+      resources: InputValues | null;
+      resourceType: string | null;
+    }
+  | Record<string, string>;
+
 const ALL_POOLS_QUERY = gql`
   query GetAllPools(
     $first: Int
@@ -29,6 +36,7 @@ const ALL_POOLS_QUERY = gql`
     $after: Cursor
     $resourceTypeId: ID
     $filterByResources: Map
+    $tags: TagOr
   ) {
     QueryRootResourcePools(
       first: $first
@@ -37,6 +45,7 @@ const ALL_POOLS_QUERY = gql`
       after: $after
       resourceTypeId: $resourceTypeId
       filterByResources: $filterByResources
+      tags: $tags
     ) {
       edges {
         node {
@@ -110,10 +119,12 @@ const GET_RESOURCE_TYPES = gql`
 
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
+  const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
   const [allocatedResources, setAllocatedResources] = useState<InputValues>({});
   const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
+  const [searchName, setSearchName] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [paginationArgs, { nextPage, previousPage, setItemsCount }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage, setItemsCount, firstPage }] = usePagination();
 
   const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery, GetAllPoolsQueryVariables>({
     query: ALL_POOLS_QUERY,
@@ -122,7 +133,9 @@ const PoolsPage: VoidFunctionComponent = () => {
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
-      filterByResources: Object.keys(allocatedResources).length ? allocatedResources : null,
+      filterByResources: poolsFilter.resources ?? null,
+      tags: selectedTags.length ? { matchesAny: [{ matchesAll: selectedTags }] } : null,
+      resourceTypeId: poolsFilter.resourceType || null,
     },
     context,
   });
@@ -139,11 +152,27 @@ const PoolsPage: VoidFunctionComponent = () => {
       return e?.node ?? null;
     })
     .filter(omitNullValue);
-
-  const { addToastNotification } = useNotifications();
-  const { results, searchText, setSearchText } = useMinisearch({
+  const { results, setSearchText } = useMinisearch({
     items: filteredPools,
   });
+
+  const onSearchClick = () => {
+    if (Object.keys(allocatedResources).length) {
+      setPoolsFilter({
+        resources: allocatedResources,
+        resourceType: selectedResourceType,
+      });
+    }
+    if (!Object.keys(allocatedResources).length) {
+      setPoolsFilter({
+        resourceType: selectedResourceType,
+      });
+    }
+    setSearchText(searchName);
+    firstPage();
+  };
+
+  const { addToastNotification } = useNotifications();
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -167,7 +196,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSearchText('');
     clearAllTags();
     setSelectedResourceType('');
-    setAllocatedResources({});
+    setPoolsFilter({});
   };
 
   const handleOnStrategyClick = (id?: string) => {
@@ -179,26 +208,6 @@ const PoolsPage: VoidFunctionComponent = () => {
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
-
-  const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;
-
-  const resourcePools = results.filter((pool) => {
-    if (!isSelectedResourceTypeEmpty && selectedTags.length > 0) {
-      return (
-        pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag)) && pool.ResourceType.id === selectedResourceType
-      );
-    }
-
-    if (!isSelectedResourceTypeEmpty) {
-      return pool.ResourceType.id === selectedResourceType;
-    }
-
-    if (selectedTags.length > 0) {
-      return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
-    }
-
-    return true;
-  });
 
   return (
     <>
@@ -221,9 +230,10 @@ const PoolsPage: VoidFunctionComponent = () => {
         </Box>
       </HStack>
       <SearchFilterPoolsBar
+        searchName={searchName}
+        setSearchName={setSearchName}
+        onSearchClick={onSearchClick}
         setPageItemsCount={setItemsCount}
-        setSearchText={setSearchText}
-        searchText={searchText}
         allocatedResources={allocatedResources}
         setAllocatedResources={setAllocatedResources}
         selectedTags={selectedTags}
@@ -235,6 +245,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         resourceTypes={resourceTypes?.QueryResourceTypes}
         canFilterByResourceType
         canFilterByAllocatedResources
+        canSetItemsPerPage
       />
 
       <Box position="relative" marginBottom={5}>
@@ -242,7 +253,7 @@ const PoolsPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-          pools={resourcePools}
+          pools={results}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
           onTagClick={handleOnTagClick}

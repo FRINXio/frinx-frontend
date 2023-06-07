@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, FormLabel, Heading, Icon, Progress, Switch } from '@chakra-ui/react';
 import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
@@ -18,6 +18,15 @@ import {
 } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 
+type InputValues = { [key: string]: string };
+
+type PoolsFilter =
+  | {
+      resources: InputValues | null;
+      resourceType: string | null;
+    }
+  | Record<string, string>;
+
 const POOLS_QUERY = gql`
   query GetAllIPPools(
     $first: Int
@@ -26,6 +35,7 @@ const POOLS_QUERY = gql`
     $after: Cursor
     $resourceTypeId: ID
     $filterByResources: Map
+    $tags: TagOr
   ) {
     QueryRootResourcePools(
       first: $first
@@ -34,6 +44,7 @@ const POOLS_QUERY = gql`
       after: $after
       resourceTypeId: $resourceTypeId
       filterByResources: $filterByResources
+      tags: $tags
     ) {
       edges {
         node {
@@ -103,10 +114,17 @@ const GET_RESOURCE_TYPES = gql`
 `;
 
 const IpamPoolPage: VoidFunctionComponent = () => {
+  const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
+  const [isIpv4, setIsIpv4] = useState<boolean>(true);
   const [selectedResourceType, setSelectedResourceType] = useState<string>('');
   const [allocatedResources, setAllocatedResources] = useState({});
+  const [searchName, setSearchName] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage, firstPage, setItemsCount }] = usePagination();
+  const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
+
+  const ipv4PrefixId = '25769803776';
+  const ipv6PrefixId = '25769803780';
 
   const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllIpPoolsQuery, GetAllIpPoolsQueryVariables>({
     query: POOLS_QUERY,
@@ -115,10 +133,13 @@ const IpamPoolPage: VoidFunctionComponent = () => {
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
-      filterByResources: Object.keys(allocatedResources).length ? allocatedResources : null,
+      filterByResources: poolsFilter.resources ?? null,
+      tags: { matchesAny: [{ matchesAll: selectedTags }] },
+      resourceTypeId: isIpv4 ? ipv4PrefixId : ipv6PrefixId,
     },
     context,
   });
+
   const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
     query: GET_RESOURCE_TYPES,
   });
@@ -133,15 +154,26 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     })
     .filter(omitNullValue);
 
-  const filteredResourcePools = allResourcePools?.filter(
-    (pool) => pool?.ResourceType.Name === 'ipv4_prefix' || pool?.ResourceType.Name === 'ipv6_prefix',
-  );
+  const { setSearchText, results } = useMinisearch({
+    items: allResourcePools,
+  });
+  const onSearchClick = () => {
+    if (Object.keys(allocatedResources).length) {
+      setPoolsFilter({
+        resources: allocatedResources,
+        resourceType: selectedResourceType,
+      });
+    }
+    if (!Object.keys(allocatedResources).length) {
+      setPoolsFilter({
+        resourceType: selectedResourceType,
+      });
+    }
+    setSearchText(searchName);
+    firstPage();
+  };
 
   const { addToastNotification } = useNotifications();
-  const { searchText, setSearchText, results } = useMinisearch({
-    items: filteredResourcePools,
-  });
-  const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
 
   const handleDeleteBtnClick = async (id: string) => {
     try {
@@ -171,6 +203,15 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     setSearchText('');
     setSelectedResourceType('');
     clearAllTags();
+    setAllocatedResources({});
+    setPoolsFilter({});
+    firstPage();
+  };
+
+  const handleSwitch = () => {
+    clearAllTags();
+    setIsIpv4((prevState) => !prevState);
+    firstPage();
   };
 
   if (error != null || data == null) {
@@ -205,20 +246,35 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <SearchFilterPoolsBar
+          setPageItemsCount={setItemsCount}
+          onSearchClick={onSearchClick}
+          searchName={searchName}
+          setSearchName={setSearchName}
           allocatedResources={allocatedResources}
           setAllocatedResources={setAllocatedResources}
-          setSearchText={setSearchText}
-          searchText={searchText}
           selectedTags={selectedTags}
           clearAllTags={clearAllTags}
           onTagClick={handleOnTagClick}
           onClearSearch={handleOnClearSearch}
-          canFilterByResourceType
           resourceTypes={resourceTypes?.QueryResourceTypes}
           selectedResourceType={selectedResourceType}
           setSelectedResourceType={handleOnStrategyClick}
           canFilterByAllocatedResources
+          canSetItemsPerPage
         />
+        <FormControl mb={5}>
+          <Flex align="center">
+            <FormLabel m={0}>{isIpv4 ? 'Resource type - ipv4_prefix' : 'Resource type - ipv6_prefix'}</FormLabel>{' '}
+            <Switch
+              size="md"
+              ml={5}
+              onChange={handleSwitch}
+              data-cy="ipv4-ipv6-switch"
+              name="isNested"
+              isChecked={isIpv4}
+            />
+          </Flex>
+        </FormControl>
         <PoolsTable
           pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}
@@ -227,15 +283,11 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           onStrategyClick={handleOnStrategyClick}
         />
       </Box>
-      {data && (
+      {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
         <Box marginTop={4} paddingX={4}>
           <Pagination
-            onPrevious={previousPage(
-              data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
-            )}
-            onNext={nextPage(
-              data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
-            )}
+            onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
+            onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
             hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
             hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
           />

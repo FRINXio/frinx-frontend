@@ -86,6 +86,7 @@ const DELETE_POOL_MUTATION = gql`
 
 const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   const [allocatedResources, setAllocatedResources] = useState({});
+  const [searchName, setSearchName] = useState<string>('');
   const { poolId } = useParams<{ poolId: string }>();
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<
     GetNestedPoolsDetailQuery,
@@ -101,7 +102,7 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     })
     .filter(omitNullValue);
 
-  const { results, searchText, setSearchText } = useMinisearch({ items: resources });
+  const { results, setSearchText } = useMinisearch({ items: resources });
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
 
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
@@ -139,6 +140,10 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
       });
   };
 
+  const onSearchClick = () => {
+    setSearchText(searchName);
+  };
+
   const resourcePools = results.filter((pool) => {
     if (selectedTags.length > 0) {
       return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
@@ -165,8 +170,9 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
       <SearchFilterPoolsBar
         allocatedResources={allocatedResources}
         setAllocatedResources={setAllocatedResources}
-        setSearchText={setSearchText}
-        searchText={searchText}
+        setSearchName={setSearchName}
+        searchName={searchName}
+        onSearchClick={onSearchClick}
         selectedTags={selectedTags}
         clearAllTags={clearAllTags}
         onTagClick={handleOnTagClick}

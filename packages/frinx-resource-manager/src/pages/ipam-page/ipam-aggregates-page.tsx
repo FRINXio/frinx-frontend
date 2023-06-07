@@ -1,4 +1,4 @@
-import { Box, Heading, Progress, Text } from '@chakra-ui/react';
+import { Box, Flex, FormControl, FormLabel, Heading, Switch, Text } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
@@ -6,8 +6,8 @@ import { useMinisearch, useTags, useNotifications, omitNullValue } from '@frinx/
 import {
   DeleteIpPoolMutation,
   DeleteIpPoolMutationVariables,
-  GetPoolIpRangesQuery,
-  GetPoolIpRangesQueryVariables,
+  GetPoolAggregatesQuery,
+  GetPoolAggregatesQueryVariables,
 } from '../../__generated__/graphql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import AggregatesTable from './aggregates-table';
@@ -15,13 +15,14 @@ import Pagination from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination';
 
 const GET_IP_POOLS = gql`
-  query GetPoolIpRanges(
+  query GetPoolAggregates(
     $first: Int
     $last: Int
     $before: Cursor
     $after: Cursor
     $resourceTypeId: ID
     $filterByResources: Map
+    $tags: TagOr
   ) {
     QueryRootResourcePools(
       first: $first
@@ -30,6 +31,7 @@ const GET_IP_POOLS = gql`
       after: $after
       resourceTypeId: $resourceTypeId
       filterByResources: $filterByResources
+      tags: $tags
     ) {
       edges {
         node {
@@ -86,18 +88,25 @@ const DELETE_POOL_MUTATION = gql`
 const isIpv4 = (name: string) => name === 'ipv4_prefix';
 
 const IpamAggregatesPage: VoidFunctionComponent = () => {
-  const [allocatedResources, setAllocatedResources] = useState({});
+  const [searchName, setSearchName] = useState<string>('');
+  const [isIpv4Prefix, setIsIpv4Prefix] = useState<boolean>(true);
+  const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
 
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage, firstPage, setItemsCount }] = usePagination();
 
-  const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
+  const ipv4PrefixId = '25769803776';
+  const ipv6PrefixId = '25769803780';
+
+  const [{ data, fetching, error }] = useQuery<GetPoolAggregatesQuery, GetPoolAggregatesQueryVariables>({
     query: GET_IP_POOLS,
     variables: {
       ...(paginationArgs?.first !== null && { first: paginationArgs.first }),
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+      resourceTypeId: isIpv4Prefix ? ipv4PrefixId : ipv6PrefixId,
+      tags: { matchesAny: [{ matchesAll: selectedTags }] },
     },
     context,
   });
@@ -110,8 +119,7 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
     .filter(omitNullValue);
 
   const { addToastNotification } = useNotifications();
-  const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
-  const { results, searchText, setSearchText } = useMinisearch({
+  const { results, setSearchText } = useMinisearch({
     items: allAggregates,
     searchFields: ['PoolProperties'],
     extractField: (document, fieldName) => {
@@ -155,38 +163,35 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
       );
   };
 
-  if (fetching) {
-    return <Progress isIndeterminate size="sm" mt={-10} />;
-  }
+  const onSearchClick = () => {
+    setSearchText(searchName);
+  };
+
+  const handleSwitch = () => {
+    clearAllTags();
+    setIsIpv4Prefix((prevState) => !prevState);
+    firstPage();
+  };
 
   if (error != null) {
     return <Text>No aggregates exists</Text>;
   }
 
-  const aggregates = results
-    .filter(
-      (aggregate) => aggregate.ResourceType.Name === 'ipv4_prefix' || aggregate.ResourceType.Name === 'ipv6_prefix',
-    )
-    .map((aggregate) => {
-      const { address, prefix } = aggregate.PoolProperties;
+  const aggregates = results.map((aggregate) => {
+    const { address, prefix } = aggregate.PoolProperties;
 
-      const aggregateInfo = isIpv4(aggregate.ResourceType.Name)
-        ? `${ipaddr.IPv4.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`
-        : `${ipaddr.IPv6.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`;
-      return {
-        id: aggregate.id,
-        aggregate: aggregateInfo,
-        prefixes: aggregate.Resources.filter((resource) => resource.NestedPool != null).length,
-        freeCapacity: aggregate.Capacity?.freeCapacity,
-        utilizedCapacity: aggregate.Capacity?.utilizedCapacity,
-        tags: aggregate.Tags.map(({ id, Tag: tagName }: { id: string; Tag: string }) => ({ tag: tagName, id })),
-      };
-    });
-
-  const filteredAggregates =
-    selectedTags.length === 0
-      ? aggregates
-      : aggregates.filter(({ tags }) => tags.some(({ tag }: { tag: string }) => selectedTags.includes(tag)));
+    const aggregateInfo = isIpv4(aggregate.ResourceType.Name)
+      ? `${ipaddr.IPv4.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`
+      : `${ipaddr.IPv6.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`;
+    return {
+      id: aggregate.id,
+      aggregate: aggregateInfo,
+      prefixes: aggregate.Resources.filter((resource) => resource.NestedPool != null).length,
+      freeCapacity: aggregate.Capacity?.freeCapacity,
+      utilizedCapacity: aggregate.Capacity?.utilizedCapacity,
+      tags: aggregate.Tags.map(({ id, Tag: tagName }: { id: string; Tag: string }) => ({ tag: tagName, id })),
+    };
+  });
 
   return (
     <>
@@ -194,17 +199,32 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         Aggregates
       </Heading>
       <SearchFilterPoolsBar
-        allocatedResources={allocatedResources}
-        setAllocatedResources={setAllocatedResources}
+        setPageItemsCount={setItemsCount}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        onSearchClick={onSearchClick}
         clearAllTags={clearAllTags}
         onTagClick={handleOnTagClick}
-        searchText={searchText}
         selectedTags={selectedTags}
-        setSearchText={setSearchText}
         onClearSearch={handleOnClearSearch}
+        canSetItemsPerPage
       />
+      <FormControl mb={5}>
+        <Flex align="center">
+          <FormLabel m={0}>{isIpv4Prefix ? 'Resource type - ipv4_prefix' : 'Resource type - ipv6_prefix'}</FormLabel>
+          <Switch
+            size="md"
+            ml={5}
+            onChange={handleSwitch}
+            data-cy="ipv4-ipv6-switch"
+            name="isNested"
+            isChecked={isIpv4Prefix}
+          />
+        </Flex>
+      </FormControl>
       <AggregatesTable
-        aggregates={filteredAggregates}
+        aggregates={aggregates}
+        fetching={fetching}
         onTagClick={handleOnTagClick}
         onDeletePoolClick={handleOnDeletePool}
       />

@@ -62,6 +62,10 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
   isNestedShown = true,
   onTagClick,
 }) => {
+  if (isLoading) {
+    return <Progress isIndeterminate size="sm" />;
+  }
+
   return (
     <Table data-cy="pool-details-nested" background="white" size="sm">
       <Thead bgColor="gray.200">
