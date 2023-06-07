@@ -16,8 +16,8 @@ import { sortExecutedWorkflows } from '../../executed-workflow.helpers';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 
 const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
-  query WorkflowInstanceDetail($workflowInstanceDetailId: String!) {
-    workflowInstanceDetail(workflowId: $workflowInstanceDetailId) {
+  query WorkflowInstanceDetail($workflowId: String!) {
+    workflowInstanceDetail(workflowId: $workflowId) {
       subworkflows {
         executedWorkflowDetail {
           id
@@ -58,7 +58,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
   >({
     query: WORKFLOW_INSTANCE_DETAIL_QUERY,
     variables: {
-      workflowInstanceDetailId: workflowInstanceDetailId ?? '',
+      workflowId: workflowInstanceDetailId ?? '',
     },
     context: workflowInstanceDetailCtx,
   });

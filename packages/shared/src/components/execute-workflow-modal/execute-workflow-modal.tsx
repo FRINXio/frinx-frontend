@@ -30,7 +30,7 @@ type Props = {
   workflow: Workflow | ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (inputParameters: Record<string, unknown>) => Promise<string | null> | null;
+  onSubmit: (inputParameters: Record<string, unknown>) => Promise<string | void | null> | null;
 };
 
 const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
@@ -38,7 +38,7 @@ const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }
   const parsedInputParameters = parseInputParameters(workflow.inputParameters);
   const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
   const [isExecuting, setIsExecuting] = useState(false);
-  const [executedWorkflowId, setExecutedWorkflowId] = useState<string | null>(null);
+  const [executedWorkflowId, setExecutedWorkflowId] = useState<string | void | null>(null);
   const { values, handleSubmit, submitForm, isSubmitting, setSubmitting, setFieldValue } = useFormik<
     Record<string, unknown>
   >({
