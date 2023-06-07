@@ -75,9 +75,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   );
 
   const { addToastNotification } = useNotifications();
-  const [, executeWorkflow] = useMutation<ExecuteWorkflowDefinitionMutation, ExecuteWorkflowByItsNameMutationVariables>(
-    EXECUTE_WORKFLOW_MUTATION,
-  );
 
   const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
     const scheduleInput = {
@@ -135,7 +132,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     confirmDeleteModal.onClose();
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, unknown>): Promise<string | null> | null => {
+  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
     if (activeWorkflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
@@ -144,15 +141,19 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
 
       return null;
     }
-
     return onExecute({
       input: {
         inputParameters: JSON.stringify(values),
         workflowName: activeWorkflow.name,
       },
     })
-      .then(() => {
-        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+      .then((res) => {
+        if (!res.error) {
+          addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+        }
+        if (res.error) {
+          addToastNotification({ content: res.error.message, type: 'error' });
+        }
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
