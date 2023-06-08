@@ -18,17 +18,19 @@ const Pagination: VoidFunctionComponent<Props> = ({
   onPrevious,
   onNext,
 }) => {
+  console.log(hasNextPage, hasPreviousPage, before, after, onPrevious, onNext);
+
   return (
     <Box padding={1}>
       <HStack spacing="2" divider={<StackDivider borderColor="gray" />}>
-        {(after == null && before == null) || (before != null && !hasPreviousPage) ? (
+        {!hasPreviousPage ? (
           <Text cursor="not-allowed">Previous</Text>
         ) : (
           <Button color="blue.600" onClick={onPrevious} variant="link" outline="none">
             Previous
           </Button>
         )}
-        {(after == null && before == null && !hasNextPage) || (after != null && !hasNextPage) ? (
+        {!hasNextPage ? (
           <Text cursor="not-allowed">Next</Text>
         ) : (
           <Button color="blue.600" onClick={onNext} variant="link">

@@ -146,6 +146,9 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutation,
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
+console.log(data);
+console.log(paginationArgs);
+
 
   const filteredPools = (data?.QueryRootResourcePools.edges ?? [])
     ?.map((e) => {
