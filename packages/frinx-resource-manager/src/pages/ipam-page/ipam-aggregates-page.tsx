@@ -1,4 +1,4 @@
-import { Box, Flex, FormControl, FormLabel, Heading, Switch, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
@@ -13,6 +13,8 @@ import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import AggregatesTable from './aggregates-table';
 import Pagination from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination';
+import SelectItemsPerPage from '../../components/select-items-per-page';
+import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 
 const GET_IP_POOLS = gql`
   query GetPoolAggregates(
@@ -167,12 +169,6 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
     setSearchText(searchName);
   };
 
-  const handleSwitch = () => {
-    clearAllTags();
-    setIsIpv4Prefix((prevState) => !prevState);
-    firstPage();
-  };
-
   if (error != null) {
     return <Text>No aggregates exists</Text>;
   }
@@ -199,7 +195,6 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         Aggregates
       </Heading>
       <SearchFilterPoolsBar
-        setPageItemsCount={setItemsCount}
         searchName={searchName}
         setSearchName={setSearchName}
         onSearchClick={onSearchClick}
@@ -207,41 +202,37 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         onTagClick={handleOnTagClick}
         selectedTags={selectedTags}
         onClearSearch={handleOnClearSearch}
-        canSetItemsPerPage
       />
-      <FormControl mb={5}>
-        <Flex align="center">
-          <FormLabel m={0}>{isIpv4Prefix ? 'Resource type - ipv4_prefix' : 'Resource type - ipv6_prefix'}</FormLabel>
-          <Switch
-            size="md"
-            ml={5}
-            onChange={handleSwitch}
-            data-cy="ipv4-ipv6-switch"
-            name="isNested"
-            isChecked={isIpv4Prefix}
-          />
-        </Flex>
-      </FormControl>
+      <Ipv46PrefixSwitch
+        isIpv4={isIpv4Prefix}
+        setIsIpv4={setIsIpv4Prefix}
+        clearAllTags={clearAllTags}
+        firstPage={firstPage}
+      />
+
       <AggregatesTable
         aggregates={aggregates}
         fetching={fetching}
         onTagClick={handleOnTagClick}
         onDeletePoolClick={handleOnDeletePool}
       />
-      {data && (
-        <Box marginTop={4} paddingX={4}>
-          <Pagination
-            onPrevious={previousPage(
-              data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
-            )}
-            onNext={nextPage(
-              data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
-            )}
-            hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
-            hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
-          />
-        </Box>
-      )}
+      <Flex align="center" justify="space-between">
+        {data && (
+          <Box marginTop={4} paddingX={4}>
+            <Pagination
+              onPrevious={previousPage(
+                data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
+              )}
+              onNext={nextPage(
+                data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
+              )}
+              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+            />
+          </Box>
+        )}
+        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+      </Flex>
     </>
   );
 };

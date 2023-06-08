@@ -12,9 +12,7 @@ type Props = {
   selectedResourceType?: string;
   allocatedResources?: { [key: string]: string };
   selectedTags: string[];
-  pageItemsCount?: number;
   canFilterByResourceType?: boolean;
-  setPageItemsCount?: (value: number) => void;
   setAllocatedResources?: React.Dispatch<React.SetStateAction<InputValues>>;
   setSelectedResourceType?: (value: string) => void;
   onClearSearch?: () => void;
@@ -23,7 +21,6 @@ type Props = {
   onTagClick: (tag: string) => void;
   setSearchName: (value: string) => void;
   canFilterByAllocatedResources?: boolean;
-  canSetItemsPerPage?: boolean;
 };
 
 const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
@@ -32,8 +29,7 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
   allocatedResources,
   setAllocatedResources,
   setSearchName,
-  pageItemsCount,
-  setPageItemsCount,
+
   selectedTags,
   resourceTypes,
   clearAllTags,
@@ -43,7 +39,6 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
   setSelectedResourceType,
   canFilterByResourceType = false,
   canFilterByAllocatedResources = false,
-  canSetItemsPerPage = false,
 }) => {
   const onClearSearchClick = () => {
     if (onClearSearch) {
@@ -55,8 +50,6 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
 
     setSearchName('');
   };
-
-  const itemCountOptions = [5, 10, 20, 50, 100];
 
   return (
     <>
@@ -83,7 +76,7 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
             ))}
           </Select>
         )}
-        {canSetItemsPerPage && (
+        {/* {canSetItemsPerPage && (
           <Select
             data-cy="select-page-items-count"
             value={pageItemsCount}
@@ -100,7 +93,7 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
               );
             })}
           </Select>
-        )}
+        )} */}
       </HStack>
       {canFilterByAllocatedResources && allocatedResources && setAllocatedResources && (
         <SearchByAllocatedResources

@@ -2,7 +2,6 @@ import { Table, Thead, Tr, Th, Tbody, Td, ButtonGroup, Button } from '@chakra-ui
 import { keys } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
 import Pagination from '../../components/pagination';
-import { PaginationArgs } from '../../hooks/use-pagination';
 import { AllocatedResourcesQuery, Maybe, Resource } from '../../__generated__/graphql';
 
 type PoolResources = Array<
@@ -15,7 +14,6 @@ type PoolResources = Array<
 type Props = {
   allocatedResources?: AllocatedResourcesQuery['QueryResourcesByAltId'];
   resources: PoolResources;
-  paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onClaimResource: (description?: string | null, userInput?: Record<string, string | number>) => void;
   onPrevious: (cursor: string | null) => () => void;
@@ -44,7 +42,6 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
   allocatedResources,
   onPrevious,
   onNext,
-  paginationArgs,
 }) => {
   const mappedResources = resources.map((resource) => {
     if (allocatedResources == null) {
@@ -112,16 +109,16 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
           )}
         </Tbody>
       </Table>
-      {allocatedResources != null && (
-        <Pagination
-          after={paginationArgs.after}
-          before={paginationArgs.before}
-          onNext={onNext(allocatedResources.pageInfo.startCursor && allocatedResources.pageInfo.startCursor.ID)}
-          onPrevious={onPrevious(allocatedResources.pageInfo.endCursor && allocatedResources.pageInfo.endCursor.ID)}
-          hasNextPage={allocatedResources.pageInfo.hasNextPage}
-          hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
-        />
-      )}
+      {allocatedResources != null &&
+        allocatedResources.pageInfo.endCursor &&
+        allocatedResources.pageInfo.startCursor && (
+          <Pagination
+            onNext={onNext(allocatedResources.pageInfo.startCursor.ID)}
+            onPrevious={onPrevious(allocatedResources.pageInfo.endCursor.ID)}
+            hasNextPage={allocatedResources.pageInfo.hasNextPage}
+            hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
+          />
+        )}
     </>
   );
 };

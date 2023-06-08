@@ -1,12 +1,14 @@
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Icon, Progress, Switch } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
 import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
+import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 import Pagination from '../../components/pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
+import SelectItemsPerPage from '../../components/select-items-per-page';
 import { usePagination } from '../../hooks/use-pagination';
 import {
   DeletePoolMutation,
@@ -208,12 +210,6 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     firstPage();
   };
 
-  const handleSwitch = () => {
-    clearAllTags();
-    setIsIpv4((prevState) => !prevState);
-    firstPage();
-  };
-
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
@@ -246,7 +242,6 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <SearchFilterPoolsBar
-          setPageItemsCount={setItemsCount}
           onSearchClick={onSearchClick}
           searchName={searchName}
           setSearchName={setSearchName}
@@ -260,21 +255,8 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           selectedResourceType={selectedResourceType}
           setSelectedResourceType={handleOnStrategyClick}
           canFilterByAllocatedResources
-          canSetItemsPerPage
         />
-        <FormControl mb={5}>
-          <Flex align="center">
-            <FormLabel m={0}>{isIpv4 ? 'Resource type - ipv4_prefix' : 'Resource type - ipv6_prefix'}</FormLabel>{' '}
-            <Switch
-              size="md"
-              ml={5}
-              onChange={handleSwitch}
-              data-cy="ipv4-ipv6-switch"
-              name="isNested"
-              isChecked={isIpv4}
-            />
-          </Flex>
-        </FormControl>
+        <Ipv46PrefixSwitch isIpv4={isIpv4} setIsIpv4={setIsIpv4} clearAllTags={clearAllTags} firstPage={firstPage} />
         <PoolsTable
           pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}
@@ -283,16 +265,19 @@ const IpamPoolPage: VoidFunctionComponent = () => {
           onStrategyClick={handleOnStrategyClick}
         />
       </Box>
-      {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
-        <Box marginTop={4} paddingX={4}>
-          <Pagination
-            onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
-            onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
-            hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
-            hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
-          />
-        </Box>
-      )}
+      <Flex align="center" justify="space-between">
+        {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
+          <Box marginTop={4} paddingX={4}>
+            <Pagination
+              onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
+              onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
+              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+            />
+          </Box>
+        )}
+        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+      </Flex>
     </>
   );
 };

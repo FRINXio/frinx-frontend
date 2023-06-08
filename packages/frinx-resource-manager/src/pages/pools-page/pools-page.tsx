@@ -1,4 +1,4 @@
-import { Box, Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
@@ -18,6 +18,7 @@ import PoolsTable from './pools-table';
 import { usePagination } from '../../hooks/use-pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import Pagination from '../../components/pagination';
+import SelectItemsPerPage from '../../components/select-items-per-page';
 
 type InputValues = { [key: string]: string };
 
@@ -146,9 +147,6 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutation,
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
-console.log(data);
-console.log(paginationArgs);
-
 
   const filteredPools = (data?.QueryRootResourcePools.edges ?? [])
     ?.map((e) => {
@@ -236,7 +234,6 @@ console.log(paginationArgs);
         searchName={searchName}
         setSearchName={setSearchName}
         onSearchClick={onSearchClick}
-        setPageItemsCount={setItemsCount}
         allocatedResources={allocatedResources}
         setAllocatedResources={setAllocatedResources}
         selectedTags={selectedTags}
@@ -248,7 +245,6 @@ console.log(paginationArgs);
         resourceTypes={resourceTypes?.QueryResourceTypes}
         canFilterByResourceType
         canFilterByAllocatedResources
-        canSetItemsPerPage
       />
 
       <Box position="relative" marginBottom={5}>
@@ -263,16 +259,19 @@ console.log(paginationArgs);
           onStrategyClick={handleOnStrategyClick}
         />
       </Box>
-      {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
-        <Box marginTop={4} paddingX={4}>
-          <Pagination
-            onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
-            onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
-            hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
-            hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
-          />
-        </Box>
-      )}
+      <Flex align="center" justify="space-between">
+        {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
+          <Box mt={4} px={4}>
+            <Pagination
+              onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
+              onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
+              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+            />
+          </Box>
+        )}
+        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+      </Flex>
     </>
   );
 };
