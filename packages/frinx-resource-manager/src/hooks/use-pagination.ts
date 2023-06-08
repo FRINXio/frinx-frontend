@@ -21,13 +21,16 @@ export function usePagination(devicesPerPage = 5): [PaginationArgs, CallbackFunc
     last: undefined,
     before: undefined,
   });
-  const firstPage = () =>
-    setState({
-      first: devicesPerPage,
-      after: undefined,
-      last: undefined,
-      before: undefined,
-    });
+  const firstPage = useCallback(
+    () =>
+      setState({
+        first: devicesPerPage,
+        after: undefined,
+        last: undefined,
+        before: undefined,
+      }),
+    [devicesPerPage],
+  );
   const nextPage = useCallback(
     (cursor: string | null) => () =>
       setState({

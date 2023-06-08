@@ -76,24 +76,6 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
             ))}
           </Select>
         )}
-        {/* {canSetItemsPerPage && (
-          <Select
-            data-cy="select-page-items-count"
-            value={pageItemsCount}
-            onChange={(e) => setPageItemsCount && setPageItemsCount(Number(e.target.value))}
-            variant="outline"
-            bgColor="white"
-          >
-            <option value={10}>Select number of pools per page</option>
-            {itemCountOptions.map((option) => {
-              return (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              );
-            })}
-          </Select>
-        )} */}
       </HStack>
       {canFilterByAllocatedResources && allocatedResources && setAllocatedResources && (
         <SearchByAllocatedResources
