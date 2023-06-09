@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "chakra-ui-autocomplete": "^1.4.5",
-    "date-fns": "2.29.3",
+    "date-fns": "^2.29.3",
     "date-fns-tz": "2.0.0",
     "feather-icons-react": "0.6.2",
     "html-webpack-plugin": "^5.5.0",

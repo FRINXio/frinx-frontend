@@ -2452,6 +2452,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.21.0":
+  version: 7.22.5
+  resolution: "@babel/runtime@npm:7.22.5"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 12a50b7de2531beef38840d17af50c55a094253697600cee255311222390c68eed704829308d4fd305e1b3dfbce113272e428e9d9d45b1730e0fede997eaceb1
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.16.7":
   version: 7.16.7
   resolution: "@babel/template@npm:7.16.7"
@@ -4646,7 +4655,7 @@ __metadata:
     "@urql/exchange-retry": 1.0.0
     "@webpack-cli/serve": 1.7.0
     chakra-ui-autocomplete: ^1.4.5
-    date-fns: ^2.29.2
+    date-fns: ^2.29.3
     eslint: 8.36.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
@@ -4789,7 +4798,7 @@ __metadata:
     "@webpack-cli/serve": 1.7.0
     babel-loader: 8.3.0
     chakra-ui-autocomplete: ^1.4.5
-    date-fns: 2.29.3
+    date-fns: ^2.29.3
     date-fns-tz: 2.0.0
     eslint: 8.36.0
     eslint-config-prettier: 7.2.0
@@ -4913,7 +4922,7 @@ __metadata:
     "@typescript-eslint/parser": 5.54.1
     "@webpack-cli/serve": 1.7.0
     chakra-ui-autocomplete: ^1.4.5
-    date-fns: 2.29.3
+    date-fns: ^2.29.3
     date-fns-tz: 2.0.0
     eslint: 8.36.0
     eslint-config-prettier: 7.2.0
@@ -10266,17 +10275,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:2.29.3":
-  version: 2.29.3
-  resolution: "date-fns@npm:2.29.3"
-  checksum: e01cf5b62af04e05dfff921bb9c9933310ed0e1ae9a81eb8653452e64dc841acf7f6e01e1a5ae5644d0337e9a7f936175fd2cb6819dc122fdd9c5e86c56be484
-  languageName: node
-  linkType: hard
-
-"date-fns@npm:^2.29.2":
-  version: 2.29.2
-  resolution: "date-fns@npm:2.29.2"
-  checksum: 08bebcceb0a5dbadae4c55e6592b9d5c07dbd7833433c7e9a1d4a424300db32589b8b48e5979b32863c9b00a48d9bab6663e580c2a4f9f203d46cbf9113b5664
+"date-fns@npm:^2.29.3":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+  checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
   languageName: node
   linkType: hard
 
