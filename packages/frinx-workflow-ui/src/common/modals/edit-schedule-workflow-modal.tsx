@@ -226,7 +226,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
                     <ExecuteWorkflowModalFormInput
                       inputParameterKey={inputParameterKey}
                       onChange={(key, value) => setFieldValue(`workflowContext.${key}`, value)}
-                      values={values.workflowContext || JSON.parse(values.workflowContext)}
+                      values={values.workflowContext}
                       parsedInputParameters={parsedInputParameters}
                     />
                   </GridItem>
