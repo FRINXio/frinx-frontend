@@ -16,7 +16,7 @@ import {
   Progress,
   VStack,
 } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared';
+import { useNotifications } from '@frinx/shared/src';
 import { Link, useParams } from 'react-router-dom';
 import { gql, useMutation, useSubscription, useQuery } from 'urql';
 import {

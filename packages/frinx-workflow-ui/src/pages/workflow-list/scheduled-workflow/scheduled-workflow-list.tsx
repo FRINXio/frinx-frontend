@@ -23,6 +23,7 @@ import {
 import Pagination from '@frinx/inventory-client/src/components/pagination';
 import FeatherIcon from 'feather-icons-react';
 import {
+  omitNullValue,
   useNotifications,
   ScheduledWorkflow,
   StatusType,
@@ -34,7 +35,6 @@ import {
 } from '@frinx/shared/src';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
-import { omitNullValue } from '@frinx/shared';
 import {
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
