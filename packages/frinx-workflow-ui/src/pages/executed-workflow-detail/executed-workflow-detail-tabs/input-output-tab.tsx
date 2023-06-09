@@ -38,7 +38,6 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
   externalOutputPayloadStoragePath,
 }) => {
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
-  console.log(input.test);
 
   return (
     <>
