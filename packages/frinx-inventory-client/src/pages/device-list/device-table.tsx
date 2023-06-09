@@ -18,7 +18,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { getLocalDateFromUTC } from '@frinx/shared';
+import { getLocalDateFromUTC } from '@frinx/shared/src';
 import { DevicesQuery } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 
