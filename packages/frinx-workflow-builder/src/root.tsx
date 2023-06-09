@@ -1,6 +1,7 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
-import { convertTaskToExtendedTask, jsonParse } from '@frinx/shared';
 import {
+  convertTaskToExtendedTask,
+  jsonParse,
   createEmptyWorkflow,
   ExtendedTask,
   unwrap,
@@ -185,7 +186,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
 
     const tasks = jsonParse<Task[]>(workflowDetail.tasks);
-    const extendedTasks = tasks.map(convertTaskToExtendedTask);
+    const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
     const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
 
     setWorkflow({
@@ -273,7 +274,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
     const { node } = e;
-    const parsedTasks = jsonParse<Task[]>(node.tasks);
+    const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
     const description = jsonParse<DescriptionJSON | null>(node.description);
     return {
       ...node,

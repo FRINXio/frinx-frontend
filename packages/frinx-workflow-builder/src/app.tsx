@@ -1,10 +1,10 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
 import { OperationResult } from 'urql';
-import { convertToTasks } from '@frinx/shared';
 import {
   ClientWorkflow,
   ExecuteWorkflowModal,
   ExtendedTask,
+  convertToTasks,
   getElementsFromWorkflow,
   getNodeType,
   NodeData,

@@ -17,10 +17,15 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { isWorkflowNameAvailable, SearchByTagInput, useTagsInput, ClientWorkflow } from '@frinx/shared/src';
+import {
+  isWorkflowNameAvailable,
+  SearchByTagInput,
+  useTagsInput,
+  ClientWorkflow,
+  ExtendedTask,
+} from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { ExtendedTask } from '@frinx/shared';
 
 type Props = {
   workflow: ClientWorkflow<ExtendedTask>;
