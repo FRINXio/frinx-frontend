@@ -12,12 +12,12 @@ type Props = {
 const SearchByAllocatedResources: VoidFunctionComponent<Props> = ({ allocatedResources, setAllocatedResources }) => {
   const handleInputChange = (propertyName: string, value: string) => {
     setAllocatedResources((prevInputValues: Record<string, string>) => {
-      const updatedInputValues = { ...prevInputValues };
-      if (value === '') {
-        delete updatedInputValues[propertyName];
-      } else {
+      const { [propertyName]: _, ...updatedInputValues } = prevInputValues;
+
+      if (value !== '') {
         updatedInputValues[propertyName] = value;
       }
+
       return updatedInputValues;
     });
   };
