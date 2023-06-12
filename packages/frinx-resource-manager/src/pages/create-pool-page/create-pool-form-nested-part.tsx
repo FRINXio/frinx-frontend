@@ -41,7 +41,6 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
             ?.filter(
               (pool) =>
                 pool?.Resources.length &&
-                pool?.Resources !== undefined &&
                 isSpecificResourceTypeName(pool.ResourceType.Name, [
                   'ipv4_prefix',
                   'ipv6_prefix',

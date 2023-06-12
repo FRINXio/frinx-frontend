@@ -14,11 +14,7 @@ const SearchByAllocatedResources: VoidFunctionComponent<Props> = ({ allocatedRes
     setAllocatedResources((prevInputValues: Record<string, string>) => {
       const { [propertyName]: _, ...updatedInputValues } = prevInputValues;
 
-      if (value !== '') {
-        updatedInputValues[propertyName] = value;
-      }
-
-      return updatedInputValues;
+      return { ...updatedInputValues, ...(value !== '' && { [propertyName]: value }) };
     });
   };
 
