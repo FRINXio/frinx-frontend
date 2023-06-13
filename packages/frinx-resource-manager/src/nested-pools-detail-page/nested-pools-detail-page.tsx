@@ -1,5 +1,5 @@
 import { Box, Heading, Progress } from '@chakra-ui/react';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import { unwrap, useNotifications, useMinisearch, useTags, omitNullValue } from '@frinx/shared/src';
@@ -85,6 +85,8 @@ const DELETE_POOL_MUTATION = gql`
 `;
 
 const NestedPoolsDetailPage: VoidFunctionComponent = () => {
+  const [allocatedResources, setAllocatedResources] = useState({});
+  const [searchName, setSearchName] = useState<string>('');
   const { poolId } = useParams<{ poolId: string }>();
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<
     GetNestedPoolsDetailQuery,
@@ -94,11 +96,13 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
 
     variables: { poolId: unwrap(poolId) },
   });
-  const resources = poolData?.QueryResourcePool.Resources.map(({ NestedPool }) =>
-    NestedPool !== null ? NestedPool : null,
-  ).filter(omitNullValue);
+  const resources = (poolData?.QueryResourcePool.Resources || [])
+    .map(({ NestedPool }) => {
+      return NestedPool ?? null;
+    })
+    .filter(omitNullValue);
 
-  const { results, searchText, setSearchText } = useMinisearch({ items: resources });
+  const { results, setSearchText } = useMinisearch({ items: resources });
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
 
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
@@ -136,6 +140,10 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
       });
   };
 
+  const onSearchClick = () => {
+    setSearchText(searchName);
+  };
+
   const resourcePools = results.filter((pool) => {
     if (selectedTags.length > 0) {
       return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
@@ -160,8 +168,11 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
         Nested pools
       </Heading>
       <SearchFilterPoolsBar
-        setSearchText={setSearchText}
-        searchText={searchText}
+        allocatedResources={allocatedResources}
+        setAllocatedResources={setAllocatedResources}
+        setSearchName={setSearchName}
+        searchName={searchName}
+        onSearchClick={onSearchClick}
         selectedTags={selectedTags}
         clearAllTags={clearAllTags}
         onTagClick={handleOnTagClick}

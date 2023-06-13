@@ -12,6 +12,7 @@ import {
   Button,
   Link as ChakraLink,
   ButtonGroup,
+  Progress,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
@@ -32,12 +33,17 @@ type IpRange = {
 };
 
 type Props = {
+  fetching: boolean;
+
   ipRanges: IpRange[];
   onTagClick: (tagName: string) => void;
   onDeleteBtnClick?: (poolId: string) => void;
 };
 
-const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onDeleteBtnClick }) => {
+const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, fetching, onDeleteBtnClick }) => {
+  if (fetching) {
+    return <Progress isIndeterminate size="sm" />;
+  }
   return (
     <TableContainer bgColor="white">
       <Table size="sm">
@@ -92,7 +98,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                         variant="outline"
                         icon={<Icon as={FeatherIcon} size={20} icon="settings" />}
                         as={Link}
-                        to={`../pools/${id}`}
+                        to={`${id}/nested-ranges`}
                       />
                       {onDeleteBtnClick && (
                         <IconButton

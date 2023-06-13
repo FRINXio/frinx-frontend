@@ -36,9 +36,13 @@ type Props = {
   aggregates: Aggregate[];
   onTagClick: (tag: string) => void;
   onDeletePoolClick: (id: string) => void;
+  fetching: boolean;
 };
 
-const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick, onDeletePoolClick }) => {
+const AggregatesTable: VoidFunctionComponent<Props> = ({ aggregates, onTagClick, fetching, onDeletePoolClick }) => {
+  if (fetching) {
+    return <Progress isIndeterminate size="sm" />;
+  }
   return (
     <TableContainer background="white">
       <Table size="sm">
