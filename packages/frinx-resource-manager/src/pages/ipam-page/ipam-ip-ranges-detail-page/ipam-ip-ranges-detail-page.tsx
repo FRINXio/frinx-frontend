@@ -1,7 +1,7 @@
 import { Heading, Progress } from '@chakra-ui/react';
 import { IPv4, IPv6 } from 'ipaddr.js';
 import { compact } from 'lodash';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMinisearch, useTags } from '@frinx/shared/src';
 import SearchFilterPoolsBar from '../../../components/search-filter-pools-bar';
@@ -23,9 +23,10 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
   const { id } = useParams();
 
   const [{ poolDetail }, { deleteResourcePool }] = useResourcePoolActions({ poolId: id });
-
+  const [searchName, setSearchName] = useState<string>('');
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
-  const { results, searchText, setSearchText } = useMinisearch({
+
+  const { results, setSearchText } = useMinisearch({
     items: compact(
       poolDetail.data?.QueryResourcePool.Resources.map((resource) => resource.NestedPool).filter(
         (resource) => resource?.ResourceType.Name === 'ipv4_prefix' || resource?.ResourceType.Name === 'ipv6_prefix',
@@ -84,20 +85,30 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
       };
     });
 
+  const onSearchClick = () => {
+    setSearchText(searchName);
+  };
+
   return (
     <>
       <Heading as="h1" size="lg" mb={5}>
         IP Ranges of {poolDetail.data?.QueryResourcePool.Name}
       </Heading>
       <SearchFilterPoolsBar
-        searchText={searchText}
-        setSearchText={setSearchText}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        onSearchClick={onSearchClick}
         clearAllTags={clearAllTags}
         selectedTags={selectedTags}
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
       />
-      <IpRangesTable ipRanges={nestedIpRanges} onTagClick={handleOnTagClick} onDeleteBtnClick={deleteResourcePool} />
+      <IpRangesTable
+        ipRanges={nestedIpRanges}
+        fetching={poolDetail.fetching}
+        onTagClick={handleOnTagClick}
+        onDeleteBtnClick={deleteResourcePool}
+      />
     </>
   );
 };

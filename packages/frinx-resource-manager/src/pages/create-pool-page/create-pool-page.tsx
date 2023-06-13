@@ -84,29 +84,66 @@ const SELECT_RESOURCE_TYPES_QUERY = gql`
     QueryResourceTypes {
       Name
       id
+      Pools {
+        id
+        Name
+      }
+      PropertyTypes {
+        id
+        Name
+      }
     }
   }
 `;
 const SELECT_POOLS_QUERY = gql`
-  query SelectPools {
-    QueryResourcePools {
-      id
-      Name
-      ResourceType {
-        id
-        Name
-      }
-      Resources {
-        Description
-        Properties
-        id
-        ParentPool {
+  query SelectPools(
+    $first: Int
+    $last: Int
+    $before: Cursor
+    $after: Cursor
+    $resourceTypeId: ID
+    $filterByResources: Map
+  ) {
+    QueryRootResourcePools(
+      first: $first
+      last: $last
+      before: $before
+      after: $after
+      resourceTypeId: $resourceTypeId
+      filterByResources: $filterByResources
+    ) {
+      edges {
+        node {
           id
           Name
-        }
-        NestedPool {
-          id
           PoolProperties
+          ParentResource {
+            id
+          }
+          ResourceType {
+            id
+            Name
+            Pools {
+              id
+              Name
+            }
+            PropertyTypes {
+              id
+              Name
+            }
+          }
+          Resources {
+            NestedPool {
+              id
+            }
+            Description
+            Properties
+            id
+            ParentPool {
+              id
+              Name
+            }
+          }
         }
       }
     }
@@ -273,7 +310,7 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
   const [customResourceTypeName, setCustomResourceTypeName] = useState('');
   const client = useClient();
   const { addToastNotification } = useNotifications();
-  const [{ data: poolsData, fetching: poolsFetching }] = useQuery<SelectPoolsQuery>({ query: SELECT_POOLS_QUERY });
+  const [{ data: poolsRawData, fetching: poolsFetching }] = useQuery<SelectPoolsQuery>({ query: SELECT_POOLS_QUERY });
   const [{ data: allocStratData, fetching: allocStratFetching }] = useQuery<SelectAllocationStrategiesQuery>({
     query: SELECT_ALLOCATION_STRATEGIES_QUERY,
   });
@@ -282,6 +319,10 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
     RequiredPoolPropertiesQuery,
     RequiredPoolPropertiesQueryVariables
   >({ query: GET_POOL_PROPERTIES_BY_ALLOC_STRATEGY, variables: { allocationStrategyName: customResourceTypeName } });
+
+  const poolsData = poolsRawData?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node;
+  });
 
   const handleFormSubmit = (values: FormValues) => {
     createPool(client.mutation.bind(client), values)
@@ -328,7 +369,7 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           // @ts-ignore
           onFormSubmit={handleFormSubmit}
           resourceTypes={data.QueryResourceTypes}
-          resourcePools={poolsData}
+          resourcePools={poolsRawData}
           allocStrategies={allocStrategies}
           isLoadingRequiredPoolProperties={isLoadingPoolProperties}
           onResourceTypeChange={setCustomResourceTypeName}

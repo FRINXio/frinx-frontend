@@ -3,7 +3,6 @@ import { omitNullValue } from '@frinx/shared/src';
 import React, { FC, useState } from 'react';
 import AlternativeIdModal from '../../components/alternative-id-modal/alternative-id-modal';
 import Pagination from '../../components/pagination';
-import { PaginationArgs } from '../../hooks/use-pagination';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 
 type AllocatedResources = AllocatedResourcesQuery['QueryResourcesByAltId'];
@@ -11,7 +10,6 @@ type AllocatedResource = NonNullable<AllocatedResources['edges'][0]>['node'];
 
 type Props = {
   allocatedResources?: AllocatedResources;
-  paginationArgs: PaginationArgs;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onPrevious: (cursor: string | null) => () => void;
   onNext: (cursor: string | null) => () => void;
@@ -36,13 +34,7 @@ const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResources) =
   ].filter(omitNullValue);
 };
 
-const PoolDetailAllocatingTable: FC<Props> = ({
-  allocatedResources,
-  onFreeResource,
-  onPrevious,
-  onNext,
-  paginationArgs,
-}) => {
+const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResource, onPrevious, onNext }) => {
   const [selectedResource, setSelectedResource] = useState<AllocatedResource | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const allocatedResourcesKeys = getNamesOfAllocatedResources(allocatedResources);
@@ -119,8 +111,6 @@ const PoolDetailAllocatingTable: FC<Props> = ({
       </Table>
       {allocatedResources != null && (
         <Pagination
-          after={paginationArgs.after}
-          before={paginationArgs.before}
           onPrevious={onPrevious(String(allocatedResources.pageInfo.startCursor))}
           onNext={onNext(String(allocatedResources.pageInfo.endCursor))}
           hasNextPage={allocatedResources.pageInfo.hasNextPage}
