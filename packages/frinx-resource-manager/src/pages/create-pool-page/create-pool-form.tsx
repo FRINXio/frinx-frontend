@@ -102,6 +102,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   onResourceTypeChange,
   requiredPoolProperties,
 }) => {
+  const [resTypeId, setResTypeId] = useState('');
+
   const navigate = useNavigate();
   const tagsInput = useTagsInput();
   const [validationSchema, setValidationSchema] = useState(
@@ -189,9 +191,9 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     handleChange(e);
     setFieldValue('resourceTypeName', selectedResourceTypeName);
 
-    if (selectedResourceTypeName != null && isCustomResourceType(selectedResourceTypeName)) {
-      onResourceTypeChange(selectedResourceTypeName);
-    }
+    const selectedResourceTypeId = e.target.value;
+    setResTypeId(selectedResourceTypeId);
+    onResourceTypeChange(resTypeId);
   };
 
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
@@ -228,7 +230,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             data-cy="create-pool-type"
             id="resourceType"
             name="resourceTypeId"
-            value={resourceTypeId}
+            value={resTypeId}
             onChange={handleOnResourceTypeChange}
             placeholder="Select resource type"
           >
