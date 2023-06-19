@@ -123,10 +123,16 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
   const { addToastNotification } = useNotifications();
   const { results, setSearchText } = useMinisearch({
     items: allAggregates,
-    searchFields: ['PoolProperties'],
+    searchFields: ['aggregate'],
     extractField: (document, fieldName) => {
-      if (fieldName === 'PoolProperties') {
-        return JSON.stringify(document[fieldName]);
+      if (fieldName === 'aggregate') {
+        const { PoolProperties } = document;
+        const { address, prefix } = PoolProperties;
+        const aggregateInfo = isIpv4(document.ResourceType.Name)
+          ? `${ipaddr.IPv4.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`
+          : `${ipaddr.IPv6.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`;
+
+        return aggregateInfo.toString();
       }
 
       return document[fieldName];
@@ -196,6 +202,7 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
       </Heading>
       <SearchFilterPoolsBar
         searchName={searchName}
+        searchBy="aggregate"
         setSearchName={setSearchName}
         onSearchClick={onSearchClick}
         clearAllTags={clearAllTags}

@@ -21,6 +21,7 @@ type Props = {
   onTagClick: (tag: string) => void;
   setSearchName: (value: string) => void;
   canFilterByAllocatedResources?: boolean;
+  searchBy?: string;
 };
 
 const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
@@ -29,7 +30,7 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
   allocatedResources,
   setAllocatedResources,
   setSearchName,
-
+  searchBy = 'name',
   selectedTags,
   resourceTypes,
   clearAllTags,
@@ -55,7 +56,7 @@ const SearchFilterPoolsBar: VoidFunctionComponent<Props> = ({
     <>
       <HStack mb={5}>
         <Searchbar
-          placeholder="Search by name"
+          placeholder={`Search by ${searchBy}`}
           data-cy="search-by-name"
           value={searchName}
           onChange={(e) => setSearchName(e.target.value)}
