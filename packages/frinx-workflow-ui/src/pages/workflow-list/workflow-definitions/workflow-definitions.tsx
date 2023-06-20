@@ -4,10 +4,13 @@ import { jsonParse, ClientWorkflow, Task } from '@frinx/shared/src';
 import { debounce } from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
-import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
+import { useNotifications } from '@frinx/shared';
+import { usePagination } from '../../../hooks/use-graphql-pagination';
 import {
   DeleteWorkflowMutation,
   DeleteWorkflowMutationVariables,
+  UpdateWorkflowMutation,
+  UpdateWorkflowMutationVariables,
   WorkflowLabelsQuery,
   WorkflowsQuery,
 } from '../../../__generated__/graphql';
@@ -73,6 +76,16 @@ const WORKFLOW_DELETE_MUTATION = gql`
   }
 `;
 
+const UPDATE_WORKFLOW_MUTATION = gql`
+  mutation UpdateWorkflow($updateWorkflowId: String!, $input: UpdateWorkflowInput!) {
+    updateWorkflow(id: $updateWorkflowId, input: $input) {
+      workflow {
+        id
+      }
+    }
+  }
+`;
+
 const WorkflowDefinitions = () => {
   const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
@@ -82,6 +95,7 @@ const WorkflowDefinitions = () => {
     labels: [],
   });
   const [activeWf, setActiveWf] = useState<ClientWorkflow>();
+  const { addToastNotification } = useNotifications();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -89,7 +103,7 @@ const WorkflowDefinitions = () => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
-  const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
   const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] =
     useQuery<WorkflowsQuery>({
@@ -107,6 +121,10 @@ const WorkflowDefinitions = () => {
 
   const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
     WORKFLOW_DELETE_MUTATION,
+  );
+
+  const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
+    UPDATE_WORKFLOW_MUTATION,
   );
 
   const debouncedKeywordFilter = useMemo(
@@ -127,31 +145,52 @@ const WorkflowDefinitions = () => {
     });
   };
 
-  const updateFavourite = (workflow: ClientWorkflow) => {
-    let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
+  const handleOnFavouriteClick = (workflow: ClientWorkflow) => {
+    const wfDescription = jsonParse<DescriptionJSON>(workflow.description);
+    const hasLabels = wfDescription != null && wfDescription?.labels != null && wfDescription.labels.length > 0;
+    const isFavourite = wfDescription?.labels?.includes('favourite');
 
-    // if workflow doesn't contain description attr. at all
-    if (!wfDescription) {
-      wfDescription = {
-        description: '',
-        labels: ['FAVOURITE'],
-      };
-    }
-    // if workflow has only description but no labels array
-    else if (wfDescription && !wfDescription.labels) {
-      wfDescription = {
-        ...wfDescription,
-        labels: ['FAVOURITE'],
-      };
-    }
-    // if workflow is already favourited (unfav.)
-    else if (wfDescription.labels.includes('FAVOURITE')) {
-      wfDescription.labels = wfDescription?.labels.filter((e: string) => e !== 'FAVOURITE');
-    }
-    // if workflow has correct description object, just add label
-    else {
-      wfDescription.labels.push('FAVOURITE');
-    }
+    updateWorkflow(
+      {
+        updateWorkflowId: workflow.id,
+        input: {
+          workflow: {
+            name: workflow.name,
+            tasks: JSON.stringify(workflow.tasks),
+            timeoutSeconds: workflow.timeoutSeconds,
+            description: JSON.stringify({
+              description: workflow.description,
+              ...(hasLabels && {
+                labels: isFavourite
+                  ? wfDescription.labels.filter((l) => l !== 'FAVOURITE')
+                  : [...wfDescription.labels, 'FAVOURITE'],
+              }),
+              ...(!hasLabels && { labels: ['FAVOURITE'] }),
+            }),
+          },
+        },
+      },
+      {
+        additionalTypenames: ['Workflow', 'WorkflowConnection'],
+      },
+    )
+      .then((r) => {
+        if (r.error != null) {
+          throw r.error;
+        }
+        addToastNotification({
+          title: 'Success',
+          content: 'Workflow added to favourites',
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          title: 'Error',
+          content: 'Workflow could not be added to favourites',
+          type: 'error',
+        });
+      });
   };
 
   if (isLoadingWorkflowDefinitions) {
@@ -224,7 +263,7 @@ const WorkflowDefinitions = () => {
         scheduleWorkflowModal={schedulingModal}
         confirmDeleteModal={confirmDeleteModal}
         setActiveWorkflow={setActiveWf}
-        onFavoriteClick={updateFavourite}
+        onFavoriteClick={handleOnFavouriteClick}
         onLabelClick={(label) => {
           setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}

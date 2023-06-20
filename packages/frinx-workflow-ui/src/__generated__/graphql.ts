@@ -290,6 +290,7 @@ export type Device = Node & {
   model: Maybe<Scalars['String']>;
   mountParameters: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  port: Maybe<Scalars['Int']>;
   serviceState: DeviceServiceState;
   source: DeviceSource;
   updatedAt: Scalars['String'];
@@ -489,6 +490,10 @@ export type ExecutedWorkflowTaskStatus =
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type FilterPoolsInput = {
+  poolName?: InputMaybe<Scalars['String']>;
 };
 
 export type FilterTopologyInput = {
@@ -947,6 +952,34 @@ export type PaginationArgs = {
   start: Scalars['Int'];
 };
 
+export type Pool = Node & {
+  __typename?: 'Pool';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  poolType: PoolType;
+  resourceType: ResourceType;
+  tags: Array<Maybe<Tag>>;
+  version: Maybe<Scalars['Int']>;
+};
+
+export type PoolConnection = {
+  __typename?: 'PoolConnection';
+  edges: Array<PoolEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int'];
+};
+
+export type PoolEdge = {
+  __typename?: 'PoolEdge';
+  cursor: Scalars['String'];
+  node: Pool;
+};
+
+export type PoolType =
+  | 'allocating'
+  | 'set'
+  | 'singleton';
+
 export type Query = {
   __typename?: 'Query';
   blueprints: BlueprintConnection;
@@ -959,6 +992,7 @@ export type Query = {
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
   node: Maybe<Node>;
+  pools: PoolConnection;
   schedules: ScheduleConnection;
   taskDefinitions: Array<TaskDefinition>;
   topology: Maybe<Topology>;
@@ -1040,6 +1074,16 @@ export type QueryNodeArgs = {
 };
 
 
+export type QueryPoolsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<FilterPoolsInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  resourceTypeId?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QuerySchedulesArgs = {
   after?: InputMaybe<Scalars['String']>;
   before?: InputMaybe<Scalars['String']>;
@@ -1094,6 +1138,16 @@ export type RemoveWorkflowInput = {
 export type ResetConfigPayload = {
   __typename?: 'ResetConfigPayload';
   dataStore: DataStore;
+};
+
+export type ResourceType = {
+  __typename?: 'ResourceType';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+};
+
+export type ResourceTypeInput = {
+  resourceTypeId?: InputMaybe<Scalars['String']>;
 };
 
 export type RestartWorkflowInput = {
@@ -1206,6 +1260,12 @@ export type SubscriptionUniconfigShellArgs = {
 export type SyncFromNetworkPayload = {
   __typename?: 'SyncFromNetworkPayload';
   dataStore: Maybe<DataStore>;
+};
+
+export type Tag = {
+  __typename?: 'Tag';
+  id: Scalars['ID'];
+  tag: Scalars['String'];
 };
 
 export type TaskDefinition = {
@@ -1494,7 +1554,7 @@ export type ExecutedWorkflowDetailQueryVariables = Exact<{
 }>;
 
 
-export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow', id: string, version: number | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: ExecutedWorkflowStatus | null, parentWorkflowId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, workflowVersion: number | null, workflowName: string | null, workflowId: string, correlationId: string | null, workflowDefinition: { __typename?: 'Workflow', id: string, version: number | null, timeoutSeconds: number, name: string, description: string | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, tasks: string | null, inputParameters: Array<string> | null, hasSchedule: boolean | null, restartable: boolean | null, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, version: number | null, taskType: string | null, referenceTaskName: string | null, status: ExecutedWorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updateTime: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Schedule' } | { __typename?: 'Workflow' } | { __typename?: 'Zone' } | null };
+export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow', id: string, version: number | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: ExecutedWorkflowStatus | null, parentWorkflowId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, workflowVersion: number | null, workflowName: string | null, workflowId: string, correlationId: string | null, workflowDefinition: { __typename?: 'Workflow', id: string, version: number | null, timeoutSeconds: number, name: string, description: string | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, tasks: string | null, inputParameters: Array<string> | null, hasSchedule: boolean | null, restartable: boolean | null, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, version: number | null, taskType: string | null, referenceTaskName: string | null, status: ExecutedWorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updateTime: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Pool' } | { __typename?: 'Schedule' } | { __typename?: 'Workflow' } | { __typename?: 'Zone' } | null };
 
 export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
   controlExecutedWorkflowId: Scalars['String'];
@@ -1621,13 +1681,6 @@ export type EditWorkflowScheduleMutationVariables = Exact<{
 
 export type EditWorkflowScheduleMutation = { __typename?: 'Mutation', editWorkflowSchedule: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, isEnabled: boolean, performFromDate: string, performTillDate: string, parallelRuns: boolean } | null };
 
-export type ExecuteWorkflowDefinitionMutationVariables = Exact<{
-  input: ExecuteWorkflowByName;
-}>;
-
-
-export type ExecuteWorkflowDefinitionMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };
-
 export type ScheduleWorkflowMutationVariables = Exact<{
   input: CreateScheduleInput;
 }>;
@@ -1664,3 +1717,11 @@ export type DeleteWorkflowMutationVariables = Exact<{
 
 
 export type DeleteWorkflowMutation = { __typename?: 'Mutation', deleteWorkflow: { __typename?: 'DeleteWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };
+
+export type UpdateWorkflowMutationVariables = Exact<{
+  updateWorkflowId: Scalars['String'];
+  input: UpdateWorkflowInput;
+}>;
+
+
+export type UpdateWorkflowMutation = { __typename?: 'Mutation', updateWorkflow: { __typename?: 'UpdateWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };
