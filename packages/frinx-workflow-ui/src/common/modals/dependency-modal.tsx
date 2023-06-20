@@ -73,7 +73,7 @@ function DependencyTree({ workflow, workflows }: { workflow: Workflow; workflows
           }}
           title="Edit"
           as={Link}
-          to={`../builder/${workflow?.name}/${workflow?.version}`}
+          to={`../builder/${workflow?.id}/${workflow?.version}`}
         >
           {`${workflow?.name} / ${workflow?.version}`}
         </Box>
