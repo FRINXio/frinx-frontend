@@ -1,24 +1,45 @@
+import { Checkbox, Td, Tr } from '@chakra-ui/react';
 import moment from 'moment';
 import React, { FC } from 'react';
-import { Tr, Td, Checkbox } from '@chakra-ui/react';
-import { ExecutedWorkflows } from '@frinx/shared/src';
 import { Link } from 'react-router-dom';
+import { ExecutedWorkflowsQuery, ExecutedWorkflowStatus } from '../../../../../__generated__/graphql';
+import ExecutedWorkflowStatusLabels from '../executed-workflow-status-labels';
+import { SortProperty } from '../../executed-workflow-list';
+import { sortExecutedWorkflows } from '../../executed-workflow.helpers';
 
 type Props = {
-  flatWorkflows: ExecutedWorkflows['result']['hits'];
-  selectedWfs: string[];
-  selectWf: (workflowId: string, isChecked: boolean) => void;
+  workflows: ExecutedWorkflowsQuery;
+  selectedWorkflows: string[];
+  sort: SortProperty;
+  onWorkflowSelect: (workflowId: string) => void;
+  onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
-const ExecutedWorkflowFlatTableItem: FC<Props> = ({ flatWorkflows, selectWf, selectedWfs }) => {
+const ExecutedWorkflowFlatTableItem: FC<Props> = ({
+  workflows,
+  sort,
+  selectedWorkflows,
+  onWorkflowSelect,
+  onWorkflowStatusClick,
+}) => {
+  if (workflows.executedWorkflows?.edges == null || workflows.executedWorkflows?.edges.length === 0) {
+    return (
+      <Tr>
+        <Td>No executed workflows available</Td>
+      </Tr>
+    );
+  }
+
   return (
     <>
-      {flatWorkflows.map((item) => (
-        <Tr key={item.workflowId}>
+      {sortExecutedWorkflows(workflows.executedWorkflows.edges, sort).map(({ node }) => (
+        <Tr key={node.id}>
           <Td>
             <Checkbox
-              isChecked={selectedWfs.includes(item.workflowId)}
-              onChange={(e) => selectWf(item.workflowId, e.target.checked)}
+              isChecked={selectedWorkflows.includes(node.id)}
+              onChange={() => {
+                onWorkflowSelect(node.id);
+              }}
             />
           </Td>
           <Td
@@ -27,13 +48,17 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({ flatWorkflows, selectWf, sel
               overflow: 'hidden',
               textOverflow: 'ellipsis',
             }}
-            title={item.workflowType}
+            title={node.workflowId ?? 'UNKNOWN workflow'}
+            textColor="blue.500"
           >
-            <Link to={`../executed/${item.workflowId}`}>{item.workflowType}</Link>
+            <Link to={`../executed/${node.id}`}>{node.workflowId}</Link>
           </Td>
-          <Td>{item.status}</Td>
-          <Td>{moment(item.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
-          <Td>{item.endTime ? moment(item.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
+          <Td>{node.workflowName}</Td>
+          <Td>{moment(node.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
+          <Td>{node.endTime ? moment(node.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
+          <Td>
+            <ExecutedWorkflowStatusLabels status={node.status ?? 'UNKNOWN'} onClick={onWorkflowStatusClick} />
+          </Td>
         </Tr>
       ))}
     </>

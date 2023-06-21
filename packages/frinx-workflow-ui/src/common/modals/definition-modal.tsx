@@ -9,12 +9,12 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { Editor, Workflow } from '@frinx/shared/src';
+import { ClientWorkflow, Editor } from '@frinx/shared/src';
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  workflow?: Workflow;
+  workflow?: ClientWorkflow;
 };
 
 const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => (

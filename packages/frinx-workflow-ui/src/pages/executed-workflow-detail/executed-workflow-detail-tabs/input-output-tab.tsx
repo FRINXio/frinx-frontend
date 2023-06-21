@@ -14,28 +14,9 @@ type Props = {
   externalOutputPayloadStoragePath?: string;
 };
 
-const isJson = (data: string) => {
-  try {
-    JSON.parse(data);
-  } catch (e) {
-    return false;
-  }
-  if (Number.isFinite(Number(data))) {
-    return false;
-  }
-  return true;
-};
-
-const replaceJsonAndArray = (key: string, value: string) => {
-  if (isJson(value)) {
-    return JSON.parse(value);
-  }
-  return value;
-};
-
 const getJSON = (data: Record<string, unknown> | unknown, isEscaped: boolean) => {
   return isEscaped
-    ? JSON.stringify(data, replaceJsonAndArray, 2)
+    ? JSON.stringify(data, null, 2)
         .replace(/\\n/g, '\\n')
         .replace(/\\'/g, "\\'")
         .replace(/\\"/g, '\\"')
@@ -44,7 +25,7 @@ const getJSON = (data: Record<string, unknown> | unknown, isEscaped: boolean) =>
         .replace(/\\t/g, '\\t')
         .replace(/\\b/g, '\\b')
         .replace(/\\f/g, '\\f')
-    : unescapeJs(JSON.stringify(data, replaceJsonAndArray, 2));
+    : unescapeJs(JSON.stringify(data, null, 2));
 };
 
 const InputOutputTab: VoidFunctionComponent<Props> = ({

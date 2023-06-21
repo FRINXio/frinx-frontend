@@ -2,32 +2,51 @@ import React from 'react';
 import moment from 'moment';
 import { Text, Tr, Td } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { ExecutedWorkflowTask } from '@frinx/shared/src';
+import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../../__generated__/graphql';
+import ExecutedWorkflowStatusLabels from './executed-workflow-status-labels';
 
-type ExecutedSubworkflowTask = ExecutedWorkflowTask & { inputData: Record<string, string> };
 type Props = {
-  workflow: ExecutedSubworkflowTask;
+  subworkflow: NonNullable<NonNullable<WorkflowInstanceDetailQuery['workflowInstanceDetail']>['subworkflows']>[0];
+  onSubworkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
-export function ExecutedWorkflowItem({ workflow }: Props) {
+export function ExecutedWorkflowItem({ subworkflow, onSubworkflowStatusClick }: Props) {
+  const executedSubworkflow = subworkflow.executedWorkflowDetail;
+
   return (
-    <Tr key={workflow.subWorkflowId}>
+    <Tr backgroundColor="gray.50">
       <Td />
+      <Td>
+        <Text paddingLeft={8} whiteSpace="nowrap">
+          {executedSubworkflow.workflowId}
+        </Text>
+      </Td>
       <Td
         style={{
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         }}
-        title={workflow.taskType}
+        title={`${executedSubworkflow.workflowName} ${executedSubworkflow.workflowVersion}`}
       >
         <Text paddingLeft={8}>
-          <Link to={`../executed/${workflow.subWorkflowId}`}>{workflow.inputData.subWorkflowName}</Link>
+          <Link to={`../executed/${executedSubworkflow.id}`}>
+            {executedSubworkflow.workflowName} / {executedSubworkflow.workflowVersion}
+          </Link>
         </Text>
       </Td>
-      <Td>{workflow.status}</Td>
-      <Td>{moment(workflow.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
-      <Td>{workflow.endTime ? moment(workflow.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
+      <Td>
+        {executedSubworkflow.startTime ? moment(executedSubworkflow.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}
+      </Td>
+      <Td>
+        {executedSubworkflow.endTime ? moment(executedSubworkflow.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}
+      </Td>
+      <Td>
+        <ExecutedWorkflowStatusLabels
+          status={executedSubworkflow.status ?? 'UNKNOWN'}
+          onClick={onSubworkflowStatusClick}
+        />
+      </Td>
     </Tr>
   );
 }

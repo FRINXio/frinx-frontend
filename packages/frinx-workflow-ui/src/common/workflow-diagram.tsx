@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactFlow, { Edge, Node } from 'react-flow-renderer';
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import {
-  WorkflowInstanceDetail,
-  Workflow,
-  WorkflowDefinition,
   ExtendedTask,
-  ExecutedWorkflowTask,
+  Task,
   convertWorkflowTaskToExtendedTask,
   getElementsFromWorkflow,
+  jsonParse,
+  unwrap,
 } from '@frinx/shared/src';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './components';
+import { ControlExecutedWorkflowSubscription, Workflow } from '../__generated__/graphql';
 
 const nodeTypes = {
   base: BaseNode,
@@ -22,12 +22,8 @@ const nodeTypes = {
 };
 
 type Props = {
-  meta: Workflow;
-  result: WorkflowInstanceDetail;
-};
-
-type ExtedendedTaskWithExecutionData = ExtendedTask & {
-  execution?: ExecutedWorkflowTask;
+  result?: ControlExecutedWorkflowSubscription['controlExecutedWorkflow'] | null;
+  meta?: Workflow | null;
 };
 
 type NodeData = {
@@ -39,12 +35,20 @@ type NodeData = {
 };
 
 const WorkflowDiagram = ({ meta, result }: Props) => {
-  useState<WorkflowDefinition<ExtedendedTaskWithExecutionData> | null>(null);
   const navigate = useNavigate();
 
-  const taskMap = new Map(result.tasks.map((t) => [t.referenceTaskName, t]));
+  if (meta == null || result == null) {
+    return (
+      <Box height="600">
+        <Text>No workflow found</Text>
+      </Box>
+    );
+  }
+
+  const tasks = jsonParse<Task[]>(meta.tasks) || [];
+  const taskMap = new Map(unwrap(result.tasks).map((t) => [t.id, t]));
   const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(
-    getElementsFromWorkflow(meta.tasks.map(convertWorkflowTaskToExtendedTask), true),
+    getElementsFromWorkflow(tasks.map(convertWorkflowTaskToExtendedTask), true),
     'TB',
   );
   const nodesWithExecutionState = elements.nodes.map((n) => {

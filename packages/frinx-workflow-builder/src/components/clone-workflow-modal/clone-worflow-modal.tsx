@@ -11,7 +11,7 @@ import {
   Input,
   useToast,
 } from '@chakra-ui/react';
-import { isWorkflowNameAvailable, Workflow } from '@frinx/shared/src';
+import { ClientWorkflow, isWorkflowNameAvailable } from '@frinx/shared/src';
 import { isEmpty } from 'lodash';
 import React, { FC, FormEvent, useRef, useState } from 'react';
 
@@ -19,7 +19,7 @@ type Props = {
   onWorkflowClone: (name: string) => void;
   isOpen: boolean;
   onClose: () => void;
-  workflows: Workflow[];
+  workflows: ClientWorkflow[];
 };
 
 const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose, workflows }) => {

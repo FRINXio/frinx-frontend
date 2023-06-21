@@ -1,56 +1,68 @@
 import React, { FC } from 'react';
-import { Table, Tbody, Box } from '@chakra-ui/react';
-import { ExecutedWorkflows } from '@frinx/shared/src';
+import { Table, Tbody, Box, Text } from '@chakra-ui/react';
 import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table/executed-workflow-flat-table-item';
 import ExecutedWorkflowTableHead from './executed-workflow-table-head';
 import ExecutedWorkflowHierarchicalTableItem from './executed-workflow-hierarchical-table/executed-workflow-hierarchical-table-item';
+import { ExecutedWorkflowStatus, ExecutedWorkflowsQuery } from '../../../../__generated__/graphql';
+import { SortProperty } from '../executed-workflow-list';
 
-type SortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';
-type SortOrder = 'ASC' | 'DESC';
 type Props = {
   isFlat: boolean;
-  sortBy: SortBy;
-  sortOrder: SortOrder;
-  workflows: ExecutedWorkflows['result']['hits'];
-  selectedWfs: string[];
-  selectAllWorkflows: (isChecked: boolean) => void;
-  sortWf: (sortBy: SortBy) => void;
-  selectWf: (workflowId: string, isChecked: boolean) => void;
+  sort: SortProperty;
+  workflows: ExecutedWorkflowsQuery;
+  selectedWorkflows: string[];
+  onSortPropertyClick: (sortProperty: SortProperty) => void;
+  onSelectAllWorkflows: () => void;
+  onWorkflowSelect: (workflowId: string) => void;
+  onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowTable: FC<Props> = ({
   isFlat,
-  sortBy,
-  sortOrder,
-  sortWf,
-  selectedWfs,
-  selectWf,
   workflows,
-  selectAllWorkflows,
+  onSelectAllWorkflows,
+  onSortPropertyClick,
+  onWorkflowSelect,
+  onWorkflowStatusClick,
+  selectedWorkflows,
+  sort,
 }) => {
-  const areSelectedAll = workflows.length === selectedWfs.length;
+  const areAllWorkflowsSelected = workflows.executedWorkflows?.edges.length === selectedWorkflows.length;
+  const areThereAnyExecutedWorkflows =
+    workflows.executedWorkflows != null && workflows.executedWorkflows.edges.length > 0;
 
   return (
     <Box marginBottom={10}>
-      <Table background="white" variant="striped" size="sm">
+      <Table background="white" size="md">
         <ExecutedWorkflowTableHead
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          sortWf={sortWf}
-          selectAllWorkflows={selectAllWorkflows}
-          areSelectedAll={areSelectedAll}
+          onSelectAllWorkflows={onSelectAllWorkflows}
+          areAllWorkflowsSelected={areAllWorkflowsSelected}
+          onSortPropertyClick={onSortPropertyClick}
+          sort={sort}
         />
-        <Tbody fontSize={13} textAlign="left">
-          {isFlat ? (
-            <ExecutedWorkflowFlatTableItem selectWf={selectWf} selectedWfs={selectedWfs} flatWorkflows={workflows} />
-          ) : (
-            <ExecutedWorkflowHierarchicalTableItem
-              selectWf={selectWf}
-              selectedWfs={selectedWfs}
-              workflows={workflows}
-            />
-          )}
-        </Tbody>
+        {!areThereAnyExecutedWorkflows && <Text>There no executed workflows</Text>}
+
+        {workflows.executedWorkflows != null && (
+          <Tbody fontSize={13} textAlign="left">
+            {isFlat ? (
+              <ExecutedWorkflowFlatTableItem
+                onWorkflowSelect={onWorkflowSelect}
+                onWorkflowStatusClick={onWorkflowStatusClick}
+                selectedWorkflows={selectedWorkflows}
+                workflows={workflows}
+                sort={sort}
+              />
+            ) : (
+              <ExecutedWorkflowHierarchicalTableItem
+                onWorkflowSelect={onWorkflowSelect}
+                selectedWorkflows={selectedWorkflows}
+                workflows={workflows.executedWorkflows}
+                sort={sort}
+                onWorkflowStatusClick={onWorkflowStatusClick}
+              />
+            )}
+          </Tbody>
+        )}
       </Table>
     </Box>
   );

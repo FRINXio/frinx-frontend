@@ -8,6 +8,7 @@ import {
   ExecutedWorkflowResponse,
   WorkflowPayload,
   EListener,
+  ScheduleWorkflowInput,
 } from '@frinx/shared/src/helpers/workflow-api.types';
 import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow } from './type-guards';
 import { ApiHelpers } from '../api-helpers';
@@ -16,7 +17,7 @@ export type UniflowApiClient = {
   getWorkflows: () => Promise<Workflow[]>;
   getSchedules: () => Promise<ScheduledWorkflow[]>;
   getSchedule: (name: string, version: string) => Promise<ScheduledWorkflow>;
-  registerSchedule: (name: string, version: string, schedule: unknown) => Promise<unknown>;
+  registerSchedule: (name: string, version: string, schedule: ScheduleWorkflowInput) => Promise<unknown>;
   deleteSchedule: (name: string, version: string) => Promise<unknown>;
   registerTaskDefinition: (taskDefinitions: TaskDefinition[]) => Promise<TaskDefinition[]>;
   getTaskDefinitions: () => Promise<TaskDefinition[]>;
@@ -75,7 +76,7 @@ export default function createUniflowApiClient(apiHelpers: ApiHelpers): UniflowA
 
   // TODO: types, guards
   // Register workflow schedule
-  async function registerSchedule(name: string, version: string, schedule: unknown): Promise<unknown> {
+  async function registerSchedule(name: string, version: string, schedule: ScheduleWorkflowInput): Promise<unknown> {
     return sendPutRequest(`/schedule/${name}:${version}`, schedule);
   }
 

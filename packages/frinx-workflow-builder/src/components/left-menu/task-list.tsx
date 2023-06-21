@@ -63,10 +63,10 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) 
               </Tooltip>
             </Heading>
             <Text fontStyle="italic" color="gray.800">
-              {parseDescription(tskDefinition.description)}
+              {parseDescription(tskDefinition.description ?? '')}
             </Text>
             <Wrap marginTop={2} spacing={2}>
-              {parseLabels(tskDefinition.description)?.map((label) => (
+              {parseLabels(tskDefinition.description ?? '')?.map((label) => (
                 <WrapItem key={label}>
                   <Badge>{label}</Badge>
                 </WrapItem>

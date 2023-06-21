@@ -98,28 +98,28 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
     <form onSubmit={onSubmit}>
       <Grid gridTemplateColumns="1fr 1fr" columnGap={12} rowGap={2}>
         <FormInput id="name" label="Name" onChange={onChange} value={task.name} />
-        <FormInput id="description" label="Description" onChange={onChange} value={task.description} />
-        <FormInput id="ownerEmail" label="Owner Email" onChange={onChange} value={task.ownerEmail} />
-        <FormInput id="retryCount" label="Retry Count" onChange={onChange} value={task.retryCount} type="number" />
+        <FormInput id="description" label="Description" onChange={onChange} value={task.description ?? ''} />
+        <FormInput id="ownerEmail" label="Owner Email" onChange={onChange} value={task.ownerEmail ?? ''} />
+        <FormInput id="retryCount" label="Retry Count" onChange={onChange} value={task.retryCount ?? 0} type="number" />
         <FormSelect
           id="retryLogic"
           label="Retry Logic"
           onChange={onChange}
-          value={task.retryLogic}
+          value={task.retryLogic ?? 'FIXED'}
           valuesList={['FIXED', 'EXPONENTIAL_BACKOFF']}
         />
         <FormInput
           id="retryDelaySeconds"
           label="Retry Delay"
           onChange={onChange}
-          value={task.retryDelaySeconds}
+          value={task.retryDelaySeconds || ''}
           type="number"
         />
         <FormSelect
           id="timeoutPolicy"
           label="Timeout Policy"
           onChange={onChange}
-          value={task.timeoutPolicy}
+          value={task.timeoutPolicy ?? 'RETRY'}
           valuesList={['RETRY', 'TIME_OUT_WF', 'ALERT_ONLY']}
         />
         <FormInput id="timeoutSeconds" label="Timeout" onChange={onChange} value={task.timeoutSeconds} type="number" />
@@ -127,7 +127,7 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
           id="responseTimeoutSeconds"
           label="Response Timeout"
           onChange={onChange}
-          value={task.responseTimeoutSeconds}
+          value={task.responseTimeoutSeconds || ''}
           type="number"
         />
         <FormControl>

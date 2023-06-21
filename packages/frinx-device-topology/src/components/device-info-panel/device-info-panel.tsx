@@ -4,7 +4,7 @@ import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useQuery } from 'urql';
-import { getLocalDateFromUTC } from '../../helpers/datetime-helpers';
+import { getLocalDateFromUTC } from '@frinx/shared/src';
 import { DeviceQuery, DeviceQueryVariables } from '../../__generated__/graphql';
 
 const DEVICE_QUERY = gql`

@@ -1,37 +1,101 @@
-import React, { useEffect, useState } from 'react';
-import { Container, useDisclosure } from '@chakra-ui/react';
-import { callbackUtils, jsonParse, omitNullValue, Workflow } from '@frinx/shared/src';
+import { Box, Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
+import Pagination from '@frinx/inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
+import { jsonParse, ClientWorkflow, Task } from '@frinx/shared/src';
+import { debounce } from 'lodash';
+import React, { useMemo, useState } from 'react';
+import { gql, useMutation, useQuery } from 'urql';
+import { useNotifications } from '@frinx/shared';
+import { usePagination } from '../../../hooks/use-graphql-pagination';
+import {
+  DeleteWorkflowMutation,
+  DeleteWorkflowMutationVariables,
+  UpdateWorkflowMutation,
+  UpdateWorkflowMutationVariables,
+  WorkflowLabelsQuery,
+  WorkflowsQuery,
+} from '../../../__generated__/graphql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
-import { usePagination } from '../../../common/pagination-hook';
 
 type DescriptionJSON = { labels: string[]; description: string };
-
-const getLabels = (dataset: Workflow[]) => {
-  const labelsArr = dataset
-    .flatMap(({ description }) => {
-      return jsonParse<DescriptionJSON>(description)?.labels;
-    })
-    .filter(omitNullValue);
-  const allLabels = [...new Set(labelsArr)];
-  return allLabels
-    .filter((e) => {
-      return e !== undefined;
-    })
-    .sort((a, b) => {
-      return a.localeCompare(b);
-    });
+type WorkflowFilter = {
+  keyword: string[] | null;
+  labels: string[] | [];
 };
 
-const WorkflowDefinitions = () => {
-  const [keywords, setKeywords] = useState('');
-  const [labels, setLabels] = useState<string[]>([]);
-  const [activeWf, setActiveWf] = useState<Workflow>();
-  const [allLabels, setAllLabels] = useState<string[]>([]);
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+const WORKFLOWS_QUERY = gql`
+  query Workflows($first: Int, $after: String, $last: Int, $before: String, $filter: FilterWorkflowsInput) {
+    workflows(first: $first, after: $after, last: $last, before: $before, filter: $filter) {
+      edges {
+        node {
+          id
+          name
+          description
+          version
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          tasks
+          hasSchedule
+          inputParameters
+          outputParameters {
+            key
+            value
+          }
+          restartable
+          timeoutSeconds
+          timeoutPolicy
+        }
+      }
+      totalCount
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
 
-  const { currentPage, setCurrentPage, setItemList, totalPages, pageItems } = usePagination<Workflow>();
+const WORKFLOW_LABELS_QUERY = gql`
+  query WorkflowLabels {
+    workflowLabels
+  }
+`;
+
+const WORKFLOW_DELETE_MUTATION = gql`
+  mutation DeleteWorkflow($input: DeleteWorkflowInput!) {
+    deleteWorkflow(input: $input) {
+      workflow {
+        id
+      }
+    }
+  }
+`;
+
+const UPDATE_WORKFLOW_MUTATION = gql`
+  mutation UpdateWorkflow($updateWorkflowId: String!, $input: UpdateWorkflowInput!) {
+    updateWorkflow(id: $updateWorkflowId, input: $input) {
+      workflow {
+        id
+      }
+    }
+  }
+`;
+
+const WorkflowDefinitions = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
+  const [keywords, setKeywords] = useState('');
+  // TODO: FD-493 this is redundant because we can use the labels from filter state
+  const [filter, setFilter] = useState<WorkflowFilter>({
+    keyword: null,
+    labels: [],
+  });
+  const [activeWf, setActiveWf] = useState<ClientWorkflow>();
+  const { addToastNotification } = useNotifications();
 
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
@@ -39,88 +103,123 @@ const WorkflowDefinitions = () => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
-  useEffect(() => {
-    const { getWorkflows } = callbackUtils.getCallbacks;
-
-    getWorkflows().then((wfs) => {
-      setWorkflows(wfs);
-      setAllLabels(getLabels(wfs));
-    });
-  }, []);
-
-  useEffect(() => {
-    const results =
-      !keywords && labels.length === 0
-        ? workflows
-        : workflows.filter((e) => {
-            const queryWords = keywords.toUpperCase();
-            const wfName = e.name.toUpperCase();
-            const labelsArr = jsonParse<DescriptionJSON>(e.description)?.labels;
-
-            // if labels are used and wf does not contain selected labels => filter out
-            if (labels.length) {
-              return labels?.every((label: string) => labelsArr?.includes(label));
-            }
-
-            // search for keywords in "searchedKeys"
-            if (wfName.includes(queryWords)) {
-              return true;
-            }
-
-            return false;
-          });
-    setItemList(results);
-  }, [workflows, labels, keywords, setItemList]);
-
-  const updateFavourite = (workflow: Workflow) => {
-    let wfDescription = jsonParse<DescriptionJSON>(workflow.description);
-
-    // if workflow doesn't contain description attr. at all
-    if (!wfDescription) {
-      wfDescription = {
-        description: '',
-        labels: ['FAVOURITE'],
-      };
-    }
-    // if workflow has only description but no labels array
-    else if (wfDescription && !wfDescription.labels) {
-      wfDescription = {
-        ...wfDescription,
-        labels: ['FAVOURITE'],
-      };
-    }
-    // if workflow is already favourited (unfav.)
-    else if (wfDescription.labels.includes('FAVOURITE')) {
-      wfDescription.labels = wfDescription?.labels.filter((e: string) => e !== 'FAVOURITE');
-    }
-    // if workflow has correct description object, just add label
-    else {
-      wfDescription.labels.push('FAVOURITE');
-    }
-
-    const { putWorkflow, getWorkflows } = callbackUtils.getCallbacks;
-
-    putWorkflow([
-      {
-        ...workflow,
-        description: JSON.stringify(wfDescription),
+  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] =
+    useQuery<WorkflowsQuery>({
+      query: WORKFLOWS_QUERY,
+      variables: {
+        ...paginationArgs,
+        filter,
       },
-    ]).then(() => {
-      getWorkflows().then((wfs) => {
-        const dataset =
-          wfs.sort((a, b) => {
-            return a.name.localeCompare(b.name);
-          }) || [];
-        setWorkflows(dataset);
-        setItemList(dataset);
-        setAllLabels(getLabels(dataset));
-      });
+      context,
+    });
+
+  const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
+    query: WORKFLOW_LABELS_QUERY,
+  });
+
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+    WORKFLOW_DELETE_MUTATION,
+  );
+
+  const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
+    UPDATE_WORKFLOW_MUTATION,
+  );
+
+  const debouncedKeywordFilter = useMemo(
+    () =>
+      debounce((value) => {
+        setFilter((f) => ({ ...f, keyword: value }));
+      }, 500),
+    [],
+  );
+
+  const handleDeleteWorkflow = async (workflow: ClientWorkflow) => {
+    const { name, version } = workflow;
+    await deleteWorkflow({
+      input: {
+        name,
+        version: version || 1,
+      },
     });
   };
 
+  const handleOnFavouriteClick = (workflow: ClientWorkflow) => {
+    const wfDescription = jsonParse<DescriptionJSON>(workflow.description);
+    const hasLabels = wfDescription != null && wfDescription?.labels != null && wfDescription.labels.length > 0;
+    const isFavourite = wfDescription?.labels?.includes('favourite');
+
+    updateWorkflow(
+      {
+        updateWorkflowId: workflow.id,
+        input: {
+          workflow: {
+            name: workflow.name,
+            tasks: JSON.stringify(workflow.tasks),
+            timeoutSeconds: workflow.timeoutSeconds,
+            description: JSON.stringify({
+              description: workflow.description,
+              ...(hasLabels && {
+                labels: isFavourite
+                  ? wfDescription.labels.filter((l) => l !== 'FAVOURITE')
+                  : [...wfDescription.labels, 'FAVOURITE'],
+              }),
+              ...(!hasLabels && { labels: ['FAVOURITE'] }),
+            }),
+          },
+        },
+      },
+      {
+        additionalTypenames: ['Workflow', 'WorkflowConnection'],
+      },
+    )
+      .then((r) => {
+        if (r.error != null) {
+          throw r.error;
+        }
+        addToastNotification({
+          title: 'Success',
+          content: 'Workflow added to favourites',
+          type: 'success',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          title: 'Error',
+          content: 'Workflow could not be added to favourites',
+          type: 'error',
+        });
+      });
+  };
+
+  if (isLoadingWorkflowDefinitions) {
+    return (
+      <Container maxWidth={1280}>
+        <Progress size="xs" isIndeterminate />
+      </Container>
+    );
+  }
+
+  if (workflowDefinitionsError) {
+    return <Text>We are sorry, but something went wrong when we were loading workflow definitions.</Text>;
+  }
+
+  const workflows: ClientWorkflow[] =
+    workflowsData?.workflows.edges.map((e) => {
+      const { node } = e;
+      const parsedLabels = jsonParse<DescriptionJSON>(e.node.description)?.labels ?? [];
+      const tasks = jsonParse<Task[]>(e.node.tasks) ?? [];
+      return {
+        ...node,
+        labels: parsedLabels,
+        tasks,
+        hasSchedule: node.hasSchedule ?? false,
+      };
+    }) ?? [];
+
   return (
-    <Container maxWidth={1200} mx="auto">
+    <Container maxWidth={1280} mx="auto">
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}
@@ -129,31 +228,34 @@ const WorkflowDefinitions = () => {
         executeWorkflowModal={inputParametersModal}
         scheduledWorkflowModal={schedulingModal}
         activeWorkflow={activeWf}
-        getData={() => {
-          const { getWorkflows } = callbackUtils.getCallbacks;
-
-          getWorkflows().then((wfs) => {
-            setWorkflows(wfs);
-            setAllLabels(getLabels(wfs));
-          });
-        }}
-        workflows={pageItems}
+        onDeleteWorkflow={handleDeleteWorkflow}
+        workflows={workflows}
       />
       <WorkflowDefinitionsHeader
-        allLabels={allLabels}
-        keywords={[keywords]}
-        onKeywordsChange={setKeywords}
-        labels={labels}
+        allLabels={labelsData?.workflowLabels ?? []}
+        keywords={keywords}
+        onKeywordsChange={(value) => {
+          setKeywords(value);
+          debouncedKeywordFilter(value);
+        }}
+        labels={filter.labels}
         onLabelsChange={(newLabels) => {
-          setLabels([...new Set(newLabels)]);
+          const newLabelsArray = [...new Set(newLabels)];
+          setFilter((f) => ({
+            ...f,
+            labels: newLabelsArray,
+          }));
         }}
         onClearSearch={() => {
           setKeywords('');
-          setLabels([]);
+          setFilter({
+            keyword: null,
+            labels: [],
+          });
         }}
       />
       <WorkflowDefinitionsTable
-        workflows={pageItems}
+        workflows={workflows}
         definitionModal={definitionModal}
         diagramModal={diagramModal}
         dependencyModal={dependencyModal}
@@ -161,17 +263,22 @@ const WorkflowDefinitions = () => {
         scheduleWorkflowModal={schedulingModal}
         confirmDeleteModal={confirmDeleteModal}
         setActiveWorkflow={setActiveWf}
-        onFavoriteClick={updateFavourite}
+        onFavoriteClick={handleOnFavouriteClick}
         onLabelClick={(label) => {
-          setLabels((prevLabels) => [...new Set([...prevLabels, label])]);
+          setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}
-        allLabels={allLabels}
-        paginationProps={{
-          currentPage,
-          setCurrentPage,
-          totalPages,
-        }}
+        allLabels={labelsData?.workflowLabels ?? []}
       />
+      {workflowsData && (
+        <Box marginTop={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(workflowsData.workflows.pageInfo.startCursor)}
+            onNext={nextPage(workflowsData.workflows.pageInfo.endCursor)}
+            hasNextPage={workflowsData.workflows.pageInfo.hasNextPage}
+            hasPreviousPage={workflowsData.workflows.pageInfo.hasPreviousPage}
+          />
+        </Box>
+      )}
     </Container>
   );
 };

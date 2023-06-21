@@ -1,14 +1,15 @@
+import { utcToZonedTime } from 'date-fns-tz';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
-import { ExtendedTask, Workflow } from './workflow-api.types';
+import { Workflow, ExtendedTask, ClientWorkflow } from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
   { value: string; description: string; type: string; options?: string[] | null }
 >;
 
-export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | null): string[] => {
+export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | ClientWorkflow | null): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});
   const match = stringifiedWorkflow.match(REGEX)?.map((path) => path.replace('workflow.input.', ''));
@@ -29,7 +30,7 @@ export const jsonParse = <T = { description: string }>(json?: string | null): T 
   }
 };
 
-export function parseInputParameters(inputParameters?: string[]): InputParameter | null {
+export function parseInputParameters(inputParameters?: string[] | null): InputParameter | null {
   if (inputParameters == null || inputParameters.length === 0) {
     return null;
   }
@@ -51,14 +52,14 @@ export function parseInputParameters(inputParameters?: string[]): InputParameter
   }, {});
 }
 
-export function isWorkflowNameAvailable(workflows: Workflow[], name: string): boolean {
+export function isWorkflowNameAvailable(workflows: ClientWorkflow[], name: string): boolean {
   return workflows.every((wf) => wf.name !== name);
 }
 
 export function getInitialValuesFromParsedInputParameters(
   parsedInputParameters?: InputParameter | null,
   dynamicInputParameters?: string[] | null,
-) {
+): Record<string, string> {
   let initialValues = {};
   if (parsedInputParameters != null) {
     initialValues = Object.keys(parsedInputParameters).reduce(
@@ -96,26 +97,48 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
 }
 
 export function createEmptyWorkflow(): Pick<
-  Workflow,
+  ClientWorkflow<ExtendedTask>,
+  | 'id'
   | 'name'
   | 'description'
   | 'version'
-  | 'ownerEmail'
+  | 'createdAt'
+  | 'createdBy'
+  | 'updatedAt'
+  | 'updatedBy'
+  | 'hasSchedule'
+  | 'tasks'
+  | 'inputParameters'
+  | 'labels'
+  // | 'ownerEmail'
   | 'restartable'
   | 'timeoutPolicy'
   | 'timeoutSeconds'
   | 'outputParameters'
-  | 'variables'
+  // | 'variables'
 > {
   return {
+    id: '',
     name: '',
     description: '',
     version: 1,
-    ownerEmail: '',
+    createdAt: null,
+    createdBy: null,
+    updatedAt: null,
+    updatedBy: null,
+    hasSchedule: false,
+    tasks: [],
+    inputParameters: [],
+    labels: [],
+    // ownerEmail: '',
     restartable: true,
     timeoutPolicy: 'ALERT_ONLY',
     timeoutSeconds: 0,
-    outputParameters: {},
-    variables: {},
+    outputParameters: [],
+    // variables: {},
   };
+}
+
+export function getLocalDateFromUTC(date: string): Date {
+  return utcToZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
 }
