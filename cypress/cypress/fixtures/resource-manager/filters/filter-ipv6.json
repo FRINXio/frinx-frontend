@@ -1,0 +1,18 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 0,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}
