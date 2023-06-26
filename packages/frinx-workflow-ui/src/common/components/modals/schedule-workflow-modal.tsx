@@ -20,6 +20,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Progress,
   Spacer,
   Text,
   useBoolean,
@@ -30,34 +31,64 @@ import {
   ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
   CreateScheduledWorkflow,
-  EditScheduledWorkflow,
-} from '@frinx/shared/src';
+} from 'packages/shared/src';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
-import ExecuteWorkflowModalFormInput from '@frinx/shared/src/components/execute-workflow-modal/execute-workflow-modal-form-input';
+import ExecuteWorkflowModalFormInput from 'packages/shared/src/components/execute-workflow-modal/execute-workflow-modal-form-input';
 import FeatherIcon from 'feather-icons-react';
+import { gql, useQuery } from 'urql';
+import { SchedulesQuery, SchedulesQueryVariables } from '../../../__generated__/graphql';
+
+const SCHEDULED_WORKFLOWS_QUERY = gql`
+  query GetSchedules {
+    schedules {
+      edges {
+        node {
+          name
+        }
+      }
+    }
+  }
+`;
 
 const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
 
 type Props = {
-  scheduledWorkflow: EditScheduledWorkflow;
   workflow: ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (workflow: EditScheduledWorkflow) => void;
+  onSubmit: (workflow: CreateScheduledWorkflow) => void;
 };
 
-const resetDateFormat = (dateTime: string | undefined): string => {
-  return moment(dateTime).format('yyyy-MM-DDTHH:mm');
-};
+const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
+  const [{ data: scheduledWorkflows, fetching: isLoadingScheduledWorkflows }] = useQuery<
+    SchedulesQuery,
+    SchedulesQueryVariables
+  >({
+    query: SCHEDULED_WORKFLOWS_QUERY,
+  });
 
-const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen, onClose, onSubmit }) => {
   const validationSchema = Yup.object().shape({
     workflowName: Yup.string().required('Workflow name is required'),
     workflowVersion: Yup.number().required('Workflow version is required'),
-    name: Yup.string().required('Schedule name is required'),
+    name: Yup.string()
+      .required('Schedule name is required')
+      .test({
+        name: 'name',
+        message: 'Schedule name must be unique',
+        test: (value) => {
+          const scheduleNames = scheduledWorkflows?.schedules.edges.map((edge) => {
+            return edge?.node.name;
+          });
+          const isNameUnique = !scheduleNames?.some((wfName) => wfName === value);
+          if (!isNameUnique) {
+            return false;
+          }
+          return true;
+        },
+      }),
     cronString: Yup.string()
       .required('Cron expression is required')
       .test({
@@ -87,21 +118,18 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
     validationSchema,
     validateOnMount: false,
     initialValues: {
-      workflowName: scheduledWorkflow?.workflowName ?? workflow.name,
-      workflowVersion: scheduledWorkflow?.workflowVersion ?? workflow.version?.toString() ?? '',
-      workflowContext: scheduledWorkflow?.workflowContext
-        ? scheduledWorkflow.workflowContext
-        : getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
-      name: scheduledWorkflow?.name || '',
-      cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
-      isEnabled: scheduledWorkflow?.isEnabled ?? false,
-      performFromDate: scheduledWorkflow?.performFromDate && resetDateFormat(scheduledWorkflow?.performFromDate),
-      performTillDate: scheduledWorkflow?.performFromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
+      workflowName: workflow.name,
+      workflowVersion: workflow.version?.toString() ?? '',
+      workflowContext: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
+      name: '',
+      cronString: DEFAULT_CRON_STRING,
+      isEnabled: false,
+      performFromDate: undefined,
+      performTillDate: undefined,
     },
     onSubmit: (formValues) => {
       const formattedValues = {
         ...formValues,
-        id: scheduledWorkflow?.id,
         cronString: formValues.cronString || DEFAULT_CRON_STRING,
         ...(formValues.performFromDate && {
           performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
@@ -113,7 +141,6 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
           workflowContext: formValues.workflowContext,
         }),
       };
-
       onSubmit(formattedValues);
       onClose();
     },
@@ -129,6 +156,10 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
     );
   };
 
+  if (isLoadingScheduledWorkflows) {
+    return <Progress size="xs" isIndeterminate />;
+  }
+
   const inputParametersKeys = Object.keys(values.workflowContext);
 
   return (
@@ -143,7 +174,6 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
           <FormControl isInvalid={errors.name != null} isRequired>
             <FormLabel>Schedule name</FormLabel>
             <Input
-              disabled={scheduledWorkflow?.name.length !== undefined}
               value={values.name}
               onChange={(e) => {
                 handleChange(e);

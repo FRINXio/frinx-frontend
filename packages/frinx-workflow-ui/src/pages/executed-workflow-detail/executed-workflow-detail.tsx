@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
-import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
+import { TaskModal } from '../../common/components/modals';
 import {
   Box,
   Button,

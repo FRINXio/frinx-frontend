@@ -14,7 +14,7 @@ import {
   DependencyModal,
   ScheduleWorkflowModal,
   ConfirmDeleteModal,
-} from '../../../common/modals';
+} from '../../../common/components/modals';
 import {
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
