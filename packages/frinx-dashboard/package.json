@@ -1,6 +1,6 @@
 {
   "name": "@frinx/dashboard",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "2.34.0",
@@ -19,7 +19,7 @@
     "@frinx/shared": "workspace:^",
     "@frinx/workflow-builder": "workspace:^",
     "@frinx/workflow-ui": "workspace:^",
-    "@frinxio/gamma": "0.0.30",
+    "@frinxio/gamma": "0.0.31",
     "@types/node": "16.18.14",
     "@types/react": "17.0.53",
     "@types/react-dom": "18.0.11",
