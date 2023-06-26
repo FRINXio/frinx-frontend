@@ -1,130 +1,88 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
   Button,
-  Flex,
+  Card,
+  HStack,
   Heading,
-  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Spacer,
   Spinner,
-  Stack,
+  Text,
 } from '@chakra-ui/react';
-import FeatherIcon from 'feather-icons-react';
-import { useNotifications, callbackUtils } from '@frinx/shared/src';
-
-type CallBackUtilsFunctionNames =
-  | 'restartWorkflows'
-  | 'resumeWorkflows'
-  | 'pauseWorkflows'
-  | 'deleteWorkflowInstance'
-  | 'terminateWorkflows';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 
 type Props = {
-  workflowsAmount: number;
-  selectedWorkflows: string[];
-  selectAllWorkflows: (isChecked: boolean) => void;
-  onSuccessfullOperation: () => void;
+  isExecutingBulkOperation: boolean;
+  amountOfVisibleWorkflows: number;
+  amountOfSelectedWorkflows: number;
+  onRestart: () => void;
+  onRetry: () => void;
+  onResume: () => void;
+  onTerminate: () => void;
+  onPause: () => void;
 };
 
 const ExecutedWorkflowBulkOperationsBlock: FC<Props> = ({
-  workflowsAmount,
-  selectedWorkflows,
-  selectAllWorkflows,
-  onSuccessfullOperation,
+  isExecutingBulkOperation,
+  amountOfVisibleWorkflows,
+  amountOfSelectedWorkflows,
+  onPause,
+  onRestart,
+  onResume,
+  onRetry,
+  onTerminate,
 }) => {
-  const [isFetching, setIsFetching] = useState(false);
-  const { addToastNotification } = useNotifications();
+  if (amountOfSelectedWorkflows === 0) {
+    return (
+      <Card p={15}>
+        <Heading size="lg">Showing {amountOfVisibleWorkflows} workflows</Heading>
+      </Card>
+    );
+  } else {
+    return (
+      <Card p={15} bgColor="blue.200">
+        <HStack>
+          <Heading size="lg" textColor="white">
+            Selected {amountOfSelectedWorkflows} workflows
+          </Heading>
 
-  const executeBulkOperation = (operationFunctionName: CallBackUtilsFunctionNames) => {
-    if (selectedWorkflows.length === 0) return;
+          <Spacer />
 
-    setIsFetching(true);
-
-    if (operationFunctionName === 'deleteWorkflowInstance') {
-      const operations = callbackUtils.getCallbacks;
-      Promise.all(selectedWorkflows.map((workflow) => operations[operationFunctionName](workflow)))
-        .then(() => {
-          addToastNotification({
-            content: 'Successfully deleted executed workflows',
-            type: 'success',
-            title: 'Success',
-          });
-          onSuccessfullOperation();
-        })
-        .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
-        .finally(() => {
-          setIsFetching(false);
-          selectAllWorkflows(false);
-        });
-    } else {
-      const operations = callbackUtils.getCallbacks;
-      operations[operationFunctionName](selectedWorkflows)
-        .then(() => {
-          addToastNotification({ content: 'Successfully executed bulk operation', type: 'success' });
-          onSuccessfullOperation();
-        })
-        .catch((err) => addToastNotification({ content: err.message, type: 'error', title: 'Error' }))
-        .finally(() => {
-          setIsFetching(false);
-          selectAllWorkflows(false);
-        });
-    }
-  };
-
-  return (
-    <Accordion allowToggle backgroundColor="white" marginBottom={10}>
-      <AccordionItem>
-        <h2>
-          <AccordionButton>
-            <Box flex="1" textAlign="left">
-              Bulk Processing (click to expand)&nbsp;&nbsp;
-              <Icon size={20} as={FeatherIcon} icon="more-horizontal" />
-              &nbsp;&nbsp; Displaying <b>{workflowsAmount}</b> workflows
-            </Box>
-            <AccordionIcon />
-          </AccordionButton>
-        </h2>
-        <AccordionPanel padding={8}>
-          <Flex justifyContent="space-between">
-            <Box>
-              <Heading as="h5" size="sm">
-                Workflows selected: {selectedWorkflows.length}
-                {isFetching ? (
-                  <Spinner color="blue.500" size="md" marginLeft={8} float="right" marginRight={40} />
-                ) : null}
-              </Heading>
-            </Box>
-            <Stack spacing={4} direction="row">
-              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('pauseWorkflows')}>
-                Pause
-              </Button>
-              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('resumeWorkflows')}>
-                Resume
-              </Button>
-              <Button variant="outline" colorScheme="blue" onClick={() => executeBulkOperation('restartWorkflows')}>
-                Restart
-              </Button>
-              <Button variant="outline" colorScheme="red" onClick={() => executeBulkOperation('terminateWorkflows')}>
-                Terminate
-              </Button>
-              <Button
-                variant="outline"
-                colorScheme="gray"
-                onClick={() => executeBulkOperation('deleteWorkflowInstance')}
-              >
-                Delete
-              </Button>
-            </Stack>
-          </Flex>
-        </AccordionPanel>
-      </AccordionItem>
-    </Accordion>
-  );
+          <Menu>
+            {({ isOpen }) => (
+              <>
+                <MenuButton
+                  as={Button}
+                  rightIcon={<ChevronDownIcon />}
+                  colorScheme="blue"
+                  cursor={isExecutingBulkOperation ? 'not-allowed' : 'pointer'}
+                  disabled={isExecutingBulkOperation}
+                >
+                  <HStack>
+                    {isExecutingBulkOperation && <Spinner />}
+                    <Text>Bulk actions</Text>
+                  </HStack>
+                </MenuButton>
+                {isOpen && !isExecutingBulkOperation && (
+                  <MenuList>
+                    <MenuItem onClick={onRestart}>Restart</MenuItem>
+                    <MenuItem onClick={onRetry}>Retry</MenuItem>
+                    <MenuItem onClick={onResume}>Resume</MenuItem>
+                    <MenuItem onClick={onPause}>Pause</MenuItem>
+                    <MenuItem onClick={onTerminate}>Terminate</MenuItem>
+                  </MenuList>
+                )}
+              </>
+            )}
+          </Menu>
+        </HStack>
+      </Card>
+    );
+  }
 };
 
 export default ExecutedWorkflowBulkOperationsBlock;

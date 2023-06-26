@@ -1,15 +1,15 @@
 import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import { OperationResult } from 'urql';
 import {
-  callbackUtils,
-  convertToTasks,
+  ClientWorkflow,
   ExecuteWorkflowModal,
   ExtendedTask,
+  convertToTasks,
   getElementsFromWorkflow,
   getNodeType,
   NodeData,
   TaskDefinition,
   useNotifications,
-  Workflow,
 } from '@frinx/shared/src';
 import produce from 'immer';
 import { zip } from 'lodash';
@@ -43,18 +43,12 @@ import StartEndNode from './components/workflow-nodes/start-end-node';
 import { EdgeRemoveContext } from './edge-remove-context';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
-
-type WorkflowParam = Pick<
-  Workflow,
-  | 'name'
-  | 'description'
-  | 'version'
-  | 'restartable'
-  | 'timeoutPolicy'
-  | 'timeoutSeconds'
-  | 'outputParameters'
-  | 'variables'
->;
+import {
+  ExecuteWorkflowByNameMutation,
+  ExecuteWorkflowByNameMutationVariables,
+  UpdateWorkflowMutation,
+  UpdateWorkflowMutationVariables,
+} from './__generated__/graphql';
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -68,14 +62,18 @@ const edgeTypes = {
 };
 
 type Props = {
-  workflow: Workflow<ExtendedTask>;
-  workflows: Workflow[];
+  workflow: ClientWorkflow<ExtendedTask>;
+  workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
-  onWorkflowChange: (workflow: WorkflowParam) => void;
+  onWorkflowChange: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onFileImport: (file: File) => void;
-  onFileExport: (workflow: Workflow) => void;
-  onWorkflowDelete: () => void;
-  onWorkflowClone: (workflow: Workflow, name: string) => void;
+  onFileExport: (workflow: ClientWorkflow) => void; // eslint-disable-line react/no-unused-prop-types
+  onWorkflowDelete: (name: string, version?: number | null) => void;
+  onWorkflowClone: (workflow: ClientWorkflow, name: string) => void; // eslint-disable-line react/no-unused-prop-types
+  updateWorkflow: (variables: UpdateWorkflowMutationVariables) => Promise<OperationResult<UpdateWorkflowMutation>>;
+  executeWorkflow: (
+    variables: ExecuteWorkflowByNameMutationVariables,
+  ) => Promise<OperationResult<ExecuteWorkflowByNameMutation>>;
 };
 
 const App: VoidFunctionComponent<Props> = ({
@@ -85,8 +83,10 @@ const App: VoidFunctionComponent<Props> = ({
   taskDefinitions,
   onFileImport,
   onFileExport,
-  onWorkflowDelete,
   onWorkflowClone,
+  onWorkflowDelete,
+  updateWorkflow,
+  executeWorkflow,
 }) => {
   const { addToastNotification } = useNotifications();
   const workflowDefinitionDisclosure = useDisclosure();
@@ -100,7 +100,7 @@ const App: VoidFunctionComponent<Props> = ({
   );
   const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [workflowToExecute, setWorkflowToExecute] = useState<Workflow<ExtendedTask>>(workflow);
+  const [workflowToExecute, setWorkflowToExecute] = useState<ClientWorkflow<ExtendedTask>>(workflow);
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => ({
@@ -214,10 +214,9 @@ const App: VoidFunctionComponent<Props> = ({
 
   const handleWorkflowClone = (wfName: string) => {
     const newTasks = convertToTasks(elements);
-    const { tasks, ...rest } = workflow;
     onWorkflowClone(
       {
-        ...rest,
+        ...workflow,
         tasks: newTasks,
       },
       wfName,
@@ -238,14 +237,14 @@ const App: VoidFunctionComponent<Props> = ({
     [],
   );
 
-  const handleOnWorkflowChange = (editedWorkflow: Workflow<ExtendedTask>, isWorkflowChanged: boolean) => {
+  const handleOnWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>, isWorkflowChanged: boolean) => {
     onWorkflowChange(editedWorkflow);
     setHasUnsavedChanges(isWorkflowChanged);
   };
 
-  const handleOnSaveWorkflow = (editedWorkflow: Workflow<ExtendedTask>, shouldOpenExecuteModal = false) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleOnSaveWorkflow = async (editedWorkflow: ClientWorkflow<ExtendedTask>, shouldOpenExecuteModal = false) => {
     try {
-      const { tasks, ...rest } = editedWorkflow;
       const newTasks = convertToTasks(elements);
 
       setWorkflowToExecute({
@@ -253,31 +252,46 @@ const App: VoidFunctionComponent<Props> = ({
         tasks: newTasks,
       });
 
-      const { putWorkflow } = callbackUtils.getCallbacks;
-      putWorkflow([
-        {
-          ...rest,
-          tasks: newTasks,
+      const description = JSON.stringify({
+        description: editedWorkflow.description,
+        labels: editedWorkflow.labels,
+      });
+
+      const result = await updateWorkflow({
+        updateWorkflowId: workflow.id,
+        input: {
+          workflow: {
+            description,
+            name: editedWorkflow.name,
+            tasks: JSON.stringify(newTasks),
+            timeoutSeconds: 0,
+            version: editedWorkflow.version,
+            restartable: editedWorkflow.restartable,
+            outputParameters: editedWorkflow.outputParameters,
+            updatedAt: new Date().toISOString(),
+          },
         },
-      ])
-        .then(() => {
-          setHasUnsavedChanges(false);
-          if (shouldOpenExecuteModal) {
-            executeWorkflowModal.onOpen();
-          }
-          addToastNotification({
-            title: 'Workflow Saved',
-            content: 'Workflow was successfully saved',
-            type: 'success',
-          });
-        })
-        .catch((e) => {
-          addToastNotification({
-            title: 'Saving wofklow error',
-            content: `Workflow could not be saved: ${e}`,
-            type: 'error',
-          });
+      });
+
+      if (result.error) {
+        addToastNotification({
+          title: 'Saving wofklow error',
+          content: `Workflow could not be saved: ${result.error}`,
+          type: 'error',
         });
+        return;
+      }
+
+      setHasUnsavedChanges(false);
+      if (shouldOpenExecuteModal) {
+        executeWorkflowModal.onOpen();
+      }
+
+      addToastNotification({
+        title: 'Workflow Saved',
+        content: 'Workflow was successfully saved',
+        type: 'success',
+      });
     } catch (e) {
       addToastNotification({
         title: 'Conversion workflow error',
@@ -287,7 +301,7 @@ const App: VoidFunctionComponent<Props> = ({
     }
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, string>) => {
+  const handleOnExecuteWorkflow = async (values: Record<string, unknown>): Promise<string | null> => {
     if (workflow == null) {
       addToastNotification({
         content: 'We cannot execute undefined workflow',
@@ -297,21 +311,20 @@ const App: VoidFunctionComponent<Props> = ({
       return null;
     }
 
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
-    return executeWorkflow({
-      input: values,
-      name: workflow.name,
-      version: workflow.version,
-    })
-      .then((res) => {
-        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
-      })
-      .catch(() => {
-        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
-        return null;
+    try {
+      const result = await executeWorkflow({
+        input: {
+          inputParameters: JSON.stringify(values),
+          workflowName: workflow.name,
+          workflowVersion: workflow.version,
+        },
       });
+      addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+      return result.data?.executeWorkflowByName ?? null;
+    } catch {
+      addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
+      return null;
+    }
   };
 
   return (
@@ -357,6 +370,7 @@ const App: VoidFunctionComponent<Props> = ({
                   onWorkflowDelete={onWorkflowDelete}
                   onWorkflowClone={handleWorkflowClone}
                   workflows={workflows}
+                  workflow={workflow}
                 />
               </Box>
               <HStack>
@@ -425,8 +439,9 @@ const App: VoidFunctionComponent<Props> = ({
                 </Heading>
                 <WorkflowForm
                   workflow={workflow}
-                  onSubmit={(partialWorkflow) => {
-                    handleOnWorkflowChange({ ...workflow, ...partialWorkflow }, true);
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  onSubmit={(editedWorkflow) => {
+                    handleOnWorkflowChange(editedWorkflow, true);
                     setIsEditing(false);
                   }}
                   onClose={() => {

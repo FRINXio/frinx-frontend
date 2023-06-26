@@ -2,7 +2,7 @@ import { FormLabel, Progress, Select } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import React, { ChangeEvent, VoidFunctionComponent } from 'react';
 import { gql, useQuery } from 'urql';
-import { getLocalDateFromUTC } from '../../helpers/datetime-helpers';
+import { getLocalDateFromUTC } from '@frinx/shared/src';
 import { setSelectedVersion } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { VersionsQueryQuery, VersionsQueryQueryVariables } from '../../__generated__/graphql';

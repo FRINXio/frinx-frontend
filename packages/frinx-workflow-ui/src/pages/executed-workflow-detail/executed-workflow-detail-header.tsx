@@ -1,17 +1,19 @@
 import React, { FC } from 'react';
 import { Box, Grid } from '@chakra-ui/react';
-import { Status } from '@frinx/shared/src';
 import { isEmpty } from 'lodash';
 import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-action-button';
+import { ExecutedWorkflowStatus } from '../../__generated__/graphql';
 
 type Props = {
   startTime: string;
   endTime: string;
-  status: Status;
-  restartWorkflows: () => void;
-  onWorkflowActionExecution: (workflowId: string) => void;
-  workflowId: string;
+  status: ExecutedWorkflowStatus | null;
   visibleRestartButton: boolean;
+  onRestartWorkflow: () => void;
+  onTerminateWorkflow: () => void;
+  onRetryWorkflow: () => void;
+  onPauseWorkflow: () => void;
+  onResumeWorkflow: () => void;
 };
 
 const getExecutionTime = (end: string, start: string) => {
@@ -34,10 +36,12 @@ const DetailsModalHeader: FC<Props> = ({
   startTime,
   status,
   endTime,
-  onWorkflowActionExecution,
-  workflowId,
-  restartWorkflows,
   visibleRestartButton,
+  onRestartWorkflow,
+  onTerminateWorkflow,
+  onRetryWorkflow,
+  onPauseWorkflow,
+  onResumeWorkflow,
 }) => (
   <Box background="blue.600" borderRadius={4} padding={15} marginBottom={10}>
     <Grid templateColumns={status === 'COMPLETED' ? 'repeat(4, 1fr)' : 'repeat(5,1fr)'}>
@@ -72,11 +76,13 @@ const DetailsModalHeader: FC<Props> = ({
       {status !== 'COMPLETED' && (
         <Box>
           <DetailsModalHeaderActionButtons
-            restartWorkflows={restartWorkflows}
-            workflowId={workflowId}
             status={status}
-            onWorkflowActionExecution={onWorkflowActionExecution}
             isVisibleRestartButton={visibleRestartButton}
+            onRestartWorkflow={onRestartWorkflow}
+            onTerminateWorkflow={onTerminateWorkflow}
+            onRetryWorkflow={onRetryWorkflow}
+            onPauseWorkflow={onPauseWorkflow}
+            onResumeWorkflow={onResumeWorkflow}
           />
         </Box>
       )}

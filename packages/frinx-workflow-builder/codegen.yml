@@ -1,0 +1,16 @@
+schema:
+  - api.graphql
+documents:
+  - './src/**/*.tsx'
+  - './src/**/*.ts'
+generates:
+  src/__generated__/graphql.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+    config:
+      enumsAsTypes: true
+      avoidOptionals:
+        field: true
+        object: false
+        inputValue: false

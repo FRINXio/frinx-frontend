@@ -133,14 +133,6 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
   const { results, setSearchText } = useMinisearch({
     items: allIpamIpRanges,
-    searchFields: ['Name', 'PoolProperties'],
-    extractField: (document, fieldName) => {
-      if (fieldName === 'PoolProperties') {
-        return JSON.stringify(document[fieldName]);
-      }
-
-      return document[fieldName];
-    },
   });
 
   const handleOnClearSearch = () => {

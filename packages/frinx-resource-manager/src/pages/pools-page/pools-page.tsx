@@ -175,22 +175,24 @@ const PoolsPage: VoidFunctionComponent = () => {
 
   const { addToastNotification } = useNotifications();
 
-  const handleDeleteBtnClick = async (id: string) => {
-    try {
-      const result = await deletePool({ input: { resourcePoolId: id } }, context);
-      if (result.error) {
-        throw Error();
-      }
-      addToastNotification({
-        type: 'success',
-        content: 'Successfully deleted resource pool',
+  const handleDeleteBtnClick = (id: string) => {
+    deletePool({ input: { resourcePoolId: id } }, context)
+      .then((res) => {
+        if (!res.error) {
+          addToastNotification({
+            content: 'Pool deleted successfuly',
+            title: 'Success',
+            type: 'success',
+          });
+        }
+      })
+      .catch((err) => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: err?.message,
+        });
       });
-    } catch {
-      addToastNotification({
-        type: 'error',
-        content: 'There was a problem with deletion of the resource pool',
-      });
-    }
   };
 
   const handleOnClearSearch = () => {

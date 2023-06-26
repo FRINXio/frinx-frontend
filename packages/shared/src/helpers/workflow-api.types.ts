@@ -295,6 +295,32 @@ export type ExtendedTask =
   | ExtendedJsonJQTask
   | ExtendedSetVariableTask;
 
+type OutputParameter = {
+  key: string;
+  value: string;
+};
+
+export type ClientWorkflow<T = Task> = {
+  id: string;
+  name: string;
+  description: string | null;
+  timeoutSeconds: number;
+  version: number | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+  tasks: T[];
+  hasSchedule: boolean;
+  labels: string[];
+  inputParameters: string[] | null;
+  outputParameters: OutputParameter[] | null;
+  restartable: boolean | null;
+  timeoutPolicy: TimeoutPolicy | null;
+};
+
+export type DescriptionJSON = { labels: string[]; description: string };
+
 export type Workflow<T = Task> = {
   name: string;
   hasSchedule: boolean;
@@ -323,23 +349,26 @@ export type NodeData = {
   handles?: string[];
 };
 
+type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+type RetryLogic = 'FIXED' | 'EXPONENTIAL_BACKOFF' | 'LINEAR_BACKOFF';
+
 export type TaskDefinition = {
   name: string;
-  description?: string;
-  retryCount: number;
+  description?: string | null;
+  retryCount: number | null;
   timeoutSeconds: number;
   pollTimeoutSeconds?: number;
   inputKeys?: string[];
   outputKeys?: string[];
   inputTemplate?: Record<string, string>;
-  timeoutPolicy: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
-  retryLogic: 'FIXED' | 'EXPONENTIAL_BACKOFF';
-  retryDelaySeconds: number;
-  responseTimeoutSeconds: number;
+  timeoutPolicy: TaskTimeoutPolicy | null;
+  retryLogic: RetryLogic | null;
+  retryDelaySeconds: number | null;
+  responseTimeoutSeconds: number | null;
   concurrentExecLimit?: number;
   rateLimitFrequencyInSeconds?: number;
   rateLimitPerFrequency?: number;
-  ownerEmail: string;
+  ownerEmail: string | null;
 };
 
 export type ExecutedWorkflowTask = {
@@ -374,19 +403,55 @@ export enum SerializerEnum {
   StringSerializer = 'org.apache.kafka.common.serialization.StringSerializer',
 }
 
-export type StatusType = 'COMPLETED' | 'RUNNING' | 'FAILED';
+export type StatusType = 'COMPLETED' | 'FAILED' | 'PAUSED' | 'RUNNING' | 'TERMINATED' | 'TIMED_OUT' | 'UNKNOWN';
 
-export type ScheduledWorkflow = {
-  correlationId: string;
-  cronString: string;
-  lastUpdate: string;
+export type ScheduleWorkflowInput = {
   name: string;
-  taskToDomain: Record<string, string>;
   workflowName: string;
   workflowVersion: string;
-  workflowContext: Record<string, any>;
-  enabled: boolean;
-  status: StatusType;
+  workflowContext: string;
+  cornString: string;
+  isEnabled: boolean;
+  performFromDate: string;
+  performTillDate: string;
+  parallelRuns?: boolean;
+};
+
+export type ScheduledWorkflow = {
+  id: string;
+  correlationId?: string;
+  cronString: string;
+  lastUpdate?: string;
+  performFromDate?: string;
+  performTillDate?: string;
+  name: string;
+  parallelRuns?: boolean | undefined;
+  taskToDomain?: string;
+  workflowName: string;
+  workflowVersion: string;
+  workflowContext: string;
+  isEnabled: boolean;
+  status?: StatusType;
+};
+
+export type CreateScheduledWorkflow = {
+  correlationId?: string;
+  cronString: string | undefined;
+  lastUpdate?: string;
+  performFromDate?: string | undefined;
+  performTillDate?: string;
+  name: string;
+  parallelRuns?: boolean | undefined;
+  taskToDomain?: string;
+  workflowName: string;
+  workflowVersion: string;
+  workflowContext: Record<string, string>;
+  isEnabled: boolean;
+  status?: StatusType;
+};
+
+export type EditScheduledWorkflow = CreateScheduledWorkflow & {
+  id: string;
 };
 
 export type ExecutedWorkflow = {
@@ -502,10 +567,11 @@ export enum WorkflowTaskType {
 }
 
 // eslint-disable-next-line no-shadow
-enum TimeoutPolicy {
-  TIME_OUT_WF,
-  ALERT_ONLY,
-}
+// enum TimeoutPolicy {
+//   TIME_OUT_WF,
+//   ALERT_ONLY,
+// }
+export type TimeoutPolicy = 'TIME_OUT_WF' | 'ALERT_ONLY';
 
 // export type WorkflowTask = {
 //   name: string;
@@ -586,7 +652,7 @@ export type WorkflowExecutionResult = {
 };
 
 export type WorkflowPayload = {
-  input: Record<string, string>;
+  input: Record<string, unknown>;
   name: string;
   version: number;
 };

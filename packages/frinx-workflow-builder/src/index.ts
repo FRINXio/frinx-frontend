@@ -1,5 +1,4 @@
 import Root from './root';
-import { getBuilderApiProvider } from './builder-api-provider';
 
-export { getBuilderApiProvider };
+export { getBuilderApiProvider, InventoryAPIProvider } from './builder-api-provider';
 export { Root as WorkflowBuilder };

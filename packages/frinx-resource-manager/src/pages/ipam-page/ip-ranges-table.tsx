@@ -49,10 +49,10 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, fet
       <Table size="sm">
         <Thead bgColor="gray.200">
           <Tr>
+            <Th>Name</Th>
             <Th>Network</Th>
             <Th>Broadcast</Th>
             <Th>Size</Th>
-            <Th>Name</Th>
             <Th>Tags</Th>
             <Th>Actions</Th>
           </Tr>
@@ -64,6 +64,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, fet
               const totalCapacity = BigInt(Number(rest.totalCapacity));
               return (
                 <Tr key={id}>
+                  <Td>{name}</Td>
                   {nestedRanges.length > 0 ? (
                     <Td>
                       <ChakraLink as={Link} textColor="blue" to={`../ipam/ip-ranges/${id}/nested-ranges`}>
@@ -75,7 +76,6 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, fet
                   )}
                   <Td>{broadcast}</Td>
                   <Td>{new Intl.NumberFormat('fr').format(totalCapacity)}</Td>
-                  <Td>{name}</Td>
                   <Td>
                     {tags.map(({ Tag: tagName, id: tagId }) => (
                       <Tag

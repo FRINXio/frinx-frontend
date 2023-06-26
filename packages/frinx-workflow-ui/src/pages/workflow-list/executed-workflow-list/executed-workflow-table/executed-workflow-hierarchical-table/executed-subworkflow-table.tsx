@@ -1,25 +1,18 @@
 import React from 'react';
 import { Spinner, Td, Tr, Text } from '@chakra-ui/react';
-import { ExecutedWorkflowTask } from '@frinx/shared/src';
+import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../../../__generated__/graphql';
 import { ExecutedWorkflowItem } from '../executed-workflow-item';
 
-type ExecutedSubworkflowTask = ExecutedWorkflowTask & { inputData: Record<string, string> };
-type ExecutedSubWorkflows = {
-  isLoading: boolean;
-  subWorkflows: ExecutedSubworkflowTask[];
-};
 type Props = {
-  workflowId: string;
-  subWorkflows: Map<string, ExecutedSubWorkflows>;
+  workflowInstanceDetail?: WorkflowInstanceDetailQuery['workflowInstanceDetail'];
+  isLoadingSubWorkflows: boolean;
+  onSubworkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
-function ExecutedSubWorkflowTable({ workflowId, subWorkflows }: Props) {
-  const workflows = subWorkflows.get(workflowId);
 
-  if (workflows == null) {
-    return null;
-  }
+function ExecutedSubWorkflowTable({ workflowInstanceDetail, isLoadingSubWorkflows, onSubworkflowStatusClick }: Props) {
+  const subworkflows = workflowInstanceDetail?.subworkflows;
 
-  if (workflows.isLoading) {
+  if (isLoadingSubWorkflows) {
     return (
       <Tr>
         <Td>
@@ -29,13 +22,21 @@ function ExecutedSubWorkflowTable({ workflowId, subWorkflows }: Props) {
     );
   }
 
-  if (workflows.subWorkflows.length === 0) {
+  if (subworkflows == null) {
+    return (
+      <Tr>
+        <Td>No subworkflows found for this workflow</Td>
+      </Tr>
+    );
+  }
+
+  if (subworkflows.length === 0) {
     return (
       <Tr>
         <Td />
         <Td colSpan={4}>
           <Text paddingLeft={8} textStyle="italic" color="gray.400">
-            No subworkflows
+            This executed workflow has no subworkflows
           </Text>
         </Td>
       </Tr>
@@ -44,9 +45,15 @@ function ExecutedSubWorkflowTable({ workflowId, subWorkflows }: Props) {
 
   return (
     <>
-      {workflows.subWorkflows.map((w) => (
-        <ExecutedWorkflowItem key={w.subWorkflowId} workflow={w} />
-      ))}
+      {subworkflows.map((subworkflow) => {
+        return (
+          <ExecutedWorkflowItem
+            key={subworkflow.executedWorkflowDetail.id}
+            subworkflow={subworkflow}
+            onSubworkflowStatusClick={onSubworkflowStatusClick}
+          />
+        );
+      })}
     </>
   );
 }
