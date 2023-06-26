@@ -28,7 +28,7 @@ import {
 import FeatherIcon from 'feather-icons-react';
 import { Editor, useNotifications, callbackUtils, EListener } from '@frinx/shared/src';
 import Paginator from '../../../common/pagination';
-import { usePagination } from '../../../hooks/pagination-hook';
+import { usePagination } from '../../../hooks/use-pagination-hook';
 
 const EventListeners = () => {
   const [eventListeners, setEventListeners] = useState<EListener[]>([]);
