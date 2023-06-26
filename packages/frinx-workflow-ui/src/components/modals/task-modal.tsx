@@ -23,10 +23,10 @@ import {
 import { jsonParse } from 'packages/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
-import copyToClipBoard from '../../../helpers/copy-to-clipboard';
-import { unescapedJSON } from '../../../helpers/utils.helpers';
-import ExternalStorageModal from '../../../pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
-import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
+import copyToClipBoard from '../../helpers/copy-to-clipboard';
+import { unescapedJSON } from '../../helpers/utils.helpers';
+import ExternalStorageModal from '../../pages/executed-workflow-detail/executed-workflow-detail-tabs/external-storage-modal';
+import { ExecutedWorkflowDetailQuery } from '../../__generated__/graphql';
 
 type Props = {
   executedWorkflow: NonNullable<ExecutedWorkflowDetailQuery['node']>;

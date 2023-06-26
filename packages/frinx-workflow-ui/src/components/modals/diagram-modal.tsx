@@ -12,8 +12,8 @@ import {
 import { convertWorkflowTaskToExtendedTask, getElementsFromWorkflow } from 'packages/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
-import { getLayoutedElements } from '../../../helpers/layout.helpers';
-import { Workflow } from '../../../pages/workflow-list/workflow-definitions/workflow-types';
+import { getLayoutedElements } from '../../helpers/layout.helpers';
+import { Workflow } from '../../pages/workflow-list/workflow-definitions/workflow-types';
 import { BaseNode, DecisionNode, StartEndNode } from '../index';
 
 type ModalProps = {

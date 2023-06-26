@@ -45,7 +45,7 @@ import {
   WorkflowsQueryVariables,
 } from '../../../__generated__/graphql';
 import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
-import EditScheduleWorkflowModal from '../../../common/components/modals/edit-schedule-workflow-modal';
+import EditScheduleWorkflowModal from '../../../components/modals/edit-schedule-workflow-modal';
 
 const WORKFLOWS_QUERY = gql`
   query WorkflowList {

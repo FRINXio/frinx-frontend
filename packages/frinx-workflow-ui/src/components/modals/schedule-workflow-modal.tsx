@@ -38,7 +38,7 @@ import moment from 'moment';
 import ExecuteWorkflowModalFormInput from 'packages/shared/src/components/execute-workflow-modal/execute-workflow-modal-form-input';
 import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
-import { SchedulesQuery, SchedulesQueryVariables } from '../../../__generated__/graphql';
+import { SchedulesQuery, SchedulesQueryVariables } from '../../__generated__/graphql';
 
 const SCHEDULED_WORKFLOWS_QUERY = gql`
   query GetSchedules {
