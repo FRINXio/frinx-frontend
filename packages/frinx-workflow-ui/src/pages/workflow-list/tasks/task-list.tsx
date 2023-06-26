@@ -1,6 +1,6 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { callbackUtils, TaskDefinition } from '@frinx/shared/src';
-import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
+import { usePagination } from 'src/hooks/pagination-hook';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import MiniSearch, { SearchResult } from 'minisearch';
