@@ -116,7 +116,7 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
       },
       validationSchema,
       validateOnBlur: false,
-      validateOnChange: false,
+      validateOnChange: true,
     });
 
   const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {
@@ -154,7 +154,7 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
                 <FormErrorMessage>{errors.userInput?.assignedNumber}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={errors.userInput?.as != null} mb={3}>
+              <FormControl isRequired isInvalid={errors.userInput?.as != null} mb={3}>
                 <FormLabel htmlFor="as">AS number</FormLabel>
                 <Input
                   id="as"
@@ -166,7 +166,7 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
                 <FormErrorMessage>{errors.userInput?.as}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={errors.userInput?.ipv4 != null} mb={3}>
+              <FormControl isRequired isInvalid={errors.userInput?.ipv4 != null} mb={3}>
                 <FormLabel htmlFor="ipv4">IPv4 address</FormLabel>
                 <Input
                   id="ipv4"
