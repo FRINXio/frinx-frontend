@@ -341,6 +341,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           throw new Error('Something went wrong');
         }
 
+        // when specific task detail is opened we need to close it after rerun so that we can see new tasks that have different ids
+        setOpenedTaskId(null);
         onExecutedOperation(result.data?.executeWorkflowByName || '');
       })
       .catch((err) => {
