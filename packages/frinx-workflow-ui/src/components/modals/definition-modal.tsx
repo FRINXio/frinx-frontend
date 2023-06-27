@@ -9,7 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { ClientWorkflow, Editor } from 'packages/shared/src';
+import { ClientWorkflow, Editor } from '@frinx/shared';
 
 type ModalProps = {
   isOpen: boolean;

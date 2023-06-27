@@ -31,11 +31,11 @@ import {
   ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
   CreateScheduledWorkflow,
-} from 'packages/shared/src';
+  ExecuteWorkflowModalFormInput,
+} from '@frinx/shared';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
-import ExecuteWorkflowModalFormInput from 'packages/shared/src/components/execute-workflow-modal/execute-workflow-modal-form-input';
 import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
 import { SchedulesQuery, SchedulesQueryVariables } from '../../__generated__/graphql';

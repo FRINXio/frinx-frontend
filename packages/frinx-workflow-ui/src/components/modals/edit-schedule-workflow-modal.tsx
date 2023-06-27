@@ -31,11 +31,11 @@ import {
   getInitialValuesFromParsedInputParameters,
   CreateScheduledWorkflow,
   EditScheduledWorkflow,
-} from 'packages/shared/src';
+  ExecuteWorkflowModalFormInput
+} from '@frinx/shared';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
-import ExecuteWorkflowModalFormInput from 'packages/shared/src/components/execute-workflow-modal/execute-workflow-modal-form-input';
 import FeatherIcon from 'feather-icons-react';
 
 const DEFAULT_CRON_STRING = '* * * * *';
