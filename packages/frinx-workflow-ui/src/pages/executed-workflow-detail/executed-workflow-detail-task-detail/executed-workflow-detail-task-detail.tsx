@@ -59,7 +59,10 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
       )}
       {task == null && (
         <HStack>
-          <Heading size="md" as="h2">Task not found</Heading> <Spacer />
+          <Heading size="md" as="h2">
+            Task not found
+          </Heading>{' '}
+          <Spacer />
           <IconButton
             aria-label="close task detail"
             icon={<Icon as={FeatherIcon} icon="x" size={20} />}
