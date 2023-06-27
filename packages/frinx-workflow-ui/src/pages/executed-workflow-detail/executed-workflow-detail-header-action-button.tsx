@@ -12,7 +12,7 @@ type Props = {
   isVisibleRestartButton: boolean;
 };
 
-const DetailsModalHeaderActionButtons: FC<Props> = ({
+const ExecutedWorkflowDetailHeaderActionButton: FC<Props> = ({
   status,
   isVisibleRestartButton,
   onRestartWorkflow,
@@ -61,4 +61,4 @@ const DetailsModalHeaderActionButtons: FC<Props> = ({
   );
 };
 
-export default DetailsModalHeaderActionButtons;
+export default ExecutedWorkflowDetailHeaderActionButton;

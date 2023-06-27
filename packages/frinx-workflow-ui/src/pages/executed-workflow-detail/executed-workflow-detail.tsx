@@ -39,7 +39,7 @@ import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
-import DetailsModalHeader from './executed-workflow-detail-header';
+import ExecutedWorkflowDetailHeader from './executed-workflow-detail-header';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 import WorkflowDiagram from '../../common/workflow-diagram';
 import { formatDate } from '../../helpers/utils.helpers';
@@ -532,7 +532,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           </Button>
         )}
       </Box>
-      <DetailsModalHeader
+      <ExecutedWorkflowDetailHeader
         endTime={formatDate(executedWorkflow.endTime)}
         startTime={formatDate(executedWorkflow.startTime)}
         status={executedWorkflow.status}
