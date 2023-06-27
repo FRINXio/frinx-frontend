@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Text } from '@chakra-ui/react';
-import { ExtendedDecisionTask } from 'packages/shared/src';
+import { ExtendedDecisionTask } from '@frinx/shared';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position } from 'react-flow-renderer';
 import { ExecutionState, getBackgroundColor } from './node.helpers';

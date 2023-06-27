@@ -31,7 +31,7 @@ import {
   getInitialValuesFromParsedInputParameters,
   CreateScheduledWorkflow,
   EditScheduledWorkflow,
-  ExecuteWorkflowModalFormInput
+  ExecuteWorkflowModalFormInput,
 } from '@frinx/shared';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
