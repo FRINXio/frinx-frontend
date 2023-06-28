@@ -1,10 +1,10 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { callbackUtils, TaskDefinition } from '@frinx/shared/src';
-import { usePagination } from '@frinx/workflow-ui/src/common/pagination-hook';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import MiniSearch, { SearchResult } from 'minisearch';
 import React, { useEffect, useRef, useState } from 'react';
+import { usePagination } from '../../../hooks/use-pagination-hook';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';

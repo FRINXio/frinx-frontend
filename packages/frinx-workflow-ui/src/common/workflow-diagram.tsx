@@ -11,7 +11,7 @@ import {
   unwrap,
 } from '@frinx/shared/src';
 import { getLayoutedElements } from '../helpers/layout.helpers';
-import { BaseNode, DecisionNode, StartEndNode } from './components';
+import { BaseNode, DecisionNode, StartEndNode } from '../components';
 import { ControlExecutedWorkflowSubscription, Workflow } from '../__generated__/graphql';
 
 const nodeTypes = {

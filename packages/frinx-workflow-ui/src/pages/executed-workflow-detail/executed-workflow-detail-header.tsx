@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Grid } from '@chakra-ui/react';
 import { isEmpty } from 'lodash';
-import DetailsModalHeaderActionButtons from './executed-workflow-detail-header-action-button';
+import ExecutedWorkflowDetailHeaderActionButton from './executed-workflow-detail-header-action-button';
 import { ExecutedWorkflowStatus } from '../../__generated__/graphql';
 
 type Props = {
@@ -32,7 +32,7 @@ const getExecutionTime = (end: string, start: string) => {
   return total / 1000;
 };
 
-const DetailsModalHeader: FC<Props> = ({
+const ExecutedWorkflowDetailHeader: FC<Props> = ({
   startTime,
   status,
   endTime,
@@ -75,7 +75,7 @@ const DetailsModalHeader: FC<Props> = ({
       </Box>
       {status !== 'COMPLETED' && (
         <Box>
-          <DetailsModalHeaderActionButtons
+          <ExecutedWorkflowDetailHeaderActionButton
             status={status}
             isVisibleRestartButton={visibleRestartButton}
             onRestartWorkflow={onRestartWorkflow}
@@ -90,4 +90,4 @@ const DetailsModalHeader: FC<Props> = ({
   </Box>
 );
 
-export default DetailsModalHeader;
+export default ExecutedWorkflowDetailHeader;

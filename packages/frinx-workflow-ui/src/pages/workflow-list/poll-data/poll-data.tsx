@@ -18,7 +18,7 @@ import { orderBy } from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import Paginator from '../../../common/pagination';
-import { usePagination } from '../../../common/pagination-hook';
+import { usePagination } from '../../../hooks/use-pagination-hook';
 
 function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
   const query = keyword.toUpperCase();
