@@ -13,7 +13,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { ClientWorkflow } from '@frinx/shared/src';
+import { ClientWorkflow } from '@frinx/shared';
 
 type Props = {
   activeWorkflow: ClientWorkflow;
