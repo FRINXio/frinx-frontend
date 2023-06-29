@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Button, Flex, Icon, IconButton, Input, InputGroup, FormLabel } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import WfAutoComplete from '../../common/wf-autocomplete';
+import WfAutoComplete from '../../components/wf-autocomplete';
 
 type Props = {
   allLabels: string[];

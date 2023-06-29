@@ -17,7 +17,7 @@ import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import Paginator from '../../common/pagination';
+import Paginator from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination-hook';
 
 function filterBySearchKeyword(queue: Queue, keyword: string): boolean {

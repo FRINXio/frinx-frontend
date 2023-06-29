@@ -9,7 +9,7 @@ import ExecutedWorkflowList from './pages/executed-workflow-list/executed-workfl
 import PollData from './pages/poll-data/poll-data';
 import ScheduledWorkflowList from './pages/scheduled-workflow/scheduled-workflow-list';
 import TaskList from './pages/workflow-list/tasks/task-list';
-import WorkflowListHeader from './pages/workflow-list/workflow-list-header';
+import WorkflowListHeader from './components/workflow-list-header';
 import WorkflowDefinitions from './pages/workflow-definitions/workflow-definitions';
 
 const Root: VoidFunctionComponent = () => {

@@ -27,7 +27,7 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Editor, useNotifications, callbackUtils, EListener } from '@frinx/shared';
-import Paginator from '../../common/pagination';
+import Paginator from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination-hook';
 
 const EventListeners = () => {

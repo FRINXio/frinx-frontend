@@ -20,7 +20,7 @@ import {
 import React, { VoidFunctionComponent } from 'react';
 import { ClientWorkflow, jsonParse } from '@frinx/shared';
 import WorkflowActions from './workflow-actions';
-import WorkflowLabels from '../../common/workflow-labels';
+import WorkflowLabels from '../../components/workflow-labels';
 
 type Props = {
   workflows: ClientWorkflow[];
