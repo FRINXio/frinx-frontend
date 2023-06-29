@@ -1,1 +1,8 @@
-{"data":{"CreateNestedAllocatingPool":{"pool":{"id":"21474836559","__typename":"ResourcePool"},"__typename":"CreateNestedAllocatingPoolPayload"}}}
+{
+  "data": {
+    "CreateNestedAllocatingPool": {
+      "pool": { "id": "21474836559", "__typename": "ResourcePool" },
+      "__typename": "CreateNestedAllocatingPoolPayload"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836544",
+            "Name": "bukurest3",
+            "Tags": [{ "id": "30064771106", "Tag": "bukurest3", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803780", "Name": "ipv6_prefix", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": {
+              "freeCapacity": "18446744073709551616",
+              "utilizedCapacity": "0",
+              "__typename": "PoolCapacityPayload"
+            },
+            "PoolProperties": { "address": "2001:db8:1::", "prefix": 64, "subnet": false },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836538",
+            "Name": "bukurest",
+            "Tags": [{ "id": "30064771100", "Tag": "bukurest", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803780", "Name": "ipv6_prefix", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": {
+              "freeCapacity": "18446744073709551616",
+              "utilizedCapacity": "0",
+              "__typename": "PoolCapacityPayload"
+            },
+            "PoolProperties": { "address": "2001:db8:1::", "prefix": 64, "subnet": false },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+        
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 2,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}

@@ -1,1 +1,229 @@
-{"data":{"QueryResourcePools":[{"id":"21474836481","Name":"test","ResourceType":{"id":"25769803777","Name":"ipv4","__typename":"ResourceType"},"Resources":[{"Description":"","Properties":{"address":"192.168.10.1"},"id":"17179869189","ParentPool":{"id":"21474836481","Name":"test","__typename":"ResourcePool"},"NestedPool":null,"__typename":"Resource"}],"__typename":"ResourcePool"}]}}
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836480",
+            "Name": "halabala",
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803776",
+              "Name": "ipv4_prefix",
+              "Pools": [{ "id": "21474836480", "Name": "halabala", "__typename": "ResourcePool" }],
+              "PropertyTypes": [
+                { "id": "12884901888", "Name": "address", "__typename": "PropertyType" },
+                { "id": "12884901889", "Name": "prefix", "__typename": "PropertyType" },
+                { "id": "12884901890", "Name": "subnet", "__typename": "PropertyType" }
+              ],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836485",
+            "Name": "TestGraphQL",
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 12, "subnet": false },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803777",
+              "Name": "ipv4",
+              "Pools": [
+                { "id": "21474836485", "Name": "TestGraphQL", "__typename": "ResourcePool" },
+                { "id": "21474836486", "Name": "abcdaa", "__typename": "ResourcePool" },
+                { "id": "21474836492", "Name": "test1", "__typename": "ResourcePool" },
+                { "id": "21474836495", "Name": "hala", "__typename": "ResourcePool" },
+                { "id": "21474836496", "Name": "jonas", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [{ "id": "12884901894", "Name": "address", "__typename": "PropertyType" }],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836486",
+            "Name": "abcdaa",
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 24, "subnet": false },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803777",
+              "Name": "ipv4",
+              "Pools": [
+                { "id": "21474836485", "Name": "TestGraphQL", "__typename": "ResourcePool" },
+                { "id": "21474836486", "Name": "abcdaa", "__typename": "ResourcePool" },
+                { "id": "21474836492", "Name": "test1", "__typename": "ResourcePool" },
+                { "id": "21474836495", "Name": "hala", "__typename": "ResourcePool" },
+                { "id": "21474836496", "Name": "jonas", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [{ "id": "12884901894", "Name": "address", "__typename": "PropertyType" }],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836489",
+            "Name": "ipv6_test",
+            "PoolProperties": { "address": "2001:db8:1::", "prefix": 24, "subnet": false },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803780",
+              "Name": "ipv6_prefix",
+              "Pools": [
+                { "id": "21474836489", "Name": "ipv6_test", "__typename": "ResourcePool" },
+                { "id": "21474836493", "Name": "testik1", "__typename": "ResourcePool" },
+                { "id": "21474836494", "Name": "test1.1", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [
+                { "id": "12884901905", "Name": "address", "__typename": "PropertyType" },
+                { "id": "12884901906", "Name": "prefix", "__typename": "PropertyType" },
+                { "id": "12884901907", "Name": "subnet", "__typename": "PropertyType" }
+              ],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836492",
+            "Name": "test1",
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 1, "subnet": true },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803777",
+              "Name": "ipv4",
+              "Pools": [
+                { "id": "21474836485", "Name": "TestGraphQL", "__typename": "ResourcePool" },
+                { "id": "21474836486", "Name": "abcdaa", "__typename": "ResourcePool" },
+                { "id": "21474836492", "Name": "test1", "__typename": "ResourcePool" },
+                { "id": "21474836495", "Name": "hala", "__typename": "ResourcePool" },
+                { "id": "21474836496", "Name": "jonas", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [{ "id": "12884901894", "Name": "address", "__typename": "PropertyType" }],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836493",
+            "Name": "testik1",
+            "PoolProperties": { "address": "2001:db8:1::", "prefix": 11, "subnet": true },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803780",
+              "Name": "ipv6_prefix",
+              "Pools": [
+                { "id": "21474836489", "Name": "ipv6_test", "__typename": "ResourcePool" },
+                { "id": "21474836493", "Name": "testik1", "__typename": "ResourcePool" },
+                { "id": "21474836494", "Name": "test1.1", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [
+                { "id": "12884901905", "Name": "address", "__typename": "PropertyType" },
+                { "id": "12884901906", "Name": "prefix", "__typename": "PropertyType" },
+                { "id": "12884901907", "Name": "subnet", "__typename": "PropertyType" }
+              ],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836494",
+            "Name": "test1.1",
+            "PoolProperties": { "address": "2001:db8:1::", "prefix": 64, "subnet": false },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803780",
+              "Name": "ipv6_prefix",
+              "Pools": [
+                { "id": "21474836489", "Name": "ipv6_test", "__typename": "ResourcePool" },
+                { "id": "21474836493", "Name": "testik1", "__typename": "ResourcePool" },
+                { "id": "21474836494", "Name": "test1.1", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [
+                { "id": "12884901905", "Name": "address", "__typename": "PropertyType" },
+                { "id": "12884901906", "Name": "prefix", "__typename": "PropertyType" },
+                { "id": "12884901907", "Name": "subnet", "__typename": "PropertyType" }
+              ],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836495",
+            "Name": "hala",
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 24, "subnet": false },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803777",
+              "Name": "ipv4",
+              "Pools": [
+                { "id": "21474836485", "Name": "TestGraphQL", "__typename": "ResourcePool" },
+                { "id": "21474836486", "Name": "abcdaa", "__typename": "ResourcePool" },
+                { "id": "21474836492", "Name": "test1", "__typename": "ResourcePool" },
+                { "id": "21474836495", "Name": "hala", "__typename": "ResourcePool" },
+                { "id": "21474836496", "Name": "jonas", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [{ "id": "12884901894", "Name": "address", "__typename": "PropertyType" }],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836496",
+            "Name": "jonas",
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 24, "subnet": false },
+            "ParentResource": null,
+            "ResourceType": {
+              "id": "25769803777",
+              "Name": "ipv4",
+              "Pools": [
+                { "id": "21474836485", "Name": "TestGraphQL", "__typename": "ResourcePool" },
+                { "id": "21474836486", "Name": "abcdaa", "__typename": "ResourcePool" },
+                { "id": "21474836492", "Name": "test1", "__typename": "ResourcePool" },
+                { "id": "21474836495", "Name": "hala", "__typename": "ResourcePool" },
+                { "id": "21474836496", "Name": "jonas", "__typename": "ResourcePool" }
+              ],
+              "PropertyTypes": [{ "id": "12884901894", "Name": "address", "__typename": "PropertyType" }],
+              "__typename": "ResourceType"
+            },
+            "Resources": [],
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}
