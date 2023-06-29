@@ -5,7 +5,7 @@ import {
   ClientWorkflow,
   unwrap,
   CreateScheduledWorkflow,
-} from '@frinx/shared/src';
+} from 'packages/shared/src';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
 import {
@@ -14,13 +14,13 @@ import {
   DependencyModal,
   ScheduleWorkflowModal,
   ConfirmDeleteModal,
-} from '../../../components/modals';
+} from '../../components/modals';
 import {
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
   ScheduleWorkflowMutation,
   ScheduleWorkflowMutationVariables,
-} from '../../../__generated__/graphql';
+} from '../../__generated__/graphql';
 
 type Props = {
   workflows: ClientWorkflow[];

@@ -2,7 +2,7 @@ import { Checkbox, Td, Tr } from '@chakra-ui/react';
 import moment from 'moment';
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
-import { ExecutedWorkflowsQuery, ExecutedWorkflowStatus } from '../../../../../__generated__/graphql';
+import { ExecutedWorkflowsQuery, ExecutedWorkflowStatus } from '../../../../__generated__/graphql';
 import ExecutedWorkflowStatusLabels from '../executed-workflow-status-labels';
 import { SortProperty } from '../../executed-workflow-list';
 import { sortExecutedWorkflows } from '../../executed-workflow.helpers';

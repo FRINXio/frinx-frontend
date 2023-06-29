@@ -10,7 +10,7 @@ import {
   ExecutedWorkflowsQuery,
   WorkflowInstanceDetailQuery,
   WorkflowInstanceDetailQueryVariables,
-} from '../../../../../__generated__/graphql';
+} from '../../../../__generated__/graphql';
 import { SortProperty } from '../../executed-workflow-list';
 import { sortExecutedWorkflows } from '../../executed-workflow.helpers';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';

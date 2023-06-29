@@ -20,7 +20,7 @@ import {
   Progress,
   Container,
 } from '@chakra-ui/react';
-import Pagination from '@frinx/inventory-client/src/components/pagination';
+import Pagination from 'packages/frinx-inventory-client/src/components/pagination';
 import FeatherIcon from 'feather-icons-react';
 import {
   omitNullValue,
@@ -32,7 +32,7 @@ import {
   jsonParse,
   Task,
   EditScheduledWorkflow,
-} from '@frinx/shared/src';
+} from 'packages/shared/src';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
 import {
@@ -43,9 +43,9 @@ import {
   SchedulesQuery,
   WorkflowsQuery,
   WorkflowsQueryVariables,
-} from '../../../__generated__/graphql';
-import { usePagination as graphlUsePagination } from '../../../hooks/use-graphql-pagination';
-import EditScheduleWorkflowModal from '../../../components/modals/edit-schedule-workflow-modal';
+} from '../../__generated__/graphql';
+import { usePagination as graphlUsePagination } from '../../hooks/use-graphql-pagination';
+import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
 const WORKFLOWS_QUERY = gql`
   query WorkflowList {

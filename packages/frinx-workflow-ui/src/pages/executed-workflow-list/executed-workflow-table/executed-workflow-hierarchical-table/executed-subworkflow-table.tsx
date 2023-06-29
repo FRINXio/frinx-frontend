@@ -1,6 +1,6 @@
 import React from 'react';
 import { Spinner, Td, Tr, Text } from '@chakra-ui/react';
-import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../../../__generated__/graphql';
+import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../../__generated__/graphql';
 import { ExecutedWorkflowItem } from '../executed-workflow-item';
 
 type Props = {

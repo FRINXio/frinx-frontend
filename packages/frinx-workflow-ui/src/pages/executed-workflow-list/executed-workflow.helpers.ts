@@ -1,11 +1,11 @@
 import { orderBy } from 'lodash';
 import moment from 'moment';
-import { makeArrayFromValue, parseBoolean } from '../../../helpers/utils.helpers';
+import { makeArrayFromValue, parseBoolean } from '../../helpers/utils.helpers';
 import {
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
   ExecutedWorkflowStatus,
-} from '../../../__generated__/graphql';
+} from '../../__generated__/graphql';
 import { SortProperty } from './executed-workflow-list';
 import { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
 

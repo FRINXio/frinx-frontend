@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tag } from '@chakra-ui/react';
-import { ExecutedWorkflowStatus } from '../../../../__generated__/graphql';
+import { ExecutedWorkflowStatus } from '../../../__generated__/graphql';
 
 type Props = {
   status: ExecutedWorkflowStatus | 'UNKNOWN';

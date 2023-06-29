@@ -18,9 +18,9 @@ import {
   UseDisclosureReturn,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { ClientWorkflow, jsonParse } from '@frinx/shared/src';
+import { ClientWorkflow, jsonParse } from 'packages/shared/src';
 import WorkflowActions from './workflow-actions';
-import WorkflowLabels from '../../../common/workflow-labels';
+import WorkflowLabels from '../../common/workflow-labels';
 
 type Props = {
   workflows: ClientWorkflow[];

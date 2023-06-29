@@ -1,10 +1,10 @@
 import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
-import Pagination from '@frinx/inventory-client/src/components/pagination';
-import { useNotifications } from '@frinx/shared/src';
+import Pagination from 'packages/frinx-inventory-client/src/components/pagination';
+import { useNotifications } from 'packages/shared/src';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { makeURLSearchParamsFromObject } from '../../../helpers/utils.helpers';
+import { makeURLSearchParamsFromObject } from '../../helpers/utils.helpers';
 import {
   BulkPauseWorkflowMutation,
   BulkPauseWorkflowMutationVariables,
@@ -20,7 +20,7 @@ import {
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
   ExecutedWorkflowStatus,
-} from '../../../__generated__/graphql';
+} from '../../__generated__/graphql';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
 import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';

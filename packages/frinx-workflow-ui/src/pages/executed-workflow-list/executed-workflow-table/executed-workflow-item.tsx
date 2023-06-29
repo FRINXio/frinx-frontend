@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { Text, Tr, Td } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../../__generated__/graphql';
+import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../__generated__/graphql';
 import ExecutedWorkflowStatusLabels from './executed-workflow-status-labels';
 
 type Props = {

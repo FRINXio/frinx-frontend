@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { FC } from 'react';
-import { ExecutedWorkflowStatus } from '../../../../__generated__/graphql';
+import { ExecutedWorkflowStatus } from '../../../__generated__/graphql';
 import ExecutedWorkflowStatusLabels from '../executed-workflow-table/executed-workflow-status-labels';
 
 export type ExecutedWorkflowSearchQuery = {
