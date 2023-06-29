@@ -19,6 +19,8 @@ describe('check devices inventory table', () => {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
     }).as('getFilterLabels');
+
+    cy.visit(Cypress.env('device-inventory-host'));
   });
 
   it('Search by label', () => {
@@ -27,8 +29,6 @@ describe('check devices inventory table', () => {
         req.reply({ fixture: 'device-inventory/device-list/label-search-RX.json' });
       }
     }).as('searchDevicesByLabel');
-
-    cy.visit(Cypress.env('device-inventory-host'));
 
     cy.wait('@getFilterLabels');
     cy.get('[data-cy="search-by-label"]').click();
@@ -47,6 +47,7 @@ describe('check devices inventory table', () => {
         req.reply({ fixture: 'device-inventory/device-list/label-list.json' });
       }
     }).as('searchDevicesByName');
+
     cy.get('[data-cy="search-by-name"]').type('R9').get('[data-cy="search-button"]').click().wait(2000);
     cy.contains('R9');
   });

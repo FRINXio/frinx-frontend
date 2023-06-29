@@ -8,7 +8,7 @@ import { hasOperationName } from '../../helpers/utils';
 describe('Check pools', () => {
   it('Delete pool test_ipv6', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/test_ipv6/get-pools.json' });
       }
     }).as('getPools');
@@ -34,7 +34,7 @@ describe('Check pools', () => {
       }
     }).as('DeletePool');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/get-pools.json' });
       }
     }).as('GetPools');
