@@ -10,6 +10,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Record: any;
   Upload: any;
 };
 
@@ -505,6 +506,11 @@ export type FilterWorkflowsInput = {
   labels?: InputMaybe<Array<Scalars['String']>>;
 };
 
+export type FreeResourceInput = {
+  poolId: Scalars['String'];
+  resource: Scalars['Record'];
+};
+
 export type GraphEdge = {
   __typename?: 'GraphEdge';
   id: Scalars['ID'];
@@ -644,6 +650,7 @@ export type Mutation = {
   editWorkflowSchedule: Maybe<Schedule>;
   executeNewWorkflow: Maybe<Scalars['String']>;
   executeWorkflowByName: Maybe<Scalars['String']>;
+  freeResource: Maybe<Scalars['String']>;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   pauseWorkflow: Maybe<IsOkResponse>;
@@ -792,6 +799,11 @@ export type MutationExecuteNewWorkflowArgs = {
 
 export type MutationExecuteWorkflowByNameArgs = {
   input: ExecuteWorkflowByName;
+};
+
+
+export type MutationFreeResourceArgs = {
+  input: FreeResourceInput;
 };
 
 
@@ -958,7 +970,7 @@ export type Pool = Node & {
   name: Scalars['String'];
   poolType: PoolType;
   resourceType: ResourceType;
-  tags: Array<Maybe<Tag>>;
+  tags: Array<Tag>;
   version: Maybe<Scalars['Int']>;
 };
 
@@ -1680,6 +1692,11 @@ export type EditWorkflowScheduleMutationVariables = Exact<{
 
 
 export type EditWorkflowScheduleMutation = { __typename?: 'Mutation', editWorkflowSchedule: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, isEnabled: boolean, performFromDate: string, performTillDate: string, parallelRuns: boolean } | null };
+
+export type TaskDefinitionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TaskDefinitionsQuery = { __typename?: 'Query', taskDefinitions: Array<{ __typename?: 'TaskDefinition', name: string, timeoutSeconds: number, description: string | null, retryCount: number | null, pollTimeoutSeconds: number | null, inputKeys: Array<string> | null, outputKeys: Array<string> | null, inputTemplate: string | null, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, concurrentExecLimit: number | null, rateLimitFrequencyInSeconds: number | null, rateLimitPerFrequency: number | null, ownerEmail: string | null }> };
 
 export type ScheduleWorkflowMutationVariables = Exact<{
   input: CreateScheduleInput;

@@ -1,13 +1,15 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import { callbackUtils, TaskDefinition } from '@frinx/shared/src';
+import { callbackUtils, omitNullValue, TaskDefinition } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
+import { gql, useMutation, useQuery } from 'urql';
 import MiniSearch, { SearchResult } from 'minisearch';
 import React, { useEffect, useRef, useState } from 'react';
 import { usePagination } from '../../../hooks/use-pagination-hook';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
+import { TaskDefinitionsQuery, TaskDefinitionsQueryVariables } from '../../../__generated__/graphql';
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -18,10 +20,37 @@ const taskDefinition: TaskDefinition = {
   timeoutPolicy: 'TIME_OUT_WF',
   timeoutSeconds: 60,
   responseTimeoutSeconds: 10,
+  inputTemplate: '{}',
   ownerEmail: '',
   inputKeys: [],
   outputKeys: [],
+  concurrentExecLimit: null,
+  rateLimitFrequencyInSeconds: null,
+  rateLimitPerFrequency: null
 };
+
+const TASK_DEFINITIONS_QUERY = gql`
+  query TaskDefinitions {
+    taskDefinitions {
+      name
+      timeoutSeconds
+      description
+      retryCount
+      pollTimeoutSeconds
+      inputKeys
+      outputKeys
+      inputTemplate
+      timeoutPolicy
+      retryLogic
+      retryDelaySeconds
+      responseTimeoutSeconds
+      concurrentExecLimit
+      rateLimitFrequencyInSeconds
+      rateLimitPerFrequency
+      ownerEmail
+    }
+  }
+`;
 
 function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {
   const resultIds = searchResult.map((r) => r.id);
@@ -38,29 +67,29 @@ const TaskList = () => {
   const addTaskModal = useDisclosure();
   const taskConfigModal = useDisclosure();
 
-  useEffect(() => {
-    const { getTaskDefinitions } = callbackUtils.getCallbacks;
+  const [{ data: taskData }] = useQuery<TaskDefinitionsQuery, TaskDefinitionsQueryVariables>({
+    query: TASK_DEFINITIONS_QUERY,
+  });
 
-    getTaskDefinitions().then((taskDefinitions) => {
-      const data = taskDefinitions.sort((a, b) => a.name.localeCompare(b.name)) || [];
-      setTasks(data);
-    });
-  }, []);
+  const sortedTasks =
+    (taskData?.taskDefinitions || []).sort((a, b) => a.name.localeCompare(b.name)) || [].filter(omitNullValue);
 
-  useEffect(() => {
-    minisearch.addAll(tasks);
-  }, [tasks, minisearch]);
+console.log(taskData);
 
   useEffect(() => {
-    const searchResults = getFilteredResults(minisearch.search(searchTerm, { prefix: true }), tasks);
+    minisearch.addAll(sortedTasks);
+  }, [sortedTasks, minisearch]);
+
+  useEffect(() => {
+    const searchResults = getFilteredResults(minisearch.search(searchTerm, { prefix: true }), sortedTasks);
 
     if (searchTerm.length > 0) {
       setItemList(searchResults);
     }
     if (!searchTerm.length) {
-      setItemList(tasks);
+      setItemList(sortedTasks);
     }
-  }, [searchTerm, tasks, minisearch, setItemList]);
+  }, [searchTerm, sortedTasks, minisearch, setItemList]);
 
   const handleTaskModal = (tsk: TaskDefinition) => {
     setTask(tsk);
