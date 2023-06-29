@@ -18,7 +18,6 @@ import {
   ExecutedWorkflow,
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
-  ExecutedWorkflowStatus,
 } from '../../__generated__/graphql';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
