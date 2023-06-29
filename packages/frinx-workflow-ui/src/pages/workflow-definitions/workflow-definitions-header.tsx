@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Box, Button, Flex, Icon, IconButton, Input, InputGroup, FormLabel } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import WfAutoComplete from '../../components/wf-autocomplete';
+import WorkflowAutocomplete from '../../components/workflow-autocomplete';
 
 type Props = {
   allLabels: string[];
@@ -44,7 +44,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({
       <Flex width="50%" align="flex-end">
         <Box flex={1}>
           <FormLabel marginBottom="4">Filter by labels</FormLabel>
-          <WfAutoComplete
+          <WorkflowAutocomplete
             options={allLabels}
             onChange={onLabelsChange}
             selected={labels}

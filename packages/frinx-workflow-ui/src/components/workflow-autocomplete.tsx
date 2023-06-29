@@ -21,7 +21,7 @@ type Props = {
   placeholder: string;
 };
 
-const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = [] }: Props, ref) => {
+const WorkflowAutocomplete = forwardRef(({ onChange, options, placeholder, selected = [] }: Props, ref) => {
   const [query, setQuery] = React.useState('');
   const [active, setActive] = React.useState(0);
   const [isOptionsVisible, setOptionsVisible] = React.useState(false);
@@ -166,4 +166,4 @@ const WfAutoComplete = forwardRef(({ onChange, options, placeholder, selected = 
   );
 });
 
-export default WfAutoComplete;
+export default WorkflowAutocomplete;
