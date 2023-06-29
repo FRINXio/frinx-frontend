@@ -26,7 +26,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { Editor, useNotifications, callbackUtils, EListener } from 'packages/shared/src';
+import { Editor, useNotifications, callbackUtils, EListener } from '@frinx/shared';
 import Paginator from '../../common/pagination';
 import { usePagination } from '../../hooks/use-pagination-hook';
 

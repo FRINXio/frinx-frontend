@@ -5,7 +5,7 @@ import {
   ClientWorkflow,
   unwrap,
   CreateScheduledWorkflow,
-} from 'packages/shared/src';
+} from '@frinx/shared';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
 import {

@@ -1,4 +1,4 @@
-import { callbackUtils, ExecutedWorkflow, ExecutedWorkflowSortBy, ExecutedWorkflowSortOrder } from 'packages/shared/src';
+import { callbackUtils, ExecutedWorkflow, ExecutedWorkflowSortBy, ExecutedWorkflowSortOrder } from '@frinx/shared';
 
 const getApiLabels = (labels: string[]): string => labels.join('&');
 

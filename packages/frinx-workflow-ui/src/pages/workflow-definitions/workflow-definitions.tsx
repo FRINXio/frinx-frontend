@@ -1,10 +1,8 @@
 import { Box, Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import Pagination from 'packages/frinx-inventory-client/src/components/pagination'; // TODO: can we move this to shared components?
-import { jsonParse, ClientWorkflow, Task } from 'packages/shared/src';
+import { jsonParse, ClientWorkflow, Task, useNotifications } from '@frinx/shared';
 import { debounce } from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
-import { useNotifications } from '@frinx/shared';
 import { usePagination } from '../../hooks/use-graphql-pagination';
 import {
   DeleteWorkflowMutation,

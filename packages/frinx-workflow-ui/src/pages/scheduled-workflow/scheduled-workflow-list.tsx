@@ -32,7 +32,7 @@ import {
   jsonParse,
   Task,
   EditScheduledWorkflow,
-} from 'packages/shared/src';
+} from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
 import {
