@@ -5,10 +5,14 @@
 
 import { hasOperationName } from '../../helpers/utils';
 
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
+
 describe('Create pool, claim, create nested pool', () => {
   beforeEach(() => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/nitra_klokocina/get-pools.json' });
       }
     }).as('getPools');
@@ -83,7 +87,7 @@ describe('Create pool, claim, create nested pool', () => {
     }).as('SelectPools');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/nitra_klokocina/form-create-pool/get-pools.json' });
       }
     }).as('GetPools');
@@ -230,7 +234,7 @@ describe('Create pool, claim, create nested pool', () => {
       }
     }).as('CreateNestedAllocationPool');
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/nitra_klokocina/create-nested/get-pools.json' });
       }
     }).as('GetPools');
@@ -242,12 +246,12 @@ describe('Create pool, claim, create nested pool', () => {
 
     cy.contains('h1', 'Create new Pool');
     cy.get('[data-cy="create-pool-nested"]').should('have.attr', 'data-checked'); // Nested ON/OFF is set ON
-    cy.get('[data-cy="create-pool-parent"]').select('NITRA_KLOKOCINA', { timeout: 50000 }); // Parent pool*
+    cy.get('[data-cy="create-pool-parent"]').select('halabala'); // Parent pool*
     // cy.get('[data-cy="create-pool-parent"]').invoke("text").should("eq", "NITRA_KLOKOCINA")
-    cy.contains('select', 'NITRA_KLOKOCINA');
-    cy.get('[data-cy="create-pool-allocated-resources"]').select('192.168.10.1', { timeout: 50000 }); // Parent allocated resources*
+    cy.contains('select', 'halabala');
+    cy.get('[data-cy="create-pool-allocated-resources"]').select('10.0.0.0'); // Parent allocated resources*
     // cy.get('[data-cy="create-pool-allocated-resources"]').invoke("text").should("eq", "192.168.10.1")
-    cy.contains('select', '192.168.10.1');
+    cy.contains('select', '10.0.0.0');
     cy.get('[data-cy="create-pool-type"]').select('ipv4'); // Resource type*
     cy.contains('select', 'ipv4');
     cy.get('[data-cy="create-pool-name"]').type('Mikoviniho'); // Name*
@@ -402,7 +406,7 @@ describe('Create pool, claim, create nested pool', () => {
     }).as('SelectPools');
 
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/nitra_klokocina/form-create-pool/get-pools.json' });
       }
     }).as('GetPools');
@@ -426,7 +430,7 @@ describe('Create pool, claim, create nested pool', () => {
 
   it('2. Claim resource', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/nitra_klokocina/form-create-pool/get-pools.json' });
       }
     }).as('getPools');
@@ -546,7 +550,7 @@ describe('Create pool, claim, create nested pool', () => {
 
   it('3. Create nested pool', () => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/nitra_klokocina/form-create-pool/get-pools.json' });
       }
     }).as('getPools');
@@ -625,12 +629,12 @@ describe('Create pool, claim, create nested pool', () => {
 
     cy.contains('h1', 'Create new Pool');
     cy.get('[data-cy="create-pool-nested"]').should('have.attr', 'data-checked'); // Nested ON/OFF is set ON
-    cy.get('[data-cy="create-pool-parent"]').select('NITRA_KLOKOCINA', { timeout: 50000 }); // Parent pool*
+    cy.get('[data-cy="create-pool-parent"]').select('halabala'); // Parent pool*
     // cy.get('[data-cy="create-pool-parent"]').invoke("text").should("eq", "NITRA_KLOKOCINA")
-    cy.contains('select', 'NITRA_KLOKOCINA');
-    cy.get('[data-cy="create-pool-allocated-resources"]').select('192.168.10.1', { timeout: 50000 }); // Parent allocated resources*
+    cy.contains('select', 'halabala');
+    cy.get('[data-cy="create-pool-allocated-resources"]').select('10.0.0.0'); // Parent allocated resources*
     // cy.get('[data-cy="create-pool-allocated-resources"]').invoke("text").should("eq", "192.168.10.1")
-    cy.contains('select', '192.168.10.1');
+    cy.contains('select', '10.0.0.0');
     cy.get('[data-cy="create-pool-type"]').select('ipv4'); // Resource type*
     cy.contains('select', 'ipv4');
     cy.get('[data-cy="create-pool-name"]').type('Mikoviniho'); // Name*

@@ -1,0 +1,51 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836540",
+            "Name": "warsawa",
+            "Tags": [{ "id": "30064771102", "Tag": "warsawa", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803782", "Name": "route_distinguisher", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": {
+              "freeCapacity": "281474976710656",
+              "utilizedCapacity": "0",
+              "__typename": "PoolCapacityPayload"
+            },
+            "PoolProperties": { "rd": "" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836547",
+            "Name": "warsawa3",
+            "Tags": [{ "id": "30064771109", "Tag": "warsawa3", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803782", "Name": "route_distinguisher", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": {
+              "freeCapacity": "281474976710656",
+              "utilizedCapacity": "0",
+              "__typename": "PoolCapacityPayload"
+            },
+            "PoolProperties": { "rd": "" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 10,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}

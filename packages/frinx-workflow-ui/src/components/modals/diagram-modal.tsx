@@ -9,12 +9,12 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { convertWorkflowTaskToExtendedTask, getElementsFromWorkflow } from '@frinx/shared/src';
+import { convertWorkflowTaskToExtendedTask, getElementsFromWorkflow } from '@frinx/shared';
 import React, { VoidFunctionComponent } from 'react';
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
 import { Workflow } from '../../pages/workflow-list/workflow-definitions/workflow-types';
-import { BaseNode, DecisionNode, StartEndNode } from '../components';
+import { BaseNode, DecisionNode, StartEndNode } from '../index';
 
 type ModalProps = {
   isOpen: boolean;

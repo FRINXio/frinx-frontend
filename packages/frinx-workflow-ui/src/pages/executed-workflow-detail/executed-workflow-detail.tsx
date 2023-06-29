@@ -1,5 +1,4 @@
 import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
-import { TaskModal } from '@frinx/workflow-ui/src/common/modals';
 import {
   Box,
   Button,
@@ -11,7 +10,6 @@ import {
   TabPanels,
   Tabs,
   useToast,
-  useDisclosure,
   Text,
   Progress,
   VStack,
@@ -41,10 +39,11 @@ import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
 import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
-import DetailsModalHeader from './executed-workflow-detail-header';
+import ExecutedWorkflowDetailHeader from './executed-workflow-detail-header';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 import WorkflowDiagram from '../../common/workflow-diagram';
 import { formatDate } from '../../helpers/utils.helpers';
+import ExecutedWorkflowDetailTaskDetail from './executed-workflow-detail-task-detail/executed-workflow-detail-task-detail';
 
 const EXECUTED_WORKFLOW_QUERY = gql`
   query ExecutedWorkflowDetail($nodeId: ID!) {
@@ -241,7 +240,6 @@ type Props = {
 const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const ctx = useMemo(() => ({ additionalTypenames: ['ExecutedWorkflow'] }), []);
   const { workflowId } = useParams<{ workflowId: string }>();
-  const taskModalDisclosure = useDisclosure();
   const [openedTaskId, setOpenedTaskId] = useState<string | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
   const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
@@ -343,6 +341,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           throw new Error('Something went wrong');
         }
 
+        // when specific task detail is opened we need to close it after rerun so that we can see new tasks that have different ids
+        setOpenedTaskId(null);
         onExecutedOperation(result.data?.executeWorkflowByName || '');
       })
       .catch((err) => {
@@ -359,16 +359,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     const workflowForm = executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {};
     workflowForm[key] = e.target.value;
     setWorkflowVariables((prev) => ({ ...prev, ...workflowForm }));
-  };
-
-  const handleOnOpenTaskModal = (id: string) => {
-    setOpenedTaskId(id);
-    taskModalDisclosure.onOpen();
-  };
-
-  const handleOnCloseTaskModal = () => {
-    setOpenedTaskId(null);
-    taskModalDisclosure.onClose();
   };
 
   const handleCopyToClipborad = (inputText: Record<string, unknown>) => {
@@ -532,14 +522,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
 
   return (
     <Container maxWidth={1280}>
-      {openedTaskId != null && (
-        <TaskModal
-          taskId={openedTaskId}
-          executedWorkflow={executedWorkflowDetail.node}
-          isOpen={taskModalDisclosure.isOpen}
-          onClose={handleOnCloseTaskModal}
-        />
-      )}
       <Heading size="xl" marginBottom={10}>
         Details of {executedWorkflow.workflowName} / {executedWorkflow.workflowVersion}
       </Heading>
@@ -550,7 +532,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           </Button>
         )}
       </Box>
-      <DetailsModalHeader
+      <ExecutedWorkflowDetailHeader
         endTime={formatDate(executedWorkflow.endTime)}
         startTime={formatDate(executedWorkflow.startTime)}
         status={executedWorkflow.status}
@@ -566,7 +548,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           <VStack>
             <Progress isIndeterminate />
 
-            <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} />
+            <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />
           </VStack>
         ) : (
           <Tabs index={tabIndex} onChange={setTabIndex}>
@@ -586,7 +568,15 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
             </TabList>
             <TabPanels>
               <TabPanel>
-                <TaskTable tasks={executedWorkflow.tasks} onTaskClick={handleOnOpenTaskModal} />
+                {openedTaskId == null && <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />}
+
+                {openedTaskId != null && executedWorkflow.tasks != null && (
+                  <ExecutedWorkflowDetailTaskDetail
+                    executedWorkflow={executedWorkflowDetail.node}
+                    taskId={openedTaskId}
+                    onClose={() => setOpenedTaskId(null)}
+                  />
+                )}
               </TabPanel>
               <TabPanel>
                 <InputOutputTab
