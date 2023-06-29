@@ -1,6 +1,5 @@
 import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
-import Pagination from 'packages/frinx-inventory-client/src/components/pagination';
-import { useNotifications } from '@frinx/shared';
+import { useNotifications, Pagination } from '@frinx/shared';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
@@ -27,16 +26,6 @@ import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-
 import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from './executed-workflow.helpers';
 
 export type SortProperty = { key: keyof ExecutedWorkflow; value: 'ASC' | 'DESC' };
-
-export type ExecutedworkflowsFilter = {
-  isRootWorkflow: boolean;
-  from?: string;
-  to?: string;
-  status: ExecutedWorkflowStatus[] | ExecutedWorkflowStatus;
-  workflowId: string[] | string;
-  workflowType: string[] | string;
-  workflowsPerPage: number;
-};
 
 const EXECUTED_WORKFLOW_QUERY = gql`
   query ExecutedWorkflows($searchQuery: ExecutedWorkflowSearchInput, $pagination: PaginationArgs) {

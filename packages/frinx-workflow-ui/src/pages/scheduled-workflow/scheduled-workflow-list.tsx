@@ -20,7 +20,6 @@ import {
   Progress,
   Container,
 } from '@chakra-ui/react';
-import Pagination from 'packages/frinx-inventory-client/src/components/pagination';
 import FeatherIcon from 'feather-icons-react';
 import {
   omitNullValue,
@@ -32,6 +31,7 @@ import {
   jsonParse,
   Task,
   EditScheduledWorkflow,
+  Pagination,
 } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
