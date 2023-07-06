@@ -357,17 +357,17 @@ export type TaskDefinition = {
   description?: string | null;
   retryCount: number | null;
   timeoutSeconds: number;
-  pollTimeoutSeconds?: number;
-  inputKeys?: string[];
-  outputKeys?: string[];
-  inputTemplate?: Record<string, string>;
+  pollTimeoutSeconds?: number | null;
+  inputKeys: string[] | null;
+  outputKeys: string[] | null;
+  inputTemplate: string | null;
   timeoutPolicy: TaskTimeoutPolicy | null;
   retryLogic: RetryLogic | null;
   retryDelaySeconds: number | null;
   responseTimeoutSeconds: number | null;
-  concurrentExecLimit?: number;
-  rateLimitFrequencyInSeconds?: number;
-  rateLimitPerFrequency?: number;
+  concurrentExecLimit: number | null;
+  rateLimitFrequencyInSeconds: number | null;
+  rateLimitPerFrequency: number | null;
   ownerEmail: string | null;
 };
 

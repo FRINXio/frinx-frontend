@@ -221,6 +221,15 @@ export type CreateScheduleInput = {
   workflowVersion: Scalars['String'];
 };
 
+export type CreateTaskDefinitionInput = {
+  taskDefinition: TaskDefinitionInput;
+};
+
+export type CreateTaskDefinitionPayload = {
+  __typename?: 'CreateTaskDefinitionPayload';
+  taskDefinition: TaskDefinition;
+};
+
 export type CreateTransactionPayload = {
   __typename?: 'CreateTransactionPayload';
   transactionId: Maybe<Scalars['String']>;
@@ -639,6 +648,7 @@ export type Mutation = {
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
+  createTaskDefinition: Maybe<CreateTaskDefinitionPayload>;
   createTransaction: CreateTransactionPayload;
   createWorkflow: CreateWorkflowPayload;
   deleteBlueprint: DeleteBlueprintPayload;
@@ -646,6 +656,7 @@ export type Mutation = {
   deleteLabel: DeleteLabelPayload;
   deleteSchedule: Maybe<IsOkResponse>;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  deleteTask: Maybe<IsOkResponse>;
   deleteWorkflow: DeleteWorkflowPayload;
   editWorkflowSchedule: Maybe<Schedule>;
   executeNewWorkflow: Maybe<Scalars['String']>;
@@ -746,6 +757,11 @@ export type MutationCreateLabelArgs = {
 };
 
 
+export type MutationCreateTaskDefinitionArgs = {
+  input: CreateTaskDefinitionInput;
+};
+
+
 export type MutationCreateTransactionArgs = {
   deviceId: Scalars['String'];
 };
@@ -778,6 +794,11 @@ export type MutationDeleteScheduleArgs = {
 
 export type MutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
+};
+
+
+export type MutationDeleteTaskArgs = {
+  name: Scalars['String'];
 };
 
 
@@ -1283,7 +1304,7 @@ export type Tag = {
 export type TaskDefinition = {
   __typename?: 'TaskDefinition';
   concurrentExecLimit: Maybe<Scalars['Int']>;
-  createdAt: Maybe<Scalars['String']>;
+  createTime: Maybe<Scalars['String']>;
   createdBy: Maybe<Scalars['String']>;
   description: Maybe<Scalars['String']>;
   inputKeys: Maybe<Array<Scalars['String']>>;
@@ -1300,8 +1321,29 @@ export type TaskDefinition = {
   retryLogic: Maybe<RetryLogic>;
   timeoutPolicy: Maybe<TaskTimeoutPolicy>;
   timeoutSeconds: Scalars['Int'];
-  updatedAt: Maybe<Scalars['String']>;
+  updateTime: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
+};
+
+export type TaskDefinitionInput = {
+  concurrentExecLimit?: InputMaybe<Scalars['Int']>;
+  createTime?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  inputKeys?: InputMaybe<Array<Scalars['String']>>;
+  inputTemplate?: InputMaybe<Scalars['Record']>;
+  name: Scalars['String'];
+  outputKeys?: InputMaybe<Array<Scalars['String']>>;
+  ownerEmail?: InputMaybe<Scalars['String']>;
+  pollTimeoutSeconds?: InputMaybe<Scalars['Int']>;
+  rateLimitFrequencyInSeconds?: InputMaybe<Scalars['Int']>;
+  rateLimitPerFrequency?: InputMaybe<Scalars['Int']>;
+  responseTimeoutSeconds?: InputMaybe<Scalars['Int']>;
+  retryCount?: InputMaybe<Scalars['Int']>;
+  retryDelaySeconds?: InputMaybe<Scalars['Int']>;
+  retryLogic?: InputMaybe<RetryLogic>;
+  timeoutPolicy?: InputMaybe<TaskTimeoutPolicy>;
+  timeoutSeconds: Scalars['Int'];
+  updateTime?: InputMaybe<Scalars['String']>;
 };
 
 export type TaskInput = {
@@ -1697,6 +1739,13 @@ export type TaskDefinitionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type TaskDefinitionsQuery = { __typename?: 'Query', taskDefinitions: Array<{ __typename?: 'TaskDefinition', name: string, timeoutSeconds: number, description: string | null, retryCount: number | null, pollTimeoutSeconds: number | null, inputKeys: Array<string> | null, outputKeys: Array<string> | null, inputTemplate: string | null, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, concurrentExecLimit: number | null, rateLimitFrequencyInSeconds: number | null, rateLimitPerFrequency: number | null, ownerEmail: string | null }> };
+
+export type DeleteTaskMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type DeleteTaskMutation = { __typename?: 'Mutation', deleteTask: { __typename?: 'IsOkResponse', isOk: boolean } | null };
 
 export type ScheduleWorkflowMutationVariables = Exact<{
   input: CreateScheduleInput;

@@ -1,15 +1,20 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import { callbackUtils, omitNullValue, TaskDefinition } from '@frinx/shared/src';
+import { callbackUtils, omitNullValue, TaskDefinition, useNotifications } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import { gql, useMutation, useQuery } from 'urql';
 import MiniSearch, { SearchResult } from 'minisearch';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usePagination } from '../../../hooks/use-pagination-hook';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
-import { TaskDefinitionsQuery, TaskDefinitionsQueryVariables } from '../../../__generated__/graphql';
+import {
+  DeleteTaskMutation,
+  DeleteTaskMutationVariables,
+  TaskDefinitionsQuery,
+  TaskDefinitionsQueryVariables,
+} from '../../../__generated__/graphql';
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -26,7 +31,7 @@ const taskDefinition: TaskDefinition = {
   outputKeys: [],
   concurrentExecLimit: null,
   rateLimitFrequencyInSeconds: null,
-  rateLimitPerFrequency: null
+  rateLimitPerFrequency: null,
 };
 
 const TASK_DEFINITIONS_QUERY = gql`
@@ -52,18 +57,26 @@ const TASK_DEFINITIONS_QUERY = gql`
   }
 `;
 
-function getFilteredResults<T extends { name: string }>(searchResult: SearchResult[], defs: T[]): T[] {
-  const resultIds = searchResult.map((r) => r.id);
-  return defs.filter((df) => resultIds.includes(df.name));
+const DELETE_TASK_DEFINITION_MUTATION = gql`
+  mutation DeleteTask($name: String!) {
+    deleteTask(name: $name) {
+      isOk
+    }
+  }
+`;
+
+function getFilteredResults<T extends { name: string }>(searchTerm: string, defs: T[]): T[] {
+  return defs.filter((df) => df.name.toLowerCase().includes(searchTerm.toLowerCase()));
 }
 
 const TaskList = () => {
+  const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<TaskDefinition>();
   const [sorted, setSorted] = useState(false);
   const [task, setTask] = useState<TaskDefinition>();
   const [tasks, setTasks] = useState<TaskDefinition[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name'], idField: 'name' }));
+  const { addToastNotification } = useNotifications();
   const addTaskModal = useDisclosure();
   const taskConfigModal = useDisclosure();
 
@@ -71,25 +84,19 @@ const TaskList = () => {
     query: TASK_DEFINITIONS_QUERY,
   });
 
+  const [, onDelete] = useMutation<DeleteTaskMutation, DeleteTaskMutationVariables>(DELETE_TASK_DEFINITION_MUTATION);
+
   const sortedTasks =
     (taskData?.taskDefinitions || []).sort((a, b) => a.name.localeCompare(b.name)) || [].filter(omitNullValue);
 
-console.log(taskData);
-
   useEffect(() => {
-    minisearch.addAll(sortedTasks);
-  }, [sortedTasks, minisearch]);
-
-  useEffect(() => {
-    const searchResults = getFilteredResults(minisearch.search(searchTerm, { prefix: true }), sortedTasks);
-
     if (searchTerm.length > 0) {
-      setItemList(searchResults);
+      setItemList(getFilteredResults(searchTerm, sortedTasks));
     }
     if (!searchTerm.length) {
       setItemList(sortedTasks);
     }
-  }, [searchTerm, sortedTasks, minisearch, setItemList]);
+  }, [searchTerm, taskData]);
 
   const handleTaskModal = (tsk: TaskDefinition) => {
     setTask(tsk);
@@ -97,15 +104,34 @@ console.log(taskData);
   };
 
   const handleDeleteTask = (taskToDelete: TaskDefinition) => {
-    const { deleteTaskDefinition } = callbackUtils.getCallbacks;
-
-    deleteTaskDefinition(taskToDelete.name).then(() => {
-      setItemList(tasks.filter((tsk: TaskDefinition) => tsk.name !== taskToDelete.name));
-    });
+    onDelete({ name: taskToDelete.name }, context)
+      .then((res) => {
+        if (!res.data?.deleteTask?.isOk) {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: res.error?.message,
+          });
+        }
+        if (res.data?.deleteTask?.isOk || !res.error) {
+          addToastNotification({
+            content: 'Deleted successfuly',
+            title: 'Success',
+            type: 'success',
+          });
+        }
+      })
+      .catch((err) => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: err?.message,
+        });
+      });
   };
 
   const sortArray = (key: string) => {
-    setItemList(sorted ? orderBy(tasks, [key], ['desc']) : orderBy(tasks, [key], ['asc']));
+    setItemList(sorted ? orderBy(sortedTasks, [key], ['desc']) : orderBy(sortedTasks, [key], ['asc']));
     setSorted(!sorted);
   };
 
@@ -126,6 +152,7 @@ console.log(taskData);
       });
     }
   };
+  console.log(pageItems);
 
   return (
     <Container maxWidth={1200} mx="auto">
