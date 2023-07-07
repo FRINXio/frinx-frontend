@@ -1,18 +1,19 @@
-import { cacheExchange, ClientOptions, createClient, dedupExchange, fetchExchange, Provider } from 'urql';
+import { cacheExchange, ClientOptions, createClient, dedupExchange, fetchExchange, mapExchange, Provider } from 'urql';
 import { retryExchange } from '@urql/exchange-retry';
 import React, { FC, useRef } from 'react';
 import { CustomToastProvider } from '@frinx/shared/src';
 import PageContainer from './components/page-container';
 
-export type InventoryApiClient = {
+export type ResourceManagerApiClient = {
   clientOptions: ClientOptions;
   onError: () => void;
 };
 export type Props = {
-  client: InventoryApiClient;
+  client: ResourceManagerApiClient;
+  refreshToken: () => Promise<string | null>;
 };
 
-const ResourceManagerApiProvider: FC<Props> = ({ children, client }) => {
+const ResourceManagerApiProvider: FC<Props> = ({ children, client, refreshToken }) => {
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
@@ -25,6 +26,13 @@ const ResourceManagerApiProvider: FC<Props> = ({ children, client }) => {
               client.onError();
             }
             return false;
+          },
+        }),
+        mapExchange({
+          onResult: async (result) => {
+            console.log('== resource manager: refresh token on result');
+            refreshToken();
+            return result;
           },
         }),
         fetchExchange,

@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { PublicClientApplication } from '@azure/msal-browser';
+import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 import EventEmitter from 'eventemitter3';
 
 const LS_TOKEN_KEY = 'id_token';

@@ -1,4 +1,4 @@
-import { InteractionStatus } from '@azure/msal-browser';
+import { InteractionStatus, IPublicClientApplication } from '@azure/msal-browser';
 import { AuthenticationResult } from '@azure/msal-common';
 import { useMsal } from '@azure/msal-react';
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
@@ -10,6 +10,7 @@ export type ContextType = {
   login: () => Promise<AuthenticationResult>;
   logout: () => Promise<void>;
   inProgress: InteractionStatus;
+  instance: IPublicClientApplication;
 };
 
 export const Context = createContext<ContextType | null>(null);
@@ -66,6 +67,7 @@ const AuthProvider: FC = ({ children }) => {
       logout: () => {
         return instance.logout();
       },
+      instance,
     }),
     [handleLogin, inProgress, instance],
   );
