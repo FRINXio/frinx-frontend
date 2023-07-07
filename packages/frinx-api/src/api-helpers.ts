@@ -45,11 +45,8 @@ export function createApiHelpers(
       },
     });
 
-    console.log('== refresh token: ', refreshToken);
-
     if (refreshToken) {
-      const tokenResponse = await refreshToken();
-      console.log('== refresh token response: ', tokenResponse);
+      await refreshToken();
     }
 
     if (response.status === 401) {

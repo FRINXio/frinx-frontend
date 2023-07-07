@@ -1,13 +1,15 @@
+import { useMsal } from '@azure/msal-react';
 import { InventoryApi, UniflowApi } from '@frinx/api';
 import { InventoryApiClient } from '@frinx/inventory-client/src';
 import React, { FC, useEffect, useState } from 'react';
-import { authContext } from './auth-helpers';
+import { authContext, refreshToken } from './auth-helpers';
 
 type InventoryComponents = Omit<typeof import('@frinx/inventory-client/src'), 'getInventoryApiProvider'> & {
-  InventoryAPIProvider: FC<{ client: InventoryApiClient; wsUrl: string }>;
+  InventoryAPIProvider: FC<{ client: InventoryApiClient; wsUrl: string; refreshToken: () => Promise<string | null> }>;
 };
 const InventoryApp: FC = () => {
   const [components, setComponents] = useState<InventoryComponents | null>(null);
+  const { inProgress, accounts, instance } = useMsal();
 
   useEffect(() => {
     import('@frinx/inventory-client/src').then((mod) => {
@@ -30,6 +32,7 @@ const InventoryApp: FC = () => {
     <InventoryAPIProvider
       wsUrl={window.__CONFIG__.inventoryWsURL}
       client={InventoryApi.create({ url: window.__CONFIG__.inventoryApiURL, authContext }).client}
+      refreshToken={() => refreshToken(inProgress, accounts, instance)}
     >
       <App />
     </InventoryAPIProvider>

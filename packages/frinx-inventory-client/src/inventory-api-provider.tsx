@@ -3,7 +3,15 @@ import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
 import { createClient as createWSClient } from 'graphql-ws';
 import React, { createContext, FC, useRef } from 'react';
-import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider, subscriptionExchange } from 'urql';
+import {
+  cacheExchange,
+  ClientOptions,
+  createClient,
+  dedupExchange,
+  mapExchange,
+  Provider,
+  subscriptionExchange,
+} from 'urql';
 
 export const InventoryAPIContext = createContext(false);
 
@@ -15,9 +23,10 @@ export type InventoryApiClient = {
 export type Props = {
   client: InventoryApiClient;
   wsUrl: string;
+  refreshToken: () => Promise<string | null>;
 };
 
-const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
+const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl, refreshToken }) => {
   const wsClient = createWSClient({ url: wsUrl });
   const { current: urqlClient } = useRef(
     createClient({
@@ -31,6 +40,14 @@ const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
               client.onError();
             }
             return false;
+          },
+        }),
+        mapExchange({
+          onResult: async (result) => {
+            refreshToken();
+            // eslint-disable-next-line no-console
+            console.log('== device manager: refresh token on result');
+            return result;
           },
         }),
         multipartFetchExchange,

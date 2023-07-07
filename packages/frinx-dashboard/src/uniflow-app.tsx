@@ -1,8 +1,7 @@
-import { AccountInfo, InteractionStatus, IPublicClientApplication } from '@azure/msal-browser';
 import { useMsal } from '@azure/msal-react';
 import { UniflowApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
-import { authContext } from './auth-helpers';
+import { authContext, refreshToken as getRefreshToken } from './auth-helpers';
 
 type UniflowComponents = Omit<typeof import('@frinx/workflow-ui/src'), 'getUniflowApiProvider'> & {
   UniflowApiProvider: FC;
@@ -10,31 +9,6 @@ type UniflowComponents = Omit<typeof import('@frinx/workflow-ui/src'), 'getUnifl
 type BuilderComponents = {
   BuilderApiProvider: FC;
 };
-
-async function getRefreshedToken(
-  inProgress: InteractionStatus,
-  accounts: AccountInfo[],
-  instance: IPublicClientApplication,
-): Promise<string | null> {
-  console.log(inProgress, accounts);
-  if (inProgress === 'none' && accounts.length > 0) {
-    try {
-      console.log(accounts[0]);
-      const authResult = await instance.acquireTokenSilent({
-        account: accounts[0],
-        scopes: ['User.Read'],
-      });
-
-      console.log('authResult: ', authResult.idToken);
-
-      return authResult.idToken || null;
-    } catch (e) {
-      console.log('errors:', e);
-    }
-  }
-
-  return null;
-}
 
 const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
@@ -46,7 +20,7 @@ const UniflowApp: FC = () => {
         const { UniflowApp: App, getUniflowApiProvider } = uniflowImport;
         const { getBuilderApiProvider } = builderImport;
 
-        const refreshToken = () => getRefreshedToken(inProgress, accounts, instance);
+        const refreshToken = () => getRefreshToken(inProgress, accounts, instance);
 
         setComponents({
           UniflowApp: App,
@@ -59,7 +33,7 @@ const UniflowApp: FC = () => {
         });
       },
     );
-  }, []);
+  }, [accounts, inProgress, instance]);
 
   if (components == null) {
     return null;

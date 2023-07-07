@@ -30,8 +30,9 @@ const ResourceManagerApiProvider: FC<Props> = ({ children, client, refreshToken 
         }),
         mapExchange({
           onResult: async (result) => {
-            console.log('== resource manager: refresh token on result');
             refreshToken();
+            // eslint-disable-next-line no-console
+            console.log('== resource manager: refresh token on result');
             return result;
           },
         }),
