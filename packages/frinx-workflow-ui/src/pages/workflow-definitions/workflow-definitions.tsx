@@ -1,5 +1,6 @@
 import { Box, Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow, Task, useNotifications, Pagination } from '@frinx/shared';
+import { jsonParse, ClientWorkflow, Task, useNotifications } from '@frinx/shared';
+import Pagination from '@frinx/shared/src/components/pagination/pagination';
 import { debounce } from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';

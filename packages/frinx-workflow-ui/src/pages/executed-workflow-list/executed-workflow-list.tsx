@@ -1,5 +1,6 @@
 import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
-import { useNotifications, Pagination } from '@frinx/shared';
+import { useNotifications } from '@frinx/shared';
+import Pagination from '@frinx/shared/src/components/pagination/pagination';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
