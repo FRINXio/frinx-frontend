@@ -257,6 +257,11 @@ const App: VoidFunctionComponent<Props> = ({
         labels: editedWorkflow.labels,
       });
 
+      const outputParameters = editedWorkflow.outputParameters?.map((p) => ({
+        key: p.key,
+        value: p.value,
+      }));
+
       const result = await updateWorkflow({
         updateWorkflowId: workflow.id,
         input: {
@@ -267,7 +272,7 @@ const App: VoidFunctionComponent<Props> = ({
             timeoutSeconds: 0,
             version: editedWorkflow.version,
             restartable: editedWorkflow.restartable,
-            outputParameters: editedWorkflow.outputParameters,
+            outputParameters,
             updatedAt: new Date().toISOString(),
           },
         },

@@ -195,6 +195,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       labels: description?.labels || [],
       tasks: extendedTasks,
       hasSchedule: workflowDetail.hasSchedule ?? false,
+      outputParameters: workflowDetail.outputParameters,
     });
   }, [workflowData]);
 

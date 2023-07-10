@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
-import { ClientWorkflow, jsonParse } from '@frinx/shared';
+import { ClientWorkflow, jsonParse } from '@frinx/shared/src';
 
 type Props = {
   workflow: ClientWorkflow;
