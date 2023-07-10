@@ -1,10 +1,9 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import { callbackUtils, omitNullValue, TaskDefinition, useNotifications } from '@frinx/shared/src';
+import { omitNullValue, TaskDefinition, useNotifications } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import { gql, useMutation, useQuery } from 'urql';
-import MiniSearch, { SearchResult } from 'minisearch';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { usePagination } from '../../../hooks/use-pagination-hook';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
@@ -105,7 +104,6 @@ const TaskList = () => {
   const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<TaskDefinition>();
   const [sorted, setSorted] = useState(false);
   const [task, setTask] = useState<TaskDefinition>();
-  const [tasks, setTasks] = useState<TaskDefinition[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const { addToastNotification } = useNotifications();
   const addTaskModal = useDisclosure();
@@ -130,7 +128,7 @@ const TaskList = () => {
     if (!searchTerm.length) {
       setItemList(sortedTasks);
     }
-  }, [searchTerm, taskData]);
+  }, [searchTerm, taskData, setItemList, sortedTasks]);
 
   const handleTaskModal = (tsk: TaskDefinition) => {
     setTask(tsk);
@@ -215,11 +213,6 @@ const TaskList = () => {
         });
     }
   };
-  const taskDefinitions = searchTerm
-    ? pageItems.filter((task) => {
-        !task.name.includes(searchTerm);
-      })
-    : pageItems;
 
   return (
     <Container maxWidth={1200} mx="auto">
