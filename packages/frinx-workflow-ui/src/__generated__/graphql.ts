@@ -10,6 +10,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Record: any;
   Upload: any;
 };
 
@@ -505,6 +506,11 @@ export type FilterWorkflowsInput = {
   labels?: InputMaybe<Array<Scalars['String']>>;
 };
 
+export type FreeResourceInput = {
+  poolId: Scalars['String'];
+  resource: Scalars['Record'];
+};
+
 export type GraphEdge = {
   __typename?: 'GraphEdge';
   id: Scalars['ID'];
@@ -644,6 +650,7 @@ export type Mutation = {
   editWorkflowSchedule: Maybe<Schedule>;
   executeNewWorkflow: Maybe<Scalars['String']>;
   executeWorkflowByName: Maybe<Scalars['String']>;
+  freeResource: Maybe<Scalars['String']>;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   pauseWorkflow: Maybe<IsOkResponse>;
@@ -792,6 +799,11 @@ export type MutationExecuteNewWorkflowArgs = {
 
 export type MutationExecuteWorkflowByNameArgs = {
   input: ExecuteWorkflowByName;
+};
+
+
+export type MutationFreeResourceArgs = {
+  input: FreeResourceInput;
 };
 
 
@@ -958,7 +970,7 @@ export type Pool = Node & {
   name: Scalars['String'];
   poolType: PoolType;
   resourceType: ResourceType;
-  tags: Array<Maybe<Tag>>;
+  tags: Array<Tag>;
   version: Maybe<Scalars['Int']>;
 };
 
