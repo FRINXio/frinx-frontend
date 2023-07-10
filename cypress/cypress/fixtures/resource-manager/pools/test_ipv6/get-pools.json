@@ -1,34 +1,138 @@
 {
   "data": {
-    "QueryRootResourcePools": [
-      {
-        "id": "21474836481",
-        "Name": "test",
-        "PoolType": "allocating",
-        "Tags": [{ "id": "30064771072", "Tag": "test", "__typename": "Tag" }],
-        "PoolProperties": { "address": "192.168.10.1", "prefix": 24, "subnet": false },
-        "AllocationStrategy": { "id": "2", "Name": "ipv4", "Lang": "go", "__typename": "AllocationStrategy" },
-        "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
-        "Resources": [{ "id": "17179869189", "NestedPool": null, "__typename": "Resource" }],
-        "Capacity": { "freeCapacity": "255", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
-        "__typename": "ResourcePool"
-      },
-      {
-        "id": "21474836482",
-        "Name": "test_ipv6",
-        "PoolType": "allocating",
-        "Tags": [{ "id": "30064771073", "Tag": "test_ipv6", "__typename": "Tag" }],
-        "PoolProperties": { "address": "2001:db8:1::", "prefix": 64, "subnet": false },
-        "AllocationStrategy": { "id": "6", "Name": "ipv6", "Lang": "go", "__typename": "AllocationStrategy" },
-        "ResourceType": { "id": "25769803781", "Name": "ipv6", "__typename": "ResourceType" },
-        "Resources": [],
-        "Capacity": {
-          "freeCapacity": "18446744073709551616",
-          "utilizedCapacity": "0",
-          "__typename": "PoolCapacityPayload"
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836481",
+            "Name": "test",
+            "PoolType": "allocating",
+            "Tags": [{ "id": "30064771072", "Tag": "test", "__typename": "Tag" }],
+            "PoolProperties": { "address": "192.168.10.1", "prefix": 24, "subnet": false },
+            "AllocationStrategy": { "id": "2", "Name": "ipv4", "Lang": "go", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+            "Resources": [{ "id": "17179869189", "NestedPool": null, "__typename": "Resource" }],
+            "Capacity": { "freeCapacity": "255", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          }
         },
-        "__typename": "ResourcePool"
-      }
-    ]
+        {
+          "node": {
+            "id": "21474836482",
+            "Name": "test_ipv6",
+            "PoolType": "allocating",
+            "Tags": [{ "id": "30064771073", "Tag": "test_ipv6", "__typename": "Tag" }],
+            "PoolProperties": { "address": "2001:db8:1::", "prefix": 64, "subnet": false },
+            "AllocationStrategy": { "id": "6", "Name": "ipv6", "Lang": "go", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803781", "Name": "ipv6", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": {
+              "freeCapacity": "18446744073709551616",
+              "utilizedCapacity": "0",
+              "__typename": "PoolCapacityPayload"
+            },
+            "__typename": "ResourcePool"
+          }
+        },
+        {
+          "node": {
+            "id": "21474836480",
+            "Name": "halabala",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771072", "Tag": "halabala", "__typename": "Tag" }],
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "AllocationStrategy": { "id": "1", "Name": "ipv4_prefix", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836485",
+            "Name": "TestGraphQL",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771077", "Tag": "TestGraphQL", "__typename": "Tag" }],
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 12, "subnet": false },
+            "AllocationStrategy": { "id": "2", "Name": "ipv4", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "1048576", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836486",
+            "Name": "abcdaa",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771078", "Tag": "abcdaa", "__typename": "Tag" }],
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 24, "subnet": false },
+            "AllocationStrategy": { "id": "2", "Name": "ipv4", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836489",
+            "Name": "ipv6_test",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771081", "Tag": "ipv6_test", "__typename": "Tag" }],
+            "PoolProperties": { "address": "2001:db8:1::", "prefix": 24, "subnet": false },
+            "AllocationStrategy": { "id": "5", "Name": "ipv6_prefix", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803780", "Name": "ipv6_prefix", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": {
+              "freeCapacity": "20282409603651670423947251286016",
+              "utilizedCapacity": "0",
+              "__typename": "PoolCapacityPayload"
+            },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836492",
+            "Name": "test1",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771084", "Tag": "test1", "__typename": "Tag" }],
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 1, "subnet": true },
+            "AllocationStrategy": { "id": "2", "Name": "ipv4", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "2147483646", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAM",
+        "hasNextPage": true,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 9,
+      "__typename": "ResourcePoolConnection"
+    }
   }
 }

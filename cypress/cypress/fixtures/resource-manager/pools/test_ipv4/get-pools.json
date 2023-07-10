@@ -1,36 +1,69 @@
 {
   "data": {
-    "QueryRootResourcePools": [
-      {
-        "id": "21474836481",
-        "Name": "test",
-        "PoolType": "allocating",
-        "Tags": [{ "id": "30064771072", "Tag": "test", "__typename": "Tag" }],
-        "PoolProperties": { "address": "192.168.10.1", "prefix": 24, "subnet": false },
-        "AllocationStrategy": { "id": "2", "Name": "ipv4", "Lang": "go", "__typename": "AllocationStrategy" },
-        "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
-        "Resources": [{ "id": "17179869189", "NestedPool": null, "__typename": "Resource" }],
-        "Capacity": { "freeCapacity": "255", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
-        "__typename": "ResourcePool"
-      },
-      {
-        "id": "21474836571",
-        "Name": "test_ipv4",
-        "PoolType": "allocating",
-        "Tags": [{ "id": "30064771128", "Tag": "test_ipv4", "__typename": "Tag" }],
-        "PoolProperties": { "address": "192.168.1.0", "prefix": 12, "subnet": false },
-        "AllocationStrategy": {
-          "id": "2",
-          "Name": "ipv4",
-          "Lang": "go",
-          "Script": "\n'use strict';\n\n// ipv4 int to str\nfunction inet_ntoa(addrint) {\n    return ((addrint \u003e\u003e 24) \u0026 0xff) + \".\" +\n        ((addrint \u003e\u003e 16) \u0026 0xff) + \".\" +\n        ((addrint \u003e\u003e 8) \u0026 0xff) + \".\" +\n        (addrint \u0026 0xff)\n}\n\n// ipv4 str to int\nfunction inet_aton(addrstr) {\n    var re = /^([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})$/;\n    var res = re.exec(addrstr);\n\n    if (res === null) {\n        console.error(\"Address: \" + addrstr + \" is invalid, doesn't match regex: \" + re);\n        return null\n    }\n\n    for (var i = 1; i \u003c= 4; i++) {\n        if (res[i] \u003c 0 || res[i] \u003e 255) {\n            console.error(\"Address: \" + addrstr + \" is invalid, outside of ipv4 range: \" + addrstr);\n            return null\n        }\n    }\n\n    return (res[1] \u003c\u003c 24) | (res[2] \u003c\u003c 16) | (res[3] \u003c\u003c 8) | res[4]\n}// parse prefix from a string e.g. 1.2.3.4/18 into an object\n// number of addresses in a subnet based on its mask\nfunction subnetAddresses(mask) {\n    return 1 \u003c\u003c (32 - mask)\n}\n\n// number of assignable addresses based on address and mask\nfunction hostsInMask(addressStr, mask) {\n    if (mask == 32) {\n        return 1;\n    }\n    if (mask == 31) {\n        return 2;\n    }\n    let address = inet_aton(addressStr);\n\n    return subnetLastAddress(address, mask) - (address + 1);\n}\n\nfunction subnetLastAddress(subnet, mask) {\n    return subnet + subnetAddresses(mask) - 1;\n}\n\nfunction addressesToStr(currentResourcesUnwrapped) {\n    let addressesToStr = \"\";\n    for (let allocatedAddr of currentResourcesUnwrapped) {\n        addressesToStr += allocatedAddr.address;\n        addressesToStr += \", \";\n    }\n    return addressesToStr\n}\n\nfunction prefixToStr(prefix) {\n    return `${prefix.address}/${prefix.prefix}`\n}\n\n// framework managed constants\n//;\n//;\n//;\n// framework managed constants\n\n/*\nIPv4 address allocation strategy\n\n- Expects IPv4 prefix resource type to have 2 properties of type int [\"address:string\", \"mask:int\"]\n- userInput.subnet is an optional parameter specifying whether root prefix will be used as a real subnet or just\n  as an IP pool. Essentially whether to consider subnet address and broadcast when allocating addresses.\n- Logs utilisation stats\n- Allocates previously freed prefixes\n- All addresses from parent prefix are used, including the first and last one\n */\n\n\n\n// calculate utilized capacity based on previously allocated prefixes + a newly allocated prefix\nfunction utilizedCapacity(allocatedAddresses, newlyAllocatedRangeCapacity) {\n    return allocatedAddresses.length + newlyAllocatedRangeCapacity\n}\n\n// calculate free capacity based on previously allocated prefixes\nfunction freeCapacity(address, mask, utilisedCapacity) {\n    let subnetItself = userInput.subnet ? 1 : 0;\n    return hostsInMask(address, mask) - utilisedCapacity + subnetItself;\n}\n\nfunction capacity() {\n    return {\n        freeCapacity: String(\n            freeCapacity(resourcePoolProperties.address, resourcePoolProperties.prefix, currentResources.length)),\n        utilizedCapacity: String(currentResources.length)\n    };\n}\n\n// log utilisation stats\nfunction logStats(newlyAllocatedAddr, parentRange, isSubnet = false, allocatedAddresses = [], level = \"log\") {\n    let newlyAllocatedPrefixCapacity = 0;\n    if (newlyAllocatedAddr) {\n        newlyAllocatedPrefixCapacity = 1;\n    } else {\n        newlyAllocatedPrefixCapacity = 0;\n    }\n\n    let utilisedCapacity = utilizedCapacity(allocatedAddresses, newlyAllocatedPrefixCapacity);\n    if(isSubnet) {\n        utilisedCapacity += 2;\n    }\n    let remainingCapacity = freeCapacity(parentRange, utilisedCapacity);\n    let utilPercentage;\n    if (remainingCapacity === 0) {\n        utilPercentage = 100.0;\n    } else {\n        utilPercentage = (utilisedCapacity / subnetAddresses(parentRange.prefix)) * 100;\n    }\n    console[level](\"Remaining capacity: \" + remainingCapacity);\n    console[level](\"Utilised capacity: \" + utilisedCapacity);\n    console[level](`Utilisation: ${utilPercentage.toFixed(1)}%`);\n}\n\n// main\nfunction invoke() {\n    let rootPrefixParsed = resourcePoolProperties;\n    if (rootPrefixParsed == null) {\n        console.error(\"Unable to extract root prefix from pool name: \" + resourcePoolProperties);\n        return null\n    }\n    let rootAddressStr = rootPrefixParsed.address;\n    let rootMask = rootPrefixParsed.prefix;\n    let rootPrefixStr = prefixToStr(rootPrefixParsed);\n    let rootCapacity = subnetAddresses(rootMask);\n    let rootAddressNum = inet_aton(rootAddressStr);\n\n    // unwrap and sort currentResources\n    let currentResourcesUnwrapped = currentResources.map(cR =\u003e cR.Properties);\n    let currentResourcesSet = new Set(currentResourcesUnwrapped.map(ip =\u003e ip.address));\n\n    let firstPossibleAddr = 0;\n    let lastPossibleAddr = 0;\n    if (userInput.subnet === true) {\n        firstPossibleAddr = rootAddressNum + 1;\n        lastPossibleAddr = rootAddressNum + rootCapacity - 1;\n    } else {\n        firstPossibleAddr = rootAddressNum;\n        lastPossibleAddr = rootAddressNum + rootCapacity;\n    }\n\n    for (let i = firstPossibleAddr; i \u003c lastPossibleAddr; i++) {\n        if (!currentResourcesSet.has(inet_ntoa(i))) {\n            // FIXME How to pass these stats ?\n            // logStats(inet_ntoa(i), rootPrefixParsed, userInput.subnet === true, currentResourcesUnwrapped)\n            return {\n                \"address\": inet_ntoa(i)\n            }\n        }\n    }\n\n    // no suitable range found\n    console.error(\"Unable to allocate Ipv4 address from: \" + rootPrefixStr +\n        \". Insufficient capacity to allocate a new address\");\n    console.error(\"Currently allocated addresses: \" + addressesToStr(currentResourcesUnwrapped));\n    logStats(null, rootPrefixParsed, userInput.subnet === true, currentResourcesUnwrapped, \"error\");\n    return null\n}\n\n\n",
-          "__typename": "AllocationStrategy"
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836480",
+            "Name": "halabala",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771072", "Tag": "halabala", "__typename": "Tag" }],
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "AllocationStrategy": { "id": "1", "Name": "ipv4_prefix", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
         },
-        "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
-        "Resources": [],
-        "Capacity": { "freeCapacity": "1048576", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
-        "__typename": "ResourcePool"
-      }
-    ]
+        {
+          "node": {
+            "id": "21474836485",
+            "Name": "TestGraphQL",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771077", "Tag": "TestGraphQL", "__typename": "Tag" }],
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 12, "subnet": false },
+            "AllocationStrategy": { "id": "2", "Name": "ipv4", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "1048576", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836486",
+            "Name": "test_ipv4",
+            "PoolType": "allocating",
+            "ParentResource": null,
+            "allocatedResources": { "totalCount": 0, "__typename": "ResourceConnection" },
+            "Tags": [{ "id": "30064771078", "Tag": "abcdaa", "__typename": "Tag" }],
+            "PoolProperties": { "address": "192.168.0.12", "prefix": 24, "subnet": false },
+            "AllocationStrategy": { "id": "2", "Name": "ipv4", "__typename": "AllocationStrategy" },
+            "ResourceType": { "id": "25769803777", "Name": "ipv4", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+        
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAM",
+        "hasNextPage": true,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 10,
+      "__typename": "ResourcePoolConnection"
+    }
   }
 }

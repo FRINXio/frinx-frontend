@@ -1,1 +1,15 @@
-{"data":{"QueryAllocationStrategies":[{"id":"3","Name":"vlan_range","__typename":"AllocationStrategy"},{"id":"4","Name":"vlan","__typename":"AllocationStrategy"},{"id":"1","Name":"ipv4_prefix","__typename":"AllocationStrategy"},{"id":"5","Name":"ipv6_prefix","__typename":"AllocationStrategy"},{"id":"7","Name":"route_distinguisher","__typename":"AllocationStrategy"},{"id":"8","Name":"random_signed_int32","__typename":"AllocationStrategy"},{"id":"6","Name":"ipv6","__typename":"AllocationStrategy"},{"id":"2","Name":"ipv4","__typename":"AllocationStrategy"},{"id":"9","Name":"unique_id","__typename":"AllocationStrategy"}]}}
+{
+  "data": {
+    "QueryAllocationStrategies": [
+      { "id": "3", "Name": "vlan_range", "__typename": "AllocationStrategy" },
+      { "id": "4", "Name": "vlan", "__typename": "AllocationStrategy" },
+      { "id": "1", "Name": "ipv4_prefix", "__typename": "AllocationStrategy" },
+      { "id": "5", "Name": "ipv6_prefix", "__typename": "AllocationStrategy" },
+      { "id": "7", "Name": "route_distinguisher", "__typename": "AllocationStrategy" },
+      { "id": "8", "Name": "random_signed_int32", "__typename": "AllocationStrategy" },
+      { "id": "6", "Name": "ipv6", "__typename": "AllocationStrategy" },
+      { "id": "2", "Name": "ipv4", "__typename": "AllocationStrategy" },
+      { "id": "9", "Name": "unique_id", "__typename": "AllocationStrategy" }
+    ]
+  }
+}

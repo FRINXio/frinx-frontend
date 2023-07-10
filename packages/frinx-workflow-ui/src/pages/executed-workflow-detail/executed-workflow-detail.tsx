@@ -41,7 +41,7 @@ import WorkflowJsonTab from './executed-workflow-detail-tabs/workflow-json-tab';
 import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import ExecutedWorkflowDetailHeader from './executed-workflow-detail-header';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
-import WorkflowDiagram from '../../common/workflow-diagram';
+import WorkflowDiagram from '../../components/workflow-diagram';
 import { formatDate } from '../../helpers/utils.helpers';
 import ExecutedWorkflowDetailTaskDetail from './executed-workflow-detail-task-detail/executed-workflow-detail-task-detail';
 

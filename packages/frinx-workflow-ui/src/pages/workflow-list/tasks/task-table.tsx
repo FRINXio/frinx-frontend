@@ -1,8 +1,8 @@
 import React from 'react';
 import { Table, Thead, Tr, Th, Tbody, Tfoot, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
-import Paginator from '@frinx/workflow-ui/src/common/pagination';
 import FeatherIcon from 'feather-icons-react';
 import { TaskDefinition } from '@frinx/shared/src';
+import Paginator from '../../../components/pagination';
 
 type Pagination = {
   currentPage: number;
