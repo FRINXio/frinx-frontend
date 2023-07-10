@@ -13,6 +13,7 @@ import {
 import { useFormik } from 'formik';
 import { TaskDefinition } from '@frinx/shared/src';
 import { AddTaskModalForm } from './add-task-modal-form';
+import * as yup from 'yup';
 
 type AddTaskModalProps = {
   isOpen: boolean;
@@ -21,9 +22,16 @@ type AddTaskModalProps = {
   onSubmit: (task: TaskDefinition) => void;
 };
 
+const validationSchema = yup.object({
+  name: yup.string().required('Please enter a task name.'),
+  timeoutSeconds: yup.number().required('Please enter timeout seconds.'),
+});
+
 function AddTaskModal({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) {
-  const { handleSubmit, setFieldValue, values, submitForm } = useFormik({
+  const { handleSubmit, setFieldValue, values, errors, submitForm } = useFormik({
     initialValues: task,
+    validationSchema,
+    validateOnChange: false,
     onSubmit: (formData) => {
       onSubmit(formData);
       onClose();
@@ -37,7 +45,7 @@ function AddTaskModal({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) {
         <ModalCloseButton />
         <ModalHeader>Add new Task</ModalHeader>
         <ModalBody>
-          <AddTaskModalForm onSubmit={handleSubmit} onChange={setFieldValue} task={values} />
+          <AddTaskModalForm errors={errors} onSubmit={handleSubmit} onChange={setFieldValue} task={values} />
         </ModalBody>
         <ModalFooter>
           <ButtonGroup>

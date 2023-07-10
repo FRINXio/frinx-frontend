@@ -10,6 +10,8 @@ import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
 import {
+  CreateTaskDefinitionMutation,
+  CreateTaskDefinitionMutationVariables,
   DeleteTaskMutation,
   DeleteTaskMutationVariables,
   TaskDefinitionsQuery,
@@ -65,6 +67,35 @@ const DELETE_TASK_DEFINITION_MUTATION = gql`
   }
 `;
 
+const CREATE_TASK_DEFINITION_MUTATION = gql`
+  mutation CreateTaskDefinition($input: CreateTaskDefinitionInput!) {
+    createTaskDefinition(input: $input) {
+      id
+      version
+      name
+      timeoutSeconds
+      createTime
+      updateTime
+      createdBy
+      updatedBy
+      description
+      retryCount
+      pollTimeoutSeconds
+      inputKeys
+      outputKeys
+      inputTemplate
+      timeoutPolicy
+      retryLogic
+      retryDelaySeconds
+      responseTimeoutSeconds
+      concurrentExecLimit
+      rateLimitFrequencyInSeconds
+      rateLimitPerFrequency
+      ownerEmail
+    }
+  }
+`;
+
 function getFilteredResults<T extends { name: string }>(searchTerm: string, defs: T[]): T[] {
   return defs.filter((df) => df.name.toLowerCase().includes(searchTerm.toLowerCase()));
 }
@@ -85,6 +116,9 @@ const TaskList = () => {
   });
 
   const [, onDelete] = useMutation<DeleteTaskMutation, DeleteTaskMutationVariables>(DELETE_TASK_DEFINITION_MUTATION);
+  const [, onCreate] = useMutation<CreateTaskDefinitionMutation, CreateTaskDefinitionMutationVariables>(
+    CREATE_TASK_DEFINITION_MUTATION,
+  );
 
   const sortedTasks =
     (taskData?.taskDefinitions || []).sort((a, b) => a.name.localeCompare(b.name)) || [].filter(omitNullValue);
@@ -138,21 +172,54 @@ const TaskList = () => {
   const addTask = (tsk: TaskDefinition) => {
     if (tsk.name !== '') {
       const ownerEmail = tsk.ownerEmail || 'example@example.com';
-      const { registerTaskDefinition } = callbackUtils.getCallbacks;
-
-      registerTaskDefinition([
-        {
+      const responseTimeoutSeconds = Number(tsk?.responseTimeoutSeconds);
+      const retryCount = Number(tsk?.retryCount) || null;
+      const retryDelaySeconds = Number(tsk?.retryDelaySeconds);
+      const timeoutSeconds = Number(tsk?.timeoutSeconds);
+      const input = {
+        input: {
           ...tsk,
+          responseTimeoutSeconds,
+          retryCount,
+          retryDelaySeconds,
+          timeoutSeconds,
           ownerEmail,
           outputKeys: [...new Set(tsk.outputKeys?.filter((outputKey) => outputKey !== ''))],
           inputKeys: [...new Set(tsk.inputKeys?.filter((inputKey) => inputKey !== ''))],
         },
-      ]).then(() => {
-        window.location.reload();
-      });
+      };
+
+      onCreate(input)
+        .then((res) => {
+          if (!res.data?.createTaskDefinition?.id) {
+            addToastNotification({
+              type: 'error',
+              title: 'Error',
+              content: res.error?.message,
+            });
+          }
+          if (res.data?.createTaskDefinition?.id || !res.error) {
+            addToastNotification({
+              content: 'Task created successfuly',
+              title: 'Success',
+              type: 'success',
+            });
+          }
+        })
+        .catch((err) => {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: err?.message,
+          });
+        });
     }
   };
-  console.log(pageItems);
+  const taskDefinitions = searchTerm
+    ? pageItems.filter((task) => {
+        !task.name.includes(searchTerm);
+      })
+    : pageItems;
 
   return (
     <Container maxWidth={1200} mx="auto">
