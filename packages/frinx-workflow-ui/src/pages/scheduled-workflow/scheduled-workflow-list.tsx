@@ -32,7 +32,7 @@ import {
   Task,
   EditScheduledWorkflow,
   Pagination,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
 import {
