@@ -12,7 +12,7 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { callbackUtils, Queue } from '@frinx/shared/src';
+import { callbackUtils, Queue } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import moment from 'moment';
