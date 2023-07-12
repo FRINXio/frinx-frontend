@@ -10,7 +10,55 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Record: any;
   Upload: any;
+};
+
+export type ActionCompleteTask = {
+  __typename?: 'ActionCompleteTask';
+  output: Maybe<Scalars['String']>;
+  taskId: Maybe<Scalars['String']>;
+  taskRefName: Maybe<Scalars['String']>;
+  workflowId: Maybe<Scalars['String']>;
+};
+
+export type ActionCompleteTaskInput = {
+  output?: InputMaybe<Scalars['String']>;
+  taskId?: InputMaybe<Scalars['String']>;
+  taskRefName?: InputMaybe<Scalars['String']>;
+  workflowId?: InputMaybe<Scalars['String']>;
+};
+
+export type ActionFailTask = {
+  __typename?: 'ActionFailTask';
+  output: Maybe<Scalars['String']>;
+  taskId: Maybe<Scalars['String']>;
+  taskRefName: Maybe<Scalars['String']>;
+  workflowId: Maybe<Scalars['String']>;
+};
+
+export type ActionFailTaskInput = {
+  output?: InputMaybe<Scalars['String']>;
+  taskId?: InputMaybe<Scalars['String']>;
+  taskRefName?: InputMaybe<Scalars['String']>;
+  workflowId?: InputMaybe<Scalars['String']>;
+};
+
+export type ActionStartWorkflow = {
+  __typename?: 'ActionStartWorkflow';
+  correlationId: Maybe<Scalars['String']>;
+  input: Maybe<Scalars['String']>;
+  name: Maybe<Scalars['String']>;
+  taskToDomain: Maybe<Scalars['String']>;
+  version: Maybe<Scalars['Int']>;
+};
+
+export type ActionStartWorkflowInput = {
+  correlationId?: InputMaybe<Scalars['String']>;
+  input?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  taskToDomain?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<Scalars['Int']>;
 };
 
 export type AddBlueprintInput = {
@@ -199,6 +247,17 @@ export type CountryEdge = {
   node: Country;
 };
 
+export type CreateEventHandlerInput = {
+  actions: Array<EventHandlerActionInput>;
+  condition?: InputMaybe<Scalars['String']>;
+  evaluatorType?: InputMaybe<Scalars['String']>;
+  /** The event is immutable and cannot be changed. */
+  event: Scalars['String'];
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  /** The name is immutable and cannot be changed. Also it must be unique. */
+  name: Scalars['String'];
+};
+
 export type CreateLabelInput = {
   name: Scalars['String'];
 };
@@ -363,6 +422,54 @@ export type EditWorkflowScheduleInput = {
   workflowVersion?: InputMaybe<Scalars['String']>;
 };
 
+export type EventHandler = {
+  __typename?: 'EventHandler';
+  actions: Array<EventHandlerAction>;
+  condition: Maybe<Scalars['String']>;
+  evaluatorType: Maybe<Scalars['String']>;
+  /** The event is immutable and cannot be changed. */
+  event: Scalars['String'];
+  id: Scalars['ID'];
+  isActive: Maybe<Scalars['Boolean']>;
+  /** The name is immutable and cannot be changed. Also it must be unique. */
+  name: Scalars['String'];
+};
+
+export type EventHandlerAction = {
+  __typename?: 'EventHandlerAction';
+  action: Maybe<EventHandlerActionEnum>;
+  completeTask: Maybe<ActionCompleteTask>;
+  expandInlineJSON: Maybe<Scalars['Boolean']>;
+  failTask: Maybe<ActionFailTask>;
+  id: Scalars['ID'];
+  startWorkflow: Maybe<ActionStartWorkflow>;
+};
+
+export type EventHandlerActionEnum =
+  | 'complete_task'
+  | 'fail_task'
+  | 'start_workflow';
+
+export type EventHandlerActionInput = {
+  action?: InputMaybe<EventHandlerActionEnum>;
+  completeTask?: InputMaybe<ActionCompleteTaskInput>;
+  expandInlineJSON?: InputMaybe<Scalars['Boolean']>;
+  failTask?: InputMaybe<ActionFailTaskInput>;
+  startWorkflow?: InputMaybe<ActionStartWorkflowInput>;
+};
+
+export type EventHandlerConnection = {
+  __typename?: 'EventHandlerConnection';
+  edges: Maybe<Array<EventHandlerEdge>>;
+  pageInfo: PageInfo;
+};
+
+export type EventHandlerEdge = {
+  __typename?: 'EventHandlerEdge';
+  cursor: Scalars['String'];
+  node: EventHandler;
+};
+
 export type ExecuteNewWorkflowInput = {
   correlationId?: InputMaybe<Scalars['String']>;
   externalInputPayloadStoragePath?: InputMaybe<Scalars['String']>;
@@ -492,6 +599,12 @@ export type FilterDevicesInput = {
   labels?: InputMaybe<Array<Scalars['String']>>;
 };
 
+export type FilterEventHandlerInput = {
+  evaluatorType?: InputMaybe<Scalars['String']>;
+  event?: InputMaybe<Scalars['String']>;
+  isActive?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type FilterPoolsInput = {
   poolName?: InputMaybe<Scalars['String']>;
 };
@@ -503,6 +616,11 @@ export type FilterTopologyInput = {
 export type FilterWorkflowsInput = {
   keyword?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type FreeResourceInput = {
+  poolId: Scalars['String'];
+  resource: Scalars['Record'];
 };
 
 export type GraphEdge = {
@@ -632,11 +750,13 @@ export type Mutation = {
   bulkTerminateWorkflow: Maybe<BulkOperationResponse>;
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
+  createEventHandler: Maybe<EventHandler>;
   createLabel: CreateLabelPayload;
   createTransaction: CreateTransactionPayload;
   createWorkflow: CreateWorkflowPayload;
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
+  deleteEventHandler: Maybe<IsOkResponse>;
   deleteLabel: DeleteLabelPayload;
   deleteSchedule: Maybe<IsOkResponse>;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
@@ -644,6 +764,7 @@ export type Mutation = {
   editWorkflowSchedule: Maybe<Schedule>;
   executeNewWorkflow: Maybe<Scalars['String']>;
   executeWorkflowByName: Maybe<Scalars['String']>;
+  freeResource: Maybe<Scalars['String']>;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   pauseWorkflow: Maybe<IsOkResponse>;
@@ -660,6 +781,7 @@ export type Mutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
+  updateEventHandler: Maybe<EventHandler>;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
   updateWorkflow: UpdateWorkflowPayload;
 };
@@ -734,6 +856,11 @@ export type MutationCommitConfigArgs = {
 };
 
 
+export type MutationCreateEventHandlerArgs = {
+  input: CreateEventHandlerInput;
+};
+
+
 export type MutationCreateLabelArgs = {
   input: CreateLabelInput;
 };
@@ -755,6 +882,11 @@ export type MutationDeleteBlueprintArgs = {
 
 
 export type MutationDeleteDeviceArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteEventHandlerArgs = {
   id: Scalars['String'];
 };
 
@@ -792,6 +924,11 @@ export type MutationExecuteNewWorkflowArgs = {
 
 export type MutationExecuteWorkflowByNameArgs = {
   input: ExecuteWorkflowByName;
+};
+
+
+export type MutationFreeResourceArgs = {
+  input: FreeResourceInput;
 };
 
 
@@ -885,6 +1022,13 @@ export type MutationUpdateDeviceArgs = {
 };
 
 
+export type MutationUpdateEventHandlerArgs = {
+  event: Scalars['String'];
+  input: UpdateEventHandlerInput;
+  name: Scalars['String'];
+};
+
+
 export type MutationUpdateGraphNodeCoordinatesArgs = {
   input: Array<GraphNodeCoordinatesInput>;
 };
@@ -958,7 +1102,7 @@ export type Pool = Node & {
   name: Scalars['String'];
   poolType: PoolType;
   resourceType: ResourceType;
-  tags: Array<Maybe<Tag>>;
+  tags: Array<Tag>;
   version: Maybe<Scalars['Int']>;
 };
 
@@ -987,6 +1131,9 @@ export type Query = {
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
   devices: DeviceConnection;
+  eventHandler: Maybe<EventHandler>;
+  eventHandlers: Maybe<EventHandlerConnection>;
+  eventHandlersByEvent: Maybe<EventHandlerConnection>;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
   labels: LabelConnection;
   locations: LocationConnection;
@@ -1043,6 +1190,31 @@ export type QueryDevicesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<DeviceOrderByInput>;
+};
+
+
+export type QueryEventHandlerArgs = {
+  event: Scalars['String'];
+  name: Scalars['String'];
+};
+
+
+export type QueryEventHandlersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<FilterEventHandlerInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryEventHandlersByEventArgs = {
+  activeOnly?: InputMaybe<Scalars['Boolean']>;
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  event: Scalars['String'];
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1410,6 +1582,13 @@ export type UpdateDevicePayload = {
   device: Maybe<Device>;
 };
 
+export type UpdateEventHandlerInput = {
+  actions?: InputMaybe<Array<EventHandlerActionInput>>;
+  condition?: InputMaybe<Scalars['String']>;
+  evaluatorType?: InputMaybe<Scalars['String']>;
+  isActive?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']>;
@@ -1548,6 +1727,51 @@ export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetSchedulesQuery = { __typename?: 'Query', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } };
+
+export type EventHandlerQueryVariables = Exact<{
+  event: Scalars['String'];
+  name: Scalars['String'];
+}>;
+
+
+export type EventHandlerQuery = { __typename?: 'Query', eventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string, condition: string | null, evaluatorType: string | null, isActive: boolean | null, actions: Array<{ __typename?: 'EventHandlerAction', id: string, action: EventHandlerActionEnum | null, expandInlineJSON: boolean | null, completeTask: { __typename?: 'ActionCompleteTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null, failTask: { __typename?: 'ActionFailTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null, startWorkflow: { __typename?: 'ActionStartWorkflow', name: string | null, version: number | null, input: string | null, correlationId: string | null, taskToDomain: string | null } | null }> } | null };
+
+export type DeleteEventHandlerDetailMutationVariables = Exact<{
+  deleteEventHandlerId: Scalars['String'];
+}>;
+
+
+export type DeleteEventHandlerDetailMutation = { __typename?: 'Mutation', deleteEventHandler: { __typename?: 'IsOkResponse', isOk: boolean } | null };
+
+export type EditEventHandlerActionsMutationVariables = Exact<{
+  input: UpdateEventHandlerInput;
+  name: Scalars['String'];
+  event: Scalars['String'];
+}>;
+
+
+export type EditEventHandlerActionsMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
+
+export type GetEventHandlersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetEventHandlersQuery = { __typename?: 'Query', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', node: { __typename?: 'EventHandler', event: string, id: string, isActive: boolean | null, name: string, evaluatorType: string | null, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null }> } }> | null } | null };
+
+export type DeleteEventHandlerMutationVariables = Exact<{
+  deleteEventHandlerId: Scalars['String'];
+}>;
+
+
+export type DeleteEventHandlerMutation = { __typename?: 'Mutation', deleteEventHandler: { __typename?: 'IsOkResponse', isOk: boolean } | null };
+
+export type UpdateEventHandlerMutationVariables = Exact<{
+  input: UpdateEventHandlerInput;
+  name: Scalars['String'];
+  event: Scalars['String'];
+}>;
+
+
+export type UpdateEventHandlerMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
 
 export type ExecutedWorkflowDetailQueryVariables = Exact<{
   nodeId: Scalars['ID'];

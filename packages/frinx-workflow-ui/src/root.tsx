@@ -10,7 +10,9 @@ import ScheduledWorkflowList from './pages/scheduled-workflow/scheduled-workflow
 import TaskList from './pages/workflow-list/tasks/task-list';
 import WorkflowListHeader from './components/workflow-list-header';
 import WorkflowDefinitions from './pages/workflow-definitions/workflow-definitions';
-import EventHandlersListPage from "./pages/event-handlers-list/event-handlers-list-page";
+import EventHandlersListPage from './pages/event-handlers-list/event-handlers-list-page';
+import EventHandlersDetailPage from './pages/event-handlers-detail/event-handlers-detail-page';
+import EventHandlerDetailEditPage from './pages/event-handlers-detail-edit/event-handler-detail-edit-page';
 
 const Root: VoidFunctionComponent = () => {
   const [key, setKey] = useState(uuid());
@@ -18,6 +20,14 @@ const Root: VoidFunctionComponent = () => {
 
   const handleExecutedWfIdClick = (id: string) => {
     navigate(`executed/${id}`);
+  };
+
+  const handleOnEventHandlerDetailClick = (event: string, name: string) => {
+    navigate(`event-handlers/${event}/${name}`);
+  };
+
+  const handleOnEventHandlerEditClick = (event: string, name: string) => {
+    navigate(`event-handlers/${event}/${name}/edit`);
   };
 
   return (
@@ -42,8 +52,22 @@ const Root: VoidFunctionComponent = () => {
         element={<ExecutedWorkflowDetail onExecutedOperation={handleExecutedWfIdClick} />}
       />
       <Route path="scheduled" element={<ScheduledWorkflowList />} />
-      <Route path="event-handlers" element={<EventHandlersListPage />} />
-      <Route path="event-handlers/:eventHandlerId" element={<EventHandlersListPage />} />
+      <Route path="event-handlers">
+        <Route
+          index
+          element={
+            <EventHandlersListPage
+              onEventHandlerDetailClick={handleOnEventHandlerDetailClick}
+              onEventHandlerEditClick={handleOnEventHandlerEditClick}
+            />
+          }
+        />
+        <Route
+          path=":event/:name"
+          element={<EventHandlersDetailPage onEventHandlerEditClick={handleOnEventHandlerEditClick} />}
+        />
+        <Route path=":event/:name/edit" element={<EventHandlerDetailEditPage />} />
+      </Route>
       <Route path="tasks" element={<TaskList />} />
       <Route path="poll-data" element={<PollData />} />
       <Route path="builder">
