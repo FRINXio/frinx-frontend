@@ -1,21 +1,25 @@
-import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue, TaskDefinition, useNotifications } from '@frinx/shared/src';
+import {
+  Box,
+  Button,
+  Container,
+  Flex,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { omitNullValue, Pagination, TaskDefinition, useNotifications } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import { gql, useMutation, useQuery } from 'urql';
-import React, { useEffect, useMemo, useState } from 'react';
-import { usePagination } from '../../../hooks/use-pagination-hook';
+import React, { useMemo, useState } from 'react';
+import { usePagination } from '../../../hooks/use-graphql-pagination';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
-import {
-  CreateTaskDefinitionMutation,
-  CreateTaskDefinitionMutationVariables,
-  DeleteTaskMutation,
-  DeleteTaskMutationVariables,
-  TaskDefinitionsQuery,
-  TaskDefinitionsQueryVariables,
-} from '../../../__generated__/graphql';
+import { CreateTaskDefinitionMutation, CreateTaskDefinitionMutationVariables, DeleteTaskMutation, DeleteTaskMutationVariables, TaskDefinitionEdge, TaskDefinitionsQuery, TaskDefinitionsQueryVariables } from '../../../__generated__/graphql';
+
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -36,24 +40,28 @@ const taskDefinition: TaskDefinition = {
 };
 
 const TASK_DEFINITIONS_QUERY = gql`
-  query TaskDefinitions {
-    taskDefinitions {
-      name
-      timeoutSeconds
-      description
-      retryCount
-      pollTimeoutSeconds
-      inputKeys
-      outputKeys
-      inputTemplate
-      timeoutPolicy
-      retryLogic
-      retryDelaySeconds
-      responseTimeoutSeconds
-      concurrentExecLimit
-      rateLimitFrequencyInSeconds
-      rateLimitPerFrequency
-      ownerEmail
+  query TaskDefinitions($filter: FilterTaskDefinitionsInput, $before: String, $last: Int, $after: String, $first: Int) {
+    taskDefinitions(filter: $filter, before: $before, last: $last, after: $after, first: $first) {
+      edges {
+        node {
+          id
+          name
+          timeoutPolicy
+          timeoutSeconds
+          responseTimeoutSeconds
+          retryCount
+          retryLogic
+          retryDelaySeconds
+          ownerEmail
+        }
+      }
+      totalCount
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
     }
   }
 `;
@@ -70,65 +78,52 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
   mutation CreateTaskDefinition($input: CreateTaskDefinitionInput!) {
     createTaskDefinition(input: $input) {
       id
-      version
       name
       timeoutSeconds
-      createTime
-      updateTime
-      createdBy
-      updatedBy
-      description
       retryCount
-      pollTimeoutSeconds
-      inputKeys
-      outputKeys
-      inputTemplate
       timeoutPolicy
       retryLogic
-      retryDelaySeconds
       responseTimeoutSeconds
-      concurrentExecLimit
-      rateLimitFrequencyInSeconds
-      rateLimitPerFrequency
-      ownerEmail
     }
   }
 `;
 
-function getFilteredResults<T extends { name: string }>(searchTerm: string, defs: T[]): T[] {
-  return defs.filter((df) => df.name.toLowerCase().includes(searchTerm.toLowerCase()));
-}
-
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<TaskDefinition>();
   const [sorted, setSorted] = useState(false);
   const [task, setTask] = useState<TaskDefinition>();
+  const [keyword, setKeyword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const { addToastNotification } = useNotifications();
   const addTaskModal = useDisclosure();
   const taskConfigModal = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
-  const [{ data: taskData }] = useQuery<TaskDefinitionsQuery, TaskDefinitionsQueryVariables>({
+  const [{ data: taskData }] = useQuery<TaskDefinitionsQuery,TaskDefinitionsQueryVariables>({
     query: TASK_DEFINITIONS_QUERY,
+    variables: {
+      ...paginationArgs,
+      filter: {
+        keyword,
+      },
+    },
   });
+
+  const taskDefinitions = (taskData?.taskDefinitions.edges ?? [])
+    .map((e) => {
+      const { node } = e;
+      return {
+        ...node,
+      };
+    })
+    .filter(omitNullValue);
 
   const [, onDelete] = useMutation<DeleteTaskMutation, DeleteTaskMutationVariables>(DELETE_TASK_DEFINITION_MUTATION);
   const [, onCreate] = useMutation<CreateTaskDefinitionMutation, CreateTaskDefinitionMutationVariables>(
     CREATE_TASK_DEFINITION_MUTATION,
   );
 
-  const sortedTasks =
-    (taskData?.taskDefinitions || []).sort((a, b) => a.name.localeCompare(b.name)) || [].filter(omitNullValue);
-
-  useEffect(() => {
-    if (searchTerm.length > 0) {
-      setItemList(getFilteredResults(searchTerm, sortedTasks));
-    }
-    if (!searchTerm.length) {
-      setItemList(sortedTasks);
-    }
-  }, [searchTerm, taskData, setItemList, sortedTasks]);
+  const sortedTasks = taskDefinitions.sort((a, b) => a.name.localeCompare(b.name)) || [].filter(omitNullValue);
 
   const handleTaskModal = (tsk: TaskDefinition) => {
     setTask(tsk);
@@ -163,7 +158,7 @@ const TaskList = () => {
   };
 
   const sortArray = (key: string) => {
-    setItemList(sorted ? orderBy(sortedTasks, [key], ['desc']) : orderBy(sortedTasks, [key], ['asc']));
+    sorted ? orderBy(sortedTasks, [key], ['desc']) : orderBy(sortedTasks, [key], ['asc']);
     setSorted(!sorted);
   };
 
@@ -235,18 +230,50 @@ const TaskList = () => {
             background="white"
           />
         </InputGroup>
-        <Button marginLeft={4} colorScheme="blue" onClick={addTaskModal.onOpen}>
+        <Flex gap={2}>
+          <Button
+          marginLeft={4}
+          colorScheme="blue"
+          onClick={() => {
+            setKeyword(searchTerm);
+          }}
+        >
+          Search
+        </Button>
+        <Button
+          marginLeft={4}
+          colorScheme="red"
+          variant="outline"
+          onClick={() => {
+            setKeyword('');
+            setSearchTerm('');
+          }}
+        >
+          Reset
+        </Button>
+        <Button marginLeft={4} colorScheme="blue" variant="outline" onClick={addTaskModal.onOpen}>
           New
         </Button>
+        </Flex>
+        
       </Flex>
 
       <TaskTable
-        tasks={pageItems}
+        tasks={sortedTasks}
         onTaskConfigClick={handleTaskModal}
         onTaskDelete={handleDeleteTask}
-        pagination={{ currentPage, setCurrentPage, totalPages }}
         sortArray={sortArray}
       />
+      {taskData && (
+        <Box marginTop={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(taskData?.taskDefinitions.pageInfo.startCursor)}
+            onNext={nextPage(taskData.taskDefinitions.pageInfo.endCursor)}
+            hasNextPage={taskData.taskDefinitions.pageInfo.hasNextPage}
+            hasPreviousPage={taskData.taskDefinitions.pageInfo.hasPreviousPage}
+          />
+        </Box>
+      )}
     </Container>
   );
 };
