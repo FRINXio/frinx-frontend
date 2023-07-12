@@ -31,8 +31,8 @@ import {
   jsonParse,
   Task,
   EditScheduledWorkflow,
+  Pagination,
 } from '@frinx/shared';
-import Pagination from '@frinx/shared/src/components/pagination/pagination';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
 import {

@@ -18,8 +18,14 @@ import { usePagination } from '../../../hooks/use-graphql-pagination';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
-import { CreateTaskDefinitionMutation, CreateTaskDefinitionMutationVariables, DeleteTaskMutation, DeleteTaskMutationVariables, TaskDefinitionEdge, TaskDefinitionsQuery, TaskDefinitionsQueryVariables } from '../../../__generated__/graphql';
-
+import {
+  CreateTaskDefinitionMutation,
+  CreateTaskDefinitionMutationVariables,
+  DeleteTaskMutation,
+  DeleteTaskMutationVariables,
+  TaskDefinitionsQuery,
+  TaskDefinitionsQueryVariables,
+} from '../../../__generated__/graphql';
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -99,7 +105,7 @@ const TaskList = () => {
   const taskConfigModal = useDisclosure();
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
-  const [{ data: taskData }] = useQuery<TaskDefinitionsQuery,TaskDefinitionsQueryVariables>({
+  const [{ data: taskData }] = useQuery<TaskDefinitionsQuery, TaskDefinitionsQueryVariables>({
     query: TASK_DEFINITIONS_QUERY,
     variables: {
       ...paginationArgs,
@@ -158,8 +164,9 @@ const TaskList = () => {
   };
 
   const sortArray = (key: string) => {
-    sorted ? orderBy(sortedTasks, [key], ['desc']) : orderBy(sortedTasks, [key], ['asc']);
+    const sortedArray = sorted ? orderBy(sortedTasks, [key], ['desc']) : orderBy(sortedTasks, [key], ['asc']);
     setSorted(!sorted);
+    return sortedArray;
   };
 
   const addTask = (tsk: TaskDefinition) => {
@@ -232,30 +239,29 @@ const TaskList = () => {
         </InputGroup>
         <Flex gap={2}>
           <Button
-          marginLeft={4}
-          colorScheme="blue"
-          onClick={() => {
-            setKeyword(searchTerm);
-          }}
-        >
-          Search
-        </Button>
-        <Button
-          marginLeft={4}
-          colorScheme="red"
-          variant="outline"
-          onClick={() => {
-            setKeyword('');
-            setSearchTerm('');
-          }}
-        >
-          Reset
-        </Button>
-        <Button marginLeft={4} colorScheme="blue" variant="outline" onClick={addTaskModal.onOpen}>
-          New
-        </Button>
+            marginLeft={4}
+            colorScheme="blue"
+            onClick={() => {
+              setKeyword(searchTerm);
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            marginLeft={4}
+            colorScheme="red"
+            variant="outline"
+            onClick={() => {
+              setKeyword('');
+              setSearchTerm('');
+            }}
+          >
+            Reset
+          </Button>
+          <Button marginLeft={4} colorScheme="blue" variant="outline" onClick={addTaskModal.onOpen}>
+            New
+          </Button>
         </Flex>
-        
       </Flex>
 
       <TaskTable

@@ -10,12 +10,7 @@ type TaskTableProps = {
   onTaskConfigClick: (task: TaskDefinition) => void;
 };
 
-export default function TaskTable({
-  sortArray,
-  tasks,
-  onTaskConfigClick,
-  onTaskDelete,
-}: TaskTableProps) {
+export default function TaskTable({ sortArray, tasks, onTaskConfigClick, onTaskDelete }: TaskTableProps) {
   return (
     <Table background="white">
       <Thead>

@@ -25,6 +25,21 @@ type AddTaskModalProps = {
 const validationSchema = yup.object({
   name: yup.string().required('Please enter a task name.'),
   timeoutSeconds: yup.number().required('Please enter timeout seconds.'),
+  responseTimeoutSeconds: yup
+    .number()
+    .when('timeoutSeconds', (timeout, schema) =>
+      schema.test({
+        test(value: number) {
+          if (value > timeout) {
+            return false;
+          }
+          return true;
+        },
+        message:
+          'Response timeout cannot be greater than task timeout. Default value for responseTimeoutSeconds is 3600',
+      }),
+    )
+    .required(),
 });
 
 function AddTaskModal({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) {

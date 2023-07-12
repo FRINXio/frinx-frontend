@@ -134,7 +134,7 @@ export function AddTaskModalForm({ onChange, errors, onSubmit, task }: AddTaskMo
           id="retryDelaySeconds"
           label="Retry Delay"
           onChange={onChange}
-          value={Number(task.retryDelaySeconds) || undefined}
+          value={Number(task.retryDelaySeconds) || ''}
           type="number"
         />
         <FormSelect
@@ -154,13 +154,17 @@ export function AddTaskModalForm({ onChange, errors, onSubmit, task }: AddTaskMo
           />
           {errors.timeoutSeconds && <FormErrorMessage>{errors.timeoutSeconds}</FormErrorMessage>}
         </FormControl>
-        <FormInput
-          id="responseTimeoutSeconds"
-          label="Response Timeout"
-          onChange={onChange}
-          value={Number(task.responseTimeoutSeconds) || undefined}
-          type="number"
-        />
+        <FormControl isInvalid={errors.responseTimeoutSeconds !== undefined}>
+          <FormInput
+            id="responseTimeoutSeconds"
+            label="Response Timeout"
+            onChange={onChange}
+            value={Number(task.responseTimeoutSeconds) || ''}
+            type="number"
+          />{' '}
+          {errors.responseTimeoutSeconds && <FormErrorMessage>{errors.responseTimeoutSeconds}</FormErrorMessage>}
+        </FormControl>
+
         <FormControl>
           <FormLabel htmlFor="inputKeys">
             Input Keys
