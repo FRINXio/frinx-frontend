@@ -25,10 +25,15 @@ export type ApiHelpers = {
 export type ErrorType = 'UNAUTHORIZED' | 'FORBIDDEN' | 'ACCESS_REJECTED';
 export type AuthContext = {
   getAuthToken: () => string | null;
+  setAuthToken: (authToken: string) => void;
   emit: (errorType: ErrorType) => void;
 };
 
-export function createApiHelpers(baseURL: string, authContext: AuthContext): ApiHelpers {
+export function createApiHelpers(
+  baseURL: string,
+  authContext: AuthContext,
+  refreshToken?: () => Promise<string | null>,
+): ApiHelpers {
   async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
     const url = urlJoin(baseURL, path);
     const { headers, ...rest } = options;
@@ -39,6 +44,10 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
         ...makeHeaders(authContext.getAuthToken(), headers),
       },
     });
+
+    if (refreshToken) {
+      await refreshToken();
+    }
 
     if (response.status === 401) {
       return authContext.emit('UNAUTHORIZED');

@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { PublicClientApplication } from '@azure/msal-browser';
+import { AccountInfo, InteractionStatus, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
 import EventEmitter from 'eventemitter3';
 
 const LS_TOKEN_KEY = 'id_token';
@@ -54,4 +54,26 @@ export function createPublicClientApp(): PublicClientApplication {
     },
   };
   return new PublicClientApplication(authConfig);
+}
+
+export async function refreshToken(
+  inProgress: InteractionStatus,
+  accounts: AccountInfo[],
+  instance: IPublicClientApplication,
+): Promise<string | null> {
+  if (inProgress === 'none' && accounts.length > 0) {
+    try {
+      const authResult = await instance.acquireTokenSilent({
+        account: accounts[0],
+        scopes: ['User.Read'],
+      });
+
+      return authResult.idToken;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log('could not get refreshed token', e);
+    }
+  }
+
+  return null;
 }

@@ -1,10 +1,12 @@
+import { useMsal } from '@azure/msal-react';
 import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
-import { authContext } from './auth-helpers';
+import { authContext, refreshToken } from './auth-helpers';
 
 type DeviceTopologyComponents = typeof import('@frinx/device-topology/src');
 const DeviceTopologyApp: FC = () => {
   const [components, setComponents] = useState<DeviceTopologyComponents | null>(null);
+  const { inProgress, accounts, instance } = useMsal();
 
   useEffect(() => {
     import('@frinx/device-topology/src').then((mod) => {
@@ -19,7 +21,10 @@ const DeviceTopologyApp: FC = () => {
   const { InventoryAPIProvider, DeviceTopologyApp: App } = components;
 
   return (
-    <InventoryAPIProvider client={InventoryApi.create({ url: window.__CONFIG__.inventoryApiURL, authContext }).client}>
+    <InventoryAPIProvider
+      client={InventoryApi.create({ url: window.__CONFIG__.inventoryApiURL, authContext }).client}
+      refreshToken={() => refreshToken(inProgress, accounts, instance)}
+    >
       <App />
     </InventoryAPIProvider>
   );
