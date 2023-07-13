@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - story-v1.0
 jobs:
   pr-check:
     runs-on: ubuntu-latest
