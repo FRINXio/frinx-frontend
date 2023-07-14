@@ -1,30 +1,16 @@
 import React from 'react';
-import { Table, Thead, Tr, Th, Tbody, Tfoot, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
+import { Table, Thead, Tr, Th, Tbody, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { TaskDefinition } from '@frinx/shared/src';
-import Paginator from '../../../components/pagination';
-
-type Pagination = {
-  currentPage: number;
-  totalPages: number;
-  setCurrentPage: (page: number) => void;
-};
 
 type TaskTableProps = {
-  pagination: Pagination;
   tasks: TaskDefinition[];
   sortArray: (fieldName: string) => void;
   onTaskDelete: (task: TaskDefinition) => void;
   onTaskConfigClick: (task: TaskDefinition) => void;
 };
 
-export default function TaskTable({
-  sortArray,
-  pagination: { currentPage, setCurrentPage, totalPages },
-  tasks,
-  onTaskConfigClick,
-  onTaskDelete,
-}: TaskTableProps) {
+export default function TaskTable({ sortArray, tasks, onTaskConfigClick, onTaskDelete }: TaskTableProps) {
   return (
     <Table background="white">
       <Thead>
@@ -84,13 +70,6 @@ export default function TaskTable({
           </Tr>
         ))}
       </Tbody>
-      <Tfoot>
-        <Tr>
-          <Th>
-            <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
-          </Th>
-        </Tr>
-      </Tfoot>
     </Table>
   );
 }
