@@ -4,8 +4,10 @@ import * as yup from 'yup';
 import {
   Button,
   ButtonGroup,
+  Card,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   HStack,
   Input,
@@ -39,7 +41,7 @@ export type EventHandlerAction = {
   expandInlineJSON?: boolean | null;
 };
 
-type FormValues = {
+export type FormValues = {
   name: string;
   event: string;
   actions: EventHandlerAction[];
@@ -90,10 +92,8 @@ const validationSchema = yup.object().shape({
   evaluatorType: yup.string(),
 });
 
-const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing = false, formValues, onSubmit }) => {
-  const [selectedAction, setSelectedAction] = React.useState<'start_workflow' | 'complete_task' | 'fail_task' | null>(
-    null,
-  );
+const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues, onSubmit }) => {
+  const [selectedAction, setSelectedAction] = React.useState<string>('');
   const [selectedConditionLanguage, setSelectedConditionLanguage] = React.useState<'javascript' | 'python'>(
     'javascript',
   );
@@ -124,108 +124,142 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing = false, for
     setSelectedConditionLanguage('python');
   };
 
+  const handleOnActionAdd = () => {
+    const newAction: EventHandlerAction = {
+      id: Math.random().toString(36).substring(7),
+      action: selectedAction as 'start_workflow' | 'complete_task' | 'fail_task',
+      expandInlineJSON: false,
+    };
+
+    const startWorkflow: StartWorkflow = {
+      name: '',
+      version: 0,
+      input: '{}',
+      correlationId: '',
+      taskToDomain: '{}',
+    };
+
+    const task: ActionTask = {
+      workflowId: '',
+      taskId: '',
+      output: '{}',
+      taskRefName: '',
+    };
+
+    if (selectedAction === 'start_workflow') {
+      newAction.startWorkflow = startWorkflow;
+    }
+
+    if (selectedAction === 'complete_task') {
+      newAction.completeTask = task;
+    }
+
+    if (selectedAction === 'fail_task') {
+      newAction.failTask = task;
+    }
+
+    setSelectedAction('');
+    setFieldValue('actions', [...values.actions, newAction]);
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      {isEditing && (
-        <HStack>
+    <Card p={10} mb={5}>
+      <form onSubmit={handleSubmit}>
+        <HStack mb={5}>
           <FormControl isRequired isInvalid={errors.name != null}>
             <FormLabel htmlFor="name">Name</FormLabel>
-            <Input name="name" onChange={handleChange} value={values.name} defaultValue={initialValues.name} />
+            <Input
+              placeholder="start_workflow_when_device_up"
+              name="name"
+              onChange={handleChange}
+              value={values.name}
+              defaultValue={initialValues.name}
+              readOnly={isEditing ?? false}
+            />
             <FormErrorMessage>Name is required</FormErrorMessage>
           </FormControl>
 
           <FormControl isRequired isInvalid={errors.event != null}>
             <FormLabel>Event</FormLabel>
-            <Input name="event" onChange={handleChange} value={values.event} defaultValue={initialValues.event} />
+            <Input
+              name="event"
+              placeholder="device_up"
+              onChange={handleChange}
+              value={values.event}
+              defaultValue={initialValues.event}
+              readOnly={isEditing ?? false}
+            />
             <FormErrorMessage>Event is required</FormErrorMessage>
           </FormControl>
         </HStack>
-      )}
 
-      <FormControl>
-        <HStack>
-          <FormLabel>Condition</FormLabel>
-          <Spacer />
-          <Select
-            defaultValue={selectedConditionLanguage}
-            value={selectedConditionLanguage}
-            onChange={handleOnConditionLangSelect}
-            maxWidth="xs"
-          >
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-          </Select>
-        </HStack>
-        <Editor
-          mode={selectedConditionLanguage}
-          value={values.condition ?? undefined}
-          defaultValue={initialValues.condition ?? undefined}
-          onChange={handleChange}
-        />
-        <FormErrorMessage>Condition is required</FormErrorMessage>
-      </FormControl>
+        <FormControl mb={5}>
+          <HStack mb={3}>
+            <FormLabel>Condition</FormLabel>
+            <Spacer />
+            <Select
+              defaultValue={selectedConditionLanguage}
+              value={selectedConditionLanguage}
+              onChange={handleOnConditionLangSelect}
+              maxWidth="xs"
+            >
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+            </Select>
+          </HStack>
+          <Editor
+            mode={selectedConditionLanguage}
+            value={values.condition ?? ''}
+            defaultValue={initialValues.condition ?? undefined}
+            onChange={handleChange}
+          />
+          <FormHelperText>Function must return true or false</FormHelperText>
+          <FormErrorMessage>Condition is required</FormErrorMessage>
+        </FormControl>
 
-      <FormControl isInvalid={errors.actions != null}>
-        <FormLabel>Actions</FormLabel>
-        <HStack>
-          <Select
-            value={selectedAction ?? undefined}
-            onChange={(e) => setSelectedAction(e.target.value as 'start_workflow' | 'complete_task' | 'fail_task')}
-          >
-            <option value="start_workflow">Start workflow</option>
-            <option value="complete_task">Complete task</option>
-            <option value="fail_task">Fail task</option>
-          </Select>
+        <FormControl isInvalid={errors.actions != null} mb={5}>
+          <FormLabel>Actions</FormLabel>
+          <HStack mb={3}>
+            <Select value={selectedAction ?? undefined} onChange={(e) => setSelectedAction(e.target.value)}>
+              <option value="">Select action</option>
+              <option value="start_workflow">Start workflow</option>
+              <option value="complete_task">Complete task</option>
+              <option value="fail_task">Fail task</option>
+            </Select>
 
-          <Spacer />
+            <Spacer />
 
-          <Button
-            isDisabled={selectedAction == null}
-            type="button"
-            colorScheme="blue"
-            onClick={() => {
-              const newAction: EventHandlerAction = {
-                id: Math.random().toString(36).substring(7),
-                action: selectedAction,
-                startWorkflow: null,
-                completeTask: null,
-                failTask: null,
-                expandInlineJSON: false,
-              };
-
-              setFieldValue('actions', [...values.actions, newAction]);
+            <Button isDisabled={selectedAction.length === 0} type="button" onClick={handleOnActionAdd}>
+              Add action
+            </Button>
+          </HStack>
+          <EventHandlerFormActions
+            values={values.actions}
+            onChange={(actions) => setFieldValue('actions', actions)}
+            onActionRemove={(index) => {
+              setFieldValue(
+                'actions',
+                values.actions.filter((_, i) => i !== index),
+              );
             }}
-          >
-            Add action
-          </Button>
+          />
+          <FormErrorMessage>Actions are required</FormErrorMessage>
+        </FormControl>
+
+        <HStack>
+          <Spacer />
+
+          <ButtonGroup>
+            <Button type="button" colorScheme="gray" onClick={handleReset} disabled={isSubmitting}>
+              Reset
+            </Button>
+            <Button type="submit" colorScheme="blue" isLoading={isSubmitting} disabled={!isValid}>
+              {isEditing ? 'Update handler' : 'Create handler'}
+            </Button>
+          </ButtonGroup>
         </HStack>
-        <EventHandlerFormActions
-          initialValues={initialValues.actions}
-          values={values.actions}
-          onChange={(actions) => setFieldValue('actions', actions)}
-          onActionRemove={(index) => {
-            setFieldValue(
-              'actions',
-              values.actions.filter((_, i) => i !== index),
-            );
-          }}
-        />
-        <FormErrorMessage>Actions are required</FormErrorMessage>
-      </FormControl>
-
-      <HStack>
-        <Spacer />
-
-        <ButtonGroup>
-          <Button type="button" colorScheme="gray" onClick={handleReset} disabled={isSubmitting}>
-            Reset
-          </Button>
-          <Button type="submit" colorScheme="blue" isLoading={isSubmitting} disabled={!isValid}>
-            {isEditing ? 'Update handler' : 'Create handler'}
-          </Button>
-        </ButtonGroup>
-      </HStack>
-    </form>
+      </form>
+    </Card>
   );
 };
 

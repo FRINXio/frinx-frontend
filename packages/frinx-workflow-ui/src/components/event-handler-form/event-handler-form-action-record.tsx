@@ -1,16 +1,14 @@
-import { Box, Center, HStack, FormControl, Input, Button, Text, Icon, IconButton } from '@chakra-ui/react';
+import { Box, Button, Center, FormControl, HStack, Icon, IconButton, Input, Spacer, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
 
 type Props = {
-  initialValues: Record<string, string | number>;
   values: Record<string, string | number>;
   onChange: (value: Record<string, string | number>) => void;
 };
 
-const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, initialValues, onChange }) => {
+const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, onChange }) => {
   const entries = Object.entries(values);
-  const initialEntries = Object.entries(initialValues);
 
   const handleKeyChange = (event: React.ChangeEvent<HTMLInputElement>, changedIndex: number) => {
     const changedKey = event.currentTarget.value;
@@ -40,7 +38,7 @@ const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, in
   };
 
   return (
-    <Box>
+    <Box mb={3}>
       {entries.length === 0 && (
         <Center>
           <Text>No items yet.</Text>
@@ -48,16 +46,12 @@ const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, in
       )}
       {entries.map(([key, value], index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <HStack key={`record-${index}`}>
+        <HStack key={`record-${index}`} mb={3}>
           <FormControl>
-            <Input value={key} defaultValue={initialEntries[index][0]} onChange={(e) => handleKeyChange(e, index)} />
+            <Input value={key} placeholder="inputKey" onChange={(e) => handleKeyChange(e, index)} />
           </FormControl>
           <FormControl>
-            <Input
-              value={value}
-              defaultValue={initialEntries[index][1]}
-              onChange={(e) => handleValueChange(e, index)}
-            />
+            <Input placeholder="inputValue" value={value} onChange={(e) => handleValueChange(e, index)} />
           </FormControl>
           <IconButton
             icon={<Icon size="sm" as={FeatherIcon} icon="trash-2" />}
@@ -66,7 +60,13 @@ const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, in
           />
         </HStack>
       ))}
-      <Button onClick={handleAdd}>Add</Button>
+
+      <HStack>
+        <Spacer />
+        <Button onClick={handleAdd} size="xs">
+          Add property
+        </Button>
+      </HStack>
     </Box>
   );
 };

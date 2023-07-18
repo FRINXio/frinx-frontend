@@ -39,7 +39,6 @@ const EVENT_HANDLER_QUERY = gql`
       name
       event
       actions {
-        id
         action
         expandInlineJSON
         completeTask {

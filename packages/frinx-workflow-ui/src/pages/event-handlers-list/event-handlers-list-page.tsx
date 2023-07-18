@@ -1,9 +1,13 @@
 import React, { ChangeEvent, useMemo, VoidFunctionComponent } from 'react';
 import {
+  Button,
   ButtonGroup,
   Container,
+  Heading,
+  HStack,
   IconButton,
   Progress,
+  Spacer,
   Switch,
   Table,
   Tbody,
@@ -16,6 +20,7 @@ import {
 import { gql, useMutation, useQuery } from 'urql';
 import { useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
+import { useNavigate } from 'react-router-dom';
 import {
   DeleteEventHandlerMutation,
   DeleteEventHandlerMutationVariables,
@@ -71,6 +76,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   onEventHandlerDetailClick,
   onEventHandlerEditClick,
 }) => {
+  const navigate = useNavigate();
   const ctx = useMemo(
     () => ({
       additionalTypenames: ['EventHandler'],
@@ -162,7 +168,19 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
 
   return (
     <Container mx="auto" maxWidth={1200}>
-      <Table background="white" size="sm">
+      <HStack mb={4}>
+        <Heading as="h1" size="lg">
+          Event handlers
+        </Heading>
+
+        <Spacer />
+
+        <Button colorScheme="blue" onClick={() => navigate('./add')}>
+          Create new handler
+        </Button>
+      </HStack>
+
+      <Table background="white">
         <Thead>
           <Tr>
             <Th>Is active</Th>

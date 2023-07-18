@@ -2,8 +2,8 @@ import {
   Button,
   Card,
   FormControl,
-  FormErrorMessage,
   FormLabel,
+  Heading,
   HStack,
   Input,
   Radio,
@@ -12,41 +12,30 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
 import React, { VoidFunctionComponent } from 'react';
 import { ActionTask, EventHandlerAction, StartWorkflow } from './event-handler-form';
 import EventHandlerFormActionRecord from './event-handler-form-action-record';
 
 type Props = {
-  initialValues?: EventHandlerAction[] | null;
   values: EventHandlerAction[];
   onChange: (actions: EventHandlerAction[]) => void;
   onActionRemove: (index: number) => void;
 };
 
 type StartWorkflowActionProps = {
-  initialValues?: StartWorkflow | null;
   values: StartWorkflow;
-  errors: FormikErrors<StartWorkflow>;
   onChange: (event: StartWorkflow) => void;
   onRemove: () => void;
 };
 
 type ActionProps = {
-  initialValues?: ActionTask | null;
+  isCompleteTask: boolean;
   values: ActionTask;
-  errors: FormikErrors<ActionTask>;
   onChange: (event: ActionTask) => void;
   onRemove: () => void;
 };
 
-const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
-  initialValues,
-  values,
-  errors,
-  onChange,
-  onRemove,
-}) => {
+const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({ values, onChange, onRemove }) => {
   const handleOnNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, name: event.target.value });
   };
@@ -68,67 +57,59 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
   };
 
   return (
-    <Card p={5}>
-      <HStack>
-        <Text>Start workflow action</Text>
+    <Card p={5} mb={5}>
+      <HStack mb={3}>
+        <Heading size="md" as="h3">
+          Start workflow
+        </Heading>
 
         <Spacer />
 
-        <Button colorScheme="red" onClick={onRemove}>
+        <Button colorScheme="red" size="sm" variant="outline" onClick={onRemove}>
           Remove action
         </Button>
       </HStack>
 
-      <HStack>
-        <FormControl isInvalid={values.name != null}>
+      <HStack mb={3}>
+        <FormControl>
           <FormLabel>Workflow name</FormLabel>
           <Input
+            // eslint-disable-next-line no-template-curly-in-string
+            placeholder="${event.payload.workflow_name}"
             onChange={handleOnNameChange}
             value={values.name ?? undefined}
-            defaultValue={initialValues?.name ?? undefined}
           />
-          <FormErrorMessage>{errors.name}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isInvalid={values.version != null}>
+        <FormControl>
           <FormLabel>Workflow version</FormLabel>
-          <Input
-            onChange={handleOnVersionChange}
-            value={values.version ?? undefined}
-            defaultValue={initialValues?.version ?? undefined}
-          />
-          <FormErrorMessage>{errors.version}</FormErrorMessage>
+          <Input placeholder="latest" onChange={handleOnVersionChange} value={values.version ?? undefined} />
         </FormControl>
       </HStack>
 
-      <FormControl isInvalid={values.correlationId != null}>
+      <FormControl mb={3}>
         <FormLabel>Correlation ID</FormLabel>
         <Input
+          // eslint-disable-next-line no-template-curly-in-string
+          placeholder="${event.payload.correlation_id}"
           onChange={handleOnCorrelationIdChange}
           value={values.correlationId ?? undefined}
-          defaultValue={initialValues?.correlationId ?? undefined}
         />
-        <FormErrorMessage>{errors.correlationId}</FormErrorMessage>
       </FormControl>
 
       <FormLabel>Input</FormLabel>
-      <EventHandlerFormActionRecord
-        values={JSON.parse(values.input ?? '{}')}
-        initialValues={JSON.parse(initialValues?.input ?? '{}')}
-        onChange={handleOnInputChange}
-      />
+      <EventHandlerFormActionRecord values={JSON.parse(values.input ?? '{}')} onChange={handleOnInputChange} />
 
       <FormLabel>Tasks to Domain Mapping</FormLabel>
       <EventHandlerFormActionRecord
         values={JSON.parse(values.taskToDomain ?? '{}')}
-        initialValues={JSON.parse(initialValues?.taskToDomain ?? '{}')}
         onChange={handleOnTaskToDomainChange}
       />
     </Card>
   );
 };
 
-const TaskAction: VoidFunctionComponent<ActionProps> = ({ initialValues, values, errors, onChange, onRemove }) => {
+const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values, onChange, onRemove }) => {
   const [showOnlyTaskId, setShowOnlyTaskId] = React.useState<boolean>(true);
 
   const handleOnTaskIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,17 +129,22 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({ initialValues, values,
   };
 
   return (
-    <Card p={5}>
-      <HStack>
-        <Text>Task action</Text>
+    <Card p={5} mb={5}>
+      <HStack mb={3}>
+        <Heading size="md" as="h3">
+          {isCompleteTask ? 'Complete task' : 'Fail task'}
+        </Heading>
         <Spacer />
 
-        <Button colorScheme="red" onClick={onRemove}>
+        <Button colorScheme="red" size="sm" variant="outline" onClick={onRemove}>
           Remove action
         </Button>
       </HStack>
-      <Text textColor="gray.500">Choose one of following options</Text>
-      <HStack>
+
+      <Text textColor="gray.500" fontSize="sm">
+        Choose one of following options
+      </Text>
+      <HStack mb={3}>
         <RadioGroup
           onChange={(e) => {
             setShowOnlyTaskId(e === '2');
@@ -173,50 +159,46 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({ initialValues, values,
       </HStack>
 
       {showOnlyTaskId ? (
-        <FormControl isInvalid={values.taskId != null}>
+        <FormControl mb={3}>
           <FormLabel>Task ID</FormLabel>
           <Input
+            // eslint-disable-next-line no-template-curly-in-string
+            placeholder="${event.payload.task_id}"
             onChange={handleOnTaskIdChange}
             value={values.taskId ?? undefined}
-            defaultValue={initialValues?.taskId ?? undefined}
           />
-          <FormErrorMessage>{errors.taskId}</FormErrorMessage>
         </FormControl>
       ) : (
-        <HStack>
-          <FormControl isInvalid={values.workflowId != null}>
+        <HStack mb={3}>
+          <FormControl>
             <FormLabel>Workflow ID</FormLabel>
             <Input
+              // eslint-disable-next-line no-template-curly-in-string
+              placeholder="${event.payload.workflow_id}"
               onChange={handleOnWorkflowIdChange}
               value={values.workflowId ?? undefined}
-              defaultValue={initialValues?.workflowId ?? undefined}
             />
-            <FormErrorMessage>{errors.workflowId}</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={values.taskRefName != null}>
+          <FormControl>
             <FormLabel>Task reference name</FormLabel>
             <Input
+              // eslint-disable-next-line no-template-curly-in-string
+              placeholder="${event.payload.taskReferenceName}"
               onChange={handleOnTaskRefNameChange}
               value={values.taskRefName ?? undefined}
-              defaultValue={initialValues?.taskRefName ?? undefined}
             />
-            <FormErrorMessage>{errors.taskRefName}</FormErrorMessage>
           </FormControl>
         </HStack>
       )}
 
       <FormLabel>Output</FormLabel>
-      <EventHandlerFormActionRecord
-        values={JSON.parse(values.output ?? '{}')}
-        initialValues={JSON.parse(initialValues?.output ?? '{}')}
-        onChange={handleOnOutputChange}
-      />
+      <EventHandlerFormActionRecord values={JSON.parse(values.output ?? '{}')} onChange={handleOnOutputChange} />
     </Card>
   );
 };
 
-const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ initialValues, values, onChange, onActionRemove }) => {
+const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ values, onChange, onActionRemove }) => {
   const handleOnActionChange = (event: EventHandlerAction, index: number) => {
     const newValues = [...values];
     newValues.splice(index, 1, event);
@@ -235,9 +217,7 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ initialValues, 
             <StartWorkflowAction
               // eslint-disable-next-line react/no-array-index-key
               key={action.id}
-              initialValues={initialValues?.[index].startWorkflow ?? {}}
               values={action.startWorkflow ?? {}}
-              errors={{}}
               onChange={(event) => handleOnActionChange({ ...action, startWorkflow: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
             />
@@ -245,11 +225,10 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ initialValues, 
 
           {action.action === 'complete_task' && (
             <TaskAction
+              isCompleteTask
               // eslint-disable-next-line react/no-array-index-key
               key={action.id}
-              initialValues={initialValues?.[index].completeTask ?? {}}
               values={action.completeTask ?? {}}
-              errors={{}}
               onChange={(event) => handleOnActionChange({ ...action, completeTask: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
             />
@@ -257,11 +236,10 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ initialValues, 
 
           {action.action === 'fail_task' && (
             <TaskAction
+              isCompleteTask={false}
               // eslint-disable-next-line react/no-array-index-key
               key={action.id}
-              initialValues={initialValues?.[index].failTask ?? {}}
               values={action.failTask ?? {}}
-              errors={{}}
               onChange={(event) => handleOnActionChange({ ...action, failTask: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
             />
