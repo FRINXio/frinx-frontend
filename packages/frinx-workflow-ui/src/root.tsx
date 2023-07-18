@@ -13,6 +13,7 @@ import WorkflowDefinitions from './pages/workflow-definitions/workflow-definitio
 import EventHandlersListPage from './pages/event-handlers-list/event-handlers-list-page';
 import EventHandlersDetailPage from './pages/event-handlers-detail/event-handlers-detail-page';
 import EventHandlerDetailEditPage from './pages/event-handlers-detail-edit/event-handler-detail-edit-page';
+import EventHandlersAddPage from './pages/event-handlers-list/event-handlers-add-page';
 
 const Root: VoidFunctionComponent = () => {
   const [key, setKey] = useState(uuid());
@@ -67,6 +68,7 @@ const Root: VoidFunctionComponent = () => {
           element={<EventHandlersDetailPage onEventHandlerEditClick={handleOnEventHandlerEditClick} />}
         />
         <Route path=":event/:name/edit" element={<EventHandlerDetailEditPage />} />
+        <Route path="add" element={<EventHandlersAddPage />} />
       </Route>
       <Route path="tasks" element={<TaskList />} />
       <Route path="poll-data" element={<PollData />} />

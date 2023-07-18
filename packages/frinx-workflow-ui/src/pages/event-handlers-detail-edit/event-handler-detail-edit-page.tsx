@@ -1,8 +1,12 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Heading } from '@chakra-ui/react';
+import {Center} from '@chakra-ui/react';
 
 const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
-  return <Heading>Edit page of event handler</Heading>;
+  return (
+      <Center maxWidth={1200}>
+
+      </Center>
+  )
 };
 
 export default EventHandlerDetailEditPage;
