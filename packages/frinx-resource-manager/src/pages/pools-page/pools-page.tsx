@@ -26,12 +26,9 @@ const ALL_POOLS_QUERY = gql`
         id
         Tag
       }
-      PoolProperties
       AllocationStrategy {
         id
         Name
-        Lang
-        Script
       }
       ResourceType {
         id
@@ -41,12 +38,7 @@ const ALL_POOLS_QUERY = gql`
         id
         NestedPool {
           id
-          Name
         }
-      }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
       }
     }
   }

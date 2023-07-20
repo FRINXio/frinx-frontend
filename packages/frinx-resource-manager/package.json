@@ -32,7 +32,7 @@
     "build": "run-s build:webpack generate:typings",
     "formatter:check": "prettier -l '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx' '**/*.json' '**/*.md'",
     "formatter": "prettier --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx' '**/*.json' '**/*.md'",
-    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen": "NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist yup.d.ts src/index.ts"
   },

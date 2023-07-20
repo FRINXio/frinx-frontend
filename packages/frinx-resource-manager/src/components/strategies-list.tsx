@@ -4,11 +4,11 @@ import gql from 'graphql-tag';
 import { Button, Flex, Heading, Icon, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import DeleteStrategy from './delete-strategy';
-import { QueryAllocationStrategiesQuery } from '../__generated__/graphql';
 import ViewStrategyScript from './view-strategy-script';
+import { GetAllocationStrategiesQuery } from '../__generated__/graphql';
 
 const query = gql`
-  query QueryAllocationStrategies {
+  query GetAllocationStrategies {
     QueryAllocationStrategies {
       id
       Name
@@ -23,7 +23,7 @@ type Props = {
 };
 
 const StrategiesList: FC<Props> = ({ onAddButtonClick }) => {
-  const [result] = useQuery<QueryAllocationStrategiesQuery>({
+  const [result] = useQuery<GetAllocationStrategiesQuery>({
     query,
   });
 
