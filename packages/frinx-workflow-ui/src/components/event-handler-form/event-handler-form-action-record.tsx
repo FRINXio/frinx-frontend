@@ -1,4 +1,16 @@
-import { Box, Button, Center, FormControl, HStack, Icon, IconButton, Input, Spacer, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  FormControl,
+  FormHelperText,
+  HStack,
+  Icon,
+  IconButton,
+  Input,
+  Spacer,
+  Text,
+} from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
 
@@ -9,13 +21,24 @@ type Props = {
 
 const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, onChange }) => {
   const entries = Object.entries(values);
+  const [isKeyUnique, setIsKeyUnique] = React.useState<number | null>(null);
 
   const handleKeyChange = (event: React.ChangeEvent<HTMLInputElement>, changedIndex: number) => {
-    const changedKey = event.currentTarget.value;
+    let changedKey = event.currentTarget.value;
+    setIsKeyUnique(null);
+    if (Object.keys(values).includes(event.target.value)) {
+      changedKey += '_';
+      setIsKeyUnique(changedIndex);
+    }
+
     const oldEntry = entries[changedIndex];
-    const newValues = [...entries];
-    newValues.splice(changedIndex, 1, [changedKey, oldEntry[1]]);
-    onChange(Object.fromEntries(newValues));
+    const newEntries = [
+      ...entries.slice(0, changedIndex),
+      [changedKey, oldEntry[1]],
+      ...entries.slice(changedIndex + 1),
+    ];
+
+    onChange(Object.fromEntries(newEntries));
   };
 
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>, changedIndex: number) => {
@@ -49,6 +72,12 @@ const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, on
         <HStack key={`record-${index}`} mb={3}>
           <FormControl>
             <Input value={key} placeholder="inputKey" onChange={(e) => handleKeyChange(e, index)} />
+            {isKeyUnique != null && isKeyUnique === index && (
+              <FormHelperText>
+                The key you tried to add was not unique. You can remove underscore, but keep in mind that value of the
+                first key with same name will be rewrite.
+              </FormHelperText>
+            )}
           </FormControl>
           <FormControl>
             <Input placeholder="inputValue" value={value} onChange={(e) => handleValueChange(e, index)} />
