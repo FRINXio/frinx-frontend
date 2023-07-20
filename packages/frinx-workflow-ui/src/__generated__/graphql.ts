@@ -1324,6 +1324,7 @@ export type QueryPollDataArgs = {
   filter?: InputMaybe<FilterPollDataInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  sortBy: SortDataInput;
 };
 
 
@@ -1479,6 +1480,11 @@ export type Snapshot = {
   __typename?: 'Snapshot';
   createdAt: Scalars['String'];
   name: Scalars['String'];
+};
+
+export type SortDataInput = {
+  key: Scalars['String'];
+  order: OrderBy;
 };
 
 export type SortDeviceBy =
@@ -1828,6 +1834,10 @@ export type ZonesConnection = {
   totalCount: Scalars['Int'];
 };
 
+export type OrderBy =
+  | 'asc'
+  | 'desc';
+
 export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1942,6 +1952,7 @@ export type WorkflowInstanceDetailQuery = { __typename?: 'Query', workflowInstan
 
 export type PollDataQueryVariables = Exact<{
   filter?: InputMaybe<FilterPollDataInput>;
+  sortBy: SortDataInput;
   first?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['String']>;
   last?: InputMaybe<Scalars['Int']>;

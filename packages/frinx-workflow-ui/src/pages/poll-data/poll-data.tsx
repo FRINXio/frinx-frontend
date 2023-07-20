@@ -23,12 +23,11 @@ import {
 } from '@chakra-ui/react';
 import { omitNullValue, Pagination } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import { orderBy } from 'lodash';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { gql, useQuery } from 'urql';
 import { usePagination } from '../../hooks/use-graphql-pagination';
-import { PollDataQuery, PollDataQueryVariables, PollData } from '../../__generated__/graphql';
+import { PollDataQuery, PollDataQueryVariables } from '../../__generated__/graphql';
 
 type Filter = {
   queueName?: string;
@@ -38,9 +37,21 @@ type Filter = {
   afterDate?: string;
 };
 
+type SortBy = {
+  key: string;
+  order: 'asc' | 'desc';
+};
+
 const POLL_DATA_QUERY = gql`
-  query PollData($filter: FilterPollDataInput, $first: Int, $after: String, $last: Int, $before: String) {
-    pollData(filter: $filter, first: $first, after: $after, last: $last, before: $before) {
+  query PollData(
+    $filter: FilterPollDataInput
+    $sortBy: SortDataInput!
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+  ) {
+    pollData(filter: $filter, sortBy: $sortBy, first: $first, after: $after, last: $last, before: $before) {
       totalCount
       edges {
         cursor
@@ -63,7 +74,7 @@ const POLL_DATA_QUERY = gql`
 `;
 
 const PollDataPage = () => {
-  const [sorted, setSorted] = useState(false);
+  const [sortBy, setSortBy] = useState<SortBy>({ key: 'lastPollTime', order: 'asc' });
   const [filter, setFilter] = useState<Filter>({});
   const [inputs, setInputs] = useState({
     queueName: '',
@@ -73,33 +84,23 @@ const PollDataPage = () => {
     afterDate: '' as string | undefined,
   });
 
-  const [data, setData] = useState<PollData[]>([]);
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const { isOpen, onToggle } = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
   const [{ data: pollData }] = useQuery<PollDataQuery, PollDataQueryVariables>({
     query: POLL_DATA_QUERY,
     variables: {
       ...paginationArgs,
       filter,
+      sortBy,
     },
   });
 
   const pollDataNodes = (pollData?.pollData?.edges ?? [])
-    ?.map((e) => {
+    .map((e) => {
       return e?.node ?? null;
     })
     .filter(omitNullValue);
-
-  useEffect(() => {
-    setData(pollDataNodes);
-  }, [pollDataNodes]);
-
-  const sortArray = (key: string) => {
-    const sortedData = sorted ? orderBy(pollDataNodes, [key], ['desc']) : orderBy(pollDataNodes, [key], ['asc']);
-    setSorted((prev) => !prev);
-    setData(sortedData);
-  };
 
   function getISODateString(dateString: string | undefined): string | undefined {
     if (dateString === undefined) {
@@ -129,6 +130,10 @@ const PollDataPage = () => {
       beforeDate: undefined,
       afterDate: undefined,
     });
+  };
+
+  const sort = (key: string) => {
+    return sortBy.order === 'desc' ? setSortBy({ key, order: 'asc' }) : setSortBy({ key, order: 'desc' });
   };
 
   return (
@@ -217,19 +222,19 @@ const PollDataPage = () => {
       <Table background="white">
         <Thead>
           <Tr>
-            <Th cursor="pointer" onClick={() => sortArray('queueName')}>
+            <Th cursor="pointer" onClick={() => sort('queueName')}>
               Name (Domain)
             </Th>
-            <Th cursor="pointer" textAlign="center" onClick={() => sortArray('lastPollTime')}>
+            <Th cursor="pointer" textAlign="center" onClick={() => sort('lastPollTime')}>
               Last Poll Time
             </Th>
-            <Th cursor="pointer" textAlign="center" onClick={() => sortArray('workerId')}>
+            <Th cursor="pointer" textAlign="center" onClick={() => sort('workerId')}>
               Last Polled By
             </Th>
           </Tr>
         </Thead>
         <Tbody>
-          {data.map((e) => {
+          {pollDataNodes.map((e) => {
             return (
               <Tr key={e.id}>
                 <Td>{e.queueName}</Td>
