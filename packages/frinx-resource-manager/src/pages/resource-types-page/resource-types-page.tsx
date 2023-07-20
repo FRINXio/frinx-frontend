@@ -1,15 +1,15 @@
 import { Flex, Heading, Progress, Text } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
 import gql from 'graphql-tag';
-import React, { useMemo, VoidFunctionComponent, useCallback } from 'react';
+import React, { useCallback, useMemo, VoidFunctionComponent } from 'react';
 import { useMutation, useQuery } from 'urql';
 import {
+  AllocationStrategiesQuery,
   DeleteResourceTypeMutation,
   DeleteResourceTypeMutationVariables,
-  ResourceTypesQuery,
   DeleteStrategyMutation,
   DeleteStrategyMutationVariables,
-  QueryAllocationStrategiesQuery,
+  ResourceTypesQuery,
 } from '../../__generated__/graphql';
 import ResourceTypesTable from './resource-types-table';
 
@@ -41,7 +41,7 @@ const DELETE_STRATEGY_MUTATION = gql`
 `;
 
 const STRATEGIES_QUERY = gql`
-  query QueryAllocationStrategies {
+  query AllocationStrategies {
     QueryAllocationStrategies {
       id
       Name
@@ -63,7 +63,7 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
     context: ctx,
   });
 
-  const [{ data: strategies }] = useQuery<QueryAllocationStrategiesQuery>({
+  const [{ data: strategies }] = useQuery<AllocationStrategiesQuery>({
     query: STRATEGIES_QUERY,
     context: ctx,
   });

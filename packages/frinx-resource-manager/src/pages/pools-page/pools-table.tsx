@@ -1,23 +1,8 @@
-﻿import {
-  Button,
-  HStack,
-  Icon,
-  IconButton,
-  Progress,
-  Table,
-  Tag,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react';
+﻿import { Button, HStack, Icon, IconButton, Table, Tag, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-modal';
-import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
 import { GetPoolsQuery, Tag as TagType } from '../../__generated__/graphql';
 
 type Props = {
@@ -46,7 +31,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
           <Th>Tags</Th>
           <Th>Pool Type</Th>
           <Th>Resource Type</Th>
-          <Th>Utilized Capacity</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -54,14 +38,8 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
         <Tbody>
           {pools.length > 0 ? (
             pools.map((pool) => {
-              const totalCapacity = getTotalCapacity(pool.Capacity);
               const nestedPoolsCount = pool.Resources.filter((resource) => resource.NestedPool != null).length;
               const hasNestedPools = nestedPoolsCount > 0;
-              const progressValue =
-                totalCapacity === 0n
-                  ? 100
-                  : Number((BigInt(pool.Capacity?.utilizedCapacity ?? 0n) * 100n) / totalCapacity);
-
               return (
                 <Tr key={pool.id} opacity={isLoading ? 0.5 : 1} pointerEvents={isLoading ? 'none' : 'all'}>
                   {isNestedShown && (
@@ -111,9 +89,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     >
                       {pool.ResourceType?.Name}
                     </Text>
-                  </Td>
-                  <Td isNumeric>
-                    <Progress size="xs" value={progressValue} />
                   </Td>
                   <Td>
                     <HStack spacing={2}>
