@@ -20,15 +20,15 @@ import EventHandlerFormActions from './event-handler-form-actions';
 export type StartWorkflow = {
   name?: string | null;
   version?: number | null;
-  input?: string | null;
+  input?: [string, string | number][] | null;
   correlationId?: string | null;
-  taskToDomain?: string | null;
+  taskToDomain?: [string, string | number][] | null;
 };
 
 export type ActionTask = {
   workflowId?: string | null;
   taskId?: string | null;
-  output?: string | null;
+  output?: [string, string | number][] | null;
   taskRefName?: string | null;
 };
 
@@ -107,6 +107,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
     isValid,
     initialValues,
     setFieldValue,
+    setFieldError,
   } = useFormik<FormValues>({
     validateOnChange: false,
     validateOnBlur: false,
@@ -134,15 +135,15 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
     const startWorkflow: StartWorkflow = {
       name: '',
       version: 0,
-      input: '{}',
+      input: [['', '']],
       correlationId: '',
-      taskToDomain: '{}',
+      taskToDomain: [['', '']],
     };
 
     const task: ActionTask = {
       workflowId: '',
       taskId: '',
-      output: '{}',
+      output: [['', '']],
       taskRefName: '',
     };
 
@@ -217,7 +218,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
           <FormErrorMessage>Condition is required</FormErrorMessage>
         </FormControl>
 
-        <FormControl isInvalid={errors.actions != null} mb={5}>
+        <FormControl mb={5}>
           <FormLabel>Actions</FormLabel>
           <HStack mb={3}>
             <Select value={selectedAction ?? undefined} onChange={(e) => setSelectedAction(e.target.value)}>
@@ -241,6 +242,9 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
                 'actions',
                 values.actions.filter((_, i) => i !== index),
               );
+            }}
+            onKeysNotUniqueChange={(index) => {
+              setFieldError(`actions[${index}]`, 'Keys are not unique');
             }}
           />
           <FormErrorMessage>Actions are required</FormErrorMessage>

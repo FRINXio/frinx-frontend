@@ -20,12 +20,14 @@ type Props = {
   values: EventHandlerAction[];
   onChange: (actions: EventHandlerAction[]) => void;
   onActionRemove: (index: number) => void;
+  onKeysNotUniqueChange: (index: number) => void;
 };
 
 type StartWorkflowActionProps = {
   values: StartWorkflow;
   onChange: (event: StartWorkflow) => void;
   onRemove: () => void;
+  onKeysNotUniqueChange: () => void;
 };
 
 type ActionProps = {
@@ -33,9 +35,20 @@ type ActionProps = {
   values: ActionTask;
   onChange: (event: ActionTask) => void;
   onRemove: () => void;
+  onKeysNotUniqueChange: () => void;
 };
 
-const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({ values, onChange, onRemove }) => {
+const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
+  values,
+  onChange,
+  onRemove,
+  onKeysNotUniqueChange,
+}) => {
+  const areAllKeysUniqueInInput =
+    values.input?.length === Array.from(new Set(values.input?.map(([key]) => key))).length;
+  const areAllKeysUniqueInTaskToDomain =
+    values.taskToDomain?.length === Array.from(new Set(values.taskToDomain?.map(([key]) => key))).length;
+
   const handleOnNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, name: event.target.value });
   };
@@ -48,16 +61,29 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({ 
     onChange({ ...values, correlationId: event.target.value });
   };
 
-  const handleOnInputChange = (input: Record<string, string | number>) => {
-    onChange({ ...values, input: JSON.stringify(input) });
+  const handleOnInputChange = (input: [string, string | number][]) => {
+    onChange({ ...values, input });
+
+    if (!areAllKeysUniqueInInput) {
+      onKeysNotUniqueChange();
+    }
   };
 
-  const handleOnTaskToDomainChange = (taskToDomain: Record<string, string | number>) => {
-    onChange({ ...values, taskToDomain: JSON.stringify(taskToDomain) });
+  const handleOnTaskToDomainChange = (taskToDomain: [string, string | number][]) => {
+    onChange({ ...values, taskToDomain });
+
+    if (!areAllKeysUniqueInTaskToDomain) {
+      onKeysNotUniqueChange();
+    }
   };
 
   return (
-    <Card p={5} mb={5}>
+    <Card
+      p={5}
+      mb={5}
+      border={areAllKeysUniqueInInput || areAllKeysUniqueInTaskToDomain ? '' : '1px solid'}
+      borderColor={areAllKeysUniqueInInput || areAllKeysUniqueInTaskToDomain ? '' : 'red.500'}
+    >
       <HStack mb={3}>
         <Heading size="md" as="h3">
           Start workflow
@@ -98,19 +124,32 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({ 
       </FormControl>
 
       <FormLabel>Input</FormLabel>
-      <EventHandlerFormActionRecord values={JSON.parse(values.input ?? '{}')} onChange={handleOnInputChange} />
+      <EventHandlerFormActionRecord
+        values={values.input ?? [['', '']]}
+        onChange={handleOnInputChange}
+        areAllKeysUnique={areAllKeysUniqueInInput}
+      />
 
       <FormLabel>Tasks to Domain Mapping</FormLabel>
       <EventHandlerFormActionRecord
-        values={JSON.parse(values.taskToDomain ?? '{}')}
+        values={values.taskToDomain ?? [['', '']]}
         onChange={handleOnTaskToDomainChange}
+        areAllKeysUnique={areAllKeysUniqueInTaskToDomain}
       />
     </Card>
   );
 };
 
-const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values, onChange, onRemove }) => {
+const TaskAction: VoidFunctionComponent<ActionProps> = ({
+  isCompleteTask,
+  values,
+  onChange,
+  onRemove,
+  onKeysNotUniqueChange,
+}) => {
   const [showOnlyTaskId, setShowOnlyTaskId] = React.useState<boolean>(true);
+
+  const areAllKeysUnique = values.output?.length === Array.from(new Set(values.output?.map(([key]) => key))).length;
 
   const handleOnTaskIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, taskId: event.target.value });
@@ -122,14 +161,18 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values
 
   const handleOnTaskRefNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, taskRefName: event.target.value });
+
+    if (!areAllKeysUnique) {
+      onKeysNotUniqueChange();
+    }
   };
 
-  const handleOnOutputChange = (output: Record<string, string | number>) => {
-    onChange({ ...values, output: JSON.stringify(output) });
+  const handleOnOutputChange = (output: [string, string | number][]) => {
+    onChange({ ...values, output });
   };
 
   return (
-    <Card p={5} mb={5}>
+    <Card p={5} mb={5} border={areAllKeysUnique ? '' : '1px solid'} borderColor={areAllKeysUnique ? '' : 'red.500'}>
       <HStack mb={3}>
         <Heading size="md" as="h3">
           {isCompleteTask ? 'Complete task' : 'Fail task'}
@@ -193,12 +236,21 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values
       )}
 
       <FormLabel>Output</FormLabel>
-      <EventHandlerFormActionRecord values={JSON.parse(values.output ?? '{}')} onChange={handleOnOutputChange} />
+      <EventHandlerFormActionRecord
+        values={values.output ?? [['', '']]}
+        onChange={handleOnOutputChange}
+        areAllKeysUnique={areAllKeysUnique}
+      />
     </Card>
   );
 };
 
-const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ values, onChange, onActionRemove }) => {
+const EventHandlerFormActions: VoidFunctionComponent<Props> = ({
+  values,
+  onChange,
+  onActionRemove,
+  onKeysNotUniqueChange,
+}) => {
   const handleOnActionChange = (event: EventHandlerAction, index: number) => {
     const newValues = [...values];
     newValues.splice(index, 1, event);
@@ -220,6 +272,7 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ values, onChang
               values={action.startWorkflow ?? {}}
               onChange={(event) => handleOnActionChange({ ...action, startWorkflow: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
+              onKeysNotUniqueChange={() => onKeysNotUniqueChange(index)}
             />
           )}
 
@@ -231,6 +284,7 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ values, onChang
               values={action.completeTask ?? {}}
               onChange={(event) => handleOnActionChange({ ...action, completeTask: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
+              onKeysNotUniqueChange={() => onKeysNotUniqueChange(index)}
             />
           )}
 
@@ -242,6 +296,7 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({ values, onChang
               values={action.failTask ?? {}}
               onChange={(event) => handleOnActionChange({ ...action, failTask: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
+              onKeysNotUniqueChange={() => onKeysNotUniqueChange(index)}
             />
           )}
         </>

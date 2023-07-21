@@ -1,83 +1,54 @@
-import {
-  Box,
-  Button,
-  Center,
-  FormControl,
-  FormHelperText,
-  HStack,
-  Icon,
-  IconButton,
-  Input,
-  Spacer,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Button, Center, FormControl, HStack, Icon, IconButton, Input, Spacer, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
 
 type Props = {
-  values: Record<string, string | number>;
-  onChange: (value: Record<string, string | number>) => void;
+  values: [string, string | number][];
+  areAllKeysUnique: boolean;
+  onChange: (value: [string, string | number][]) => void;
 };
 
-const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, onChange }) => {
-  const entries = Object.entries(values);
-  const [isKeyUnique, setIsKeyUnique] = React.useState<number | null>(null);
-
+const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, areAllKeysUnique, onChange }) => {
   const handleKeyChange = (event: React.ChangeEvent<HTMLInputElement>, changedIndex: number) => {
-    let changedKey = event.currentTarget.value;
-    setIsKeyUnique(null);
-    if (Object.keys(values).includes(event.target.value)) {
-      changedKey += '_';
-      setIsKeyUnique(changedIndex);
-    }
+    const changedKey = event.target.value;
 
-    const oldEntry = entries[changedIndex];
-    const newEntries = [
-      ...entries.slice(0, changedIndex),
-      [changedKey, oldEntry[1]],
-      ...entries.slice(changedIndex + 1),
-    ];
-
-    onChange(Object.fromEntries(newEntries));
+    onChange([
+      ...values.slice(0, changedIndex),
+      [changedKey, values[changedIndex][1]],
+      ...values.slice(changedIndex + 1),
+    ]);
   };
 
   const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>, changedIndex: number) => {
     const changedValue = event.currentTarget.value;
-    const oldEntry = entries[changedIndex];
-    const newValues = [...entries];
-    newValues.splice(changedIndex, 1, [oldEntry[0], changedValue]);
-    onChange(Object.fromEntries(newValues));
+
+    onChange([
+      ...values.slice(0, changedIndex),
+      [values[changedIndex][0], changedValue],
+      ...values.slice(changedIndex + 1),
+    ]);
   };
 
   const handleAdd = () => {
-    const newValues = [...entries, ['', '']];
-    onChange(Object.fromEntries(newValues));
+    onChange([...values, ['', '']]);
   };
 
   const handleDelete = (index: number) => {
-    const newValues = [...entries];
-    newValues.splice(index, 1);
-    onChange(Object.fromEntries(newValues));
+    onChange(values.filter((_, i) => i !== index));
   };
 
   return (
     <Box mb={3}>
-      {entries.length === 0 && (
+      {values.length === 0 && (
         <Center>
           <Text>No items yet.</Text>
         </Center>
       )}
-      {entries.map(([key, value], index) => (
+      {values.map(([key, value], index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <HStack key={`record-${index}`} mb={3}>
+        <HStack key={`record-${index}`} mb={3} alignItems="flex-start">
           <FormControl>
             <Input value={key} placeholder="inputKey" onChange={(e) => handleKeyChange(e, index)} />
-            {isKeyUnique != null && isKeyUnique === index && (
-              <FormHelperText>
-                The key you tried to add was not unique. You can remove underscore, but keep in mind that value of the
-                first key with same name will be rewrite.
-              </FormHelperText>
-            )}
           </FormControl>
           <FormControl>
             <Input placeholder="inputValue" value={value} onChange={(e) => handleValueChange(e, index)} />
@@ -89,6 +60,8 @@ const EventHandlerFormActionRecord: VoidFunctionComponent<Props> = ({ values, on
           />
         </HStack>
       ))}
+
+      {!areAllKeysUnique && <Text textColor="red">Keys must be unique.</Text>}
 
       <HStack>
         <Spacer />
