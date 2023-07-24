@@ -37,21 +37,21 @@ type Filter = {
   afterDate?: string;
 };
 
-type SortBy = {
-  key: string;
-  order: 'asc' | 'desc';
+type OrderBy = {
+  sortKey: 'queueName' | 'workerId' | 'lastPollTime';
+  direction: 'asc' | 'desc';
 };
 
 const POLL_DATA_QUERY = gql`
   query PollData(
     $filter: FilterPollDataInput
-    $sortBy: SortDataInput!
+    $orderBy: PollsOrderByInput!
     $first: Int
     $after: String
     $last: Int
     $before: String
   ) {
-    pollData(filter: $filter, sortBy: $sortBy, first: $first, after: $after, last: $last, before: $before) {
+    pollData(filter: $filter, orderBy: $orderBy, first: $first, after: $after, last: $last, before: $before) {
       totalCount
       edges {
         cursor
@@ -74,7 +74,7 @@ const POLL_DATA_QUERY = gql`
 `;
 
 const PollDataPage = () => {
-  const [sortBy, setSortBy] = useState<SortBy>({ key: 'lastPollTime', order: 'asc' });
+  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'lastPollTime', direction: 'asc' });
   const [filter, setFilter] = useState<Filter>({});
   const [inputs, setInputs] = useState({
     queueName: '',
@@ -92,7 +92,7 @@ const PollDataPage = () => {
     variables: {
       ...paginationArgs,
       filter,
-      sortBy,
+      orderBy,
     },
   });
 
@@ -132,8 +132,10 @@ const PollDataPage = () => {
     });
   };
 
-  const sort = (key: string) => {
-    return sortBy.order === 'desc' ? setSortBy({ key, order: 'asc' }) : setSortBy({ key, order: 'desc' });
+  const sort = (sortKey: 'queueName' | 'workerId' | 'lastPollTime') => {
+    return orderBy.direction === 'desc'
+      ? setOrderBy({ sortKey, direction: 'asc' })
+      : setOrderBy({ sortKey, direction: 'desc' });
   };
 
   return (
