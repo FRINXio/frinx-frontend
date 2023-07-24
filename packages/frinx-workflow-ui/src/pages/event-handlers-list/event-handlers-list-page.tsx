@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, VoidFunctionComponent } from 'react';
+import React, { ChangeEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -29,6 +29,7 @@ import {
   UpdateEventHandlerMutation,
   UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
+import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
 
 type Props = {
   onEventHandlerDetailClick: (event: string, name: string) => void;
@@ -36,8 +37,8 @@ type Props = {
 };
 
 const EVENT_HANDLERS_QUERY = gql`
-  query GetEventHandlers {
-    eventHandlers {
+  query GetEventHandlers($filter: FilterEventHandlerInput) {
+    eventHandlers(filter: $filter) {
       edges {
         node {
           actions {
@@ -76,6 +77,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   onEventHandlerDetailClick,
   onEventHandlerEditClick,
 }) => {
+  const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
   const navigate = useNavigate();
   const ctx = useMemo(
     () => ({
@@ -86,6 +88,9 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   const [{ data, fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
     query: EVENT_HANDLERS_QUERY,
     context: ctx,
+    variables: {
+      filter: eventHandlersFilter,
+    },
   });
   const [, deleteEventHandler] = useMutation<DeleteEventHandlerMutation, DeleteEventHandlerMutationVariables>(
     DELETE_EVENT_HANDLER_MUTATION,
@@ -168,7 +173,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
 
   return (
     <Container mx="auto" maxWidth={1200}>
-      <HStack mb={4}>
+      <HStack mb={5}>
         <Heading as="h1" size="lg">
           Event handlers
         </Heading>
@@ -179,6 +184,8 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
           Create new handler
         </Button>
       </HStack>
+
+      <EventHandlersListSearchbox onSearchSubmit={setEventHandlersFilter} />
 
       <Table background="white">
         <Thead>

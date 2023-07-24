@@ -623,6 +623,7 @@ export type FilterEventHandlerInput = {
   evaluatorType?: InputMaybe<Scalars['String']>;
   event?: InputMaybe<Scalars['String']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type FilterPollDataInput = {
@@ -1103,6 +1104,12 @@ export type NetNode = {
   networks: Array<NetNetwork>;
 };
 
+export type NetRoutingPaths = {
+  __typename?: 'NetRoutingPaths';
+  alternativePaths: Array<Array<Scalars['String']>>;
+  shortestPath: Array<Scalars['String']>;
+};
+
 export type NetTopology = {
   __typename?: 'NetTopology';
   edges: Array<GraphEdge>;
@@ -1159,6 +1166,11 @@ export type PollDataEdge = {
   node: Maybe<PollData>;
 };
 
+export type PollsOrderByInput = {
+  direction: SortPollsDirection;
+  sortKey: SortPollsBy;
+};
+
 export type Pool = Node & {
   __typename?: 'Pool';
   id: Scalars['ID'];
@@ -1204,6 +1216,7 @@ export type Query = {
   pollData: Maybe<PollDataConnection>;
   pools: PoolConnection;
   schedules: ScheduleConnection;
+  shortestPath: Maybe<NetRoutingPaths>;
   taskDefinitions: TaskDefinitionConnection;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -1315,6 +1328,7 @@ export type QueryPollDataArgs = {
   filter?: InputMaybe<FilterPollDataInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy: PollsOrderByInput;
 };
 
 
@@ -1334,6 +1348,12 @@ export type QuerySchedulesArgs = {
   filter?: InputMaybe<ScheduleFilterInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryShortestPathArgs = {
+  from: Scalars['String'];
+  to: Scalars['String'];
 };
 
 
@@ -1478,6 +1498,15 @@ export type SortDeviceBy =
 export type SortDirection =
   | 'ASC'
   | 'DESC';
+
+export type SortPollsBy =
+  | 'lastPollTime'
+  | 'queueName'
+  | 'workerId';
+
+export type SortPollsDirection =
+  | 'asc'
+  | 'desc';
 
 export type StartWorkflowRequestInput = {
   workflow: ExecuteNewWorkflowInput;
@@ -1869,7 +1898,9 @@ export type CreateEventHandlerMutationVariables = Exact<{
 
 export type CreateEventHandlerMutation = { __typename?: 'Mutation', createEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
 
-export type GetEventHandlersQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetEventHandlersQueryVariables = Exact<{
+  filter?: InputMaybe<FilterEventHandlerInput>;
+}>;
 
 
 export type GetEventHandlersQuery = { __typename?: 'Query', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', node: { __typename?: 'EventHandler', event: string, id: string, isActive: boolean | null, name: string, evaluatorType: string | null, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null }> } }> | null } | null };
