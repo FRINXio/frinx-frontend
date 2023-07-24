@@ -156,11 +156,12 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
     actionIndex: number,
   ) => {
-    const newActions = [...eventHandler.actions.slice(0, actionIndex), ...eventHandler.actions.slice(actionIndex + 1)];
     updateEventHandler(
       {
         input: {
-          actions: newActions.map(removeTypenamesFromEventHandlerAction),
+          actions: eventHandler.actions
+            .filter((_, index) => index !== actionIndex)
+            .map(removeTypenamesFromEventHandlerAction),
         },
         event: eventHandler.event,
         name: eventHandler.name,

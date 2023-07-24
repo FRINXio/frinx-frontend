@@ -4,7 +4,7 @@ import { Item } from 'chakra-ui-autocomplete';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import ConfirmDeleteModal from '../../components/confirm-delete-modal';
+import ConfirmDeleteModal from "@frinx/shared/src/components/delete-alert/confirm-delete-modal";
 import ImportCSVModal from '../../components/import-csv-modal';
 import Pagination from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination';
