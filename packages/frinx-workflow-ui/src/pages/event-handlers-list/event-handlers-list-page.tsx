@@ -192,46 +192,53 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data.eventHandlers.edges?.map(({ node }) => (
-            <Tr key={node.id}>
-              <Td>
-                <Switch
-                  isChecked={node.isActive ?? false}
-                  onChange={(e) =>
-                    handleOnIsActiveClick(e, {
-                      event: node.event,
-                      name: node.name,
-                    })
-                  }
-                />
-              </Td>
-              <Td>{node.name}</Td>
-              <Td>{node.event}</Td>
-              <Td>{node.evaluatorType || 'not defined'}</Td>
-              <Td>{node.actions.map((action) => action.action).join(', ')}</Td>
-              <Td>
-                <ButtonGroup variant="solid" size="xs">
-                  <IconButton
-                    aria-label="detail of event handler"
-                    icon={<FeatherIcon icon="settings" size={12} />}
-                    colorScheme="blue"
-                    onClick={() => onEventHandlerDetailClick(node.event, node.name)}
-                  />
-                  <IconButton
-                    aria-label="edit event handler"
-                    icon={<FeatherIcon icon="edit" size={12} />}
-                    onClick={() => onEventHandlerEditClick(node.event, node.name)}
-                  />
-                  <IconButton
-                    aria-label="delete event handler"
-                    icon={<FeatherIcon icon="trash-2" size={12} />}
-                    colorScheme="red"
-                    onClick={() => handleOnEventHandlerDelete(node.id)}
-                  />
-                </ButtonGroup>
-              </Td>
+          {data.eventHandlers.edges?.length === 0 && (
+            <Tr>
+              <Td>No event handlers were created yet.</Td>
             </Tr>
-          ))}
+          )}
+
+          {data.eventHandlers.edges?.length !== 0 &&
+            data.eventHandlers.edges?.map(({ node }) => (
+              <Tr key={node.id}>
+                <Td>
+                  <Switch
+                    isChecked={node.isActive ?? false}
+                    onChange={(e) =>
+                      handleOnIsActiveClick(e, {
+                        event: node.event,
+                        name: node.name,
+                      })
+                    }
+                  />
+                </Td>
+                <Td>{node.name}</Td>
+                <Td>{node.event}</Td>
+                <Td>{node.evaluatorType || 'not defined'}</Td>
+                <Td>{node.actions.map((action) => action.action).join(', ')}</Td>
+                <Td>
+                  <ButtonGroup variant="solid" size="xs">
+                    <IconButton
+                      aria-label="detail of event handler"
+                      icon={<FeatherIcon icon="settings" size={12} />}
+                      colorScheme="blue"
+                      onClick={() => onEventHandlerDetailClick(node.event, node.name)}
+                    />
+                    <IconButton
+                      aria-label="edit event handler"
+                      icon={<FeatherIcon icon="edit" size={12} />}
+                      onClick={() => onEventHandlerEditClick(node.event, node.name)}
+                    />
+                    <IconButton
+                      aria-label="delete event handler"
+                      icon={<FeatherIcon icon="trash-2" size={12} />}
+                      colorScheme="red"
+                      onClick={() => handleOnEventHandlerDelete(node.id)}
+                    />
+                  </ButtonGroup>
+                </Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
     </Container>

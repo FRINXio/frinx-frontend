@@ -12,10 +12,11 @@ import {
   Select,
   Spacer,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Editor, unwrap, useNotifications } from '@frinx/shared';
+import { ConfirmDeleteModal, Editor, unwrap, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import {
   DeleteEventHandlerDetailMutation,
@@ -87,6 +88,7 @@ const UPDATE_EVENT_HANDLER_MUTATION = gql`
 `;
 
 const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerEditClick }) => {
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const ctx = useMemo(() => ({ additionalTypenames: ['EventHandler'] }), []);
   const { event, name } = useParams<{ event: string; name: string }>();
   const navigate = useNavigate();
@@ -117,19 +119,20 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
   };
 
   const handleOnEventHandlerDelete = (id: string) => {
-    deleteEventHandler({
-      deleteEventHandlerId: id,
-    })
+    deleteEventHandler(
+      {
+        deleteEventHandlerId: id,
+      },
+      {
+        additionalTypenames: ['EventHandler'],
+      },
+    )
       .then((response) => {
         if (response.error != null) {
           throw new Error(response.error.message);
         }
 
-        navigate('/event-handlers');
-        addToastNotification({
-          content: 'Successfully deleted event handler',
-          type: 'success',
-        });
+        navigate('/workflow-manager/event-handlers');
       })
       .catch((err) => {
         addToastNotification({
@@ -137,10 +140,6 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
           type: 'error',
         });
       });
-  };
-
-  const handleOnEventHandlerActionEdit = (eventHandlerEvent: string, eventHandlerName: string, actionIndex: number) => {
-    navigate(`../${eventHandlerEvent}/${eventHandlerName}/edit?actionIndex=${actionIndex}#action`);
   };
 
   const handleOnEventHandlerActionDelete = (
@@ -178,75 +177,83 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     selectedConditionLang === 'python' ? '# condition was not defined' : '// condition was not defined';
 
   return (
-    <Container maxWidth={1200} mx="auto" mb={10}>
-      <HStack alignItems="flex-start">
-        <Heading mb={10}>
-          Event handler: {eventHandler.name} ({eventHandler.isActive ? 'active' : 'not active'})
-        </Heading>
-
-        <Spacer />
-
-        <ButtonGroup variant="solid">
-          <IconButton
-            aria-label="edit event handler"
-            icon={<FeatherIcon icon="edit" size={20} />}
-            onClick={() => onEventHandlerEditClick(eventHandler.event, eventHandler.name)}
-          />
-          <IconButton
-            aria-label="delete event handler"
-            icon={<FeatherIcon icon="trash-2" size={20} />}
-            colorScheme="red"
-            onClick={() => handleOnEventHandlerDelete(eventHandler.id)}
-          />
-        </ButtonGroup>
-      </HStack>
-
-      <Card borderRadius="md" p={10}>
-        <Text>
-          This event handler is executed on: <strong>{eventHandler.event}</strong>
-        </Text>
-
-        <Text>
-          Evaluated by:{' '}
-          <strong>{eventHandler.evaluatorType == null ? 'not defined' : eventHandler.evaluatorType}</strong>
-        </Text>
-
-        <FormControl>
-          <HStack mb={5} alignItems="stretch">
-            <Text>Condition when evaluated to true it will trigger</Text>
-
-            <Spacer />
-
-            <Select value={selectedConditionLang} onChange={handleOnConditionLangSelect} maxWidth="xs">
-              <option value="javascript">JavaScript</option>
-              <option value="python">Python</option>
-            </Select>
-          </HStack>
-          <Editor
-            readOnly
-            value={eventHandler.condition ?? editorComment}
-            height="400px"
-            width="100%"
-            theme="tomorrow"
-            mode={selectedConditionLang || 'javascript'}
-          />
-          <FormHelperText>
-            Currently supporting only JavaScript and Python{' '}
-            <strong>(return value of function must be true or false)</strong>
-          </FormHelperText>
-        </FormControl>
-      </Card>
-
-      <EventHandlersDetailActions
-        actions={eventHandler.actions}
-        onEventHandlerActionDelete={(actionIndex) => {
-          handleOnEventHandlerActionDelete(eventHandler, actionIndex);
-        }}
-        onEventHandlerActionEdit={(actionIndex) => {
-          handleOnEventHandlerActionEdit(eventHandler.event, eventHandler.name, actionIndex);
+    <>
+      <ConfirmDeleteModal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Are you sure you want to delete this event handler?"
+        onConfirmBtnClick={() => {
+          onClose();
+          handleOnEventHandlerDelete(eventHandler.id);
         }}
       />
-    </Container>
+      <Container maxWidth={1200} mx="auto" mb={10}>
+        <HStack alignItems="flex-start">
+          <Heading mb={10}>
+            Event handler: {eventHandler.name} ({eventHandler.isActive ? 'active' : 'not active'})
+          </Heading>
+
+          <Spacer />
+
+          <ButtonGroup variant="solid">
+            <IconButton
+              aria-label="edit event handler"
+              icon={<FeatherIcon icon="edit" size={20} />}
+              onClick={() => onEventHandlerEditClick(eventHandler.event, eventHandler.name)}
+            />
+            <IconButton
+              aria-label="delete event handler"
+              icon={<FeatherIcon icon="trash-2" size={20} />}
+              colorScheme="red"
+              onClick={onOpen}
+            />
+          </ButtonGroup>
+        </HStack>
+
+        <Card borderRadius="md" p={10}>
+          <Text>
+            This event handler is executed on: <strong>{eventHandler.event}</strong>
+          </Text>
+
+          <Text>
+            Evaluated by:{' '}
+            <strong>{eventHandler.evaluatorType == null ? 'not defined' : eventHandler.evaluatorType}</strong>
+          </Text>
+
+          <FormControl>
+            <HStack mb={5} alignItems="stretch">
+              <Text>Condition when evaluated to true it will trigger</Text>
+
+              <Spacer />
+
+              <Select value={selectedConditionLang} onChange={handleOnConditionLangSelect} maxWidth="xs">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+              </Select>
+            </HStack>
+            <Editor
+              readOnly
+              value={eventHandler.condition ?? editorComment}
+              height="400px"
+              width="100%"
+              theme="tomorrow"
+              mode={selectedConditionLang || 'javascript'}
+            />
+            <FormHelperText>
+              Currently supporting only JavaScript and Python{' '}
+              <strong>(return value of function must be true or false)</strong>
+            </FormHelperText>
+          </FormControl>
+        </Card>
+
+        <EventHandlersDetailActions
+          actions={eventHandler.actions}
+          onEventHandlerActionDelete={(actionIndex) => {
+            handleOnEventHandlerActionDelete(eventHandler, actionIndex);
+          }}
+        />
+      </Container>
+    </>
   );
 };
 

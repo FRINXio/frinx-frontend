@@ -7,7 +7,6 @@ type StartWorkflowActionProps = {
   startWorkflow: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['startWorkflow'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
-  onEventHandlerEditClick: () => void;
   cannotBeDeleted: boolean;
 };
 
@@ -15,7 +14,6 @@ type CompleteTaskActionProps = {
   completeTask: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['completeTask'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
-  onEventHandlerEditClick: () => void;
   cannotBeDeleted: boolean;
 };
 
@@ -23,7 +21,6 @@ type FailTaskActionProps = {
   failTask: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['failTask'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
-  onEventHandlerEditClick: () => void;
   cannotBeDeleted: boolean;
 };
 
@@ -31,7 +28,6 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
   startWorkflow,
   onShowJsonModalClick,
   onDeleteClick,
-  onEventHandlerEditClick,
   cannotBeDeleted,
 }) => {
   return (
@@ -42,13 +38,6 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
         </Heading>
 
         <Spacer />
-
-        <IconButton
-          aria-label="Edit action"
-          icon={<FeatherIcon icon="edit" size={15} />}
-          size="xs"
-          onClick={onEventHandlerEditClick}
-        />
 
         <IconButton
           aria-label="delete event handler action start workflow"
@@ -99,7 +88,6 @@ const CompleteTaskAction: VoidFunctionComponent<CompleteTaskActionProps> = ({
   completeTask,
   onShowJsonModalClick,
   onDeleteClick,
-  onEventHandlerEditClick,
   cannotBeDeleted,
 }) => {
   return (
@@ -110,13 +98,6 @@ const CompleteTaskAction: VoidFunctionComponent<CompleteTaskActionProps> = ({
         </Heading>
 
         <Spacer />
-
-        <IconButton
-          aria-label="Edit action"
-          icon={<FeatherIcon icon="edit" size={15} />}
-          size="xs"
-          onClick={onEventHandlerEditClick}
-        />
 
         <IconButton
           aria-label="delete event handler action start workflow"
@@ -161,7 +142,6 @@ const FailTaskAction: VoidFunctionComponent<FailTaskActionProps> = ({
   failTask,
   onShowJsonModalClick,
   onDeleteClick,
-  onEventHandlerEditClick,
   cannotBeDeleted,
 }) => {
   return (
@@ -172,13 +152,6 @@ const FailTaskAction: VoidFunctionComponent<FailTaskActionProps> = ({
         </Heading>
 
         <Spacer />
-
-        <IconButton
-          aria-label="Edit action"
-          icon={<FeatherIcon icon="edit" size={15} />}
-          size="xs"
-          onClick={onEventHandlerEditClick}
-        />
 
         <IconButton
           aria-label="delete event handler action start workflow"

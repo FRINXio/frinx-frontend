@@ -8,15 +8,10 @@ import { CompleteTaskAction, FailTaskAction, StartWorkflowAction } from './event
 
 type Props = {
   actions: NonNullable<EventHandlerQuery['eventHandler']>['actions'];
-  onEventHandlerActionEdit: (actionIndex: number) => void;
   onEventHandlerActionDelete: (actionIndex: number) => void;
 };
 
-const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({
-  onEventHandlerActionDelete,
-  onEventHandlerActionEdit,
-  actions,
-}) => {
+const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({ onEventHandlerActionDelete, actions }) => {
   const { isOpen: isAlertOpened, onOpen: onAlertOpen, onClose: onAlertClose } = useDisclosure();
   const [json, setJson] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -51,7 +46,6 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({
                     onOpen();
                   }}
                   onDeleteClick={onAlertOpen}
-                  onEventHandlerEditClick={() => onEventHandlerActionEdit(index)}
                   cannotBeDeleted={actions.length === 1}
                 />
               )}
@@ -64,7 +58,6 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({
                     onOpen();
                   }}
                   onDeleteClick={onAlertOpen}
-                  onEventHandlerEditClick={() => onEventHandlerActionEdit(index)}
                   cannotBeDeleted={actions.length === 1}
                 />
               )}
@@ -77,7 +70,6 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({
                     onOpen();
                   }}
                   onDeleteClick={onAlertOpen}
-                  onEventHandlerEditClick={() => onEventHandlerActionEdit(index)}
                   cannotBeDeleted={actions.length === 1}
                 />
               )}
