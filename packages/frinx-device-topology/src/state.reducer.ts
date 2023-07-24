@@ -1,3 +1,4 @@
+import { omitNullValue } from '@frinx/shared';
 import produce from 'immer';
 import { getEdgesWithDiff, getNodesWithDiff, GraphEdgeWithDiff, GraphNodeWithDiff } from './helpers/topology-helpers';
 import {
@@ -29,6 +30,9 @@ export type State = {
   unconfirmedSelectedNodeIds: string[];
   selectedNodeIds: string[];
   commonNodeIds: string[];
+  unconfirmedShortestPathNodeIds: [string | null, string | null];
+  selectedShortestPathNodeIds: [string | null, string | null];
+  shortestPathIds: string[];
   netNodes: GraphNetNode[];
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
@@ -50,6 +54,9 @@ export const initialState: State = {
   unconfirmedSelectedNodeIds: [],
   selectedNodeIds: [],
   commonNodeIds: [],
+  unconfirmedShortestPathNodeIds: [null, null],
+  selectedShortestPathNodeIds: [null, null],
+  shortestPathIds: [],
   netNodes: [],
   netEdges: [],
   netNodePositions: {},
@@ -133,8 +140,31 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.unconfirmedSelectedNodeIds = [...action.nodeIds];
         return acc;
       }
+      case 'ADD_REMOVE_UNCONFIRMED_NODE_ID_FOR_SHORTEST_PATH': {
+        const currentNodeIds = acc.unconfirmedShortestPathNodeIds.filter(omitNullValue);
+        const isAlreadySelected = currentNodeIds.includes(action.nodeId);
+        const newNodeIds = isAlreadySelected
+          ? currentNodeIds.filter((n) => n !== action.nodeId)
+          : [...currentNodeIds, action.nodeId];
+
+        acc.unconfirmedShortestPathNodeIds = [newNodeIds[0] ?? null, newNodeIds[1] ?? null];
+        return acc;
+      }
+      case 'FIND_SHORTEST_PATH': {
+        acc.selectedShortestPathNodeIds = acc.unconfirmedShortestPathNodeIds;
+        return acc;
+      }
       case 'SET_NODE_IDS_TO_FIND_COMMON': {
         acc.selectedNodeIds = [...state.unconfirmedSelectedNodeIds];
+        return acc;
+      }
+      case 'CLEAR_SHORTEST_PATH_SEARCH': {
+        acc.shortestPathIds = [];
+        acc.unconfirmedShortestPathNodeIds = [null, null];
+        return acc;
+      }
+      case 'SET_SHORTEST_PATH_IDS': {
+        acc.shortestPathIds = action.pathIds;
         return acc;
       }
       case 'SET_MODE': {

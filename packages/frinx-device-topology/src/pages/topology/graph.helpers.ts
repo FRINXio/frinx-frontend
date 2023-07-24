@@ -56,6 +56,7 @@ export type GrahpNetNodeInterface = {
 
 export type GraphNetNode = {
   id: string;
+  nodeId: string;
   name: string;
   interfaces: GrahpNetNodeInterface[];
   networks: NetNetwork[];

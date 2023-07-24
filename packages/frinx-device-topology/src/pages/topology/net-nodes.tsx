@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import NetNodeIcon from '../../components/node-icons/net-node-icon';
-import { setSelectedNetNode } from '../../state.actions';
+import { addRemoveUnconfirmedNodeIdForShortestPath, setSelectedNetNode } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { GraphNetNode } from './graph.helpers';
 
@@ -15,14 +15,23 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     connectedNodeIds,
     netInterfaceGroupPositions,
     unconfirmedSelectedNodeIds,
+    unconfirmedShortestPathNodeIds,
     mode,
     commonNodeIds,
+    shortestPathIds,
     selectedEdge,
   } = state;
 
   const handleClick = (node: GraphNetNode) => {
-    dispatch(setSelectedNetNode(node));
+    if (mode === 'SHORTEST_PATH') {
+      dispatch(addRemoveUnconfirmedNodeIdForShortestPath(node.id));
+    } else {
+      dispatch(setSelectedNetNode(node));
+    }
   };
+
+  // console.log('shortestPathData: ', shortestPathIds);
+  // console.log('nodes: ', nodes);
 
   return (
     <g>
@@ -33,7 +42,9 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
           positions={{ nodes: netNodePositions, interfaceGroups: netInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
           isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}
+          isSelectedForShortestPath={unconfirmedShortestPathNodeIds.includes(node.id)}
           isCommon={commonNodeIds.includes(node.name)}
+          isShortestPath={shortestPathIds.includes(node.nodeId)}
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}
