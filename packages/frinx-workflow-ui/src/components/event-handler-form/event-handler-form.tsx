@@ -227,7 +227,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
           <FormErrorMessage>Condition is required</FormErrorMessage>
         </FormControl>
 
-        <FormControl mb={5}>
+        <FormControl mb={5} isInvalid={errors.actions != null}>
           <FormLabel>Actions</FormLabel>
           <HStack mb={3}>
             <Select value={selectedAction ?? ''} onChange={(e) => setSelectedAction(e.target.value)}>
@@ -256,7 +256,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
               setFieldError(`actions[${index}]`, 'Keys are not unique');
             }}
           />
-          <FormErrorMessage>Actions are required</FormErrorMessage>
+          {values.actions.length === 0 && <FormErrorMessage>At least one action is required</FormErrorMessage>}
         </FormControl>
 
         <HStack>
