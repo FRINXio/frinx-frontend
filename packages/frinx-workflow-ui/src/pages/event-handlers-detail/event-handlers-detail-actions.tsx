@@ -52,6 +52,7 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({
                   }}
                   onDeleteClick={onAlertOpen}
                   onEventHandlerEditClick={() => onEventHandlerActionEdit(index)}
+                  cannotBeDeleted={actions.length === 1}
                 />
               )}
 
@@ -64,6 +65,7 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({
                   }}
                   onDeleteClick={onAlertOpen}
                   onEventHandlerEditClick={() => onEventHandlerActionEdit(index)}
+                  cannotBeDeleted={actions.length === 1}
                 />
               )}
 
@@ -76,6 +78,7 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({
                   }}
                   onDeleteClick={onAlertOpen}
                   onEventHandlerEditClick={() => onEventHandlerActionEdit(index)}
+                  cannotBeDeleted={actions.length === 1}
                 />
               )}
             </Fragment>

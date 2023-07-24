@@ -8,6 +8,7 @@ type StartWorkflowActionProps = {
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
   onEventHandlerEditClick: () => void;
+  cannotBeDeleted: boolean;
 };
 
 type CompleteTaskActionProps = {
@@ -15,6 +16,7 @@ type CompleteTaskActionProps = {
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
   onEventHandlerEditClick: () => void;
+  cannotBeDeleted: boolean;
 };
 
 type FailTaskActionProps = {
@@ -22,6 +24,7 @@ type FailTaskActionProps = {
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
   onEventHandlerEditClick: () => void;
+  cannotBeDeleted: boolean;
 };
 
 const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
@@ -29,6 +32,7 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
   onShowJsonModalClick,
   onDeleteClick,
   onEventHandlerEditClick,
+  cannotBeDeleted,
 }) => {
   return (
     <Card p={10} mb={5}>
@@ -52,6 +56,8 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
           size="xs"
           colorScheme="red"
           onClick={onDeleteClick}
+          isDisabled={cannotBeDeleted}
+          title={cannotBeDeleted ? 'Cannot delete this action. At least one must be defined' : undefined}
         />
       </HStack>
 
@@ -94,6 +100,7 @@ const CompleteTaskAction: VoidFunctionComponent<CompleteTaskActionProps> = ({
   onShowJsonModalClick,
   onDeleteClick,
   onEventHandlerEditClick,
+  cannotBeDeleted,
 }) => {
   return (
     <Card p={10} mb={5}>
@@ -112,11 +119,13 @@ const CompleteTaskAction: VoidFunctionComponent<CompleteTaskActionProps> = ({
         />
 
         <IconButton
-          aria-label="delete event handler action complete task"
+          aria-label="delete event handler action start workflow"
           icon={<FeatherIcon icon="trash-2" size={15} />}
           size="xs"
           colorScheme="red"
           onClick={onDeleteClick}
+          isDisabled={cannotBeDeleted}
+          title={cannotBeDeleted ? 'Cannot delete this action. At least one must be defined' : undefined}
         />
       </HStack>
 
@@ -153,6 +162,7 @@ const FailTaskAction: VoidFunctionComponent<FailTaskActionProps> = ({
   onShowJsonModalClick,
   onDeleteClick,
   onEventHandlerEditClick,
+  cannotBeDeleted,
 }) => {
   return (
     <Card p={10} mb={5}>
@@ -171,11 +181,13 @@ const FailTaskAction: VoidFunctionComponent<FailTaskActionProps> = ({
         />
 
         <IconButton
-          aria-label="delete event handler action fail task"
+          aria-label="delete event handler action start workflow"
           icon={<FeatherIcon icon="trash-2" size={15} />}
           size="xs"
           colorScheme="red"
           onClick={onDeleteClick}
+          isDisabled={cannotBeDeleted}
+          title={cannotBeDeleted ? 'Cannot delete this action. At least one must be defined' : undefined}
         />
       </HStack>
 
