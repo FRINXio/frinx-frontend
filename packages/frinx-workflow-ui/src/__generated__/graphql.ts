@@ -149,7 +149,6 @@ export type Blueprint = Node & {
   name: Scalars['String'];
   template: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type BlueprintConnection = {
@@ -231,7 +230,6 @@ export type Country = Node & {
   code: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type CountryConnection = {
@@ -380,7 +378,6 @@ export type Device = Node & {
   source: DeviceSource;
   updatedAt: Scalars['String'];
   vendor: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
   zone: Zone;
 };
 
@@ -448,7 +445,7 @@ export type EditWorkflowScheduleInput = {
   workflowVersion?: InputMaybe<Scalars['String']>;
 };
 
-export type EventHandler = {
+export type EventHandler = Node & {
   __typename?: 'EventHandler';
   actions: Array<EventHandlerAction>;
   condition: Maybe<Scalars['String']>;
@@ -534,7 +531,6 @@ export type ExecutedWorkflow = Node & {
   updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
   variables: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
   workflowDefinition: Maybe<Workflow>;
   workflowId: Scalars['String'];
   workflowName: Maybe<Scalars['String']>;
@@ -604,7 +600,6 @@ export type ExecutedWorkflowTask = Node & {
   taskId: Maybe<Scalars['String']>;
   taskType: Maybe<Scalars['String']>;
   updateTime: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
   workflowType: Maybe<Scalars['String']>;
 };
 
@@ -733,7 +728,6 @@ export type Label = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type LabelConnection = {
@@ -756,7 +750,6 @@ export type Location = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type LocationConnection = {
@@ -1118,7 +1111,6 @@ export type NetTopology = {
 
 export type Node = {
   id: Scalars['ID'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type OutputParameter = {
@@ -1156,15 +1148,15 @@ export type PollData = {
 
 export type PollDataConnection = {
   __typename?: 'PollDataConnection';
-  edges: Array<PollDataEdge>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int'];
+  edges: Maybe<Array<Maybe<PollDataEdge>>>;
+  pageInfo: Maybe<PageInfo>;
+  totalCount: Maybe<Scalars['Int']>;
 };
 
 export type PollDataEdge = {
   __typename?: 'PollDataEdge';
-  cursor: Scalars['String'];
-  node: PollData;
+  cursor: Maybe<Scalars['String']>;
+  node: Maybe<PollData>;
 };
 
 export type Pool = Node & {
@@ -1174,7 +1166,6 @@ export type Pool = Node & {
   poolType: PoolType;
   resourceType: ResourceType;
   tags: Array<Tag>;
-  version: Maybe<Scalars['Int']>;
 };
 
 export type PoolConnection = {
@@ -1442,7 +1433,6 @@ export type Schedule = Node & {
   performFromDate: Scalars['String'];
   performTillDate: Scalars['String'];
   status: ScheduleStatus;
-  version: Maybe<Scalars['Int']>;
   workflowContext: Scalars['String'];
   workflowName: Scalars['String'];
   workflowVersion: Scalars['String'];
@@ -1553,7 +1543,6 @@ export type TaskDefinition = Node & {
   timeoutSeconds: Scalars['Int'];
   updateTime: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
 };
 
 export type TaskDefinitionConnection = {
@@ -1812,7 +1801,6 @@ export type Zone = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type ZoneEdge = {
@@ -1832,6 +1820,23 @@ export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetSchedulesQuery = { __typename?: 'Query', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } };
+
+export type GetEventHandlerDetailQueryVariables = Exact<{
+  event: Scalars['String'];
+  name: Scalars['String'];
+}>;
+
+
+export type GetEventHandlerDetailQuery = { __typename?: 'Query', eventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string, condition: string | null, isActive: boolean | null, evaluatorType: string | null, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null, expandInlineJSON: boolean | null, startWorkflow: { __typename?: 'ActionStartWorkflow', name: string | null, version: number | null, input: string | null, correlationId: string | null, taskToDomain: string | null } | null, completeTask: { __typename?: 'ActionCompleteTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null, failTask: { __typename?: 'ActionFailTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null }> } | null };
+
+export type EditEventHandlerMutationVariables = Exact<{
+  event: Scalars['String'];
+  name: Scalars['String'];
+  input: UpdateEventHandlerInput;
+}>;
+
+
+export type EditEventHandlerMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string } | null };
 
 export type EventHandlerQueryVariables = Exact<{
   event: Scalars['String'];
@@ -1890,7 +1895,7 @@ export type ExecutedWorkflowDetailQueryVariables = Exact<{
 }>;
 
 
-export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow', id: string, version: number | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: ExecutedWorkflowStatus | null, parentWorkflowId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, workflowVersion: number | null, workflowName: string | null, workflowId: string, correlationId: string | null, workflowDefinition: { __typename?: 'Workflow', id: string, version: number | null, timeoutSeconds: number, name: string, description: string | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, tasks: string | null, inputParameters: Array<string> | null, hasSchedule: boolean | null, restartable: boolean | null, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, version: number | null, taskType: string | null, referenceTaskName: string | null, status: ExecutedWorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updateTime: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Pool' } | { __typename?: 'Schedule' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'Zone' } | null };
+export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'ExecutedWorkflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: ExecutedWorkflowStatus | null, parentWorkflowId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, workflowVersion: number | null, workflowName: string | null, workflowId: string, correlationId: string | null, workflowDefinition: { __typename?: 'Workflow', id: string, version: number | null, timeoutSeconds: number, name: string, description: string | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, tasks: string | null, inputParameters: Array<string> | null, hasSchedule: boolean | null, restartable: boolean | null, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: ExecutedWorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updateTime: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Pool' } | { __typename?: 'Schedule' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'Zone' } | null };
 
 export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
   controlExecutedWorkflowId: Scalars['String'];

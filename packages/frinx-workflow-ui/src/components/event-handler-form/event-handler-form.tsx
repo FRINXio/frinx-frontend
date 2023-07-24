@@ -13,6 +13,7 @@ import {
   Input,
   Select,
   Spacer,
+  Switch,
 } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared';
 import EventHandlerFormActions from './event-handler-form-actions';
@@ -64,32 +65,41 @@ const validationSchema = yup.object().shape({
     .of(
       yup.object().shape({
         action: yup.string(),
-        startWorkflow: yup.object().shape({
-          name: yup.string(),
-          version: yup.number(),
-          input: yup.string(),
-          correlationId: yup.string(),
-          taskToDomain: yup.string(),
-        }),
-        completeTask: yup.object().shape({
-          workflowId: yup.string(),
-          taskId: yup.string(),
-          output: yup.string(),
-          taskRefName: yup.string(),
-        }),
-        failTask: yup.object().shape({
-          workflowId: yup.string(),
-          taskId: yup.string(),
-          output: yup.string(),
-          taskRefName: yup.string(),
-        }),
-        expandInlineJSON: yup.boolean(),
+        startWorkflow: yup
+          .object()
+          .shape({
+            name: yup.string().nullable(),
+            version: yup.number().nullable(),
+            input: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+            correlationId: yup.string().nullable(),
+            taskToDomain: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+          })
+          .nullable(),
+        completeTask: yup
+          .object()
+          .shape({
+            workflowId: yup.string().nullable(),
+            taskId: yup.string().nullable(),
+            output: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+            taskRefName: yup.string().nullable(),
+          })
+          .nullable(),
+        failTask: yup
+          .object()
+          .shape({
+            workflowId: yup.string().nullable(),
+            taskId: yup.string().nullable(),
+            output: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+            taskRefName: yup.string().nullable(),
+          })
+          .nullable(),
+        expandInlineJSON: yup.boolean().nullable(),
       }),
     )
     .min(1, 'At least one action is required'),
-  condition: yup.string(),
-  isActive: yup.boolean(),
-  evaluatorType: yup.string(),
+  condition: yup.string().nullable(),
+  isActive: yup.boolean().nullable(),
+  evaluatorType: yup.string().nullable(),
 });
 
 const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues, onSubmit }) => {
@@ -105,7 +115,6 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
     handleReset,
     isSubmitting,
     isValid,
-    initialValues,
     setFieldValue,
     setFieldError,
   } = useFormik<FormValues>({
@@ -174,7 +183,6 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
               name="name"
               onChange={handleChange}
               value={values.name}
-              defaultValue={initialValues.name}
               readOnly={isEditing ?? false}
             />
             <FormErrorMessage>Name is required</FormErrorMessage>
@@ -187,33 +195,27 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
               placeholder="device_up"
               onChange={handleChange}
               value={values.event}
-              defaultValue={initialValues.event}
               readOnly={isEditing ?? false}
             />
             <FormErrorMessage>Event is required</FormErrorMessage>
           </FormControl>
         </HStack>
 
+        <FormControl mb={5} isInvalid={errors.isActive != null}>
+          <FormLabel>Active</FormLabel>
+          <Switch isChecked={values.isActive ?? false} onChange={handleChange} name="isActive" />
+        </FormControl>
+
         <FormControl mb={5}>
           <HStack mb={3}>
             <FormLabel>Condition</FormLabel>
             <Spacer />
-            <Select
-              defaultValue={selectedConditionLanguage}
-              value={selectedConditionLanguage}
-              onChange={handleOnConditionLangSelect}
-              maxWidth="xs"
-            >
+            <Select value={selectedConditionLanguage} onChange={handleOnConditionLangSelect} maxWidth="xs">
               <option value="javascript">JavaScript</option>
               <option value="python">Python</option>
             </Select>
           </HStack>
-          <Editor
-            mode={selectedConditionLanguage}
-            value={values.condition ?? ''}
-            defaultValue={initialValues.condition ?? undefined}
-            onChange={handleChange}
-          />
+          <Editor mode={selectedConditionLanguage} value={values.condition ?? ''} onChange={handleChange} />
           <FormHelperText>Function must return true or false</FormHelperText>
           <FormErrorMessage>Condition is required</FormErrorMessage>
         </FormControl>
@@ -221,7 +223,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
         <FormControl mb={5}>
           <FormLabel>Actions</FormLabel>
           <HStack mb={3}>
-            <Select value={selectedAction ?? undefined} onChange={(e) => setSelectedAction(e.target.value)}>
+            <Select value={selectedAction ?? ''} onChange={(e) => setSelectedAction(e.target.value)}>
               <option value="">Select action</option>
               <option value="start_workflow">Start workflow</option>
               <option value="complete_task">Complete task</option>

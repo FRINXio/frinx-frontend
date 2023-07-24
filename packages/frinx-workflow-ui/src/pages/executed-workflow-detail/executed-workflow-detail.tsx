@@ -4,19 +4,19 @@ import {
   Button,
   Container,
   Heading,
+  Progress,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  useToast,
   Text,
-  Progress,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared/src';
 import { Link, useParams } from 'react-router-dom';
-import { gql, useMutation, useSubscription, useQuery } from 'urql';
+import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import {
   ControlExecutedWorkflowSubscription,
   ControlExecutedWorkflowSubscriptionVariables,
@@ -50,7 +50,6 @@ const EXECUTED_WORKFLOW_QUERY = gql`
     node(id: $nodeId) {
       ... on ExecutedWorkflow {
         id
-        version
         createdBy
         updatedBy
         createdAt
@@ -91,7 +90,6 @@ const EXECUTED_WORKFLOW_QUERY = gql`
         workflowId
         tasks {
           id
-          version
           taskType
           referenceTaskName
           status
@@ -192,10 +190,10 @@ const convertWorkflowVariablesToFormFormat = (
   workflowInput: Record<string, string>,
   inputParameters: string[] = [],
 ) => {
-  /* 
-    search through whole executed workflow and is searching for all worklow.input
-    variables in this object and returns array of found variables
-  */
+  /*
+                  search through whole executed workflow and is searching for all worklow.input
+                  variables in this object and returns array of found variables
+                */
   const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
   let match = inputCaptureRegex.exec(workflowDetails);
   const labels = new Set<string>([]);

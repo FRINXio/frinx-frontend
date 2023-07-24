@@ -12,7 +12,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import React, { Fragment, VoidFunctionComponent } from 'react';
 import { ActionTask, EventHandlerAction, StartWorkflow } from './event-handler-form';
 import EventHandlerFormActionRecord from './event-handler-form-action-record';
 
@@ -103,13 +103,13 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
             // eslint-disable-next-line no-template-curly-in-string
             placeholder="${event.payload.workflow_name}"
             onChange={handleOnNameChange}
-            value={values.name ?? undefined}
+            value={values.name ?? ''}
           />
         </FormControl>
 
         <FormControl>
           <FormLabel>Workflow version</FormLabel>
-          <Input placeholder="latest" onChange={handleOnVersionChange} value={values.version ?? undefined} />
+          <Input placeholder="latest" onChange={handleOnVersionChange} value={values.version ?? ''} />
         </FormControl>
       </HStack>
 
@@ -119,7 +119,7 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
           // eslint-disable-next-line no-template-curly-in-string
           placeholder="${event.payload.correlation_id}"
           onChange={handleOnCorrelationIdChange}
-          value={values.correlationId ?? undefined}
+          value={values.correlationId ?? ''}
         />
       </FormControl>
 
@@ -208,7 +208,7 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({
             // eslint-disable-next-line no-template-curly-in-string
             placeholder="${event.payload.task_id}"
             onChange={handleOnTaskIdChange}
-            value={values.taskId ?? undefined}
+            value={values.taskId ?? ''}
           />
         </FormControl>
       ) : (
@@ -219,7 +219,7 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({
               // eslint-disable-next-line no-template-curly-in-string
               placeholder="${event.payload.workflow_id}"
               onChange={handleOnWorkflowIdChange}
-              value={values.workflowId ?? undefined}
+              value={values.workflowId ?? ''}
             />
           </FormControl>
 
@@ -229,7 +229,7 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({
               // eslint-disable-next-line no-template-curly-in-string
               placeholder="${event.payload.taskReferenceName}"
               onChange={handleOnTaskRefNameChange}
-              value={values.taskRefName ?? undefined}
+              value={values.taskRefName ?? ''}
             />
           </FormControl>
         </HStack>
@@ -264,11 +264,9 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({
   return (
     <>
       {values.map((action, index) => (
-        <>
+        <Fragment key={action.id}>
           {action.action === 'start_workflow' && (
             <StartWorkflowAction
-              // eslint-disable-next-line react/no-array-index-key
-              key={action.id}
               values={action.startWorkflow ?? {}}
               onChange={(event) => handleOnActionChange({ ...action, startWorkflow: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
@@ -279,8 +277,6 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({
           {action.action === 'complete_task' && (
             <TaskAction
               isCompleteTask
-              // eslint-disable-next-line react/no-array-index-key
-              key={action.id}
               values={action.completeTask ?? {}}
               onChange={(event) => handleOnActionChange({ ...action, completeTask: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
@@ -291,15 +287,13 @@ const EventHandlerFormActions: VoidFunctionComponent<Props> = ({
           {action.action === 'fail_task' && (
             <TaskAction
               isCompleteTask={false}
-              // eslint-disable-next-line react/no-array-index-key
-              key={action.id}
               values={action.failTask ?? {}}
               onChange={(event) => handleOnActionChange({ ...action, failTask: event }, index)}
               onRemove={() => handleOnActionRemove(index)}
               onKeysNotUniqueChange={() => onKeysNotUniqueChange(index)}
             />
           )}
-        </>
+        </Fragment>
       ))}
     </>
   );

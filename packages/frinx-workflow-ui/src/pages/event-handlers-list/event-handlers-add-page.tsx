@@ -55,7 +55,7 @@ const EventHandlersAddPage = () => {
           throw new Error(response.error.message);
         }
 
-        navigate('/event-handlers');
+        navigate('/workflow-manager/event-handlers');
       })
       .catch((err) => {
         addToastNotification({
@@ -76,7 +76,7 @@ const EventHandlersAddPage = () => {
           event: '',
           actions: [],
           condition: '',
-          isActive: true,
+          isActive: false,
           evaluatorType: 'default',
         }}
         onSubmit={handleOnSubmit}
