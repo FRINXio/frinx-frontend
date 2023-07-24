@@ -139,15 +139,6 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
       });
   };
 
-  const handleOnEventHandlerActionTaskEdit = (
-    eventHandlerEvent: string,
-    eventHandlerName: string,
-    actionIndex: number,
-    taskType: 'complete' | 'fail' | 'start',
-  ) => {
-    navigate(`../${eventHandlerEvent}/${eventHandlerName}/edit?taskType=${taskType}&actionIndex=${actionIndex}#action`);
-  };
-
   const handleOnEventHandlerActionEdit = (eventHandlerEvent: string, eventHandlerName: string, actionIndex: number) => {
     navigate(`../${eventHandlerEvent}/${eventHandlerName}/edit?actionIndex=${actionIndex}#action`);
   };
@@ -160,52 +151,8 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
       {
         input: {
           actions: eventHandler.actions
-            .filter((_, index) => index !== actionIndex)
+            .filter((_, index) => index === actionIndex)
             .map(removeTypenamesFromEventHandlerAction),
-        },
-        event: eventHandler.event,
-        name: eventHandler.name,
-      },
-      ctx,
-    );
-  };
-
-  const handleOnEventHandlerActionTaskDelete = (
-    eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
-    actionIndex: number,
-    taskType: 'complete' | 'fail' | 'start',
-  ) => {
-    let newAction = eventHandler.actions[actionIndex];
-
-    if (taskType === 'complete') {
-      newAction = {
-        ...newAction,
-        completeTask: null,
-      };
-    }
-
-    if (taskType === 'fail') {
-      newAction = {
-        ...newAction,
-        failTask: null,
-      };
-    }
-
-    if (taskType === 'start') {
-      newAction = {
-        ...newAction,
-        startWorkflow: null,
-      };
-    }
-
-    updateEventHandler(
-      {
-        input: {
-          actions: [
-            ...eventHandler.actions.slice(0, actionIndex).map(removeTypenamesFromEventHandlerAction),
-            removeTypenamesFromEventHandlerAction(newAction),
-            ...eventHandler.actions.slice(actionIndex + 1).map(removeTypenamesFromEventHandlerAction),
-          ],
         },
         event: eventHandler.event,
         name: eventHandler.name,
@@ -292,12 +239,6 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
 
       <EventHandlersDetailActions
         actions={eventHandler.actions}
-        onEventHandlerActionTaskAdd={(actionIndex, taskType) => {
-          handleOnEventHandlerActionTaskEdit(eventHandler.event, eventHandler.name, actionIndex, taskType);
-        }}
-        onEventHandlerActionTaskDelete={(actionIndex, taskType) => {
-          handleOnEventHandlerActionTaskDelete(eventHandler, actionIndex, taskType);
-        }}
         onEventHandlerActionDelete={(actionIndex) => {
           handleOnEventHandlerActionDelete(eventHandler, actionIndex);
         }}

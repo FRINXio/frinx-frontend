@@ -74,7 +74,6 @@ const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
   );
 
   const handleOnSubmit = (formValues: FormValues) => {
-    console.log('halabala');
     updateEventHandler({
       name: formValues.name,
       event: formValues.event,

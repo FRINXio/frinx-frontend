@@ -215,7 +215,14 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
               <option value="python">Python</option>
             </Select>
           </HStack>
-          <Editor mode={selectedConditionLanguage} value={values.condition ?? ''} onChange={handleChange} />
+          <Editor
+            name="condition"
+            mode={selectedConditionLanguage}
+            value={values.condition ?? ''}
+            onChange={(value) => {
+              setFieldValue('condition', value);
+            }}
+          />
           <FormHelperText>Function must return true or false</FormHelperText>
           <FormErrorMessage>Condition is required</FormErrorMessage>
         </FormControl>

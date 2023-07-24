@@ -1,5 +1,5 @@
-import React, { FC, VoidFunctionComponent } from 'react';
-import { Button, Card, Center, GridItem, Heading, HStack, IconButton, Spacer, Text } from '@chakra-ui/react';
+import React, { VoidFunctionComponent } from 'react';
+import { Button, Card, Heading, HStack, IconButton, Spacer, Text } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { EventHandlerQuery } from '../../__generated__/graphql';
 
@@ -7,57 +7,44 @@ type StartWorkflowActionProps = {
   startWorkflow: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['startWorkflow'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
+  onEventHandlerEditClick: () => void;
 };
 
 type CompleteTaskActionProps = {
   completeTask: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['completeTask'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
+  onEventHandlerEditClick: () => void;
 };
 
 type FailTaskActionProps = {
   failTask: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['failTask'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
-};
-
-const UndefinedAction: FC<{ onUndefinedActionClick: () => void }> = ({ children, onUndefinedActionClick }) => {
-  return (
-    <GridItem
-      as={Center}
-      border="1px"
-      borderStyle="dashed"
-      borderColor="gray.300"
-      width="100%"
-      height="100%"
-      cursor="pointer"
-      borderRadius="md"
-      _hover={{
-        borderColor: 'gray.500',
-        bgColor: 'gray.100',
-        transition: '0.2s ease-in-out',
-      }}
-      onClick={onUndefinedActionClick}
-      title="Click to add action"
-    >
-      {children}
-    </GridItem>
-  );
+  onEventHandlerEditClick: () => void;
 };
 
 const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
   startWorkflow,
   onShowJsonModalClick,
   onDeleteClick,
+  onEventHandlerEditClick,
 }) => {
   return (
-    <GridItem as={Card} borderRadius="md" p={10}>
+    <Card p={10} mb={5}>
       <HStack alignItems="stretch">
         <Heading size="md" mb={5}>
           Start workflow
         </Heading>
 
         <Spacer />
+
+        <IconButton
+          aria-label="Edit action"
+          icon={<FeatherIcon icon="edit" size={15} />}
+          size="xs"
+          onClick={onEventHandlerEditClick}
+        />
 
         <IconButton
           aria-label="delete event handler action start workflow"
@@ -98,7 +85,7 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({
           Show me task to domain
         </Button>
       </Text>
-    </GridItem>
+    </Card>
   );
 };
 
@@ -106,15 +93,23 @@ const CompleteTaskAction: VoidFunctionComponent<CompleteTaskActionProps> = ({
   completeTask,
   onShowJsonModalClick,
   onDeleteClick,
+  onEventHandlerEditClick,
 }) => {
   return (
-    <GridItem as={Card} borderRadius="md" p={10}>
+    <Card p={10} mb={5}>
       <HStack alignItems="stretch">
         <Heading size="md" mb={5}>
           Complete task
         </Heading>
 
         <Spacer />
+
+        <IconButton
+          aria-label="Edit action"
+          icon={<FeatherIcon icon="edit" size={15} />}
+          size="xs"
+          onClick={onEventHandlerEditClick}
+        />
 
         <IconButton
           aria-label="delete event handler action complete task"
@@ -149,7 +144,7 @@ const CompleteTaskAction: VoidFunctionComponent<CompleteTaskActionProps> = ({
           {completeTask?.taskRefName ?? '-'}
         </Text>
       </Text>
-    </GridItem>
+    </Card>
   );
 };
 
@@ -157,15 +152,23 @@ const FailTaskAction: VoidFunctionComponent<FailTaskActionProps> = ({
   failTask,
   onShowJsonModalClick,
   onDeleteClick,
+  onEventHandlerEditClick,
 }) => {
   return (
-    <GridItem as={Card} borderRadius="md" p={10}>
+    <Card p={10} mb={5}>
       <HStack alignItems="stretch">
         <Heading size="md" mb={5}>
           Fail task
         </Heading>
 
         <Spacer />
+
+        <IconButton
+          aria-label="Edit action"
+          icon={<FeatherIcon icon="edit" size={15} />}
+          size="xs"
+          onClick={onEventHandlerEditClick}
+        />
 
         <IconButton
           aria-label="delete event handler action fail task"
@@ -200,8 +203,8 @@ const FailTaskAction: VoidFunctionComponent<FailTaskActionProps> = ({
           Show me output
         </Button>
       </Text>
-    </GridItem>
+    </Card>
   );
 };
 
-export { UndefinedAction, StartWorkflowAction, CompleteTaskAction, FailTaskAction };
+export { StartWorkflowAction, CompleteTaskAction, FailTaskAction };
