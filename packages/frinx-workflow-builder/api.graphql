@@ -248,6 +248,7 @@ type Device implements Node {
   model: String
   mountParameters: String
   name: String!
+  port: Int
   serviceState: DeviceServiceState!
   source: DeviceSource!
   updatedAt: String!
@@ -334,6 +335,7 @@ input ExecuteWorkflowByName {
 }
 
 type ExecutedWorkflow implements Node {
+  correlationId: String
   createdAt: String
   createdBy: String
   endTime: String
@@ -353,7 +355,7 @@ type ExecutedWorkflow implements Node {
   variables: String
   version: Int
   workflowDefinition: Workflow
-  workflowId: String
+  workflowId: String!
   workflowName: String
   workflowVersion: Int
 }
@@ -396,20 +398,27 @@ enum ExecutedWorkflowStatus {
 }
 
 type ExecutedWorkflowTask implements Node {
+  callbackAfterSeconds: Int
   endTime: String
   executed: Boolean
+  externalInputPayloadStoragePath: String
+  externalOutputPayloadStoragePath: String
   id: ID!
+  inputData: String
+  outputData: String
+  pollCount: Int
   reasonForIncompletion: String
+  referenceTaskName: String
   retried: Boolean
   retryCount: Int
   scheduledTime: String
+  seq: Int
   startTime: String
   status: ExecutedWorkflowTaskStatus
   subWorkflowId: String
   taskDefName: String
   taskDefinition: String
   taskId: String
-  taskReferenceName: String
   taskType: String
   updateTime: String
   version: Int
@@ -433,6 +442,10 @@ input FilterDevicesInput {
   labels: [String!]
 }
 
+input FilterPoolsInput {
+  poolName: String
+}
+
 input FilterTopologyInput {
   labels: [String!]
 }
@@ -440,6 +453,11 @@ input FilterTopologyInput {
 input FilterWorkflowsInput {
   keyword: String
   labels: [String!]
+}
+
+input FreeResourceInput {
+  poolId: String!
+  resource: Record!
 }
 
 type GraphEdge {
@@ -567,6 +585,7 @@ type Mutation {
   editWorkflowSchedule(id: String!, input: EditWorkflowScheduleInput!): Schedule
   executeNewWorkflow(input: StartWorkflowRequestInput!): String
   executeWorkflowByName(input: ExecuteWorkflowByName!): String
+  freeResource(input: FreeResourceInput!): String
   importCSV(input: CSVImportInput!): CSVImport
   installDevice(id: String!): InstallDevicePayload!
   pauseWorkflow(id: String!): IsOkResponse
@@ -638,6 +657,32 @@ input PaginationArgs {
   start: Int!
 }
 
+type Pool implements Node {
+  id: ID!
+  name: String!
+  poolType: PoolType!
+  resourceType: ResourceType!
+  tags: [Tag!]!
+  version: Int
+}
+
+type PoolConnection {
+  edges: [PoolEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PoolEdge {
+  cursor: String!
+  node: Pool!
+}
+
+enum PoolType {
+  allocating
+  set
+  singleton
+}
+
 type Query {
   blueprints(after: String, before: String, first: Int, last: Int): BlueprintConnection!
   calculatedDiff(deviceId: String!, transactionId: String!): CalculatedDiffPayload!
@@ -656,6 +701,14 @@ type Query {
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   netTopology: NetTopology
   node(id: ID!, version: Int): Node
+  pools(
+    after: String
+    before: String
+    filter: FilterPoolsInput
+    first: Int
+    last: Int
+    resourceTypeId: String
+  ): PoolConnection!
   schedules(after: String, before: String, filter: ScheduleFilterInput, first: Int, last: Int): ScheduleConnection!
   taskDefinitions: [TaskDefinition!]!
   topology(filter: FilterTopologyInput): Topology
@@ -664,11 +717,16 @@ type Query {
   topologyVersions: [String!]
   transactions: [Transaction!]!
   uniconfigShellSession: String
-  workflowInstanceDetail(id: String!, shouldIncludeTasks: Boolean): WorkflowInstanceDetail
+  workflowInstanceDetail(shouldIncludeTasks: Boolean, workflowId: String!): WorkflowInstanceDetail
   workflowLabels: [String!]!
   workflows(after: String, before: String, filter: FilterWorkflowsInput, first: Int, last: Int): WorkflowConnection!
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
 }
+
+"""
+Graphql custom scalar record type
+"""
+scalar Record
 
 input RemoveWorkflowInput {
   """
@@ -679,6 +737,15 @@ input RemoveWorkflowInput {
 
 type ResetConfigPayload {
   dataStore: DataStore!
+}
+
+type ResourceType {
+  id: ID!
+  name: String!
+}
+
+input ResourceTypeInput {
+  resourceTypeId: String
 }
 
 input RestartWorkflowInput {
@@ -713,6 +780,7 @@ type Schedule implements Node {
   parallelRuns: Boolean!
   performFromDate: String!
   performTillDate: String!
+  status: ScheduleStatus!
   version: Int
   workflowContext: String!
   workflowName: String!
@@ -733,6 +801,16 @@ type ScheduleEdge {
 input ScheduleFilterInput {
   workflowName: String!
   workflowVersion: String!
+}
+
+enum ScheduleStatus {
+  COMPLETED
+  FAILED
+  PAUSED
+  RUNNING
+  TERMINATED
+  TIMED_OUT
+  UNKNOWN
 }
 
 type Snapshot {
@@ -757,16 +835,22 @@ input StartWorkflowRequestInput {
 
 type SubWorkflow {
   executedWorkflowDetail: ExecutedWorkflow!
-  taskReferenceName: String!
+  referenceTaskName: String!
   workflowDetail: Workflow!
 }
 
 type Subscription {
+  controlExecutedWorkflow(id: String!): ExecutedWorkflow
   uniconfigShell(input: String, sessionId: String!, trigger: Int): String
 }
 
 type SyncFromNetworkPayload {
   dataStore: DataStore
+}
+
+type Tag {
+  id: ID!
+  tag: String!
 }
 
 type TaskDefinition {

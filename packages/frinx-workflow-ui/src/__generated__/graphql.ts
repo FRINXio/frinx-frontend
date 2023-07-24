@@ -2097,3 +2097,28 @@ export type UpdateWorkflowMutationVariables = Exact<{
 
 
 export type UpdateWorkflowMutation = { __typename?: 'Mutation', updateWorkflow: { __typename?: 'UpdateWorkflowPayload', workflow: { __typename?: 'Workflow', id: string } } };
+
+export type TaskDefinitionsQueryVariables = Exact<{
+  filter?: InputMaybe<FilterTaskDefinitionsInput>;
+  before?: InputMaybe<Scalars['String']>;
+  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type TaskDefinitionsQuery = { __typename?: 'Query', taskDefinitions: { __typename?: 'TaskDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', id: string, name: string, timeoutPolicy: TaskTimeoutPolicy | null, timeoutSeconds: number, responseTimeoutSeconds: number | null, retryCount: number | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, ownerEmail: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
+export type DeleteTaskMutationVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type DeleteTaskMutation = { __typename?: 'Mutation', deleteTask: { __typename?: 'IsOkResponse', isOk: boolean } | null };
+
+export type CreateTaskDefinitionMutationVariables = Exact<{
+  input: CreateTaskDefinitionInput;
+}>;
+
+
+export type CreateTaskDefinitionMutation = { __typename?: 'Mutation', createTaskDefinition: { __typename?: 'TaskDefinition', id: string, name: string, timeoutSeconds: number, retryCount: number | null, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, responseTimeoutSeconds: number | null } | null };
