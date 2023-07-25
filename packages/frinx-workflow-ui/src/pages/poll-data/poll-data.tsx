@@ -73,16 +73,29 @@ const POLL_DATA_QUERY = gql`
   }
 `;
 
+const getISODateString = (dateString: string | undefined): string | undefined => {
+  if (dateString === undefined) {
+    return undefined;
+  }
+  const dateObj = new Date(dateString);
+  if (Number.isNaN(dateObj.getTime())) {
+    return undefined;
+  }
+  return dateObj.toISOString();
+}
+
+const initialValues = {
+  queueName: '',
+  workerId: '',
+  domain: '',
+  beforeDate: undefined,
+  afterDate: undefined,
+};
+
 const PollDataPage = () => {
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'lastPollTime', direction: 'asc' });
-  const [filter, setFilter] = useState<Filter>({});
-  const [inputs, setInputs] = useState({
-    queueName: '',
-    workerId: '',
-    domain: '',
-    beforeDate: '' as string | undefined,
-    afterDate: '' as string | undefined,
-  });
+  const [filter, setFilter] = useState<Filter | null>(initialValues);
+  const [inputs, setInputs] = useState<Filter>(initialValues);
 
   const { isOpen, onToggle } = useDisclosure();
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
@@ -102,17 +115,6 @@ const PollDataPage = () => {
     })
     .filter(omitNullValue);
 
-  function getISODateString(dateString: string | undefined): string | undefined {
-    if (dateString === undefined) {
-      return undefined;
-    }
-    const dateObj = new Date(dateString);
-    if (Number.isNaN(dateObj.getTime())) {
-      return undefined;
-    }
-    return dateObj.toISOString();
-  }
-
   const filterPollData = () => {
     setFilter({
       ...inputs,
@@ -122,14 +124,8 @@ const PollDataPage = () => {
   };
 
   const resetFilter = () => {
-    setFilter({});
-    setInputs({
-      queueName: '',
-      workerId: '',
-      domain: '',
-      beforeDate: undefined,
-      afterDate: undefined,
-    });
+    setFilter(initialValues);
+    setInputs(initialValues);
   };
 
   const sort = (sortKey: 'queueName' | 'workerId' | 'lastPollTime') => {
