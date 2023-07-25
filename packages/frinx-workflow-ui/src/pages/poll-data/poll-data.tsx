@@ -1,16 +1,6 @@
 import {
   Box,
-  Button,
   Container,
-  Divider,
-  Flex,
-  FormControl,
-  FormLabel,
-  HStack,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Table,
   Tbody,
   Td,
@@ -18,14 +8,13 @@ import {
   Th,
   Thead,
   Tr,
-  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import { omitNullValue, Pagination } from '@frinx/shared';
-import FeatherIcon from 'feather-icons-react';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { gql, useQuery } from 'urql';
+import PollDataSearchbox from '../../components/poll-data-searchbox';
 import { usePagination } from '../../hooks/use-graphql-pagination';
 import { PollDataQuery, PollDataQueryVariables } from '../../__generated__/graphql';
 
@@ -82,7 +71,7 @@ const getISODateString = (dateString: string | undefined): string | undefined =>
     return undefined;
   }
   return dateObj.toISOString();
-}
+};
 
 const initialValues = {
   queueName: '',
@@ -136,87 +125,14 @@ const PollDataPage = () => {
 
   return (
     <Container maxWidth={1200} mx="auto">
-      <Flex justify="space-between" mb={8}>
-        <Flex>
-          <FormControl width={250} ml={2}>
-            <FormLabel>Search by queueName</FormLabel>
-            <InputGroup>
-              <InputLeftElement>
-                <Icon size={20} as={FeatherIcon} icon="search" color="grey" />
-              </InputLeftElement>
-              <Input
-                value={inputs.queueName}
-                placeholder="Search by name"
-                onChange={(e) => setInputs((prev) => ({ ...prev, queueName: e.target.value }))}
-                background="white"
-              />
-            </InputGroup>
-          </FormControl>
-          <FormControl width={250} ml={2}>
-            <FormLabel>Poll time - before</FormLabel>
-            <Input
-              background="white"
-              name="from"
-              value={inputs.beforeDate || ''}
-              onChange={(e) => setInputs((prev) => ({ ...prev, beforeDate: e.target.value || undefined }))}
-              type="datetime-local"
-            />
-          </FormControl>
-
-          <FormControl ml={2} width={250}>
-            <FormLabel>Poll time - after</FormLabel>
-            <Input
-              background="white"
-              name="to"
-              value={inputs.afterDate || ''}
-              onChange={(e) => setInputs((prev) => ({ ...prev, afterDate: e.target.value || undefined }))}
-              type="datetime-local"
-            />
-          </FormControl>
-        </Flex>
-        <Flex align="flex-end">
-          <Button data-cy="filter-poll-data" onClick={filterPollData} colorScheme="blue">
-            Search
-          </Button>
-          <Button ml={2} data-cy="filter-poll-data" onClick={resetFilter} colorScheme="red" variant="outline">
-            Reset
-          </Button>
-        </Flex>
-      </Flex>
-      <HStack my={3}>
-        <Divider />
-        <HStack cursor="pointer" textColor="gray.500" onClick={onToggle}>
-          <Text data-cy="device-state-advanced-options" width="max-content">
-            Advanced options
-          </Text>
-          {isOpen ? <FeatherIcon icon="chevron-up" size={20} /> : <FeatherIcon icon="chevron-down" size={20} />}
-        </HStack>
-        <Divider />
-      </HStack>
-      {isOpen && (
-        <Flex mb={8}>
-          <FormControl width={250} ml={2}>
-            <FormLabel>Search by domain</FormLabel>
-
-            <Input
-              value={inputs.domain}
-              placeholder="Search by domain"
-              onChange={(e) => setInputs((prev) => ({ ...prev, domain: e.target.value }))}
-              background="white"
-            />
-          </FormControl>
-          <FormControl width={250} ml={2}>
-            <FormLabel>Last polled by - workerId</FormLabel>
-
-            <Input
-              value={inputs.workerId}
-              placeholder="Search by workerId"
-              onChange={(e) => setInputs((prev) => ({ ...prev, workerId: e.target.value }))}
-              background="white"
-            />
-          </FormControl>
-        </Flex>
-      )}
+      <PollDataSearchbox
+        inputs={inputs}
+        setInputs={setInputs}
+        filterPollData={filterPollData}
+        resetFilter={resetFilter}
+        onToggle={onToggle}
+        isOpen={isOpen}
+      />
       <Table background="white">
         <Thead>
           <Tr>
