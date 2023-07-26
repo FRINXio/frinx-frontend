@@ -9,11 +9,6 @@ import {
   CreateAllocationStrategyInput,
   CreateResourceTypeInput,
 } from '../../__generated__/graphql';
-// import 'ace-builds/webpack-resolver';
-// import 'ace-builds/src-noconflict/mode-javascript';
-// import 'ace-builds/src-noconflict/mode-python';
-// import 'ace-builds/src-noconflict/theme-tomorrow';
-// import 'ace-builds/src-noconflict/ext-language_tools';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
 function getDefaultInvokeScript(lang: 'js' | 'py'): string {
