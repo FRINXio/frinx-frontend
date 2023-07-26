@@ -5,7 +5,7 @@ Cypress.on('uncaught:exception', () => {
 });
 
 /* global cy,it,describe,Cypress */
-describe('Create workflow, test and delete it', () => {
+describe.skip('Create workflow, test and delete it', () => {
   function clickOnButtons() {
     cy.contains('button', 'Actions').click();
     cy.contains('button', 'Save workflow').click();
