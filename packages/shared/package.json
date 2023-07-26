@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "webpack serve --mode development",
     "build:webpack": "NODE_ENV=production webpack --mode production",
-    "build": "run-s build:webpack generate:typings",
+    "build": "run-s build:webpack typegen",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit",
@@ -46,6 +46,7 @@
     "vitest": "0.29.2"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.5.1",
     "chakra-ui-autocomplete": "^1.4.5",
     "date-fns": "^2.29.3",
     "date-fns-tz": "2.0.0",
@@ -53,7 +54,7 @@
     "html-webpack-plugin": "^5.5.0",
     "lodash": "^4.17.21",
     "minisearch": "^6.0.0",
-    "react-ace": "10.1.0",
+    "monaco-editor": "^0.40.0",
     "uuid": "^9.0.0"
   },
   "peerDependencies": {

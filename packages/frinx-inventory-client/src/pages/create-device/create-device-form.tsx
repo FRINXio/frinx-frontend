@@ -379,17 +379,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <Editor
             height="450px"
             width="100%"
-            mode="json"
-            theme="tomorrow"
-            editorProps={{ $blockScrolling: true }}
-            fontSize={16}
-            setOptions={{
-              enableBasicAutocompletion: true,
-              enableLiveAutocompletion: true,
-              enableSnippets: true,
-              showLineNumbers: true,
-              tabSize: 2,
-            }}
+            language="json"
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}

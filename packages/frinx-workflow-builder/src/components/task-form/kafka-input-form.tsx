@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import { FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
-import * as yup from 'yup';
+import { FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import { Editor, ExtendedTask, KafkaPublishInputParams, SerializerEnum } from '@frinx/shared/src';
+import { FormikErrors } from 'formik';
+import React, { FC } from 'react';
+import * as yup from 'yup';
 
 export const KafkaPublishInputParamsSchema = yup.object({
   inputParameters: yup.object({
@@ -31,7 +31,6 @@ type Props = {
 const KafkaPublishInputsForm: FC<Props> = ({ params, errors, onChange }) => {
   const { topic, key, value, keySerializer, requestTimeoutMs, maxBlockMs, bootStrapServers, headers } =
     params.kafka_request;
-  const theme = useTheme();
 
   return (
     <>
@@ -193,7 +192,6 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, errors, onChange }) => {
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
         <Editor
-          name="headers"
           value={JSON.stringify(headers, null, 2)}
           onChange={(v) => {
             onChange({
@@ -201,15 +199,11 @@ const KafkaPublishInputsForm: FC<Props> = ({ params, errors, onChange }) => {
               // eslint-disable-next-line @typescript-eslint/naming-convention
               kafka_request: {
                 ...params.kafka_request,
-                headers: JSON.parse(v),
+                headers: JSON.parse(v ?? ''),
               },
             });
           }}
-          enableBasicAutocompletion
           height="100px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
         />
       </FormControl>
     </>

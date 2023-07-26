@@ -33,27 +33,22 @@ const parseWorkflow = (workflow: ClientWorkflow<ExtendedTask>) => {
 
 const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onChangeNotify }) => {
   const [editedWorkflow, setEditedWorkflow] = useState(parseWorkflow(workflow));
-  const [isJsonValid, setIsJsonValid] = useState(true);
 
   const handleSave = () => {
     try {
       const parsedWorkflow = JSON.parse(editedWorkflow);
-      setIsJsonValid(true);
+
       onSave(parsedWorkflow);
       onClose();
-    } catch (error) {
-      setIsJsonValid(false);
+    } catch {
+      console.error('wrong json');
     }
   };
 
-  const handleChange = (value: string) => {
-    try {
-      setEditedWorkflow(value);
-      setIsJsonValid(true);
-      onChangeNotify();
-    } catch (error) {
-      setIsJsonValid(false);
-    }
+  const handleChange = (value: string | undefined) => {
+    // console.log(value);
+    setEditedWorkflow(value ?? '');
+    onChangeNotify();
   };
 
   return (
@@ -63,8 +58,7 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
         <ModalHeader>Workflow editor</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Editor mode="json" value={editedWorkflow} onChange={handleChange} />
-          {!isJsonValid && <p>Bad JSON</p>}
+          <Editor language="json" value={editedWorkflow} onChange={handleChange} />
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose} marginRight={2}>

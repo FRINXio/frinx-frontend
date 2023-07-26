@@ -205,17 +205,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           data-cy="device-edit-editor"
           height="450px"
           width="100%"
-          mode="json"
-          theme="tomorrow"
-          editorProps={{ $blockScrolling: true }}
-          fontSize={16}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
-          }}
+          language="json"
           onChange={(value) => {
             setFieldValue('mountParameters', value);
           }}
