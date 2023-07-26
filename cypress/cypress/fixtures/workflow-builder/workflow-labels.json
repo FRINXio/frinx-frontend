@@ -1,0 +1,32 @@
+{
+  "data": {
+    "workflowLabels": [
+      "123",
+      "BASICS",
+      "CLI",
+      "DEMO",
+      "FAVOURITE",
+      "HTTP",
+      "INFLUXDB",
+      "INTERFACES",
+      "INVENTORY",
+      "L2VPN",
+      "LLDP",
+      "MAIN",
+      "MULTIZONE",
+      "NETCONF",
+      "OPENCONFIG",
+      "PLATFORM",
+      "RESOURCE_MANAGER",
+      "SLACK",
+      "TOPOLOGY_DISCOVERY",
+      "TX",
+      "UNICONFIG",
+      "UNIFIED",
+      "UTILS",
+      "randomik6",
+      "testik2"
+    ]
+  }
+}
+
