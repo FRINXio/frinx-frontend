@@ -16,7 +16,7 @@ const WorkflowDefinitionModal: FC<Props> = ({ isOpen, onClose, workflow }) => {
         <ModalHeader>Workflow definition</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Editor value={JSON.stringify(workflow, null, 2)} readOnly />
+          <Editor language="json" defaultValue={JSON.stringify(workflow, null, 2)} />
         </ModalBody>
       </ModalContent>
     </Modal>

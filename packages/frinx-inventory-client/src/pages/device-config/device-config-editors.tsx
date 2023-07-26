@@ -101,11 +101,10 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
           </Flex>
           <Editor
             width="100%"
-            mode="json"
+            language="json"
             value={config}
-            theme="tomorrow"
             onChange={(val) => {
-              onConfigChange(val);
+              onConfigChange(val ?? '');
             }}
           />
         </GridItem>
@@ -191,7 +190,7 @@ const DeviceConfigEditors: VoidFunctionComponent<Props> = ({
               Sync from network
             </Button>
           </Flex>
-          <Editor width="100%" mode="json" value={operational} theme="tomorrow" readOnly />
+          <Editor width="100%" language="json" defaultValue={operational} />
         </GridItem>
       </Grid>
     </Box>

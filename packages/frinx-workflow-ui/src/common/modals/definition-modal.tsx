@@ -24,7 +24,7 @@ const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, w
     <ModalContent>
       <ModalHeader>{workflow?.name}</ModalHeader>
       <ModalBody>
-        <Editor value={JSON.stringify(workflow, null, 2)} readOnly name="workflow-definition" width="100%" />
+        <Editor defaultValue={JSON.stringify(workflow, null, 2)} width="100%" />
       </ModalBody>
       <ModalFooter>
         <Button colorScheme="gray" onClick={onClose}>

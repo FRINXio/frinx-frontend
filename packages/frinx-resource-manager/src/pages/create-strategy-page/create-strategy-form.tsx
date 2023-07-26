@@ -9,11 +9,11 @@ import {
   CreateAllocationStrategyInput,
   CreateResourceTypeInput,
 } from '../../__generated__/graphql';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/mode-python';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import 'ace-builds/src-noconflict/ext-language_tools';
+// import 'ace-builds/webpack-resolver';
+// import 'ace-builds/src-noconflict/mode-javascript';
+// import 'ace-builds/src-noconflict/mode-python';
+// import 'ace-builds/src-noconflict/theme-tomorrow';
+// import 'ace-builds/src-noconflict/ext-language_tools';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
 function getDefaultInvokeScript(lang: 'js' | 'py'): string {
@@ -226,11 +226,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
         <Editor
           height="200px"
           width="100%"
-          mode={values.lang === 'js' ? 'javascript' : 'python'}
-          theme="tomorrow"
-          editorProps={{ $blockScrolling: true }}
+          language={values.lang === 'js' ? 'javascript' : 'python'}
           value={values.capacityScript}
-          fontSize={16}
           onChange={(value) => {
             setFieldValue('capacityScript', value);
             if (INITIAL_VALUES.capacityScript === value) {
@@ -238,13 +235,6 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
             } else {
               setFieldTouched('capacityScript', true);
             }
-          }}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
           }}
         />
         <FormErrorMessage>{errors.capacityScript}</FormErrorMessage>
@@ -255,11 +245,8 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
         <Editor
           height="200px"
           width="100%"
-          mode={values.lang === 'js' ? 'javascript' : 'python'}
-          theme="tomorrow"
-          editorProps={{ $blockScrolling: true }}
+          language={values.lang === 'js' ? 'javascript' : 'python'}
           value={values.invokeScript}
-          fontSize={16}
           onChange={(value) => {
             setFieldValue('invokeScript', value);
             if (INITIAL_VALUES.invokeScript === value) {
@@ -267,13 +254,6 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
             } else {
               setFieldTouched('invokeScript', true);
             }
-          }}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
           }}
         />
         <FormErrorMessage>{errors.invokeScript}</FormErrorMessage>
