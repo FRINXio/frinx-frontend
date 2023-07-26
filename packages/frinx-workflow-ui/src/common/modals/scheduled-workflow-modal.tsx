@@ -103,11 +103,10 @@ const SchedulingModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => 
             <FormControl>
               <FormLabel>Workflow Context</FormLabel>
               <Editor
-                name="workflowContext"
-                mode="json"
+                language="json"
                 onChange={(e) => {
                   try {
-                    const parsedJSON = JSON.parse(e);
+                    const parsedJSON = JSON.parse(e ?? '');
                     setFieldValue('workflowContext', parsedJSON);
                   } catch (error) {
                     // eslint-disable-next-line no-console
