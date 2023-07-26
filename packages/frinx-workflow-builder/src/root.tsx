@@ -82,16 +82,20 @@ const WORKFLOW_LIST_QUERY = gql`
       totalCount
     }
     taskDefinitions {
-      name
-      description
-      createdAt
-      retryCount
-      timeoutSeconds
-      timeoutPolicy
-      retryLogic
-      retryDelaySeconds
-      responseTimeoutSeconds
-      ownerEmail
+      edges {
+        node {
+          name
+          description
+          createdAt
+          retryCount
+          timeoutSeconds
+          timeoutPolicy
+          retryLogic
+          retryDelaySeconds
+          responseTimeoutSeconds
+          ownerEmail
+        }
+      }
     }
   }
   ${WorkflowFragment}
