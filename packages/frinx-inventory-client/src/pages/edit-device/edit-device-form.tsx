@@ -66,6 +66,10 @@ const EditDeviceFormSchema = yup.object().shape({
   }),
 });
 
+const isMountParamsEmpty = (value: string): boolean => {
+  return value === '' || value === '{}';
+};
+
 const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel }): JSX.Element => {
   const INITIAL_VALUES = useMemo(() => {
     return {
@@ -92,7 +96,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         const updatedData = {
           ...data,
           labelIds: selectedLabels.map((label) => label.value),
-          mountParameters: JSON.parse(data.mountParameters),
+          mountParameters: isMountParamsEmpty(data.mountParameters) ? null : JSON.parse(data.mountParameters),
         };
         onUpdate(updatedData);
         setSubmitting(false);
