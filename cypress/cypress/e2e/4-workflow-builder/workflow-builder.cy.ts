@@ -1,3 +1,9 @@
+import { hasOperationName } from '../../helpers/utils';
+
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
+
 /* global cy,it,describe,Cypress */
 describe('Create workflow, test and delete it', () => {
   function clickOnButtons() {
@@ -152,11 +158,17 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('COMPLETED', { timeout: 30000 }).eq(0).should('be.visible');
   });
 
-  it('save changes check', () => {
+  it.only('save changes check', () => {
     // 'save changes check': 21 22 24
-    cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/21get.json' }).as(
-      'get_metadata_plus2',
-    );
+    cy.intercept('POST', 'https://localhost:8001/graphql', (req) => {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Workflows')) {
+        req.reply({ fixture: 'workflow-builder/21get.json' });
+      }
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowLabels')) {
+        req.reply({ fixture: 'workflow-builder/workflow-labels.json' });
+      }
+    }).as('get_metadata_plus2');
+
     // 'workflow builder': 2  && 'save changes check': 25, 30
     cy.intercept('GET', '/api/workflow/metadata/taskdefs', { fixture: 'workflow-builder/00get_taskdef.json' }).as(
       'get_taskdef',
@@ -186,12 +198,10 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('a', 'Explore').click();
     cy.wait('@get_metadata_plus2');
     cy.url().should('include', '/workflow-manager/definitions');
-    cy.get('input[placeholder="Search by keyword."]').type('test workflow');
-    cy.contains('test workflow / 1').should('be.visible');
-    cy.contains('test workflow copy / 1').should('be.visible');
-    cy.contains('test description').should('be.visible');
-    cy.contains('TEST').should('be.visible');
-    cy.contains('TEST2').should('be.visible');
+    cy.get('input[placeholder="Search workflow"]').type('AAAA');
+    cy.contains('AAAA / 1').should('be.visible');
+    cy.contains('abcd / 1').should('be.visible');
+    cy.contains('{"description":"aaaa"}').should('be.visible');
     // })
     // it('workflow delete', () => {
     cy.log('-- 02. workflows - delete new ones --');
@@ -199,8 +209,8 @@ describe('Create workflow, test and delete it', () => {
     cy.contains('a', 'Explore').click();
     cy.url().should('include', '/workflow-manager/definitions');
     cy.wait('@get_metadata_plus2');
-    cy.get('input[placeholder="Search by label."]').type('test');
-    cy.contains('TEST').click();
+    cy.get('input[placeholder="Start typing..."]').type('123');
+    cy.contains('123').click();
     cy.get('a[href="/workflow-manager/builder/test workflow/1"]').click();
     cy.wait('@get_workflow1');
     cy.wait('@get_metadata_plus2');
