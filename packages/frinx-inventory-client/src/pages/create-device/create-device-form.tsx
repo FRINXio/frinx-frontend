@@ -129,6 +129,10 @@ const INITIAL_VALUES: FormValues = {
   port: 0,
 };
 
+const isMountParamsEmpty = (value: string): boolean => {
+  return value === '' || value === '{}';
+};
+
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   deviceNameError,
   onFormSubmit,
@@ -150,7 +154,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         ...data,
         labelIds: selectedLabels.map((label) => label.value),
         port: Number(data.port),
-        mountParameters: JSON.parse(data.mountParameters),
+        mountParameters: isMountParamsEmpty(data.mountParameters) ? null : JSON.parse(data.mountParameters),
       };
       const { blueprintParams, ...rest } = updatedData;
       onFormSubmit(rest);
