@@ -163,14 +163,6 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
       });
   };
 
-  if (fetching) {
-    return <Progress isIndeterminate size="xs" mt={-10} />;
-  }
-
-  if (data == null || data.eventHandlers == null || error != null) {
-    return <Text>We had a problem to load event handlers for you. Try again later please.</Text>;
-  }
-
   return (
     <Container mx="auto" maxWidth={1200}>
       <HStack mb={5}>
@@ -185,69 +177,81 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
         </Button>
       </HStack>
 
-      <EventHandlersListSearchbox onSearchSubmit={setEventHandlersFilter} />
+      <EventHandlersListSearchbox
+        filters={eventHandlersFilter}
+        canDoSearch={!fetching}
+        onSearchSubmit={setEventHandlersFilter}
+      />
 
-      <Table background="white">
-        <Thead>
-          <Tr>
-            <Th>Is active</Th>
-            <Th>Name</Th>
-            <Th>Event</Th>
-            <Th>Evaluator type</Th>
-            <Th>Action types</Th>
-            <Th>Available actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data.eventHandlers.edges?.length === 0 && (
+      {fetching && <Progress isIndeterminate size="xs" mt={-10} />}
+
+      {(data == null || data.eventHandlers == null || error != null) && (
+        <Text>We had a problem to load event handlers for you. Try again later please.</Text>
+      )}
+
+      {!fetching && data != null && data.eventHandlers != null && error == null && (
+        <Table background="white">
+          <Thead>
             <Tr>
-              <Td>No event handlers were created yet.</Td>
+              <Th>Is active</Th>
+              <Th>Name</Th>
+              <Th>Event</Th>
+              <Th>Evaluator type</Th>
+              <Th>Action types</Th>
+              <Th>Available actions</Th>
             </Tr>
-          )}
-
-          {data.eventHandlers.edges?.length !== 0 &&
-            data.eventHandlers.edges?.map(({ node }) => (
-              <Tr key={node.id}>
-                <Td>
-                  <Switch
-                    isChecked={node.isActive ?? false}
-                    onChange={(e) =>
-                      handleOnIsActiveClick(e, {
-                        event: node.event,
-                        name: node.name,
-                      })
-                    }
-                  />
-                </Td>
-                <Td>{node.name}</Td>
-                <Td>{node.event}</Td>
-                <Td>{node.evaluatorType || 'not defined'}</Td>
-                <Td>{node.actions.map((action) => action.action).join(', ')}</Td>
-                <Td>
-                  <ButtonGroup variant="solid" size="xs">
-                    <IconButton
-                      aria-label="detail of event handler"
-                      icon={<FeatherIcon icon="settings" size={12} />}
-                      colorScheme="blue"
-                      onClick={() => onEventHandlerDetailClick(node.event, node.name)}
-                    />
-                    <IconButton
-                      aria-label="edit event handler"
-                      icon={<FeatherIcon icon="edit" size={12} />}
-                      onClick={() => onEventHandlerEditClick(node.event, node.name)}
-                    />
-                    <IconButton
-                      aria-label="delete event handler"
-                      icon={<FeatherIcon icon="trash-2" size={12} />}
-                      colorScheme="red"
-                      onClick={() => handleOnEventHandlerDelete(node.id)}
-                    />
-                  </ButtonGroup>
-                </Td>
+          </Thead>
+          <Tbody>
+            {data.eventHandlers.edges?.length === 0 && (
+              <Tr>
+                <Td>No event handlers were created yet.</Td>
               </Tr>
-            ))}
-        </Tbody>
-      </Table>
+            )}
+
+            {data.eventHandlers.edges?.length !== 0 &&
+              data.eventHandlers.edges?.map(({ node }) => (
+                <Tr key={node.id}>
+                  <Td>
+                    <Switch
+                      isChecked={node.isActive ?? false}
+                      onChange={(e) =>
+                        handleOnIsActiveClick(e, {
+                          event: node.event,
+                          name: node.name,
+                        })
+                      }
+                    />
+                  </Td>
+                  <Td>{node.name}</Td>
+                  <Td>{node.event}</Td>
+                  <Td>{node.evaluatorType || 'not defined'}</Td>
+                  <Td>{node.actions.map((action) => action.action).join(', ')}</Td>
+                  <Td>
+                    <ButtonGroup variant="solid" size="xs">
+                      <IconButton
+                        aria-label="detail of event handler"
+                        icon={<FeatherIcon icon="settings" size={12} />}
+                        colorScheme="blue"
+                        onClick={() => onEventHandlerDetailClick(node.event, node.name)}
+                      />
+                      <IconButton
+                        aria-label="edit event handler"
+                        icon={<FeatherIcon icon="edit" size={12} />}
+                        onClick={() => onEventHandlerEditClick(node.event, node.name)}
+                      />
+                      <IconButton
+                        aria-label="delete event handler"
+                        icon={<FeatherIcon icon="trash-2" size={12} />}
+                        colorScheme="red"
+                        onClick={() => handleOnEventHandlerDelete(node.id)}
+                      />
+                    </ButtonGroup>
+                  </Td>
+                </Tr>
+              ))}
+          </Tbody>
+        </Table>
+      )}
     </Container>
   );
 };

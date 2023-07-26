@@ -3,28 +3,38 @@ import { Button, ButtonGroup, Card, FormControl, FormLabel, HStack, Input, Space
 import { useFormik } from 'formik';
 
 export type SearchEventHandlerValues = {
-  event: string;
-  isActive: boolean;
-  evaluatorType: string;
-  name: string;
+  event?: string | null;
+  isActive?: boolean | null;
+  evaluatorType?: string | null;
+  name?: string | null;
 };
 
 type Props = {
+  filters?: SearchEventHandlerValues | null;
   onSearchSubmit: (values: SearchEventHandlerValues) => void;
+  canDoSearch?: boolean;
 };
 
 const INITIAL_VALUES: SearchEventHandlerValues = {
-  event: '',
-  isActive: false,
-  evaluatorType: '',
-  name: '',
+  event: null,
+  isActive: null,
+  evaluatorType: null,
+  name: null,
 };
 
-const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ onSearchSubmit }) => {
-  const { values, handleChange, handleReset, submitForm } = useFormik<SearchEventHandlerValues>({
-    initialValues: INITIAL_VALUES,
+const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onSearchSubmit, canDoSearch }) => {
+  const { values, handleChange, setFieldValue, submitForm } = useFormik<SearchEventHandlerValues>({
+    initialValues: filters || INITIAL_VALUES,
     onSubmit: onSearchSubmit,
   });
+
+  const resetForm = () => {
+    setFieldValue('event', null);
+    setFieldValue('isActive', null);
+    setFieldValue('evaluatorType', null);
+    setFieldValue('name', null);
+  };
+
   return (
     <Card p={10} mb={5}>
       <HStack spacing={4} mb={5}>
@@ -34,7 +44,7 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ onSearchSubm
             id="event"
             name="event"
             placeholder="Event on which event handler is executed"
-            value={values.event}
+            value={values.event ?? ''}
             onChange={handleChange}
           />
         </FormControl>
@@ -45,7 +55,7 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ onSearchSubm
             id="name"
             name="name"
             placeholder="Name of event handler"
-            value={values.name}
+            value={values.name ?? ''}
             onChange={handleChange}
           />
         </FormControl>
@@ -56,7 +66,7 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ onSearchSubm
             id="evaluatorType"
             name="evaluatorType"
             placeholder="Evaluator type"
-            value={values.evaluatorType}
+            value={values.evaluatorType ?? ''}
             onChange={handleChange}
           />
         </FormControl>
@@ -65,13 +75,13 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ onSearchSubm
       <HStack>
         <FormControl>
           <FormLabel htmlFor="isActive">Is active</FormLabel>
-          <Switch id="isActive" name="isActive" isChecked={values.isActive} onChange={handleChange} />
+          <Switch id="isActive" name="isActive" isChecked={values.isActive ?? false} onChange={handleChange} />
         </FormControl>
 
         <Spacer />
 
-        <ButtonGroup variant="outline">
-          <Button onClick={handleReset}>Clear</Button>
+        <ButtonGroup variant="outline" isDisabled={!canDoSearch}>
+          <Button onClick={resetForm}>Clear</Button>
 
           <Button colorScheme="blue" onClick={submitForm}>
             Search

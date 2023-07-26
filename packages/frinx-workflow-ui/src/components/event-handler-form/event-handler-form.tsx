@@ -201,10 +201,23 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
           </FormControl>
         </HStack>
 
-        <FormControl mb={5} isInvalid={errors.isActive != null}>
-          <FormLabel>Active</FormLabel>
-          <Switch isChecked={values.isActive ?? false} onChange={handleChange} name="isActive" />
-        </FormControl>
+        <HStack>
+          <FormControl isInvalid={errors.evaluatorType != null}>
+            <FormLabel>Event</FormLabel>
+            <Input
+              name="evaluatorType"
+              placeholder="default"
+              onChange={handleChange}
+              value={values.evaluatorType ?? ''}
+            />
+            <FormErrorMessage>Evaluator type has incorrect value</FormErrorMessage>
+          </FormControl>
+
+          <FormControl mb={5} isInvalid={errors.isActive != null}>
+            <FormLabel>Active</FormLabel>
+            <Switch isChecked={values.isActive ?? false} onChange={handleChange} name="isActive" />
+          </FormControl>
+        </HStack>
 
         <FormControl mb={5}>
           <HStack mb={3}>
