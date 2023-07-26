@@ -1,19 +1,19 @@
 import React, { FC } from 'react';
 import { Thead, Tr, Th, Checkbox, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { SortProperty } from '../executed-workflow-list';
+import { OrderBy, SortKey } from '../executed-workflow-list';
 
 type Props = {
-  sort: SortProperty;
+  sort: OrderBy;
   areAllWorkflowsSelected: boolean;
-  onSortPropertyClick: (sortProperty: SortProperty) => void;
+  handleOnSort: (sortProperty: SortKey) => void;
   onSelectAllWorkflows: () => void;
 };
 
 const ExecutedWorkflowTableHead: FC<Props> = ({
   onSelectAllWorkflows,
   areAllWorkflowsSelected,
-  onSortPropertyClick,
+  handleOnSort,
   sort,
 }) => (
   <Thead>
@@ -21,34 +21,34 @@ const ExecutedWorkflowTableHead: FC<Props> = ({
       <Th>
         <Checkbox onChange={onSelectAllWorkflows} isChecked={areAllWorkflowsSelected} />
       </Th>
-      <Th onClick={() => onSortPropertyClick({ key: 'workflowId', value: sort.value })} cursor="pointer">
+      <Th onClick={() => handleOnSort('workflowId')} cursor="pointer">
         Workflow ID
-        {sort.key === 'workflowId' ? (
-          <Icon as={FeatherIcon} size={40} icon={sort.value === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        {sort.sortKey === 'workflowId' ? (
+          <Icon as={FeatherIcon} size={40} icon={sort.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
         ) : null}
       </Th>
-      <Th onClick={() => onSortPropertyClick({ key: 'workflowName', value: sort.value })} cursor="pointer">
+      <Th onClick={() => handleOnSort('workflowName')} cursor="pointer">
         Workflow name
-        {sort.key === 'workflowName' ? (
-          <Icon as={FeatherIcon} size={40} icon={sort.value === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        {sort.sortKey === 'workflowName' ? (
+          <Icon as={FeatherIcon} size={40} icon={sort.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
         ) : null}
       </Th>
-      <Th onClick={() => onSortPropertyClick({ key: 'startTime', value: sort.value })} cursor="pointer">
+      <Th onClick={() => handleOnSort('startTime')} cursor="pointer">
         Start Time
-        {sort.key === 'startTime' ? (
-          <Icon as={FeatherIcon} size={40} icon={sort.value === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        {sort.sortKey === 'startTime' ? (
+          <Icon as={FeatherIcon} size={40} icon={sort.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
         ) : null}
       </Th>
-      <Th onClick={() => onSortPropertyClick({ key: 'endTime', value: sort.value })} cursor="pointer">
+      <Th onClick={() => handleOnSort('endTime')} cursor="pointer">
         End Time
-        {sort.key === 'endTime' ? (
-          <Icon as={FeatherIcon} size={40} icon={sort.value === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        {sort.sortKey === 'endTime' ? (
+          <Icon as={FeatherIcon} size={40} icon={sort.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
         ) : null}
       </Th>
-      <Th onClick={() => onSortPropertyClick({ key: 'status', value: sort.value })} cursor="pointer">
+      <Th onClick={() => handleOnSort('status')} cursor="pointer">
         Status
-        {sort.key === 'status' ? (
-          <Icon as={FeatherIcon} size={40} icon={sort.value === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+        {sort.sortKey === 'status' ? (
+          <Icon as={FeatherIcon} size={40} icon={sort.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
         ) : null}
       </Th>
     </Tr>
