@@ -41,6 +41,7 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
       onSave(parsedWorkflow);
       onClose();
     } catch {
+      // eslint-disable-next-line no-console
       console.error('wrong json');
     }
   };
