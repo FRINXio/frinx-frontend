@@ -1,0 +1,22 @@
+{
+  "data": {
+    "workflow": {
+      "id": "V29ya2Zsb3c6eyJuYW1lIjoiQUFBQSIsInZlcnNpb24iOjF9",
+      "name": "AAAA",
+      "description": "{\"description\":\"{\\\"description\\\":\\\"aaaa\\\"}\",\"labels\":[\"FAVOURITE\"]}",
+      "version": 1,
+      "createdAt": null,
+      "updatedAt": "2023-06-20T08:08:52.123Z",
+      "createdBy": null,
+      "updatedBy": null,
+      "tasks": "[{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambda_8WPz\",\"inputParameters\":{\"lambdaValue\":\"${workflow.input.test}\",\"scriptExpression\":\"return {testvalue: '${workflow.input.test}'}\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+      "hasSchedule": false,
+      "inputParameters": [],
+      "outputParameters": [],
+      "restartable": true,
+      "timeoutSeconds": 60,
+      "timeoutPolicy": "ALERT_ONLY",
+      "__typename": "Workflow"
+    }
+  }
+}

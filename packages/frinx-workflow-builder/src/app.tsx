@@ -381,6 +381,7 @@ const App: VoidFunctionComponent<Props> = ({
               <HStack>
                 <Button
                   colorScheme="blue"
+                  data-cy="save-and-execute-btn"
                   onClick={() => {
                     handleOnSaveWorkflow(workflow, true);
                   }}

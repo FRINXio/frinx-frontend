@@ -1,0 +1,17 @@
+{
+  "data": {
+    "updateWorkflow": {
+      "workflow": {
+        "createdBy": null,
+        "updatedAt": "2023-07-27T12:45:01.998Z",
+        "tasks": "[{\"id\":\"308df29e-b186-42fd-876a-6b3831fe2f7d\",\"name\":\"Netconf_read_structured_device_data\",\"label\":\"simple\",\"type\":\"SIMPLE\",\"taskReferenceName\":\"Netconf_read_structured_device_dataRefName_EIrS\",\"optional\":false,\"startDelay\":0,\"inputParameters\":{}}]",
+        "name": "test workflow",
+        "description": "{\"description\":\"test description\",\"labels\":[TEST]}",
+        "version": 1,
+        "outputParameters": [],
+        "__typename": "Workflow"
+      },
+      "__typename": "UpdateWorkflowPayload"
+    }
+  }
+}

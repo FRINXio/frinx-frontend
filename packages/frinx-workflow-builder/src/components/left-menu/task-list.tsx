@@ -76,6 +76,7 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) 
           <Box marginLeft="auto" alignSelf="center">
             <IconButton
               size="sm"
+              data-cy={`${tskDefinition.name}-add-task`}
               aria-label="Add task"
               icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {

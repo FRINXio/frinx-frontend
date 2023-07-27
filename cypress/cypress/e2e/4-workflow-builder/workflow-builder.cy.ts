@@ -1,36 +1,34 @@
 import { hasOperationName } from "../../helpers/utils";
 
-it('workflow builder', () => {
-  // 'workflow builder': 1 && 'save changes check': 32
-  cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json' }).as('get_metadata');
-  // 'workflow builder': 2  && 'save changes check': 25, 30
-  cy.intercept('GET', '/api/workflow/metadata/taskdefs', { fixture: 'workflow-builder/00get_taskdef.json' }).as(
-    'get_taskdef',
-  );
-  // 'workflow builder': 3 4 5 6 7
-  cy.intercept('PUT', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/01put.json' }).as('put_metadata');
-  // 'workflow builder': 8
-  cy.intercept('POST', '/api/workflow/workflow', { fixture: 'workflow-builder/08post.json' }).as('post_workflow');
-  // 'workflow builder': 9 RUNNING
-  cy.intercept('GET', '/api/workflow/id/83c65aef-07e5-4a2a-81b6-dac8f1c96380', {
-    fixture: 'workflow-builder/09get.json',
-  }).as('get_workflow_running');
-  // 'workflow builder': 10 COMPLETED
-  // cy.intercept('GET', '/api/workflow/id/83c65aef-07e5-4a2a-81b6-dac8f1c96380', { fixture: 'workflow-builder/10get.json', }).as('get_workflow_completed')
+it.only('workflow builder', () => {
+cy.intercept('POST', 'https://localhost:8001/graphql', (req) => {
+  if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowList')) {
+    req.reply({ fixture: 'workflow-builder/getWorkflows.json' });
+  }
+  if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowLabels')) {
+    req.reply({ fixture: 'workflow-builder/workflow-labels.json' });
+  }
+  if (req.body.hasOwnProperty('query') && hasOperationName(req, 'UpdateWorkflow')) {
+    req.reply({ fixture: 'workflow-builder/create-workflow.json' });
+  }
+
+}).as('getWorkflows');
+
   cy.log('-- 01. Construct and Actions/Save --');
   cy.visit(Cypress.env('host'));
   cy.get(':nth-child(3) > .chakra-linkbox__overlay').click();
-  cy.wait('@get_metadata');
-  cy.wait('@get_taskdef');
+  cy.wait('@getWorkflows');
   cy.get('input[name="name"]').type('test workflow');
   cy.get('textarea[name="description"]').clear().type('test description');
   cy.get('input[placeholder="Start typing..."]').type('TEST{enter}');
   cy.contains('button', 'Save changes').click();
   cy.contains('button', 'Tasks').click();
-  cy.contains('Install device by device name').parent().next().click();
-  cy.get('button[title="zoom out"]').click().click().click();
+  cy.get('[data-cy="Netconf_read_structured_device_data-add-task"]').click();
+  //cy.get('button[title="zoom out"]').click().click().click();
+  cy.get('button[aria-label="Edit workflow"]').move({ deltaX: 0, deltaY: 300 });
+cy.get('button[aria-label="Remove edge"]').click();
+
   cy.get('div[data-id="start"').next().next().move({ deltaX: -50, deltaY: -100 });
-  cy.get('button[aria-label="Remove edge"]').click();
   cy.get('div[data-id="start"').move({ deltaX: -100, deltaY: 0 });
   cy.get('div[data-id="end"').move({ deltaX: 100, deltaY: 0 });
   cy.get('div[data-nodeid="start"').click();
@@ -39,7 +37,7 @@ it('workflow builder', () => {
   cy.get('div[data-nodeid="end"').click();
   cy.contains('button', 'Actions').click();
   cy.contains('button', 'Save workflow').click();
-  cy.wait('@put_metadata');
+  cy.wait('@getWorkflows');
   // })
   // it('save as', () => {
   cy.log('-- 02. Actions/Save as --');
@@ -55,7 +53,7 @@ it('workflow builder', () => {
   cy.contains(/Workflow Saved|fully saved/g); // green notifications
   cy.contains('Workflow Saved').should('not.exist');
   cy.contains('fully saved').should('not.exist');
-  cy.wait('@put_metadata');
+  cy.wait('@getWorkflows');
   // })
   // it('show definition', () => {
   cy.log('-- 03. Actions/Show definition --');
@@ -87,10 +85,8 @@ it('workflow builder', () => {
   cy.contains('Edit workflow').click();
   cy.get('input[placeholder="Start typing..."]').type('TEST2{enter}');
   cy.contains('button', 'Save changes').click();
-  clickOnButtons();
-  cy.wait('@put_metadata');
-  cy.contains('Workflow Saved').as('greenNotif2'); // green notification
-  cy.contains('@greenNotif2').should('not.exist');
+  cy.wait('@getWorkflows');
+
   // })
   // it('workflow editor', () => {
   cy.log('-- 05. Actions/Workflow editor --');
@@ -100,7 +96,6 @@ it('workflow builder', () => {
   cy.get('.ace_content').type('{backspace}{backspace}{backspace}{backspace}{{}1}{enter}}');
   // the docs https://docs.cypress.io/api/commands/type --> {{} Types the literal { key
   cy.contains('button', 'Cancel').next().click();
-  clickOnButtons();
   cy.wait('@put_metadata');
   cy.contains('Workflow Saved').as('greenNotif2'); // green notification
   cy.contains('@greenNotif2').should('not.exist');
@@ -134,7 +129,7 @@ it('workflow builder', () => {
   cy.contains('COMPLETED', { timeout: 30000 }).eq(0).should('be.visible');
 });
 
-it.only('save changes check', () => {
+it('save changes check', () => {
   // 'save changes check': 21 22 24
   cy.intercept('POST', 'https://localhost:8001/graphql', (req) => {
     if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Workflows')) {
@@ -149,20 +144,13 @@ it.only('save changes check', () => {
     if (req.body.hasOwnProperty('query') && hasOperationName(req, 'Workflow')) {
       req.reply({ fixture: 'workflow-builder/getWorkflowDetail.json' });
     }
+    if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowList')) {
+      req.reply({ fixture: 'workflow-builder/getWorkflows.json' });
+    }
   }).as('getWorkflowDetail');
-  // 'save changes check': 27 - after del one wrkflw def less + also 29
-  // cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/27get.json', }).as('get_metadata_plus1')
-  // 'save changes check': 28
-  cy.intercept('GET', '/api/workflow/metadata/workflow/test%20workflow%20copy?version=1', {
-    fixture: 'workflow-builder/28get_workflow2.json',
-  }).as('get_workflow2');
-  // 'save changes check': 31
-  cy.intercept('DELETE', '/api/workflow/metadata/workflow/test%20workflow%20copy/1', {
-    fixture: 'workflow-builder/31del_workflow2.json',
-  }).as('del_workflow2');
-  // 'workflow builder': 1 && 'save changes check': 32
-  // cy.intercept('GET', '/api/workflow/metadata/workflow', { fixture: 'workflow-builder/00get.json', }).as('get_metadata')
+
   cy.log('-- 01. workflows - search for new ones --');
+
   cy.visit(Cypress.env('host'));
   cy.contains('a', 'Explore').click();
   cy.wait('@getWorkflows');
@@ -180,7 +168,11 @@ it.only('save changes check', () => {
   cy.wait('@getWorkflows');
   cy.get('input[placeholder="Start typing..."]').type('123');
   cy.contains('123').click();
-  cy.get('a[href="/workflow-manager/builder/V29ya2Zsb3c6eyJuYW1lIjoiQUFBQSIsInZlcnNpb24iOjF9/1"]').click();
-  cy.wait('@get_workflow1');
+  cy.get('[data-cy="edit-AAAA-1"]').click();
+  cy.wait('@getWorkflowDetail');
+  cy.contains('h2', 'AAAA');
+  cy.get('[data-cy="save-and-execute-btn"]').click();
+  cy.contains('Workflow was successfully saved')
+
   
 });
