@@ -4,15 +4,11 @@ import { Box, Button, Flex, FormLabel, Input } from '@chakra-ui/react';
 type Props = {
   text: string | null;
   onChange: (searchText: string | null) => void;
-  onSubmit: (searchText: string | null) => void;
 };
 
-const DeviceSearch: VoidFunctionComponent<Props> = ({ text, onChange, onSubmit }) => {
+const DeviceSearch: VoidFunctionComponent<Props> = ({ text, onChange }) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     onChange(event.target.value);
-  };
-  const handleSubmit = () => {
-    onSubmit(text);
   };
   return (
     <Box>
@@ -29,7 +25,7 @@ const DeviceSearch: VoidFunctionComponent<Props> = ({ text, onChange, onSubmit }
           background="white"
           placeholder="Search device"
         />
-        <Button data-cy="search-button" onClick={handleSubmit} colorScheme="blue" px="6" marginLeft="2">
+        <Button data-cy="search-button" type="submit" colorScheme="blue" px="6" marginLeft="2">
           Search
         </Button>
       </Flex>

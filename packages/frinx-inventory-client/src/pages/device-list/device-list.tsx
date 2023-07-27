@@ -536,9 +536,6 @@ const DeviceList: VoidFunctionComponent = () => {
                     <Box flex={1} marginLeft="2">
                       <DeviceSearch text={searchText || ''} onChange={setSearchText} />
                     </Box>
-                    <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
-                      Search
-                    </Button>
                   </Form>
                   <Flex width="50%" justify="flex-end">
                     <BulkActions
