@@ -50,7 +50,6 @@ const EXECUTED_WORKFLOW_QUERY = gql`
     node(id: $nodeId) {
       ... on ExecutedWorkflow {
         id
-        version
         createdBy
         updatedBy
         createdAt
@@ -91,7 +90,6 @@ const EXECUTED_WORKFLOW_QUERY = gql`
         workflowId
         tasks {
           id
-          version
           taskType
           referenceTaskName
           status

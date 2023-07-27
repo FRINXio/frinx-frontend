@@ -14,6 +14,53 @@ export type Scalars = {
   Upload: any;
 };
 
+export type ActionCompleteTask = {
+  __typename?: 'ActionCompleteTask';
+  output: Maybe<Scalars['String']>;
+  taskId: Maybe<Scalars['String']>;
+  taskRefName: Maybe<Scalars['String']>;
+  workflowId: Maybe<Scalars['String']>;
+};
+
+export type ActionCompleteTaskInput = {
+  output?: InputMaybe<Scalars['String']>;
+  taskId?: InputMaybe<Scalars['String']>;
+  taskRefName?: InputMaybe<Scalars['String']>;
+  workflowId?: InputMaybe<Scalars['String']>;
+};
+
+export type ActionFailTask = {
+  __typename?: 'ActionFailTask';
+  output: Maybe<Scalars['String']>;
+  taskId: Maybe<Scalars['String']>;
+  taskRefName: Maybe<Scalars['String']>;
+  workflowId: Maybe<Scalars['String']>;
+};
+
+export type ActionFailTaskInput = {
+  output?: InputMaybe<Scalars['String']>;
+  taskId?: InputMaybe<Scalars['String']>;
+  taskRefName?: InputMaybe<Scalars['String']>;
+  workflowId?: InputMaybe<Scalars['String']>;
+};
+
+export type ActionStartWorkflow = {
+  __typename?: 'ActionStartWorkflow';
+  correlationId: Maybe<Scalars['String']>;
+  input: Maybe<Scalars['String']>;
+  name: Maybe<Scalars['String']>;
+  taskToDomain: Maybe<Scalars['String']>;
+  version: Maybe<Scalars['Int']>;
+};
+
+export type ActionStartWorkflowInput = {
+  correlationId?: InputMaybe<Scalars['String']>;
+  input?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  taskToDomain?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<Scalars['Int']>;
+};
+
 export type AddBlueprintInput = {
   name: Scalars['String'];
   template: Scalars['String'];
@@ -102,7 +149,6 @@ export type Blueprint = Node & {
   name: Scalars['String'];
   template: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type BlueprintConnection = {
@@ -184,7 +230,6 @@ export type Country = Node & {
   code: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type CountryConnection = {
@@ -198,6 +243,17 @@ export type CountryEdge = {
   __typename?: 'CountryEdge';
   cursor: Scalars['String'];
   node: Country;
+};
+
+export type CreateEventHandlerInput = {
+  actions: Array<EventHandlerActionInput>;
+  condition?: InputMaybe<Scalars['String']>;
+  evaluatorType?: InputMaybe<Scalars['String']>;
+  /** The event is immutable and cannot be changed. */
+  event: Scalars['String'];
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  /** The name is immutable and cannot be changed. Also it must be unique. */
+  name: Scalars['String'];
 };
 
 export type CreateLabelInput = {
@@ -322,7 +378,6 @@ export type Device = Node & {
   source: DeviceSource;
   updatedAt: Scalars['String'];
   vendor: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
   zone: Zone;
 };
 
@@ -390,6 +445,53 @@ export type EditWorkflowScheduleInput = {
   workflowVersion?: InputMaybe<Scalars['String']>;
 };
 
+export type EventHandler = Node & {
+  __typename?: 'EventHandler';
+  actions: Array<EventHandlerAction>;
+  condition: Maybe<Scalars['String']>;
+  evaluatorType: Maybe<Scalars['String']>;
+  /** The event is immutable and cannot be changed. */
+  event: Scalars['String'];
+  id: Scalars['ID'];
+  isActive: Maybe<Scalars['Boolean']>;
+  /** The name is immutable and cannot be changed. Also it must be unique. */
+  name: Scalars['String'];
+};
+
+export type EventHandlerAction = {
+  __typename?: 'EventHandlerAction';
+  action: Maybe<EventHandlerActionEnum>;
+  completeTask: Maybe<ActionCompleteTask>;
+  expandInlineJSON: Maybe<Scalars['Boolean']>;
+  failTask: Maybe<ActionFailTask>;
+  startWorkflow: Maybe<ActionStartWorkflow>;
+};
+
+export type EventHandlerActionEnum =
+  | 'complete_task'
+  | 'fail_task'
+  | 'start_workflow';
+
+export type EventHandlerActionInput = {
+  action?: InputMaybe<EventHandlerActionEnum>;
+  completeTask?: InputMaybe<ActionCompleteTaskInput>;
+  expandInlineJSON?: InputMaybe<Scalars['Boolean']>;
+  failTask?: InputMaybe<ActionFailTaskInput>;
+  startWorkflow?: InputMaybe<ActionStartWorkflowInput>;
+};
+
+export type EventHandlerConnection = {
+  __typename?: 'EventHandlerConnection';
+  edges: Maybe<Array<EventHandlerEdge>>;
+  pageInfo: PageInfo;
+};
+
+export type EventHandlerEdge = {
+  __typename?: 'EventHandlerEdge';
+  cursor: Scalars['String'];
+  node: EventHandler;
+};
+
 export type ExecuteNewWorkflowInput = {
   correlationId?: InputMaybe<Scalars['String']>;
   externalInputPayloadStoragePath?: InputMaybe<Scalars['String']>;
@@ -429,7 +531,6 @@ export type ExecutedWorkflow = Node & {
   updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
   variables: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
   workflowDefinition: Maybe<Workflow>;
   workflowId: Scalars['String'];
   workflowName: Maybe<Scalars['String']>;
@@ -499,7 +600,6 @@ export type ExecutedWorkflowTask = Node & {
   taskId: Maybe<Scalars['String']>;
   taskType: Maybe<Scalars['String']>;
   updateTime: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
   workflowType: Maybe<Scalars['String']>;
 };
 
@@ -517,6 +617,20 @@ export type ExecutedWorkflowTaskStatus =
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type FilterEventHandlerInput = {
+  evaluatorType?: InputMaybe<Scalars['String']>;
+  event?: InputMaybe<Scalars['String']>;
+  isActive?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type FilterPollDataInput = {
+  afterDate?: InputMaybe<Scalars['String']>;
+  beforeDate?: InputMaybe<Scalars['String']>;
+  domain?: InputMaybe<Scalars['String']>;
+  queueName?: InputMaybe<Scalars['String']>;
+  workerId?: InputMaybe<Scalars['String']>;
 };
 
 export type FilterPoolsInput = {
@@ -614,7 +728,6 @@ export type Label = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type LabelConnection = {
@@ -637,7 +750,6 @@ export type Location = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type LocationConnection = {
@@ -668,12 +780,14 @@ export type Mutation = {
   bulkTerminateWorkflow: Maybe<BulkOperationResponse>;
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
+  createEventHandler: Maybe<EventHandler>;
   createLabel: CreateLabelPayload;
   createTaskDefinition: Maybe<TaskDefinition>;
   createTransaction: CreateTransactionPayload;
   createWorkflow: CreateWorkflowPayload;
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
+  deleteEventHandler: Maybe<IsOkResponse>;
   deleteLabel: DeleteLabelPayload;
   deleteSchedule: Maybe<IsOkResponse>;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
@@ -699,6 +813,7 @@ export type Mutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
+  updateEventHandler: Maybe<EventHandler>;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
   updateWorkflow: UpdateWorkflowPayload;
 };
@@ -773,6 +888,11 @@ export type MutationCommitConfigArgs = {
 };
 
 
+export type MutationCreateEventHandlerArgs = {
+  input: CreateEventHandlerInput;
+};
+
+
 export type MutationCreateLabelArgs = {
   input: CreateLabelInput;
 };
@@ -799,6 +919,11 @@ export type MutationDeleteBlueprintArgs = {
 
 
 export type MutationDeleteDeviceArgs = {
+  id: Scalars['String'];
+};
+
+
+export type MutationDeleteEventHandlerArgs = {
   id: Scalars['String'];
 };
 
@@ -939,6 +1064,13 @@ export type MutationUpdateDeviceArgs = {
 };
 
 
+export type MutationUpdateEventHandlerArgs = {
+  event: Scalars['String'];
+  input: UpdateEventHandlerInput;
+  name: Scalars['String'];
+};
+
+
 export type MutationUpdateGraphNodeCoordinatesArgs = {
   input: Array<GraphNodeCoordinatesInput>;
 };
@@ -979,7 +1111,6 @@ export type NetTopology = {
 
 export type Node = {
   id: Scalars['ID'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type OutputParameter = {
@@ -1006,6 +1137,33 @@ export type PaginationArgs = {
   start: Scalars['Int'];
 };
 
+export type PollData = {
+  __typename?: 'PollData';
+  domain: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  lastPollTime: Maybe<Scalars['String']>;
+  queueName: Maybe<Scalars['String']>;
+  workerId: Maybe<Scalars['String']>;
+};
+
+export type PollDataConnection = {
+  __typename?: 'PollDataConnection';
+  edges: Maybe<Array<Maybe<PollDataEdge>>>;
+  pageInfo: Maybe<PageInfo>;
+  totalCount: Maybe<Scalars['Int']>;
+};
+
+export type PollDataEdge = {
+  __typename?: 'PollDataEdge';
+  cursor: Maybe<Scalars['String']>;
+  node: Maybe<PollData>;
+};
+
+export type PollsOrderByInput = {
+  direction: SortPollsDirection;
+  sortKey: SortPollsBy;
+};
+
 export type Pool = Node & {
   __typename?: 'Pool';
   id: Scalars['ID'];
@@ -1013,7 +1171,6 @@ export type Pool = Node & {
   poolType: PoolType;
   resourceType: ResourceType;
   tags: Array<Tag>;
-  version: Maybe<Scalars['Int']>;
 };
 
 export type PoolConnection = {
@@ -1041,11 +1198,15 @@ export type Query = {
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
   devices: DeviceConnection;
+  eventHandler: Maybe<EventHandler>;
+  eventHandlers: Maybe<EventHandlerConnection>;
+  eventHandlersByEvent: Maybe<EventHandlerConnection>;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
   labels: LabelConnection;
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
   node: Maybe<Node>;
+  pollData: Maybe<PollDataConnection>;
   pools: PoolConnection;
   schedules: ScheduleConnection;
   taskDefinitions: TaskDefinitionConnection;
@@ -1100,6 +1261,31 @@ export type QueryDevicesArgs = {
 };
 
 
+export type QueryEventHandlerArgs = {
+  event: Scalars['String'];
+  name: Scalars['String'];
+};
+
+
+export type QueryEventHandlersArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<FilterEventHandlerInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryEventHandlersByEventArgs = {
+  activeOnly?: InputMaybe<Scalars['Boolean']>;
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  event: Scalars['String'];
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+};
+
+
 export type QueryExecutedWorkflowsArgs = {
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
@@ -1125,6 +1311,16 @@ export type QueryLocationsArgs = {
 export type QueryNodeArgs = {
   id: Scalars['ID'];
   version?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryPollDataArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  filter?: InputMaybe<FilterPollDataInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
+  orderBy: PollsOrderByInput;
 };
 
 
@@ -1243,7 +1439,6 @@ export type Schedule = Node & {
   performFromDate: Scalars['String'];
   performTillDate: Scalars['String'];
   status: ScheduleStatus;
-  version: Maybe<Scalars['Int']>;
   workflowContext: Scalars['String'];
   workflowName: Scalars['String'];
   workflowVersion: Scalars['String'];
@@ -1289,6 +1484,15 @@ export type SortDeviceBy =
 export type SortDirection =
   | 'ASC'
   | 'DESC';
+
+export type SortPollsBy =
+  | 'lastPollTime'
+  | 'queueName'
+  | 'workerId';
+
+export type SortPollsDirection =
+  | 'asc'
+  | 'desc';
 
 export type StartWorkflowRequestInput = {
   workflow: ExecuteNewWorkflowInput;
@@ -1354,7 +1558,6 @@ export type TaskDefinition = Node & {
   timeoutSeconds: Scalars['Int'];
   updateTime: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
-  version: Maybe<Scalars['Int']>;
 };
 
 export type TaskDefinitionConnection = {
@@ -1488,6 +1691,13 @@ export type UpdateDevicePayload = {
   device: Maybe<Device>;
 };
 
+export type UpdateEventHandlerInput = {
+  actions?: InputMaybe<Array<EventHandlerActionInput>>;
+  condition?: InputMaybe<Scalars['String']>;
+  evaluatorType?: InputMaybe<Scalars['String']>;
+  isActive?: InputMaybe<Scalars['Boolean']>;
+};
+
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']>;
@@ -1606,7 +1816,6 @@ export type Zone = Node & {
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['String'];
-  version: Maybe<Scalars['Int']>;
 };
 
 export type ZoneEdge = {
@@ -1632,7 +1841,7 @@ export type ExecutedWorkflowDetailQueryVariables = Exact<{
 }>;
 
 
-export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'ExecutedWorkflow', id: string, version: number | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: ExecutedWorkflowStatus | null, parentWorkflowId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, workflowVersion: number | null, workflowName: string | null, workflowId: string, correlationId: string | null, workflowDefinition: { __typename?: 'Workflow', id: string, version: number | null, timeoutSeconds: number, name: string, description: string | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, tasks: string | null, inputParameters: Array<string> | null, hasSchedule: boolean | null, restartable: boolean | null, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, version: number | null, taskType: string | null, referenceTaskName: string | null, status: ExecutedWorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updateTime: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Pool' } | { __typename?: 'Schedule' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'Zone' } | null };
+export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'ExecutedWorkflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: ExecutedWorkflowStatus | null, parentWorkflowId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, workflowVersion: number | null, workflowName: string | null, workflowId: string, correlationId: string | null, workflowDefinition: { __typename?: 'Workflow', id: string, version: number | null, timeoutSeconds: number, name: string, description: string | null, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, tasks: string | null, inputParameters: Array<string> | null, hasSchedule: boolean | null, restartable: boolean | null, timeoutPolicy: TimeoutPolicy | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'ExecutedWorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: ExecutedWorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updateTime: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'ExecutedWorkflowTask' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'Pool' } | { __typename?: 'Schedule' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'Zone' } | null };
 
 export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
   controlExecutedWorkflowId: Scalars['String'];
@@ -1733,6 +1942,18 @@ export type WorkflowInstanceDetailQueryVariables = Exact<{
 
 
 export type WorkflowInstanceDetailQuery = { __typename?: 'Query', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'SubWorkflow', executedWorkflowDetail: { __typename?: 'ExecutedWorkflow', id: string, endTime: string | null, startTime: string | null, reasonForIncompletion: string | null, status: ExecutedWorkflowStatus | null, workflowId: string, workflowName: string | null, workflowVersion: number | null } }> | null } | null };
+
+export type PollDataQueryVariables = Exact<{
+  filter?: InputMaybe<FilterPollDataInput>;
+  orderBy: PollsOrderByInput;
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type PollDataQuery = { __typename?: 'Query', pollData: { __typename?: 'PollDataConnection', totalCount: number | null, edges: Array<{ __typename?: 'PollDataEdge', cursor: string | null, node: { __typename?: 'PollData', id: string, queueName: string | null, workerId: string | null, domain: string | null, lastPollTime: string | null } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } | null } | null };
 
 export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
 
