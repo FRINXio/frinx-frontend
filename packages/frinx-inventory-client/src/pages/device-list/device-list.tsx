@@ -525,7 +525,7 @@ const DeviceList: VoidFunctionComponent = () => {
               <Box>
                 <Flex>
                   <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
-                    <Box flex={1}>
+                    <Box marginRight={2}>
                       <DeviceFilter
                         labels={labels}
                         selectedLabels={selectedLabels}
@@ -533,7 +533,7 @@ const DeviceList: VoidFunctionComponent = () => {
                         isCreationDisabled
                       />
                     </Box>
-                    <Box flex={1} marginLeft="2">
+                    <Box flex={1}>
                       <DeviceSearch text={searchText || ''} onChange={setSearchText} />
                     </Box>
                   </Form>

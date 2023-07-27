@@ -26,7 +26,6 @@ const DeviceFilter: VoidFunctionComponent<Props> = ({
           isCreationDisabled={isCreationDisabled || false}
           labelText="Filter by labels"
         />
-        <Spacer />
       </Flex>
     </Box>
   );
