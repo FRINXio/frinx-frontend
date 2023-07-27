@@ -86,7 +86,7 @@ const WORKFLOW_LIST_QUERY = gql`
         node {
           name
           description
-          # createdTime
+          createdBy
           retryCount
           timeoutSeconds
           timeoutPolicy

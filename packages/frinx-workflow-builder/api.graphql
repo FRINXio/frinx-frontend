@@ -578,6 +578,7 @@ input FilterEventHandlerInput {
   evaluatorType: String
   event: String
   isActive: Boolean
+  name: String
 }
 
 input FilterPollDataInput {

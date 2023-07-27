@@ -1,90 +1,146 @@
-import {
-  Container,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Table,
-  Tbody,
-  Td,
-  Tfoot,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react';
-import { callbackUtils, Queue } from '@frinx/shared/src';
-import FeatherIcon from 'feather-icons-react';
-import { orderBy } from 'lodash';
+import { Box, Container, Table, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
+import { omitNullValue, Pagination } from '@frinx/shared/src';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import Paginator from '../../components/pagination';
-import { usePagination } from '../../hooks/use-pagination-hook';
+import React, { useState } from 'react';
+import { gql, useQuery } from 'urql';
+import PollDataSearchbox from '../../components/poll-data-searchbox';
+import { usePagination } from '../../hooks/use-graphql-pagination';
+import { PollDataQuery, PollDataQueryVariables } from '../../__generated__/graphql';
 
-function filterBySearchKeyword(queue: Queue, keyword: string): boolean {
-  const query = keyword.toUpperCase();
-  const worfklowName = queue.queueName.toUpperCase();
-  const searchedKeys = Object.keys(queue);
+type Filter = {
+  queueName?: string;
+  workerId?: string;
+  domain?: string;
+  beforeDate?: string;
+  afterDate?: string;
+};
 
-  return searchedKeys.some((k) => {
-    if (k === 'lastPollTime') {
-      return moment(queue[k])
-        .format('MM/DD/YYYY, HH:mm:ss:SSS')
-        .toString()
-        .toLowerCase()
-        .includes(query.toLocaleLowerCase());
+type OrderBy = {
+  sortKey: 'queueName' | 'workerId' | 'lastPollTime';
+  direction: 'asc' | 'desc';
+};
+
+const POLL_DATA_QUERY = gql`
+  query PollData(
+    $filter: FilterPollDataInput
+    $orderBy: PollsOrderByInput!
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+  ) {
+    pollData(filter: $filter, orderBy: $orderBy, first: $first, after: $after, last: $last, before: $before) {
+      totalCount
+      edges {
+        cursor
+        node {
+          id
+          queueName
+          workerId
+          domain
+          lastPollTime
+        }
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
     }
-    return worfklowName.includes(query);
+  }
+`;
+
+const getISODateString = (dateString: string | undefined): string | undefined => {
+  if (dateString === undefined) {
+    return undefined;
+  }
+  const dateObj = new Date(dateString);
+  if (Number.isNaN(dateObj.getTime())) {
+    return undefined;
+  }
+  return dateObj.toISOString();
+};
+
+const initialValues = {
+  queueName: '',
+  workerId: '',
+  domain: '',
+  beforeDate: undefined,
+  afterDate: undefined,
+};
+
+const PollDataPage = () => {
+  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'lastPollTime', direction: 'asc' });
+  const [filter, setFilter] = useState<Filter | null>(initialValues);
+  const [inputs, setInputs] = useState<Filter>(initialValues);
+
+  const { isOpen, onToggle } = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+
+  const [{ data: pollData }] = useQuery<PollDataQuery, PollDataQueryVariables>({
+    query: POLL_DATA_QUERY,
+    variables: {
+      ...paginationArgs,
+      filter,
+      orderBy,
+    },
   });
-}
 
-const PollData = () => {
-  const [sorted, setSorted] = useState(false);
-  const [data, setData] = useState<Queue[]>([]);
-  const [keywords, setKeywords] = useState('');
-  const { currentPage, setCurrentPage, pageItems, setItemList, totalPages } = usePagination<Queue>();
+  const pollDataNodes = (pollData?.pollData?.edges ?? [])
+    .map((e) => {
+      return e?.node ?? null;
+    })
+    .filter(omitNullValue);
 
-  useEffect(() => {
-    const { getQueues } = callbackUtils.getCallbacks;
-
-    getQueues().then((queues) => {
-      setData(queues);
+  const filterPollData = () => {
+    setFilter({
+      ...inputs,
+      beforeDate: getISODateString(inputs.beforeDate),
+      afterDate: getISODateString(inputs.afterDate),
     });
-  }, []);
-
-  useEffect(() => {
-    const results = !keywords ? data : data.filter((q) => filterBySearchKeyword(q, keywords));
-
-    setItemList(results);
-  }, [keywords, data, setItemList]);
-
-  const sortArray = (key: string) => {
-    setItemList(sorted ? orderBy(data, [key], ['desc']) : orderBy(data, [key], ['asc']));
-    setSorted((prev) => !prev);
   };
 
-  const pollTable = () => {
-    return (
+  const resetFilter = () => {
+    setFilter(initialValues);
+    setInputs(initialValues);
+  };
+
+  const sort = (sortKey: 'queueName' | 'workerId' | 'lastPollTime') => {
+    return orderBy.direction === 'desc'
+      ? setOrderBy({ sortKey, direction: 'asc' })
+      : setOrderBy({ sortKey, direction: 'desc' });
+  };
+
+  return (
+    <Container maxWidth={1200} mx="auto">
+      <PollDataSearchbox
+        inputs={inputs}
+        setInputs={setInputs}
+        filterPollData={filterPollData}
+        resetFilter={resetFilter}
+        onToggle={onToggle}
+        isOpen={isOpen}
+      />
       <Table background="white">
         <Thead>
           <Tr>
-            <Th onClick={() => sortArray('queueName')}>Name (Domain)</Th>
-            <Th textAlign="center" onClick={() => sortArray('qsize')}>
-              Size
+            <Th cursor="pointer" onClick={() => sort('queueName')}>
+              Name (Domain)
             </Th>
-            <Th textAlign="center" onClick={() => sortArray('lastPollTime')}>
+            <Th cursor="pointer" textAlign="center" onClick={() => sort('lastPollTime')}>
               Last Poll Time
             </Th>
-            <Th textAlign="center" onClick={() => sortArray('workerId')}>
+            <Th cursor="pointer" textAlign="center" onClick={() => sort('workerId')}>
               Last Polled By
             </Th>
           </Tr>
         </Thead>
         <Tbody>
-          {pageItems.map((e) => {
+          {pollDataNodes.map((e) => {
             return (
-              <Tr key={e.queueName}>
+              <Tr key={e.id}>
                 <Td>{e.queueName}</Td>
-                <Td textAlign="center">{e.qsize}</Td>
                 <Td textAlign="center">
                   {e.lastPollTime ? moment(e.lastPollTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}
                 </Td>
@@ -96,30 +152,22 @@ const PollData = () => {
         <Tfoot>
           <Tr>
             <Th>
-              <Paginator currentPage={currentPage} onPaginationClick={setCurrentPage} pagesCount={totalPages} />
+              {pollData?.pollData?.pageInfo && (
+                <Box marginTop={4} paddingX={4}>
+                  <Pagination
+                    onPrevious={previousPage(pollData.pollData.pageInfo.startCursor)}
+                    onNext={nextPage(pollData.pollData.pageInfo.endCursor)}
+                    hasNextPage={pollData.pollData.pageInfo.hasNextPage}
+                    hasPreviousPage={pollData.pollData.pageInfo.hasPreviousPage}
+                  />
+                </Box>
+              )}
             </Th>
           </Tr>
         </Tfoot>
       </Table>
-    );
-  };
-
-  return (
-    <Container maxWidth={1200} mx="auto">
-      <InputGroup marginBottom={8}>
-        <InputLeftElement>
-          <Icon size={20} as={FeatherIcon} icon="search" color="grey" />
-        </InputLeftElement>
-        <Input
-          value={keywords}
-          placeholder="Search..."
-          onChange={(e) => setKeywords(e.target.value)}
-          background="white"
-        />
-      </InputGroup>
-      {pollTable()}
     </Container>
   );
 };
 
-export default PollData;
+export default PollDataPage;
