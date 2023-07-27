@@ -129,6 +129,10 @@ const INITIAL_VALUES: FormValues = {
   port: 0,
 };
 
+const isMountParamsEmpty = (value: string): boolean => {
+  return value === '' || value === '{}';
+};
+
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   deviceNameError,
   onFormSubmit,
@@ -150,7 +154,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         ...data,
         labelIds: selectedLabels.map((label) => label.value),
         port: Number(data.port),
-        mountParameters: JSON.parse(data.mountParameters),
+        mountParameters: isMountParamsEmpty(data.mountParameters) ? null : JSON.parse(data.mountParameters),
       };
       const { blueprintParams, ...rest } = updatedData;
       onFormSubmit(rest);
@@ -379,17 +383,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <Editor
             height="450px"
             width="100%"
-            mode="json"
-            theme="tomorrow"
-            editorProps={{ $blockScrolling: true }}
-            fontSize={16}
-            setOptions={{
-              enableBasicAutocompletion: true,
-              enableLiveAutocompletion: true,
-              enableSnippets: true,
-              showLineNumbers: true,
-              tabSize: 2,
-            }}
+            language="json"
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}

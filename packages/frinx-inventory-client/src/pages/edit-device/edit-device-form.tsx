@@ -66,6 +66,10 @@ const EditDeviceFormSchema = yup.object().shape({
   }),
 });
 
+const isMountParamsEmpty = (value: string): boolean => {
+  return value === '' || value === '{}';
+};
+
 const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel }): JSX.Element => {
   const INITIAL_VALUES = useMemo(() => {
     return {
@@ -92,7 +96,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         const updatedData = {
           ...data,
           labelIds: selectedLabels.map((label) => label.value),
-          mountParameters: JSON.parse(data.mountParameters),
+          mountParameters: isMountParamsEmpty(data.mountParameters) ? null : JSON.parse(data.mountParameters),
         };
         onUpdate(updatedData);
         setSubmitting(false);
@@ -205,17 +209,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           data-cy="device-edit-editor"
           height="450px"
           width="100%"
-          mode="json"
-          theme="tomorrow"
-          editorProps={{ $blockScrolling: true }}
-          fontSize={16}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
-          }}
+          language="json"
           onChange={(value) => {
             setFieldValue('mountParameters', value);
           }}

@@ -117,9 +117,9 @@ const EventListeners = () => {
     setSearchTerm(event.target.value);
   };
 
-  const parseJSON = (data: string) => {
+  const parseJSON = (data: string | undefined) => {
     try {
-      const parsedJSON = JSON.parse(data);
+      const parsedJSON = JSON.parse(data ?? '');
       setSelectedEvent(parsedJSON);
     } catch (e) {
       toast({
@@ -139,11 +139,7 @@ const EventListeners = () => {
       <ModalContent>
         <ModalHeader>Edit {selectedEvent?.name}</ModalHeader>
         <ModalBody>
-          <Editor
-            name="event_listener_editor"
-            onChange={(data) => parseJSON(data)}
-            value={JSON.stringify(selectedEvent, null, 2)}
-          />
+          <Editor onChange={(data) => parseJSON(data)} value={JSON.stringify(selectedEvent, null, 2)} />
         </ModalBody>
         <ModalFooter>
           <Button marginRight={4} colorScheme="blue" onClick={() => editEvent(null, selectedEvent)}>
