@@ -1,4 +1,5 @@
 import { Box, Container, Heading } from '@chakra-ui/react';
+import { omitNullValue } from '@frinx/shared';
 import {
   convertTaskToExtendedTask,
   jsonParse,
@@ -21,6 +22,7 @@ import { TaskActionsProvider } from './task-actions-context';
 import {
   DeleteWorkflowMutation,
   DeleteWorkflowMutationVariables,
+  TaskDefinitionsQuery,
   UpdateWorkflowMutation,
   UpdateWorkflowMutationVariables,
   WorkflowListQuery,
@@ -64,6 +66,34 @@ const WORKFLOW_DETAIL_QUERY = gql`
   ${WorkflowFragment}
 `;
 
+const TASK_DEFINITIONS_QUERY = gql`
+  query TaskDefinitions {
+    taskDefinitions {
+      edges {
+        node {
+          name
+          id
+          description
+          createTime
+          retryCount
+          timeoutSeconds
+          timeoutPolicy
+          retryLogic
+          retryDelaySeconds
+          responseTimeoutSeconds
+          ownerEmail
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+      totalCount
+    }
+  }
+`;
+
 const WORKFLOW_LIST_QUERY = gql`
   query WorkflowList {
     workflows {
@@ -80,18 +110,6 @@ const WORKFLOW_LIST_QUERY = gql`
         startCursor
       }
       totalCount
-    }
-    taskDefinitions {
-      name
-      description
-      createdAt
-      retryCount
-      timeoutSeconds
-      timeoutPolicy
-      retryLogic
-      retryDelaySeconds
-      responseTimeoutSeconds
-      ownerEmail
     }
   }
   ${WorkflowFragment}
@@ -145,6 +163,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const [{ data: workflowListData }] = useQuery<WorkflowListQuery>({
     query: WORKFLOW_LIST_QUERY,
+  });
+
+  const [{ data: taskDefinitionsData }] = useQuery<TaskDefinitionsQuery>({
+    query: TASK_DEFINITIONS_QUERY,
   });
 
   const [{ data: workflowData }] = useQuery<WorkflowQuery, WorkflowQueryVariables>({
@@ -273,6 +295,12 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     return null;
   }
 
+  const taskData = (taskDefinitionsData?.taskDefinitions.edges ?? [])
+    .map((edge) => {
+      return edge.node ?? null;
+    })
+    .filter(omitNullValue);
+
   const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
     const { node } = e;
     const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
@@ -319,9 +347,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     );
   }
 
-  const { taskDefinitions } = workflowListData;
+  // const { tasks } = workflowListData;
 
-  return workflow != null && taskDefinitions != null ? (
+  return workflow != null && taskData != null ? (
     <TaskActionsProvider>
       <ReactFlowProvider>
         <App
@@ -329,7 +357,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
           workflows={clientWorkflowList}
-          taskDefinitions={taskDefinitions}
+          taskDefinitions={taskData}
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}
