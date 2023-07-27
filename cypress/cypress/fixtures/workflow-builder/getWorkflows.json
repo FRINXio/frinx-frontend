@@ -1,0 +1,518 @@
+{
+  "data": {
+    "workflows": {
+      "edges": [
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQUFBQSIsInZlcnNpb24iOjF9",
+            "name": "AAAA",
+            "description": "{\"description\":\"{\\\"description\\\":\\\"aaaa\\\"}\",\"labels\":[\"FAVOURITE\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-20T08:08:52.123Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambda_8WPz\",\"inputParameters\":{\"lambdaValue\":\"${workflow.input.test}\",\"scriptExpression\":\"return {testvalue: '${workflow.input.test}'}\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 60,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiYWJjZCIsInZlcnNpb24iOjF9",
+            "name": "abcd",
+            "description": "{\"description\":\"\",\"labels\":[\"123\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-05-30T11:52:19.694Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambda_rYH4\",\"inputParameters\":{\"lambdaValue\":\"${workflow.input.lambdaValue}\",\"scriptExpression\":\"if ($.lambdaValue == 1) { \\n  return { testvalue: true } \\n} else { \\n  return { testvalue: false } \\n}\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQWRkX2FuZF9pbnN0YWxsX2NsaV9kZXZpY2UiLCJ2ZXJzaW9uIjoxfQ",
+            "name": "Add_and_install_cli_device",
+            "description": "{\"description\":\"Add cli device to device inventory and install\",\"labels\":[\"BASICS\",\"CLI\",\"INVENTORY\",\"MAIN\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-07-26T12:37:47.690Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"INVENTORY_add_cli_device\",\"taskReferenceName\":\"INVENTORY_add_cli_deviceRefName_svxR\",\"inputParameters\":{\"device_id\":\"${workflow.input.device_id}\",\"type\":\"${workflow.input.type}\",\"version\":\"${workflow.input.version}\",\"host\":\"${workflow.input.host}\",\"protocol\":\"${workflow.input.protocol}\",\"port\":\"${workflow.input.port}\",\"username\":\"${workflow.input.username}\",\"password\":\"${workflow.input.password}\",\"journal-size\":\"${workflow.input.journal-size}\",\"parsing-engine\":\"${workflow.input.parsing-engine}\",\"labels\":\"${workflow.input.labels}\",\"uniconfig_zone\":\"${workflow.input.uniconfig_zone}\",\"service_state\":\"${workflow.input.service_state}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"INVENTORY_install_device_by_id\",\"taskReferenceName\":\"INVENTORY_install_device_by_idRefName_Jx5d\",\"inputParameters\":{\"device_id\":\"${INVENTORY_add_cli_deviceRefName_svxR.output.response_body.id}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": true,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 60,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQWRkX2FuZF9pbnN0YWxsX25ldGNvbmZfZGV2aWNlIiwidmVyc2lvbiI6MX0",
+            "name": "Add_and_install_netconf_device",
+            "description": "{\"description\": \"Add netconf device to device inventory and install\", \"labels\": [\"BASICS\",\"NETCONF\",\"INVENTORY\",\"MAIN\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:11.728Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"INVENTORY_add_netconf_device\",\"taskReferenceName\":\"INVENTORY_add_netconf_deviceRefName_9fAr\",\"inputParameters\":{\"device_id\":\"${workflow.input.device_id}\",\"host\":\"${workflow.input.host}\",\"port\":\"${workflow.input.port}\",\"keepalive-delay\":\"${workflow.input.keepalive-delay}\",\"tcp-only\":\"${workflow.input.tcp-only}\",\"username\":\"${workflow.input.username}\",\"password\":\"${workflow.input.password}\",\"uniconfig-native\":\"${workflow.input.uniconfig-native}\",\"blacklist\":\"${workflow.input.blacklist}\",\"labels\":\"${workflow.input.labels}\",\"uniconfig_zone\":\"${workflow.input.uniconfig_zone}\",\"service_state\":\"${workflow.input.service_state}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"INVENTORY_install_device_by_id\",\"taskReferenceName\":\"INVENTORY_install_device_by_idRefName_JtUx\",\"inputParameters\":{\"device_id\":\"${INVENTORY_add_netconf_deviceRefName_9fAr..output.response_body.id}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": true,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQWRkX2NsaV9kZXZpY2VfdG9faW52ZW50b3J5IiwidmVyc2lvbiI6MX0",
+            "name": "Add_cli_device_to_inventory",
+            "description": "{\"description\": \"Add cli device to device inventory\", \"labels\": [\"BASICS\",\"CLI\",\"INVENTORY\",\"MAIN\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:06.507Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"INVENTORY_add_cli_device\",\"taskReferenceName\":\"INVENTORY_add_cli_deviceRefName_4NkM\",\"inputParameters\":{\"device_id\":\"${workflow.input.device_id}\",\"type\":\"${workflow.input.type}\",\"version\":\"${workflow.input.version}\",\"host\":\"${workflow.input.host}\",\"protocol\":\"${workflow.input.protocol}\",\"port\":\"${workflow.input.port}\",\"username\":\"${workflow.input.username}\",\"password\":\"${workflow.input.password}\",\"journal-size\":\"${workflow.input.journal-size}\",\"parsing-engine\":\"${workflow.input.parsing-engine}\",\"labels\":\"${workflow.input.labels}\",\"uniconfig_zone\":\"${workflow.input.uniconfig_zone}\",\"service_state\":\"${workflow.input.service_state}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": true,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": false,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQWRkX25ldGNvbmZfZGV2aWNlX3RvX2ludmVudG9yeSIsInZlcnNpb24iOjF9",
+            "name": "Add_netconf_device_to_inventory",
+            "description": "{\"description\": \"Add netconf device to device inventory\", \"labels\": [\"BASICS\",\"NETCONF\",\"INVENTORY\",\"MAIN\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:08.744Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"INVENTORY_add_netconf_device\",\"taskReferenceName\":\"INVENTORY_add_netconf_deviceRefName_wt5s\",\"inputParameters\":{\"device_id\":\"${workflow.input.device_id}\",\"host\":\"${workflow.input.host}\",\"port\":\"${workflow.input.port}\",\"keepalive-delay\":\"${workflow.input.keepalive-delay}\",\"tcp-only\":\"${workflow.input.tcp-only}\",\"username\":\"${workflow.input.username}\",\"password\":\"${workflow.input.password}\",\"uniconfig-native\":\"${workflow.input.uniconfig-native}\",\"blacklist\":\"${workflow.input.blacklist}\",\"labels\":\"${workflow.input.labels}\",\"uniconfig_zone\":\"${workflow.input.uniconfig_zone}\",\"service_state\":\"${workflow.input.service_state}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": false,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQWxsb2NhdGVfaXB2NF9yZXNvdXJjZSIsInZlcnNpb24iOjF9",
+            "name": "Allocate_ipv4_resource",
+            "description": "{\"description\": \"Claim IPv4 resource\", \"labels\": [\"RESOURCE_MANAGER\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:07.619Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"RESOURCE_MANAGER_query_pool_by_tag\",\"taskReferenceName\":\"query_pool_by_tag\",\"inputParameters\":{\"poolTag\":\"${workflow.input.pool_name}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"decisionTask\",\"taskReferenceName\":\"pool_exists\",\"inputParameters\":{\"pool_exists\":\"${query_pool_by_tag.output.response_body.data.SearchPoolsByTags}\"},\"type\":\"DECISION\",\"caseExpression\":\"$.pool_exists.length > 0 ? 'True' : 'False'\",\"decisionCases\":{\"False\":[{\"name\":\"terminate\",\"taskReferenceName\":\"terminate_cleanup_pool\",\"inputParameters\":{\"terminationStatus\":\"FAILED\",\"workflowOutput\":{\"status\":\"Pool with name \\\"${workflow.input.pool_name}\\\" do not exists.\"}},\"type\":\"TERMINATE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]},\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"decisionTask\",\"taskReferenceName\":\"desired_value_not_null\",\"inputParameters\":{\"desiredValue\":\"${workflow.input.desired_value}\"},\"type\":\"DECISION\",\"caseExpression\":\"$.desiredValue.length > 0 ? 'True' : 'False'\",\"decisionCases\":{\"True\":[{\"name\":\"RESOURCE_MANAGER_claim_resource\",\"taskReferenceName\":\"claim_resource_with_desired_value\",\"inputParameters\":{\"poolId\":\"${query_pool_by_tag.output.response_body.data.SearchPoolsByTags[0].id}\",\"userInput\":{\"desiredValue\":\"${workflow.input.desired_value}\"},\"description\":\"${workflow.input.description}\",\"alternativeId\":\"${workflow.input.alternative_id}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false,\"retryCount\":5}],\"False\":[{\"name\":\"RESOURCE_MANAGER_claim_resource\",\"taskReferenceName\":\"claim_resource_without_desired_value\",\"inputParameters\":{\"poolId\":\"${query_pool_by_tag.output.response_body.data.SearchPoolsByTags[0].id}\",\"description\":\"${workflow.input.description}\",\"alternativeId\":\"${workflow.input.alternative_id}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false,\"retryCount\":5}]},\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambda_claimAddress\",\"inputParameters\":{\"lambdaValue\":\"${claim_resource_with_desired_value.output.response_body.ClaimResource}\",\"lambdaValue2\":\"${claim_resource_without_desired_value.output.response_body.ClaimResource}\",\"lambdaValue3\":\"${claim_resource_with_desired_value.output.response_body.ClaimResourceWithAltId}\",\"lambdaValue4\":\"${claim_resource_without_desired_value.output.response_body.ClaimResourceWithAltId}\",\"scriptExpression\":\"if ($.lambdaValue)\\n\\treturn $.lambdaValue\\nelse if($.lambdaValue2)\\nreturn $.lambdaValue2\\nelse if($.lambdaValue3)\\nreturn $.lambdaValue3\\nelse\\nreturn $.lambdaValue4;\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"pool_name\":{\"value\":\"\",\"description\":\"Pool name [MANDATORY]\",\"type\":\"string\"}, \"description\":{\"value\":\"\",\"description\":\"Description for resource [OPTIONAL]\",\"type\":\"string\"}, \"alternative_id\": {\"value\": \"\", \"description\":\"Alternative ID for resource [OPTIONAL] e.g. {'status':'active'}\", \"type\":\"string\"}, \"desired_value\":{\"value\":\"\",\"description\":\"[OPTIONAL] e.g. If pool address is 192.168.0.1 with prefix 24 my address should be between 192.168.0.0 and 192.168.0.255\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "response_body",
+                "value": "\"${lambda_claimAddress.output.result.Properties}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQnVpbGRfcmVhZF9zdG9yZV9MTERQX3RvcG9sb2d5IiwidmVyc2lvbiI6MX0",
+            "name": "Build_read_store_LLDP_topology",
+            "description": "{\"description\": \"Build, read and store LLDP topology in database\", \"labels\": [\"DEMO\",\"LLDP\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:10.368Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"LLDP_build_topology\",\"taskReferenceName\":\"LLDP_build_topology\",\"inputParameters\":{\"node-aggregation\":\"${workflow.input.node-aggregation}\",\"link-aggregation\":\"${workflow.input.link-aggregation}\",\"per-node-read-timeout\":\"${workflow.input.per-node-read-timeout}\",\"concurrent-read-nodes\":\"${workflow.input.concurrent-read-nodes}\",\"destination-topology\":\"${workflow.input.destination-topology}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"LLDP_read_topology\",\"taskReferenceName\":\"LLDP_read_topology\",\"inputParameters\":{\"destination-topology\":\"${workflow.input.destination-topology}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"LLDP_store_topology\",\"taskReferenceName\":\"LLDP_store_topology\",\"inputParameters\":{\"destination-topology\":\"${workflow.input.destination-topology}\",\"content\":\"${LLDP_read_topology.output.response_body.topology}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"node-aggregation\":{\"value\":\"system-name\",\"description\":\"Which unique attribute of a device to use in order to identify a device. This reduces node duplicity\",\"type\":\"string\"},\"link-aggregation\":{\"value\":\"bidirectional-abbreviations\",\"description\":\"Which unique attribute of a link to use in order to identify a device e.g. source and destination interfaces\",\"type\":\"string\"},\"per-node-read-timeout\":{\"value\":\"30\",\"description\":\"Max time to spend on 1 device in seconds\",\"type\":\"string\"},\"concurrent-read-nodes\":{\"value\":\"8\",\"description\":\"How many devices to query in parallel\",\"type\":\"string\"},\"destination-topology\":{\"value\":\"lldp\",\"description\":\"Name of a topology under which the result will be stored\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "destination-topology",
+                "value": "\"${workflow.input.destination-topology}\"",
+                "__typename": "OutputParameter"
+              },
+              {
+                "key": "content",
+                "value": "\"${LLDP_read_topology.output.response.topology}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQ3JlYXRlX2luZmx1eGRiX2J1Y2tldCIsInZlcnNpb24iOjF9",
+            "name": "Create_influxdb_bucket",
+            "description": "{\"description\":\"Create InfluxDB bucket\",\"labels\":[\"INFLUXDB\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:04.860Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"INFLUXDB_create_bucket_if_not_exist\",\"taskReferenceName\":\"INFLUXDB_create_bucket_if_not_existRefName_tKMV\",\"inputParameters\":{\"bucket\":\"${workflow.input.bucket}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQ3JlYXRlX0wyVlBOX1AyUF9PQ191bmljb25maWciLCJ2ZXJzaW9uIjoyfQ",
+            "name": "Create_L2VPN_P2P_OC_uniconfig",
+            "description": "{\"description\": \"Create P2P L2VPN in uniconfig\", \"labels\": [\"DEMO\",\"L2VPN\",\"UNICONFIG\",\"OPENCONFIG\"]}",
+            "version": 2,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:07.799Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"UC_TX_start\",\"taskReferenceName\":\"tx_start_1\",\"inputParameters\":{\"devices\":\"${workflow.input.node01}, ${workflow.input.node02}\"},\"type\":\"SUB_WORKFLOW\",\"startDelay\":0,\"subWorkflowParam\":{\"name\":\"UC_TX_start\",\"version\":1},\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_sync_from_network\",\"taskReferenceName\":\"uniconfig_sync_from_network_ref_LYVS\",\"inputParameters\":{\"devices\":\"${workflow.input.node01}, ${workflow.input.node02}\",\"uniconfig_context\":\"${tx_start_1.output.uniconfig_context}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_replace_config_with_oper\",\"taskReferenceName\":\"uniconfig_replace_config_with_oper_ref_JTJ4\",\"inputParameters\":{\"devices\":\"${workflow.input.node01}, ${workflow.input.node02}\",\"uniconfig_context\":\"${tx_start_1.output.uniconfig_context}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_write_structured_device_data\",\"taskReferenceName\":\"UNICONFIG_write_structured_device_data_on_first_node\",\"inputParameters\":{\"node01\":\"${workflow.input.node01}\",\"device_id\":\"${workflow.input.node01}\",\"interface01\":\"${workflow.input.interface01}\",\"VCID\":\"${workflow.input.vcid}\",\"uri\":\"/frinx-openconfig-network-instance:network-instances/network-instance=conn1233\",\"template\":\"{\\r\\n      \\\"frinx-openconfig-network-instance:network-instance\\\": [\\r\\n        {\\r\\n          \\\"name\\\": \\\"conn1233\\\",\\r\\n          \\\"config\\\": {\\r\\n            \\\"name\\\": \\\"conn1233\\\",\\r\\n            \\\"type\\\": \\\"frinx-openconfig-network-instance-types:L2P2P\\\"\\r\\n          },\\r\\n          \\\"connection-points\\\": {\\r\\n            \\\"connection-point\\\": [\\r\\n              {\\r\\n                \\\"connection-point-id\\\": \\\"1\\\",\\r\\n                \\\"config\\\": {\\r\\n                  \\\"connection-point-id\\\": \\\"1\\\"\\r\\n                },\\r\\n                \\\"endpoints\\\": {\\r\\n                  \\\"endpoint\\\": [\\r\\n                    {\\r\\n                      \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                      \\\"config\\\": {\\r\\n                        \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                        \\\"precedence\\\": 0,\\r\\n                        \\\"type\\\": \\\"frinx-openconfig-network-instance-types:LOCAL\\\"\\r\\n                      },\\r\\n                      \\\"local\\\": {\\r\\n                        \\\"config\\\": {\\r\\n                          \\\"interface\\\": \\\"${workflow.input.interface01}\\\"\\r\\n                        }\\r\\n                      }\\r\\n                    }\\r\\n                  ]\\r\\n                }\\r\\n              },\\r\\n              {\\r\\n                \\\"connection-point-id\\\": \\\"2\\\",\\r\\n                \\\"config\\\": {\\r\\n                  \\\"connection-point-id\\\": \\\"2\\\"\\r\\n                },\\r\\n                \\\"endpoints\\\": {\\r\\n                  \\\"endpoint\\\": [\\r\\n                    {\\r\\n                      \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                      \\\"config\\\": {\\r\\n                        \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                        \\\"precedence\\\": 0,\\r\\n                        \\\"type\\\": \\\"frinx-openconfig-network-instance-types:REMOTE\\\"\\r\\n                      },\\r\\n                      \\\"remote\\\": {\\r\\n                        \\\"config\\\": {\\r\\n                          \\\"remote-system\\\": \\\"10.2.2.2\\\",\\r\\n                          \\\"virtual-circuit-identifier\\\": ${workflow.input.vcid}\\r\\n                        }\\r\\n                      }\\r\\n                    }\\r\\n                  ]\\r\\n                }\\r\\n              }\\r\\n            ]\\r\\n          }\\r\\n        }\\r\\n      ]\\r\\n    \\r\\n  }\",\"params\":\"{}\",\"uniconfig_context\":\"${tx_start_1.output.uniconfig_context}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_write_structured_device_data\",\"taskReferenceName\":\"UNICONFIG_write_structured_device_data_on_second_node\",\"inputParameters\":{\"node02\":\"${workflow.input.node02}\",\"device_id\":\"${workflow.input.node02}\",\"interface02\":\"${workflow.input.interface02}\",\"uri\":\"/frinx-openconfig-network-instance:network-instances/network-instance=conn1233\",\"template\":\"{\\r\\n      \\\"frinx-openconfig-network-instance:network-instance\\\": [\\r\\n        {\\r\\n          \\\"name\\\": \\\"conn1233\\\",\\r\\n          \\\"config\\\": {\\r\\n            \\\"name\\\": \\\"conn1233\\\",\\r\\n            \\\"type\\\": \\\"frinx-openconfig-network-instance-types:L2P2P\\\"\\r\\n          },\\r\\n          \\\"connection-points\\\": {\\r\\n            \\\"connection-point\\\": [\\r\\n              {\\r\\n                \\\"connection-point-id\\\": \\\"1\\\",\\r\\n                \\\"config\\\": {\\r\\n                  \\\"connection-point-id\\\": \\\"1\\\"\\r\\n                },\\r\\n                \\\"endpoints\\\": {\\r\\n                  \\\"endpoint\\\": [\\r\\n                    {\\r\\n                      \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                      \\\"config\\\": {\\r\\n                        \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                        \\\"precedence\\\": 0,\\r\\n                        \\\"type\\\": \\\"frinx-openconfig-network-instance-types:LOCAL\\\"\\r\\n                      },\\r\\n                      \\\"local\\\": {\\r\\n                        \\\"config\\\": {\\r\\n                          \\\"interface\\\": \\\"${workflow.input.interface02}\\\"\\r\\n                        }\\r\\n                      }\\r\\n                    }\\r\\n                  ]\\r\\n                }\\r\\n              },\\r\\n              {\\r\\n                \\\"connection-point-id\\\": \\\"2\\\",\\r\\n                \\\"config\\\": {\\r\\n                  \\\"connection-point-id\\\": \\\"2\\\"\\r\\n                },\\r\\n                \\\"endpoints\\\": {\\r\\n                  \\\"endpoint\\\": [\\r\\n                    {\\r\\n                      \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                      \\\"config\\\": {\\r\\n                        \\\"endpoint-id\\\": \\\"default\\\",\\r\\n                        \\\"precedence\\\": 0,\\r\\n                        \\\"type\\\": \\\"frinx-openconfig-network-instance-types:REMOTE\\\"\\r\\n                      },\\r\\n                      \\\"remote\\\": {\\r\\n                        \\\"config\\\": {\\r\\n                          \\\"remote-system\\\": \\\"10.1.1.1\\\",\\r\\n                          \\\"virtual-circuit-identifier\\\": ${workflow.input.vcid}\\r\\n                        }\\r\\n                      }\\r\\n                    }\\r\\n                  ]\\r\\n                }\\r\\n              }\\r\\n            ]\\r\\n          }\\r\\n        }\\r\\n      ]\\r\\n    \\r\\n  }\",\"params\":\"{}\",\"uniconfig_context\":\"${tx_start_1.output.uniconfig_context}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_dryrun_commit\",\"taskReferenceName\":\"UNICONFIG_dryrun_commitRefName_rxWZ\",\"inputParameters\":{\"devices\":\"${workflow.input.node01}, ${workflow.input.node02}\",\"uniconfig_context\":\"${tx_start_1.output.uniconfig_context}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_commit\",\"taskReferenceName\":\"uniconfig_commit_ref_RXFF\",\"inputParameters\":{\"devices\":\"${workflow.input.node01}, ${workflow.input.node02}\",\"uniconfig_context\":\"${tx_start_1.output.uniconfig_context}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"decisionTask\",\"taskReferenceName\":\"decisionTaskRef_9LC8\",\"inputParameters\":{\"param\":\"${uniconfig_commit_ref_RXFF.output.responses[0].response_body.output.overall-status}\"},\"type\":\"DECISION\",\"caseValueParam\":\"param\",\"decisionCases\":{\"complete\":[{\"name\":\"Post_to_Slack\",\"taskReferenceName\":\"post_to_slack_ref_94YO\",\"inputParameters\":{\"slack_webhook_id\":\"T7UQ7KATX/BP8M0S3EH/W3YpmbUr2fQDEA7WIoWcJIXX\",\"message_text\":\"Configuration attempt succeeded!\"},\"type\":\"SUB_WORKFLOW\",\"startDelay\":0,\"subWorkflowParam\":{\"name\":\"Post_to_Slack\",\"version\":1},\"optional\":false,\"asyncComplete\":false}]},\"defaultCase\":[{\"name\":\"Post_to_Slack\",\"taskReferenceName\":\"post_to_slack_ref_284C\",\"inputParameters\":{\"slack_webhook_id\":\"T7UQ7KATX/BP8M0S3EH/W3YpmbUr2fQDEA7WIoWcJIXX\",\"message_text\":\"${uniconfig_commit_ref_RXFF.output.response_body.output.overall-status}\"},\"type\":\"SUB_WORKFLOW\",\"startDelay\":0,\"subWorkflowParam\":{\"name\":\"Post_to_Slack\",\"version\":1},\"optional\":false,\"asyncComplete\":false}],\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"node01\":{\"value\":\"IOS01\",\"description\":\"First node of P2P connection\",\"type\":\"string\"},\"node02\":{\"value\":\"IOS02\",\"description\":\"Second node of P2P connection\",\"type\":\"string\"},\"interface01\":{\"value\":\"GigabitEthernet1\",\"description\":\"Customer facing service interface on first node\",\"type\":\"string\"},\"vcid\":{\"value\":\"444\",\"description\":\"Virtual Circuit Identifier (globally unique)\",\"type\":\"string\"},\"interface02\":{\"value\":\"GigabitEthernet3\",\"description\":\"Customer facing service interface on second node\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "response_body",
+                "value": "\"Journal for ${workflow.input.node01}:  ${read_journal_cli_device_ref_LJUO.output.journal} --------  Journal for ${workflow.input.node02}:  ${read_journal_cli_device_ref_CDGP.output.journal}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQ3JlYXRlX2xvb3BiYWNrX2FsbF9pbl91bmljb25maWciLCJ2ZXJzaW9uIjoxfQ",
+            "name": "Create_loopback_all_in_uniconfig",
+            "description": "{\"description\": \"Create loopback interface for all devices in uniconfig topology\", \"labels\": [\"DEMO\",\"INTERFACES\",\"UNICONFIG\",\"OPENCONFIG\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:09.173Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"INVENTORY_get_all_devices_as_dynamic_fork_tasks\",\"taskReferenceName\":\"read_unified\",\"inputParameters\":{\"labels\":\"${workflow.input.labels}\",\"task\":\"Create_loopback_interface_uniconfig\",\"task_params\":\"{\\\"loopback_id\\\": \\\"${workflow.input.loopback_id}\\\"}\",\"optional\":\"${workflow.input.optional}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"DYNAMIC_FORK\",\"taskReferenceName\":\"create_loopback\",\"inputParameters\":{\"expectedName\":\"sub_task\",\"expectedType\":\"SUB_WORKFLOW\",\"dynamic_tasks\":\"${read_unified.output.dynamic_tasks}\",\"dynamic_tasks_i\":\"${read_unified.output.dynamic_tasks_i}\"},\"type\":\"SUB_WORKFLOW\",\"startDelay\":0,\"subWorkflowParam\":{\"name\":\"Dynamic_fork\",\"version\":1},\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_calculate_diff\",\"taskReferenceName\":\"calc_diff\",\"inputParameters\":{\"devices\":\"${create_loopback.output.forkedTasks}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_dryrun_commit\",\"taskReferenceName\":\"dryrun_commit\",\"inputParameters\":{\"devices\":\"${create_loopback.output.forkedTasks}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"UNICONFIG_commit\",\"taskReferenceName\":\"commit\",\"inputParameters\":{\"devices\":\"${create_loopback.output.forkedTasks}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"labels\":{\"value\":\"CREATE_LOOPBACK_DEMO\",\"description\":\"\",\"type\":\"string\"},\"loopback_id\":{\"value\":\"\",\"description\":\"Unique loopback identifier (e.g. 77)\",\"type\":\"string\"},\"optional\":{\"value\": true,\"description\":\"If one of devices doesn't use openconfig model, workflow will continue\",\"type\":\"toggle\", \"options\": [true,false]}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "interfaces",
+                "value": "\"${commit.output}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiQ3JlYXRlX2xvb3BiYWNrX2ludGVyZmFjZV91bmljb25maWciLCJ2ZXJzaW9uIjoxfQ",
+            "name": "Create_loopback_interface_uniconfig",
+            "description": "{\"description\": \"Create loopback interface in uniconfig\", \"labels\": [\"DEMO\",\"INTERFACES\",\"UNICONFIG\",\"OPENCONFIG\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:05.433Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"UNICONFIG_write_structured_device_data\",\"taskReferenceName\":\"UNICONFIG_write_structured_device_data\",\"inputParameters\":{\"device_id\":\"${workflow.input.device_id}\",\"uri\":\"/frinx-openconfig-interfaces:interfaces/interface=Loopback${workflow.input.loopback_id}\",\"template\":\"{\\\"interface\\\":[{\\\"name\\\":\\\"Loopback${workflow.input.loopback_id}\\\",\\\"config\\\":{\\\"type\\\":\\\"iana-if-type:softwareLoopback\\\",\\\"enabled\\\":false,\\\"name\\\":\\\"Loopback${workflow.input.loopback_id}\\\"}}]}\",\"params\":\"{}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"device_id\":{\"value\":\"\",\"description\":\"Unique device identifier. Example: IOS01\",\"type\":\"string\"},\"loopback_id\":{\"value\":\"\",\"description\":\"Unique loopback identifier (e.g. 77)\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "response_body",
+                "value": "\"${UNICONFIG_write_structured_device_data.output.response_body}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiRGVsZXRlX2xvb3BiYWNrX2ludGVyZmFjZV91bmljb25maWciLCJ2ZXJzaW9uIjoxfQ",
+            "name": "Delete_loopback_interface_uniconfig",
+            "description": "{\"description\": \"Delete loopback interface in uniconfig\", \"labels\": [\"DEMO\",\"INTERFACES\",\"UNICONFIG\",\"OPENCONFIG\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:11.969Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"UNICONFIG_delete_structured_device_data\",\"taskReferenceName\":\"UNICONFIG_delete_structured_device_data\",\"inputParameters\":{\"device_id\":\"${workflow.input.device_id}\",\"uri\":\"/frinx-openconfig-interfaces:interfaces/interface=Loopback${workflow.input.loopback_id}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"device_id\":{\"value\":\"\",\"description\":\"Unique device identifier. Example: IOS01\",\"type\":\"string\"},\"loopback_id\":{\"value\":\"\",\"description\":\"Unique loopback identifier (e.g. 77)\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "response_body",
+                "value": "\"${UNICONFIG_delete_structured_device_data.output.response_body}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiRGV2aWNlX2lkZW50aWZpY2F0aW9uIiwidmVyc2lvbiI6MX0",
+            "name": "Device_identification",
+            "description": "{\"description\":\"Identify type and version of device and return it in the output\"}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:07.337Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"Device_identification_validate_input_parameters\",\"taskReferenceName\":\"Device_identification_validate_input_parameters\",\"inputParameters\":{\"port\":\"${workflow.input.port}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Create_unique_device_name\",\"taskReferenceName\":\"create_unique_device_name\",\"inputParameters\":{},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"is_it_ssh_or_netconf\",\"inputParameters\":{\"port\":\"${workflow.input.port}\",\"scriptExpression\":\"if (+$.port >= 17000){ return {\\\"conn_type\\\": \\\"netconf\\\"} } else { return {\\\"conn_type\\\": \\\"ssh\\\"} }\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"decisionTask\",\"taskReferenceName\":\"decisionTaskRef_ssh_or_telnet_or_netconf\",\"inputParameters\":{\"param\":\"${is_it_ssh_or_netconf.output.result.conn_type}\"},\"type\":\"DECISION\",\"caseValueParam\":\"param\",\"decisionCases\":{\"netconf\":[{\"name\":\"Mount_netconf_device_identification\",\"taskReferenceName\":\"mount_netconf_device_identification\",\"description\":\"Identify type of netconf device and mount with correct schema\",\"inputParameters\":{\"device_id\":\"${create_unique_device_name.output.device_name}\",\"host\":\"${workflow.input.management_ip}\",\"port\":\"${workflow.input.port}\",\"username\":\"${workflow.input.username}\",\"password\":\"${workflow.input.password}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Identification_of_netconf_device\",\"taskReferenceName\":\"identification_of_netconf_device\",\"inputParameters\":{\"device_type\":\"${mount_netconf_device_identification.output.device_type}\",\"device_id\":\"${mount_netconf_device_identification.output.mounted_device_id}\",\"sw_version\":\"${mount_netconf_device_identification.output.sw_version}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"terminate_netconf\",\"taskReferenceName\":\"terminate_netconf\",\"inputParameters\":{\"terminationStatus\":\"COMPLETED\",\"workflowOutput\":{\"name\":\"${identification_of_netconf_device.output.response_body.device_name}\",\"vendor\":\"${identification_of_netconf_device.output.response_body.device_vendor}\",\"sw\":\"${identification_of_netconf_device.output.response_body.device_sw}\",\"sw_version\":\"${identification_of_netconf_device.output.response_body.device_version}\",\"model\":\"${identification_of_netconf_device.output.response_body.device_model}\",\"management_ip\":\"${workflow.input.management_ip}\"}},\"type\":\"TERMINATE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]},\"defaultCase\":[{\"name\":\"CLI_mount_cli\",\"taskReferenceName\":\"cli_mount_ssh\",\"inputParameters\":{\"device_id\":\"${create_unique_device_name.output.device_name}\",\"type\":\"*\",\"version\":\"*\",\"host\":\"${workflow.input.management_ip}\",\"protocol\":\"ssh\",\"port\":\"${workflow.input.port}\",\"parsing-engine\":\"one-line-parser\",\"uniconfig_tx_id\":\"\",\"username\":\"${workflow.input.username}\",\"password\":\"${workflow.input.password}\",\"install-uniconfig-node-enabled\":false},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}],\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"CLI_execute_and_read_rpc_cli\",\"taskReferenceName\":\"cli_execute_and_read_rpc_cli_identificate_vendor\",\"inputParameters\":{\"device_id\":\"${create_unique_device_name.output.device_name}\",\"template\":\"show\",\"params\":\"\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"vendor_type\",\"inputParameters\":{\"sw_type\":\"${cli_execute_and_read_rpc_cli_identificate_vendor.output.response_body.output.output}\",\"scriptExpression\":\"if ($.sw_type.match(\\\"for a list of subcommands|Incomplete command\\\")){ return {sw_type: \\\"cisco\\\"} } else if ($.sw_type.match(\\\"SHELL PARSER FAILURE\\\")){ return {sw_type: \\\"ciena\\\"} } else if ($.sw_type.match(\\\"syntax error, expecting\\\")){ return {sw_type: \\\"juniper\\\"} }\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"decisionTask\",\"taskReferenceName\":\"decisionTaskRef_cisco_or_ciena_or_juniper\",\"inputParameters\":{\"param\":\"${vendor_type.output.result.sw_type}\"},\"type\":\"DECISION\",\"caseValueParam\":\"param\",\"decisionCases\":{\"cisco\":[{\"name\":\"CLI_execute_and_read_rpc_cli\",\"taskReferenceName\":\"cli_execute_and_read_rpc_cli_for_cisco\",\"inputParameters\":{\"device_id\":\"${create_unique_device_name.output.device_name}\",\"template\":\"terminal length 0\\n        terminal width 0\\n        sh version\\n        sh run hostname\",\"params\":\"\",\"output_timer\":6},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Identification_of_device\",\"taskReferenceName\":\"identification_of_device_cisco\",\"inputParameters\":{\"device_data\":\"${cli_execute_and_read_rpc_cli_for_cisco.output.response_body.output.output}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}],\"ciena\":[{\"name\":\"CLI_execute_and_read_rpc_cli\",\"taskReferenceName\":\"cli_execute_and_read_rpc_cli_for_ciena\",\"inputParameters\":{\"device_id\":\"${create_unique_device_name.output.device_name}\",\"template\":\"system shell set global-more off\\n configuration show\",\"params\":\"\",\"output_timer\":2},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Identification_of_device\",\"taskReferenceName\":\"identification_of_device_ciena\",\"inputParameters\":{\"device_data\":\"${cli_execute_and_read_rpc_cli_for_ciena.output.response_body.output.output}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}],\"juniper\":[{\"name\":\"CLI_execute_and_read_rpc_cli\",\"taskReferenceName\":\"cli_execute_and_read_rpc_cli_for_juniper\",\"inputParameters\":{\"device_id\":\"${create_unique_device_name.output.device_name}\",\"template\":\"set cli screen-length 0\\n show version\",\"params\":\"\",\"output_timer\":2},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Identification_of_device\",\"taskReferenceName\":\"identification_of_device_juniper\",\"inputParameters\":{\"device_data\":\"${cli_execute_and_read_rpc_cli_for_juniper.output.response_body.output.output}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]},\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"identification_of_device_exclusive_join\",\"taskReferenceName\":\"identification_of_device_exclusive_join\",\"inputParameters\":{},\"type\":\"EXCLUSIVE_JOIN\",\"startDelay\":0,\"joinOn\":[\"identification_of_device_ciena\",\"identification_of_device_cisco\",\"identification_of_device_juniper\"],\"optional\":false,\"asyncComplete\":false},{\"name\":\"CLI_unmount_cli\",\"taskReferenceName\":\"CLI_unmount_cli\",\"inputParameters\":{\"device_id\":\"${create_unique_device_name.output.device_name}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"terminate\",\"taskReferenceName\":\"terminate_completed\",\"inputParameters\":{\"terminationStatus\":\"COMPLETED\",\"workflowOutput\":{\"name\":\"${identification_of_device_exclusive_join.output.response_body.device_name}\",\"vendor\":\"${identification_of_device_exclusive_join.output.response_body.device_vendor}\",\"sw\":\"${identification_of_device_exclusive_join.output.response_body.device_sw}\",\"sw_version\":\"${identification_of_device_exclusive_join.output.response_body.device_version}\",\"model\":\"${identification_of_device_exclusive_join.output.response_body.device_model}\",\"management_ip\":\"${workflow.input.management_ip}\"}},\"type\":\"TERMINATE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"management_ip\":{\"value\":\"sample-topology\",\"description\":\"IP or hostname of the management endpoint on a device\"},\"port\": {\"value\": \"10000\",\"description\":\"e.g 10000, 10001, 17000\",\"type\":\"string\"},\"username\": {\"value\": \"frinx\",\"description\":\"Username to device\",\"type\":\"string\"},\"password\": {\"value\": \"frinx\",\"description\":\"Password to device\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [],
+            "restartable": false,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiRGV2aWNlX2ludGVyZmFjZV9tb25pdG9yaW5nIiwidmVyc2lvbiI6MX0",
+            "name": "Device_interface_monitoring",
+            "description": "{\"description\":\"Write interface statistics from device to InfluxDB\",\"labels\":[\"INFLUXDB\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:04.340Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"URI_encode_aFfh\",\"inputParameters\":{\"lambdaValue\":\"${workflow.input.interface-name}\",\"scriptExpression\":\"var encoded = encodeURIComponent($.lambdaValue);\\nreturn encoded\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Netconf_read_structured_device_data\",\"taskReferenceName\":\"Netconf_read_structured_device_dataRefName_EZW4\",\"inputParameters\":{\"device_id\":\"${workflow.input.node-id}\",\"uri\":\"/Cisco-IOS-XR-pfi-im-cmd-oper:interfaces/interface-xr/interface=${URI_encode_aFfh.output.result}\",\"uniconfig_tx_id\":\"\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"jsonJQ_task\",\"taskReferenceName\":\"jsonJQ_YtC5\",\"inputParameters\":{\"key\":\"${Netconf_read_structured_device_dataRefName_EZW4.output.response_body.interface}\",\"queryExpression\":\".key | select(. != null) | .[].\\\"data-rates\\\" + .[].\\\"interface-statistics\\\".\\\"full-interface-stats\\\"\"},\"type\":\"JSON_JQ_TRANSFORM\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"INFLUXDB_write_data\",\"taskReferenceName\":\"INFLUXDB_write_dataRefName_HmZZ\",\"inputParameters\":{\"bucket\":\"devices\",\"tags\":{\"node-id\":\"${workflow.input.node-id}\",\"interface-name\":\"${workflow.input.interface-name}\"},\"fields\":\"${jsonJQ_YtC5.output.result}\",\"measurement\":\"full-interface-stats\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"node-id\":{\"value\":\"asr9k\",\"description\":\"node-id of the device that we read the data from\",\"type\":\"string\",\"constraint\":\"\"},\"interface-name\":{\"value\":\"MgmtEth0/RSP0/CPU0/0\",\"description\":\"interface of the device that we read the stats data from\",\"type\":\"string\",\"constraint\":\"\"}}"
+            ],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiRGV2aWNlX21lbW9yeV9tb25pdG9yaW5nIiwidmVyc2lvbiI6MX0",
+            "name": "Device_memory_monitoring",
+            "description": "{\"description\":\"Write memory statistics from device to InfluxDB\",\"labels\":[\"INFLUXDB\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:08.042Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"Netconf_read_structured_device_data\",\"taskReferenceName\":\"Netconf_read_structured_device_dataRefName_EZW5\",\"inputParameters\":{\"device_id\":\"${workflow.input.node-id}\",\"uri\":\"/Cisco-IOS-XR-nto-misc-shmem-oper:memory-summary\",\"uniconfig_tx_id\":\"\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambda_WeAg\",\"inputParameters\":{\"lambdaValue\":\"${Netconf_read_structured_device_dataRefName_EZW5.output.response_body.memory-summary.nodes.node}\",\"scriptExpression\":\"return $.lambdaValue.length\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Loop Task\",\"taskReferenceName\":\"LoopTask\",\"inputParameters\":{\"value\":\"${lambda_WeAg.output.result}\"},\"type\":\"DO_WHILE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false,\"loopCondition\":\"if ( $.LoopTask['iteration'] < $.value ) { true; } else { false; }\",\"loopOver\":[{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambda_rMMU\",\"inputParameters\":{\"lambdaValue\":\"${Netconf_read_structured_device_dataRefName_EZW5.output.response_body.memory-summary.nodes.node}\",\"iterator\":\"${LoopTask.output.iteration}\",\"scriptExpression\":\"if($.iterator == null){\\n return $.lambdaValue[0]\\n} else {\\n return $.lambdaValue[$.iterator];\\n}\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"INFLUXDB_write_data\",\"taskReferenceName\":\"INFLUXDB_write_dataRefName_HmZZ\",\"inputParameters\":{\"bucket\":\"devices\",\"tags\":{\"node-id\":\"${workflow.input.node-id}\",\"node-name\":\"${lambda_rMMU.output.result.node-name}\"},\"fields\":\"${lambda_rMMU.output.result.summary}\",\"measurement\":\"memory\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"node-id\":{\"value\":\"asr9k\",\"description\":\"node-id of the device that we read the data from\",\"type\":\"string\",\"constraint\":\"\"}}"
+            ],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiRHluYW1pY19mb3JrIiwidmVyc2lvbiI6MX0",
+            "name": "Dynamic_fork",
+            "description": "{\"description\": \"A dynamic fork + join task with input validation\", \"labels\": [\"BASICS\",\"UTILS\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:02.572Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambdaValidator\",\"inputParameters\":{\"lambdaValue\":\"${workflow.input.dynamic_tasks}\",\"scriptExpression\":\"if ($.lambdaValue.length > 100) {\\n    return false\\n} \\nfor (var i = 0; i < $.lambdaValue.length; i = i + 1) {\\n  if ($.lambdaValue[i].name !== $.expectedName || $.lambdaValue[i].type !== $.expectedType) {\\n    return false\\n  }\\n}\\n\\nreturn $.lambdaValue\",\"expectedName\":\"${workflow.input.expectedName}\",\"expectedType\":\"${workflow.input.expectedType}\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"decisionTask\",\"taskReferenceName\":\"decision\",\"inputParameters\":{\"result\":\"${lambdaValidator.output.result}\"},\"type\":\"DECISION\",\"caseValueParam\":\"result\",\"decisionCases\":{\"false\":[{\"name\":\"terminateTask\",\"taskReferenceName\":\"terminate\",\"inputParameters\":{\"terminationStatus\":\"FAILED\",\"workflowOutput\":\"Dynamic tasks don't contain expected name ${workflow.input.expectedName} or expected type ${workflow.input.expectedType}\"},\"type\":\"TERMINATE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]},\"defaultCase\":[{\"name\":\"dynamic_fork\",\"taskReferenceName\":\"fork\",\"inputParameters\":{\"dynamic_tasks\":\"${lambdaValidator.output.result}\",\"dynamic_tasks_i\":\"${workflow.input.dynamic_tasks_i}\"},\"type\":\"FORK_JOIN_DYNAMIC\",\"dynamicForkTasksParam\":\"dynamic_tasks\",\"dynamicForkTasksInputParamName\":\"dynamic_tasks_i\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"join\",\"taskReferenceName\":\"join\",\"inputParameters\":{},\"type\":\"JOIN\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}],\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"dynamic_tasks\":{\"value\":\"\",\"description\":\"\",\"type\":\"string\"},\"expectedName\":{\"value\":\"\",\"description\":\"\",\"type\":\"string\"},\"expectedType\":{\"value\":\"\",\"description\":\"\",\"type\":\"string\"},\"dynamic_tasks_i\":{\"value\":\"\",\"description\":\"\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "forkedTasks",
+                "value": "\"${fork.input.forkedTasks}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiRXhwb3J0X0xMRFBfdG9wb2xvZ3kiLCJ2ZXJzaW9uIjoxfQ",
+            "name": "Export_LLDP_topology",
+            "description": "{\"description\": \"Export lldp topology\", \"labels\": [\"DEMO\",\"LLDP\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:10.199Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"LLDP_export_topology\",\"taskReferenceName\":\"LLDP_export_topology\",\"inputParameters\":{},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [],
+            "outputParameters": [
+              {
+                "key": "export",
+                "value": "\"${LLDP_export_topology.output.response_body}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiSW5zdGFsbF9hbGxfZnJvbV9pbnZlbnRvcnkiLCJ2ZXJzaW9uIjoxfQ",
+            "name": "Install_all_from_inventory",
+            "description": "{\"description\": \"Install all devices from device inventory\", \"labels\": [\"INVENTORY\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:11.244Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"INVENTORY_get_pages_cursors\",\"taskReferenceName\":\"INVENTORY_get_pages_cursorsRefName_iHgJ\",\"inputParameters\":{\"labels\":\"${workflow.input.labels}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"Loop Task\",\"taskReferenceName\":\"LoopTask\",\"inputParameters\":{\"value\":\"${INVENTORY_get_pages_cursorsRefName_iHgJ.output.page_size}\"},\"type\":\"DO_WHILE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false,\"loopCondition\":\"if ( $.LoopTask['iteration'] < $.value ) { true; } else { false; }\",\"loopOver\":[{\"name\":\"LAMBDA_TASK\",\"taskReferenceName\":\"lambda_rMMU\",\"inputParameters\":{\"lambdaValue\":\"${INVENTORY_get_pages_cursorsRefName_iHgJ.output.page_ids}\",\"iterator\":\"${LoopTask.output.iteration}\",\"scriptExpression\":\"if($.iterator == null){\\n return $.lambdaValue[\\\"0\\\"]\\n} else {\\n return $.lambdaValue[$.iterator.toString()];\\n}\"},\"type\":\"LAMBDA\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"INVENTORY_get_pages_cursors_fork_tasks\",\"taskReferenceName\":\"read_inventory\",\"inputParameters\":{\"task\":\"Install_from_inventory_batch\",\"page_ids\":\"${lambda_rMMU.output.result}\",\"labels\":\"${workflow.input.labels}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false},{\"name\":\"dynamic_fork\",\"taskReferenceName\":\"fork\",\"inputParameters\":{\"dynamic_tasks\":\"${read_inventory.output.dynamic_tasks}\",\"dynamic_tasks_i\":\"${read_inventory.output.dynamic_tasks_i}\"},\"type\":\"FORK_JOIN_DYNAMIC\",\"dynamicForkTasksParam\":\"dynamic_tasks\",\"dynamicForkTasksInputParamName\":\"dynamic_tasks_i\",\"startDelay\":0,\"optional\":true,\"asyncComplete\":false},{\"name\":\"join\",\"taskReferenceName\":\"join\",\"inputParameters\":{},\"type\":\"JOIN\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]}]",
+            "hasSchedule": false,
+            "inputParameters": [],
+            "outputParameters": [],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        },
+        {
+          "node": {
+            "id": "V29ya2Zsb3c6eyJuYW1lIjoiSW5zdGFsbF9hbmRfY2hlY2tfY2xpIiwidmVyc2lvbiI6MX0",
+            "name": "Install_and_check_cli",
+            "description": "{\"description\": \"install, check and leave device installed\", \"labels\": [\"BASICS\",\"CLI\"]}",
+            "version": 1,
+            "createdAt": null,
+            "updatedAt": "2023-06-22T07:54:04.201Z",
+            "createdBy": null,
+            "updatedBy": null,
+            "tasks": "[{\"name\":\"CLI_mount_cli\",\"taskReferenceName\":\"mount\",\"inputParameters\":{\"device_id\":\"${workflow.input.device_id}\",\"type\":\"${workflow.input.type}\",\"version\":\"${workflow.input.version}\",\"host\":\"${workflow.input.host}\",\"protocol\":\"${workflow.input.protocol}\",\"port\":\"${workflow.input.port}\",\"username\":\"${workflow.input.username}\",\"password\":\"${workflow.input.password}\"},\"type\":\"SIMPLE\",\"startDelay\":0,\"optional\":false,\"asyncComplete\":false}]",
+            "hasSchedule": false,
+            "inputParameters": [
+              "{\"device_id\":{\"value\":\"\",\"description\":\"Unique identifier of device across all systems\",\"type\":\"string\"},\"type\":{\"value\":\"\",\"description\":\"Type of device or device IOS e.g. ios, ios xr\",\"type\":\"string\"},\"version\":{\"value\":\"\",\"description\":\"Version of device or device OS e.g. 15.2\",\"type\":\"string\"},\"host\":{\"value\":\"\",\"description\":\"IP or hostname of the management endpoint on a device\",\"type\":\"string\"},\"protocol\":{\"value\":\"ssh\",\"description\":\"CLI management transport protocol e.g. tcp or ssh\",\"type\":\"string\"},\"port\":{\"value\":\"22\",\"description\":\"TCP port of the management endpoint of a device\",\"type\":\"string\"},\"username\":{\"value\":\"\",\"description\":\"Username credential\",\"type\":\"string\"},\"password\":{\"value\":\"\",\"description\":\"Password credential\",\"type\":\"string\"}}"
+            ],
+            "outputParameters": [
+              {
+                "key": "mount",
+                "value": "\"${check_mounted.output.mount}\"",
+                "__typename": "OutputParameter"
+              }
+            ],
+            "restartable": true,
+            "timeoutSeconds": 0,
+            "timeoutPolicy": "ALERT_ONLY",
+            "__typename": "Workflow"
+          },
+          "__typename": "WorkflowEdge"
+        }
+      ],
+      "totalCount": 61,
+      "pageInfo": {
+        "startCursor": "YXJyYXljb25uZWN0aW9uOjA=",
+        "endCursor": "YXJyYXljb25uZWN0aW9uOjE5",
+        "hasNextPage": true,
+        "hasPreviousPage": false,
+        "__typename": "PageInfo"
+      },
+      "__typename": "WorkflowConnection"
+    }
+  }
+}
