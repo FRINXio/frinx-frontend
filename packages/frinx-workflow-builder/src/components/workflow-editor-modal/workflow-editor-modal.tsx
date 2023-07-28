@@ -8,6 +8,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Button,
+  Box,
 } from '@chakra-ui/react';
 import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared/src';
 
@@ -53,13 +54,15 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="full" closeOnOverlayClick={false}>
       <ModalOverlay />
-      <ModalContent maxW="48rem">
+      <ModalContent maxW="75vw">
         <ModalHeader>Workflow editor</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Editor language="json" value={editedWorkflow} onChange={handleChange} />
+          <Box height="calc(100vh - 62px - 72px - 16px)">
+            <Editor language="json" value={editedWorkflow} onChange={handleChange} height="100%" />
+          </Box>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose} marginRight={2}>
