@@ -37,7 +37,7 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
   const handleSave = () => {
     try {
       const parsedWorkflow = JSON.parse(editedWorkflow);
-
+      // console.log(parsedWorkflow);
       onSave(parsedWorkflow);
       onClose();
     } catch {
