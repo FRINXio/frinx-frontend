@@ -335,7 +335,7 @@ const App: VoidFunctionComponent<Props> = ({
                 You have unsaved changes
               </Alert>
             )}
-            <HStack spacing={2}>
+            <HStack spacing={2} marginLeft={2}>
               <Box>
                 <ActionsMenu
                   onShowDefinitionBtnClick={workflowDefinitionDisclosure.onOpen}
