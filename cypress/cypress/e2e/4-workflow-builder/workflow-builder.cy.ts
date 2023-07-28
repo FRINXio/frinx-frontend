@@ -1,5 +1,5 @@
 /* eslint-disable no-prototype-builtins */
-/* global cy,it,describe,Cypress,beforeEach */
+/* global cy,it,Cypress */
 
 /// <reference types="cypress" />
 import { hasOperationName } from '../../helpers/utils';
