@@ -1,18 +1,17 @@
-import { hasOperationName } from "../../helpers/utils";
+import { hasOperationName } from '../../helpers/utils';
 
 it('workflow builder', () => {
-cy.intercept('POST', 'https://localhost:8001/graphql', (req) => {
-  if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowList')) {
-    req.reply({ fixture: 'workflow-builder/getWorkflows.json' });
-  }
-  if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowLabels')) {
-    req.reply({ fixture: 'workflow-builder/workflow-labels.json' });
-  }
-  if (req.body.hasOwnProperty('query') && hasOperationName(req, 'UpdateWorkflow')) {
-    req.reply({ fixture: 'workflow-builder/create-workflow.json' });
-  }
-
-}).as('getWorkflows');
+  cy.intercept('POST', 'https://localhost:8001/graphql', (req) => {
+    if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowList')) {
+      req.reply({ fixture: 'workflow-builder/getWorkflows.json' });
+    }
+    if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowLabels')) {
+      req.reply({ fixture: 'workflow-builder/workflow-labels.json' });
+    }
+    if (req.body.hasOwnProperty('query') && hasOperationName(req, 'UpdateWorkflow')) {
+      req.reply({ fixture: 'workflow-builder/create-workflow.json' });
+    }
+  }).as('getWorkflows');
 
   cy.log('-- 01. Construct and Actions/Save --');
   cy.visit(Cypress.env('host'));
@@ -26,7 +25,7 @@ cy.intercept('POST', 'https://localhost:8001/graphql', (req) => {
   cy.get('[data-cy="Netconf_read_structured_device_data-add-task"]').click();
   //cy.get('button[title="zoom out"]').click().click().click();
   cy.get('button[aria-label="Edit workflow"]').move({ deltaX: 0, deltaY: 300 });
-cy.get('button[aria-label="Remove edge"]').click();
+  cy.get('button[aria-label="Remove edge"]').click();
 
   cy.get('div[data-id="start"').next().next().move({ deltaX: -50, deltaY: -100 });
   cy.get('div[data-id="start"').move({ deltaX: -100, deltaY: 0 });
@@ -95,7 +94,7 @@ cy.get('button[aria-label="Remove edge"]').click();
   cy.contains('button', 'Workflow editor').click();
   cy.get('.ace_content').type('{backspace}{backspace}{backspace}{backspace}{{}1}{enter}}');
   // the docs https://docs.cypress.io/api/commands/type --> {{} Types the literal { key
-  cy.contains('button', 'Cancel').next().click();  
+  cy.contains('button', 'Cancel').next().click();
 
   // })
   // it('search test', () => {
@@ -112,7 +111,6 @@ cy.get('button[aria-label="Remove edge"]').click();
   cy.contains('button', 'Execute workflow').click();
   cy.contains('We successfully executed workflow').as('greenNotif3'); // green notification
   cy.contains('@greenNotif3').should('not.exist');
-
 });
 
 it('save changes check', () => {
@@ -157,7 +155,4 @@ it('save changes check', () => {
   cy.get('[data-cy="edit-AAAA-1"]').click();
   cy.wait('@getWorkflowDetail');
   cy.contains('h2', 'AAAA');
-
-
-  
 });
