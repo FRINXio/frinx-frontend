@@ -1,3 +1,7 @@
+/* eslint-disable no-prototype-builtins */
+/* global cy,it,describe,Cypress,beforeEach */
+
+/// <reference types="cypress" />
 import { hasOperationName } from '../../helpers/utils';
 
 it('workflow builder', () => {
@@ -23,7 +27,7 @@ it('workflow builder', () => {
   cy.contains('button', 'Save changes').click();
   cy.contains('button', 'Tasks').click();
   cy.get('[data-cy="Netconf_read_structured_device_data-add-task"]').click();
-  //cy.get('button[title="zoom out"]').click().click().click();
+  // cy.get('button[title="zoom out"]').click().click().click();
   cy.get('button[aria-label="Edit workflow"]').move({ deltaX: 0, deltaY: 300 });
   cy.get('button[aria-label="Remove edge"]').click();
 
