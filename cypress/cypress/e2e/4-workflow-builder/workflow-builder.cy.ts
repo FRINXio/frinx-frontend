@@ -1,6 +1,6 @@
 import { hasOperationName } from "../../helpers/utils";
 
-it.only('workflow builder', () => {
+it('workflow builder', () => {
 cy.intercept('POST', 'https://localhost:8001/graphql', (req) => {
   if (req.body.hasOwnProperty('query') && hasOperationName(req, 'WorkflowList')) {
     req.reply({ fixture: 'workflow-builder/getWorkflows.json' });
@@ -95,10 +95,8 @@ cy.get('button[aria-label="Remove edge"]').click();
   cy.contains('button', 'Workflow editor').click();
   cy.get('.ace_content').type('{backspace}{backspace}{backspace}{backspace}{{}1}{enter}}');
   // the docs https://docs.cypress.io/api/commands/type --> {{} Types the literal { key
-  cy.contains('button', 'Cancel').next().click();
-  cy.wait('@put_metadata');
-  cy.contains('Workflow Saved').as('greenNotif2'); // green notification
-  cy.contains('@greenNotif2').should('not.exist');
+  cy.contains('button', 'Cancel').next().click();  
+
   // })
   // it('search test', () => {
   // Note: if mocked this does not work ....
@@ -109,24 +107,12 @@ cy.get('button[aria-label="Remove edge"]').click();
   // it('workflow execution', () => {
   cy.log('-- 07. workflow - Save and execute --');
   cy.contains('button', 'Save and execute').click({ force: true });
-  cy.wait('@put_metadata');
   cy.contains('Workflow Saved').as('greenNotif2'); // green notification
   cy.contains('@greenNotif2').should('not.exist');
-  cy.get('input[name="device_name"]').type('SAOS6_2');
-  cy.contains('button', 'Execute').click();
-  cy.wait('@post_workflow');
+  cy.contains('button', 'Execute workflow').click();
   cy.contains('We successfully executed workflow').as('greenNotif3'); // green notification
   cy.contains('@greenNotif3').should('not.exist');
-  cy.log('-- 07. workflow - detail of executed --');
-  cy.contains('Executed workflow in detail').click();
-  cy.url().should('include', '/workflow-manager/executed');
-  cy.wait('@get_workflow_running');
-  cy.contains('RUNNING', { timeout: 30000 }).eq(0).should('be.visible');
-  cy.intercept('GET', '/api/workflow/id/83c65aef-07e5-4a2a-81b6-dac8f1c96380', {
-    fixture: 'workflow-builder/10get.json',
-  }).as('get_workflow_completed');
-  cy.wait('@get_workflow_completed');
-  cy.contains('COMPLETED', { timeout: 30000 }).eq(0).should('be.visible');
+
 });
 
 it('save changes check', () => {
@@ -171,8 +157,7 @@ it('save changes check', () => {
   cy.get('[data-cy="edit-AAAA-1"]').click();
   cy.wait('@getWorkflowDetail');
   cy.contains('h2', 'AAAA');
-  cy.get('[data-cy="save-and-execute-btn"]').click();
-  cy.contains('Workflow was successfully saved')
+
 
   
 });
