@@ -111,19 +111,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     });
   };
 
-  const handleWorkflowChange = (
-    editedWorkflow: Pick<
-      Workflow,
-      | 'name'
-      | 'description'
-      | 'version'
-      | 'restartable'
-      | 'timeoutPolicy'
-      | 'timeoutSeconds'
-      | 'outputParameters'
-      | 'variables'
-    >,
-  ) => {
+  const handleWorkflowChange = (editedWorkflow: Workflow<ExtendedTask>) => {
     setWorkflow((wf) => ({
       ...unwrap(wf),
       ...editedWorkflow,

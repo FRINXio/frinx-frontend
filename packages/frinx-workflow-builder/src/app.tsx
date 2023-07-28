@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Grid, Heading, HStack, Text, useDisclosure } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import {
   callbackUtils,
   convertToTasks,
@@ -13,7 +13,7 @@ import {
 } from '@frinx/shared/src';
 import produce from 'immer';
 import { zip } from 'lodash';
-import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
   addEdge,
   applyEdgeChanges,
@@ -44,18 +44,6 @@ import { EdgeRemoveContext } from './edge-remove-context';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
 
-type WorkflowParam = Pick<
-  Workflow,
-  | 'name'
-  | 'description'
-  | 'version'
-  | 'restartable'
-  | 'timeoutPolicy'
-  | 'timeoutSeconds'
-  | 'outputParameters'
-  | 'variables'
->;
-
 const nodeTypes = {
   decision: DecisionNode,
   start: StartEndNode,
@@ -71,7 +59,7 @@ type Props = {
   workflow: Workflow<ExtendedTask>;
   workflows: Workflow[];
   taskDefinitions: TaskDefinition[];
-  onWorkflowChange: (workflow: WorkflowParam) => void;
+  onWorkflowChange: (workflow: Workflow<ExtendedTask>) => void;
   onFileImport: (file: File) => void;
   onFileExport: (workflow: Workflow) => void;
   onWorkflowDelete: () => void;
@@ -94,13 +82,16 @@ const App: VoidFunctionComponent<Props> = ({
   const workflowEditorDisclosure = useDisclosure();
   const executeWorkflowModal = useDisclosure();
   const [isEditing, setIsEditing] = useState(false);
-  const [workflowTasks, setWorkflowTasks] = useState(workflow.tasks);
   const [elements, setElements] = useState<{ nodes: Node<NodeData>[]; edges: Edge[] }>(
-    getLayoutedElements(getElementsFromWorkflow(workflowTasks, false)),
+    getLayoutedElements(getElementsFromWorkflow(workflow.tasks, false)),
   );
   const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [workflowToExecute, setWorkflowToExecute] = useState<Workflow<ExtendedTask>>(workflow);
+
+  useEffect(() => {
+    setElements(getLayoutedElements(getElementsFromWorkflow(workflow.tasks, false)));
+  }, [workflow.tasks]);
 
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => ({
@@ -172,7 +163,10 @@ const App: VoidFunctionComponent<Props> = ({
         nodes: [...els.nodes, newElement],
       };
     });
-    setWorkflowTasks((prevTasks) => [...prevTasks, t]);
+    onWorkflowChange({
+      ...workflow,
+      tasks: [...workflow.tasks, t],
+    });
   };
 
   const handleFormSubmit = (t: ExtendedTask) => {
@@ -334,7 +328,13 @@ const App: VoidFunctionComponent<Props> = ({
           <Box>
             <Heading size="lg">{name}</Heading>
           </Box>
-          <Box ml="auto">
+          <Flex ml="auto" alignItems="center">
+            {hasUnsavedChanges && isWorkflowEdited && (
+              <Alert status="warning">
+                <AlertIcon />
+                You have unsaved changes
+              </Alert>
+            )}
             <HStack spacing={2}>
               <Box>
                 <ActionsMenu
@@ -368,14 +368,9 @@ const App: VoidFunctionComponent<Props> = ({
                 >
                   Save and execute
                 </Button>
-                {hasUnsavedChanges && isWorkflowEdited && (
-                  <Text textColor="red" fontSize="sm">
-                    You have unsaved changes
-                  </Text>
-                )}
               </HStack>
             </HStack>
-          </Box>
+          </Flex>
         </Flex>
         <Box minHeight="60vh" maxHeight="100vh">
           <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
@@ -412,7 +407,7 @@ const App: VoidFunctionComponent<Props> = ({
                     selectTask(null);
                   }}
                   onFormSubmit={handleFormSubmit}
-                  tasks={workflowTasks}
+                  tasks={workflow.tasks}
                 />
               </Box>
             </RightDrawer>
