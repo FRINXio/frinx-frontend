@@ -102,9 +102,17 @@ export type StateAction =
   | {
       type: 'FIND_SHORTEST_PATH';
     }
+  // | {
+  //     type: 'SET_SHORTEST_PATH_IDS';
+  //     pathIds: string[];
+  //   }
   | {
-      type: 'SET_SHORTEST_PATH_IDS';
-      pathIds: string[];
+      type: 'SET_ALTERNATIVE_PATHS';
+      alternativePaths: string[][];
+    }
+  | {
+      type: 'SET_SELECTED_ALTERNATIVE_PATH';
+      alternativePathIndex: number;
     };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
@@ -401,6 +409,14 @@ export function findShortestPath(): StateAction {
   return { type: 'FIND_SHORTEST_PATH' };
 }
 
-export function setShortestPathIds(pathIds: string[]): StateAction {
-  return { type: 'SET_SHORTEST_PATH_IDS', pathIds };
+// export function setShortestPathIds(pathIds: string[]): StateAction {
+//   return { type: 'SET_SHORTEST_PATH_IDS', pathIds };
+// }
+
+export function setAlternativePaths(alternativePaths: string[][]): StateAction {
+  return { type: 'SET_ALTERNATIVE_PATHS', alternativePaths };
+}
+
+export function setSelectedAlternativePath(alternativePathIndex: number): StateAction {
+  return { type: 'SET_SELECTED_ALTERNATIVE_PATH', alternativePathIndex };
 }

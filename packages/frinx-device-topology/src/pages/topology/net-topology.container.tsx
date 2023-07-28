@@ -1,4 +1,4 @@
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Select } from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared';
 import { partition } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
@@ -9,9 +9,11 @@ import {
   clearShortestPathSearch,
   findShortestPath,
   getNetNodesAndEdges,
+  setAlternativePaths,
   setMode,
+  setSelectedAlternativePath,
   setSelectedEdge,
-  setShortestPathIds,
+  // setShortestPathIds,
 } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { ShortestPathQuery, ShortestPathQueryVariables } from '../../__generated__/graphql';
@@ -59,7 +61,8 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     topologyLayer,
     unconfirmedShortestPathNodeIds,
     selectedShortestPathNodeIds,
-    shortestPathIds,
+    alternativeShortestPaths,
+    selectedAlternativeShortestPathIndex,
   } = state;
 
   const [{ data: shorthestPathData, fetching: isShortestPathFetching }] = useQuery<
@@ -75,7 +78,8 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
   });
 
   useEffect(() => {
-    dispatch(setShortestPathIds(shorthestPathData?.shortestPath?.shortestPath ?? []));
+    // dispatch(setShortestPathIds(shorthestPathData?.shortestPath?.shortestPath ?? []));
+    dispatch(setAlternativePaths(shorthestPathData?.shortestPath?.alternativePaths ?? []));
   }, [dispatch, shorthestPathData]);
 
   useEffect(() => {
@@ -131,8 +135,15 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     dispatch(findShortestPath());
   };
 
+  const handleAlternativePathChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.currentTarget;
+    dispatch(setSelectedAlternativePath(Number(value)));
+  };
+
+  const selectedAlternativeIds = alternativeShortestPaths[selectedAlternativeShortestPathIndex] ?? [];
+
   const [shortestPathEdges, nonShortestPathEdges] = partition(netEdges, (edge) =>
-    isShortestPadhPredicate(shortestPathIds, edge),
+    isShortestPadhPredicate(selectedAlternativeIds, edge),
   );
   const sortedNetEdges = [...nonShortestPathEdges, ...shortestPathEdges];
 
@@ -188,10 +199,27 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
       </svg>
       {!!unconfirmedShortestPathNodeIds.length && (
         <Box position="absolute" top={2} left="2" background="transparent">
-          <Button onClick={handleClearShortestPath}>Clear shortest path</Button>
-          <Button onClick={handleSearchClick} isDisabled={isShortestPathFetching}>
+          <Button onClick={handleClearShortestPath} marginRight={2}>
+            Clear shortest path
+          </Button>
+          <Button onClick={handleSearchClick} isDisabled={isShortestPathFetching} marginRight={2}>
             Find shortest path
           </Button>
+          {alternativeShortestPaths.length > 0 && (
+            <Select
+              onChange={handleAlternativePathChange}
+              value={selectedAlternativeShortestPathIndex ?? 0}
+              background="white"
+              width={300}
+              display="inline-block"
+            >
+              {[...alternativeShortestPaths.keys()].map((key) => (
+                <option key={`alternative-key-${key}`} value={key}>
+                  {key === 0 ? 'shortest path' : `alternative path ${key}`}
+                </option>
+              ))}
+            </Select>
+          )}
         </Box>
       )}
     </Box>

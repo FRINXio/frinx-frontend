@@ -18,7 +18,8 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     unconfirmedShortestPathNodeIds,
     mode,
     commonNodeIds,
-    shortestPathIds,
+    alternativeShortestPaths,
+    selectedAlternativeShortestPathIndex,
     selectedEdge,
   } = state;
 
@@ -30,8 +31,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     }
   };
 
-  // console.log('shortestPathData: ', shortestPathIds);
-  // console.log('nodes: ', nodes);
+  const shortestPathIds = alternativeShortestPaths[selectedAlternativeShortestPathIndex] ?? [];
 
   return (
     <g>

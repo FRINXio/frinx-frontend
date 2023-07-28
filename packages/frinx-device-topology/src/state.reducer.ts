@@ -32,7 +32,8 @@ export type State = {
   commonNodeIds: string[];
   unconfirmedShortestPathNodeIds: [string | null, string | null];
   selectedShortestPathNodeIds: [string | null, string | null];
-  shortestPathIds: string[];
+  alternativeShortestPaths: string[][];
+  selectedAlternativeShortestPathIndex: number;
   netNodes: GraphNetNode[];
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
@@ -56,7 +57,8 @@ export const initialState: State = {
   commonNodeIds: [],
   unconfirmedShortestPathNodeIds: [null, null],
   selectedShortestPathNodeIds: [null, null],
-  shortestPathIds: [],
+  alternativeShortestPaths: [],
+  selectedAlternativeShortestPathIndex: 0,
   netNodes: [],
   netEdges: [],
   netNodePositions: {},
@@ -159,12 +161,18 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'CLEAR_SHORTEST_PATH_SEARCH': {
-        acc.shortestPathIds = [];
         acc.unconfirmedShortestPathNodeIds = [null, null];
+        acc.alternativeShortestPaths = [];
+        acc.selectedAlternativeShortestPathIndex = 0;
         return acc;
       }
-      case 'SET_SHORTEST_PATH_IDS': {
-        acc.shortestPathIds = action.pathIds;
+      case 'SET_ALTERNATIVE_PATHS': {
+        acc.alternativeShortestPaths = action.alternativePaths;
+        acc.selectedAlternativeShortestPathIndex = 0;
+        return acc;
+      }
+      case 'SET_SELECTED_ALTERNATIVE_PATH': {
+        acc.selectedAlternativeShortestPathIndex = action.alternativePathIndex;
         return acc;
       }
       case 'SET_MODE': {
