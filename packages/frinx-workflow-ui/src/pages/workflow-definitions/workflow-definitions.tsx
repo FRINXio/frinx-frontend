@@ -16,6 +16,11 @@ import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
 
+type OrderBy = {
+  sortKey: 'name';
+  direction: 'asc' | 'desc';
+};
+
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
   keyword: string[] | null;
@@ -23,8 +28,15 @@ type WorkflowFilter = {
 };
 
 const WORKFLOWS_QUERY = gql`
-  query Workflows($first: Int, $after: String, $last: Int, $before: String, $filter: FilterWorkflowsInput) {
-    workflows(first: $first, after: $after, last: $last, before: $before, filter: $filter) {
+  query Workflows(
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+    $filter: FilterWorkflowsInput
+    $orderBy: WorkflowsOrderByInput!
+  ) {
+    workflows(first: $first, after: $after, last: $last, before: $before, filter: $filter, orderBy: $orderBy) {
       edges {
         node {
           id
@@ -92,6 +104,7 @@ const WorkflowDefinitions = () => {
     keyword: null,
     labels: [],
   });
+  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'asc' });
   const [activeWf, setActiveWf] = useState<ClientWorkflow>();
   const { addToastNotification } = useNotifications();
 
@@ -109,6 +122,7 @@ const WorkflowDefinitions = () => {
       variables: {
         ...paginationArgs,
         filter,
+        orderBy,
       },
       context,
     });
@@ -191,6 +205,12 @@ const WorkflowDefinitions = () => {
       });
   };
 
+  const sort = () => {
+    return orderBy.direction === 'desc'
+      ? setOrderBy({ ...orderBy, direction: 'asc' })
+      : setOrderBy({ ...orderBy, direction: 'desc' });
+  };
+
   if (isLoadingWorkflowDefinitions) {
     return (
       <Container maxWidth={1280}>
@@ -254,6 +274,8 @@ const WorkflowDefinitions = () => {
       />
       <WorkflowDefinitionsTable
         workflows={workflows}
+        sort={sort}
+        orderBy={orderBy}
         definitionModal={definitionModal}
         diagramModal={diagramModal}
         dependencyModal={dependencyModal}
