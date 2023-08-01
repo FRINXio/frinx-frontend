@@ -166,8 +166,6 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
     setFieldValue('actions', [...values.actions, newAction]);
   };
 
-  console.log(errors);
-
   return (
     <Card p={10} mb={5}>
       <form onSubmit={handleSubmit}>
