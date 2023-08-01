@@ -1552,7 +1552,7 @@ export type Tag = {
 export type TaskDefinition = Node & {
   __typename?: 'TaskDefinition';
   concurrentExecLimit: Maybe<Scalars['Int']>;
-  createTime: Maybe<Scalars['String']>;
+  createdAt: Maybe<Scalars['String']>;
   createdBy: Maybe<Scalars['String']>;
   description: Maybe<Scalars['String']>;
   id: Scalars['ID'];
@@ -1570,7 +1570,7 @@ export type TaskDefinition = Node & {
   retryLogic: Maybe<RetryLogic>;
   timeoutPolicy: Maybe<TaskTimeoutPolicy>;
   timeoutSeconds: Scalars['Int'];
-  updateTime: Maybe<Scalars['String']>;
+  updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
 };
 
@@ -2027,6 +2027,18 @@ export type WorkflowInstanceDetailQueryVariables = Exact<{
 
 
 export type WorkflowInstanceDetailQuery = { __typename?: 'Query', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'SubWorkflow', executedWorkflowDetail: { __typename?: 'ExecutedWorkflow', id: string, endTime: string | null, startTime: string | null, reasonForIncompletion: string | null, status: ExecutedWorkflowStatus | null, workflowId: string, workflowName: string | null, workflowVersion: number | null } }> | null } | null };
+
+export type PollDataQueryVariables = Exact<{
+  filter?: InputMaybe<FilterPollDataInput>;
+  orderBy: PollsOrderByInput;
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type PollDataQuery = { __typename?: 'Query', pollData: { __typename?: 'PollDataConnection', totalCount: number | null, edges: Array<{ __typename?: 'PollDataEdge', cursor: string | null, node: { __typename?: 'PollData', id: string, queueName: string | null, workerId: string | null, domain: string | null, lastPollTime: string | null } | null } | null> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } | null } | null };
 
 export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
 

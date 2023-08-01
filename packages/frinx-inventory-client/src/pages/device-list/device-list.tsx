@@ -1,7 +1,21 @@
-import { Box, Button, Container, Flex, Heading, HStack, Progress, useDisclosure } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  chakra,
+  Container,
+  Flex,
+  Heading,
+  HStack,
+  Progress,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { callbackUtils, ExecuteWorkflowModal, unwrap, useNotifications, Workflow } from '@frinx/shared/src';
 import { Item } from 'chakra-ui-autocomplete';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import { ConfirmDeleteModal } from '@frinx/shared';
@@ -144,6 +158,8 @@ function getSorting(sorting: Sorting | null, sortedBy: SortedBy): Sorting | null
   };
 }
 
+const Form = chakra('form');
+
 const DeviceList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const deleteModalDisclosure = useDisclosure();
@@ -190,10 +206,6 @@ const DeviceList: VoidFunctionComponent = () => {
         </Box>
       </Box>
     );
-  }
-
-  if (error) {
-    return <div>{error.toString()}</div>;
   }
 
   const handleUninstallButtonClick = (deviceId: string) => {
@@ -392,7 +404,8 @@ const DeviceList: VoidFunctionComponent = () => {
     setSorting(newSorting);
   };
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (e: FormEvent) => {
+    e.preventDefault();
     firstPage();
     setDeviceNameFilter(searchText);
   };
@@ -492,6 +505,14 @@ const DeviceList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
+        {error && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertTitle>Something went wrong...</AlertTitle>
+            <br />
+            <AlertDescription>{error.toString()}</AlertDescription>
+          </Alert>
+        )}
         <Box position="relative">
           {isFetchingDevices && deviceData != null && (
             <Box position="absolute" top={0} right={0} left={0}>
@@ -499,67 +520,62 @@ const DeviceList: VoidFunctionComponent = () => {
             </Box>
           )}
 
-          <Box>
-            <Flex>
-              <Flex align="flex-start" width="50%">
-                <Box flex={1}>
-                  <DeviceFilter
-                    labels={labels}
-                    selectedLabels={selectedLabels}
-                    onSelectionChange={handleOnSelectionChange}
-                    isCreationDisabled
-                  />
-                </Box>
-                <Box flex={1} marginLeft="2">
-                  <DeviceSearch text={searchText || ''} onChange={setSearchText} />
-                </Box>
-                <Button
-                  mb={6}
-                  data-cy="search-button"
-                  onClick={handleSearchSubmit}
-                  colorScheme="blue"
-                  marginLeft="2"
-                  mt={10}
-                >
-                  Search
-                </Button>
-              </Flex>
-              <Flex width="50%" justify="flex-end">
-                <BulkActions
-                  onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
-                  onInstallButtonClick={handleInstallSelectedDevices}
-                  areButtonsDisabled={selectedDevices.size === 0}
-                  onWorkflowButtonClick={() => {
-                    setIsSendingToWorkflows(true);
-                  }}
-                />
-              </Flex>
-            </Flex>
-          </Box>
-          <DeviceTable
-            data-cy="device-table"
-            sorting={sorting}
-            devices={deviceData?.devices.edges ?? []}
-            areSelectedAll={areSelectedAll}
-            onSelectAll={handleSelectionOfAllDevices}
-            selectedDevices={selectedDevices}
-            onSortingClick={handleSortingChange}
-            onInstallButtonClick={(deviceId) => installDevices([deviceId])}
-            onUninstallButtonClick={handleUninstallButtonClick}
-            onDeleteBtnClick={handleDeleteBtnClick}
-            installLoadingMap={installLoadingMap}
-            onDeviceSelection={handleDeviceSelection}
-          />
-
           {deviceData && (
-            <Box marginTop={4} paddingX={4}>
-              <Pagination
-                onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
-                onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
-                hasNextPage={deviceData.devices.pageInfo.hasNextPage}
-                hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
+            <>
+              <Box>
+                <Flex>
+                  <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
+                    <Box flex={1}>
+                      <DeviceFilter
+                        labels={labels}
+                        selectedLabels={selectedLabels}
+                        onSelectionChange={handleOnSelectionChange}
+                        isCreationDisabled
+                      />
+                    </Box>
+                    <Box flex={1} marginLeft="2">
+                      <DeviceSearch text={searchText || ''} onChange={setSearchText} />
+                    </Box>
+                    <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+                      Search
+                    </Button>
+                  </Form>
+                  <Flex width="50%" justify="flex-end">
+                    <BulkActions
+                      onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
+                      onInstallButtonClick={handleInstallSelectedDevices}
+                      areButtonsDisabled={selectedDevices.size === 0}
+                      onWorkflowButtonClick={() => {
+                        setIsSendingToWorkflows(true);
+                      }}
+                    />
+                  </Flex>
+                </Flex>
+              </Box>
+              <DeviceTable
+                data-cy="device-table"
+                sorting={sorting}
+                devices={deviceData?.devices.edges}
+                areSelectedAll={areSelectedAll}
+                onSelectAll={handleSelectionOfAllDevices}
+                selectedDevices={selectedDevices}
+                onSortingClick={handleSortingChange}
+                onInstallButtonClick={(deviceId) => installDevices([deviceId])}
+                onUninstallButtonClick={handleUninstallButtonClick}
+                onDeleteBtnClick={handleDeleteBtnClick}
+                installLoadingMap={installLoadingMap}
+                onDeviceSelection={handleDeviceSelection}
               />
-            </Box>
+
+              <Box marginTop={4} paddingX={4}>
+                <Pagination
+                  onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
+                  onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
+                  hasNextPage={deviceData.devices.pageInfo.hasNextPage}
+                  hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
+                />
+              </Box>
+            </>
           )}
         </Box>
       </Container>
