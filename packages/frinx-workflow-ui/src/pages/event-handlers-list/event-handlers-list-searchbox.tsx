@@ -23,17 +23,10 @@ const INITIAL_VALUES: SearchEventHandlerValues = {
 };
 
 const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onSearchSubmit, canDoSearch }) => {
-  const { values, handleChange, setFieldValue, submitForm } = useFormik<SearchEventHandlerValues>({
+  const { values, handleChange, submitForm, handleReset } = useFormik<SearchEventHandlerValues>({
     initialValues: filters || INITIAL_VALUES,
     onSubmit: onSearchSubmit,
   });
-
-  const resetForm = () => {
-    setFieldValue('event', null);
-    setFieldValue('isActive', null);
-    setFieldValue('evaluatorType', null);
-    setFieldValue('name', null);
-  };
 
   return (
     <Card p={10} mb={5}>
@@ -81,7 +74,7 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onS
         <Spacer />
 
         <ButtonGroup variant="outline" isDisabled={!canDoSearch}>
-          <Button onClick={resetForm}>Clear</Button>
+          <Button onClick={handleReset}>Clear</Button>
 
           <Button colorScheme="blue" onClick={submitForm}>
             Search

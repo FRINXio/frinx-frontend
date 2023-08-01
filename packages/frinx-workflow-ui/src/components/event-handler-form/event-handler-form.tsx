@@ -17,21 +17,8 @@ import {
 } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared';
 import EventHandlerFormActions from './event-handler-form-actions';
-
-export type StartWorkflow = {
-  name?: string | null;
-  version?: number | null;
-  input?: [string, string | number][] | null;
-  correlationId?: string | null;
-  taskToDomain?: [string, string | number][] | null;
-};
-
-export type ActionTask = {
-  workflowId?: string | null;
-  taskId?: string | null;
-  output?: [string, string | number][] | null;
-  taskRefName?: string | null;
-};
+import { ActionTask, StartWorkflow } from '../../types/event-listeners.types';
+import { hasObjectUniqueKeys, isOfEntriesType } from '../../helpers/event-handlers.helpers';
 
 export type EventHandlerAction = {
   id: string;
@@ -57,6 +44,22 @@ type Props = {
   onSubmit: (values: FormValues) => void;
 };
 
+const objectUniqueKeysValidationSchema = yup
+  .array()
+  .of(yup.array().min(2, 'Key and value are required').max(2, 'Key and value are required'))
+  .test('unique-keys', 'Keys must be unique', (value) => {
+    if (value == null || value.length === 0) {
+      return true;
+    }
+
+    if (isOfEntriesType<[string, string | number][]>(value)) {
+      return hasObjectUniqueKeys(value);
+    }
+
+    return true;
+  })
+  .nullable();
+
 const validationSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
   event: yup.string().required('Event is required'),
@@ -70,9 +73,9 @@ const validationSchema = yup.object().shape({
           .shape({
             name: yup.string().nullable(),
             version: yup.number().nullable(),
-            input: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+            input: objectUniqueKeysValidationSchema,
             correlationId: yup.string().nullable(),
-            taskToDomain: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+            taskToDomain: objectUniqueKeysValidationSchema,
           })
           .nullable(),
         completeTask: yup
@@ -80,7 +83,7 @@ const validationSchema = yup.object().shape({
           .shape({
             workflowId: yup.string().nullable(),
             taskId: yup.string().nullable(),
-            output: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+            output: objectUniqueKeysValidationSchema,
             taskRefName: yup.string().nullable(),
           })
           .nullable(),
@@ -89,7 +92,7 @@ const validationSchema = yup.object().shape({
           .shape({
             workflowId: yup.string().nullable(),
             taskId: yup.string().nullable(),
-            output: yup.array().of(yup.array().min(2, 'Key and value are required')).nullable(),
+            output: objectUniqueKeysValidationSchema,
             taskRefName: yup.string().nullable(),
           })
           .nullable(),
@@ -107,23 +110,14 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
   const [selectedConditionLanguage, setSelectedConditionLanguage] = React.useState<'javascript' | 'python'>(
     'javascript',
   );
-  const {
-    values,
-    errors,
-    handleChange,
-    handleSubmit,
-    handleReset,
-    isSubmitting,
-    isValid,
-    setFieldValue,
-    setFieldError,
-  } = useFormik<FormValues>({
-    validateOnChange: false,
-    validateOnBlur: false,
-    initialValues: formValues,
-    validationSchema,
-    onSubmit,
-  });
+  const { values, errors, handleChange, handleSubmit, handleReset, isSubmitting, isValid, setFieldValue } =
+    useFormik<FormValues>({
+      validateOnChange: false,
+      validateOnBlur: false,
+      initialValues: formValues,
+      validationSchema,
+      onSubmit,
+    });
 
   const handleOnConditionLangSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value === 'javascript') {
@@ -171,6 +165,8 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
     setSelectedAction('');
     setFieldValue('actions', [...values.actions, newAction]);
   };
+
+  console.log(errors);
 
   return (
     <Card p={10} mb={5}>
@@ -220,8 +216,8 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
         </HStack>
 
         <FormControl mb={5}>
-          <HStack mb={3}>
-            <FormLabel>Condition</FormLabel>
+          <HStack mb={3} alignItems="end">
+            <FormLabel mb={0}>Condition</FormLabel>
             <Spacer />
             <Select value={selectedConditionLanguage} onChange={handleOnConditionLangSelect} maxWidth="xs">
               <option value="javascript">JavaScript</option>
@@ -240,7 +236,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
           <FormErrorMessage>Condition is required</FormErrorMessage>
         </FormControl>
 
-        <FormControl mb={5} isInvalid={errors.actions != null}>
+        <FormControl mb={5} isInvalid={errors.actions != null && values.actions.length === 0}>
           <FormLabel>Actions</FormLabel>
           <HStack mb={3}>
             <Select value={selectedAction ?? ''} onChange={(e) => setSelectedAction(e.target.value)}>
@@ -260,13 +256,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
             values={values.actions}
             onChange={(actions) => setFieldValue('actions', actions)}
             onActionRemove={(index) => {
-              setFieldValue(
-                'actions',
-                values.actions.filter((_, i) => i !== index),
-              );
-            }}
-            onKeysNotUniqueChange={(index) => {
-              setFieldError(`actions[${index}]`, 'Keys are not unique');
+              setFieldValue('actions', [...values.actions].splice(index, 0));
             }}
           />
           {values.actions.length === 0 && <FormErrorMessage>At least one action is required</FormErrorMessage>}

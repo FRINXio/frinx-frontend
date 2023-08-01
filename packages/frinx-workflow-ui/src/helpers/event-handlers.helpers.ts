@@ -19,3 +19,26 @@ export function removeTypenamesFromEventHandlerAction(
     }),
   };
 }
+
+export const hasObjectUniqueKeys = (entries: [string, string | number][] | null | undefined) => {
+  if (entries == null) {
+    return true;
+  }
+
+  const keys = entries.map(([key]) => key);
+
+  return new Set(keys).size === keys.length;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isOfEntriesType = <T>(entries: any | (any[] | undefined)[] | null | undefined): entries is T => {
+  if (entries == null) {
+    return true;
+  }
+
+  if (Array.isArray(entries)) {
+    return entries.every((entry) => Array.isArray(entry) && entry.length === 2);
+  }
+
+  return false;
+};
