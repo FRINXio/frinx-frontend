@@ -37,6 +37,13 @@ type ActionProps = {
   onRemove: () => void;
 };
 
+type ViewMode = 'all' | 'task_only';
+
+enum ViewModeEnum {
+  ALL = 'all',
+  TASK_ONLY = 'task_only',
+}
+
 const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({ values, onChange, onRemove }) => {
   const handleOnNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, name: event.target.value });
@@ -125,7 +132,7 @@ const StartWorkflowAction: VoidFunctionComponent<StartWorkflowActionProps> = ({ 
 };
 
 const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values, onChange, onRemove }) => {
-  const [viewMode, setViewMode] = React.useState<'task_only' | 'all'>('all');
+  const [viewMode, setViewMode] = React.useState<ViewMode>(ViewModeEnum.ALL);
 
   const handleOnTaskIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, taskId: event.target.value });
@@ -166,19 +173,19 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values
       </Text>
       <HStack mb={3}>
         <RadioGroup
-          onChange={(e) => {
-            if (e === 'all') {
+          onChange={(e: ViewMode) => {
+            if (e === ViewModeEnum.ALL) {
               onChange({ ...values, workflowId: '', taskRefName: '' });
             } else {
               onChange({ ...values, taskId: '' });
             }
-            setViewMode(e as 'task_only' | 'all');
+            setViewMode(e);
           }}
           value={viewMode}
         >
           <Stack direction="row">
-            <Radio value="all">Workflow id + task ref name</Radio>
-            <Radio value="task_only">Task id</Radio>
+            <Radio value={ViewModeEnum.ALL}>Workflow id + task ref name</Radio>
+            <Radio value={ViewModeEnum.TASK_ONLY}>Task id</Radio>
           </Stack>
         </RadioGroup>
       </HStack>
