@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
-import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
-import * as yup from 'yup';
+import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import { Editor, ExtendedTask, GraphQLInputParams } from '@frinx/shared/src';
+import { FormikErrors } from 'formik';
+import React, { FC, useState } from 'react';
+import * as yup from 'yup';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 export const GraphQLInputParamsSchema = yup.object({
@@ -33,7 +33,6 @@ type Props = {
 const GraphQLInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) => {
   const { contentType, method, uri, body, timeout, headers } = params.http_request;
   const { query, variables } = body;
-  const theme = useTheme();
 
   const [uriVal, setUriVal] = useState(uri);
 
@@ -124,12 +123,11 @@ const GraphQLInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task })
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
         <Editor
-          mode="json"
-          name="headers"
+          language="json"
           value={JSON.stringify(headers)}
           onChange={(value) => {
             try {
-              const parsedValue = JSON.parse(value);
+              const parsedValue = JSON.parse(value ?? '');
 
               onChange({
                 ...params,
@@ -145,16 +143,12 @@ const GraphQLInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task })
             }
           }}
           height="100px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
         />
       </FormControl>
       <FormControl id="query" my={6}>
         <FormLabel>GraphQL query</FormLabel>
         <Editor
-          mode="graphqlschema"
-          name="query"
+          language="graphqlschema"
           value={query}
           onChange={(value) => {
             onChange({
@@ -164,27 +158,22 @@ const GraphQLInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task })
                 ...params.http_request,
                 body: {
                   ...params.http_request.body,
-                  query: value,
+                  query: value ?? '',
                 },
               },
             });
           }}
-          enableBasicAutocompletion
           height="200px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
         />
       </FormControl>
       <FormControl id="variables">
         <FormLabel>Variables</FormLabel>
         <Editor
-          mode="json"
-          name="variables"
+          language="json"
           value={JSON.stringify(variables, null, 2)}
           onChange={(value) => {
             try {
-              const parsedValue = JSON.parse(value);
+              const parsedValue = JSON.parse(value ?? '');
 
               onChange({
                 ...params,
@@ -202,11 +191,7 @@ const GraphQLInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task })
               console.error(error);
             }
           }}
-          enableBasicAutocompletion
           height="100px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
         />
       </FormControl>
     </>

@@ -32,7 +32,7 @@ import {
   CreateScheduledWorkflow,
   EditScheduledWorkflow,
   ExecuteWorkflowModalFormInput,
-} from '@frinx/shared';
+} from '@frinx/shared/src';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';

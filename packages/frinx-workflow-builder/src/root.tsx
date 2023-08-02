@@ -86,7 +86,7 @@ const WORKFLOW_LIST_QUERY = gql`
         node {
           name
           description
-          createdAt
+          createdBy
           retryCount
           timeoutSeconds
           timeoutPolicy
@@ -325,11 +325,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const { taskDefinitions } = workflowListData;
 
+  // console.log(workflow?.tasks);
+
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
       <ReactFlowProvider>
         <App
-          key={`${workflow.id}`}
+          key={workflow.id}
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
           workflows={clientWorkflowList}
