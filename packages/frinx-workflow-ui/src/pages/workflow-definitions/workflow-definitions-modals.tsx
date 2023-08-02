@@ -1,5 +1,11 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications, ExecuteWorkflowModal, ClientWorkflow, unwrap, CreateScheduledWorkflow } from '@frinx/shared';
+import {
+  useNotifications,
+  ExecuteWorkflowModal,
+  ClientWorkflow,
+  unwrap,
+  CreateScheduledWorkflow,
+} from '@frinx/shared/src';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
 import {

@@ -9,8 +9,7 @@
   },
   "resolutions": {
     "csstype": "3.0.10",
-    "@types/react": "17.0.53",
-    "react-ace@10.1.0": "patch:react-ace@npm:10.1.0#.yarn/patches/react-ace-npm-10.1.0-48bccfeb30.patch"
+    "@types/react": "17.0.53"
   },
   "scripts": {
     "formatter:check": "prettier -l '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' 'cypress/**/*.js' 'cypress/**/*.ts' package.json",

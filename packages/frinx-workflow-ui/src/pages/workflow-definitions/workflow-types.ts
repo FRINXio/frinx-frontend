@@ -1,4 +1,4 @@
-import { Task } from '@frinx/shared';
+import { Task } from '@frinx/shared/src';
 
 export type Workflow = {
   id: string;
