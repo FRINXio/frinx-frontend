@@ -51,7 +51,6 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
   };
 
   const language = contentType === 'application/json' ? 'json' : 'plaintext';
-  console.log(contentType, language);
 
   return (
     <>
