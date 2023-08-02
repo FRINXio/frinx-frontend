@@ -5049,11 +5049,8 @@ __metadata:
     "@graphql-codegen/typescript": 2.8.8
     "@graphql-codegen/typescript-operations": 2.5.13
     "@types/unescape-js": ^1.0.0
-<<<<<<< HEAD
-=======
     "@urql/exchange-multipart-fetch": 1.0.1
     "@urql/exchange-retry": 1.0.0
->>>>>>> origin/main
     babel-loader: 8.3.0
     babel-preset-env: 1.7.0
     clipboard: ^2.0.4
@@ -14866,8 +14863,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-=======
 "monaco-editor-webpack-plugin@npm:^7.1.0":
   version: 7.1.0
   resolution: "monaco-editor-webpack-plugin@npm:7.1.0"
@@ -14880,7 +14875,6 @@ __metadata:
   languageName: node
   linkType: hard
 
->>>>>>> origin/main
 "monaco-editor@npm:^0.40.0":
   version: 0.40.0
   resolution: "monaco-editor@npm:0.40.0"
