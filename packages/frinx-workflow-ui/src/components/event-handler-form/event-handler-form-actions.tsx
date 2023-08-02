@@ -39,6 +39,7 @@ type ActionProps = {
 
 type ViewMode = 'all' | 'task_only';
 
+// eslint-disable-next-line no-shadow
 enum ViewModeEnum {
   ALL = 'all',
   TASK_ONLY = 'task_only',
