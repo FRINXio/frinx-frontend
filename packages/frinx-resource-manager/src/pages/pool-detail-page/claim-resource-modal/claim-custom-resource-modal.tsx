@@ -109,10 +109,8 @@ const ClaimCustomResourceModal: FC<Props> = ({ isOpen, onClaimWithAltId, onClose
                   data-cy="resource-pool-claim-value"
                   value={values.userInput}
                   onChange={handleChange}
-                  name="userInput"
                   width="100%"
-                  mode="json"
-                  theme="tomorrow"
+                  language="json"
                 />
               </FormControl>
               <FormControl isInvalid={errors.description != null}>

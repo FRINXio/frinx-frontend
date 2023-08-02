@@ -31,23 +31,7 @@ const ViewStrategyScript: FC<ViewStrategyScriptProps> = ({ script, lang }) => {
           <ModalHeader>View Strategy</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Editor
-              height="450px"
-              width="100%"
-              mode={lang === 'js' ? 'javascript' : 'python'}
-              theme="tomorrow"
-              name="asd"
-              editorProps={{ $blockScrolling: true }}
-              value={script}
-              fontSize={16}
-              setOptions={{
-                enableBasicAutocompletion: true,
-                enableLiveAutocompletion: true,
-                enableSnippets: true,
-                showLineNumbers: true,
-                tabSize: 2,
-              }}
-            />
+            <Editor height="450px" width="100%" language={lang === 'js' ? 'javascript' : 'python'} value={script} />
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" onClick={onClose}>

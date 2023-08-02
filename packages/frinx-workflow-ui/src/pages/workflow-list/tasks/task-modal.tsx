@@ -29,7 +29,7 @@ export default function TaskConfigModal({ isOpen, task, onClose }: TaskConfigMod
           <Text color="gray.500" mb={4}>
             {jsonParse(task.description)?.description || task.description}
           </Text>
-          <Editor name="task_details_editor" value={JSON.stringify(task, null, 2)} readOnly onChange={undefined} />
+          <Editor defaultValue={JSON.stringify(task, null, 2)} />
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose}>

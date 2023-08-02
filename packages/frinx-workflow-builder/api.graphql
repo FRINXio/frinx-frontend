@@ -578,6 +578,7 @@ input FilterEventHandlerInput {
   evaluatorType: String
   event: String
   isActive: Boolean
+  name: String
 }
 
 input FilterPollDataInput {
@@ -1076,7 +1077,7 @@ type Tag {
 
 type TaskDefinition implements Node {
   concurrentExecLimit: Int
-  createdAt: String
+  createTime: String
   createdBy: String
   description: String
   id: ID!
@@ -1094,7 +1095,7 @@ type TaskDefinition implements Node {
   retryLogic: RetryLogic
   timeoutPolicy: TaskTimeoutPolicy
   timeoutSeconds: Int!
-  updatedAt: String
+  updateTime: String
   updatedBy: String
 }
 
