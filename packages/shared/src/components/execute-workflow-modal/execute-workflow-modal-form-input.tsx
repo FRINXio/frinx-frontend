@@ -57,13 +57,7 @@ const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
         />
       )}
 
-      {isJson && (
-        <Editor
-          name={inputParameterKey}
-          value={values[inputParameterKey]}
-          onChange={(e) => onChange(inputParameterKey, e)}
-        />
-      )}
+      {isJson && <Editor value={values[inputParameterKey]} onChange={(e) => onChange(inputParameterKey, e ?? '')} />}
 
       {isSelect && (
         <Select
