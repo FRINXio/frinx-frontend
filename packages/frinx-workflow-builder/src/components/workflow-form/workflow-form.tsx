@@ -10,61 +10,34 @@ import {
   FormLabel,
   Heading,
   HStack,
+  Icon,
   IconButton,
   Input,
   Select,
-  Icon,
   Textarea,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { omit, omitBy } from 'lodash';
-import { isWorkflowNameAvailable, Workflow, SearchByTagInput, useTagsInput } from '@frinx/shared/src';
+import {
+  isWorkflowNameAvailable,
+  SearchByTagInput,
+  useTagsInput,
+  ClientWorkflow,
+  ExtendedTask,
+} from '@frinx/shared/src';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
-type PartialWorkflow = Pick<
-  Workflow,
-  | 'name'
-  | 'description'
-  | 'version'
-  | 'restartable'
-  | 'timeoutPolicy'
-  | 'timeoutSeconds'
-  | 'outputParameters'
-  | 'variables'
->;
 type Props = {
-  workflow: PartialWorkflow;
+  workflow: ClientWorkflow<ExtendedTask>;
   canEditName: boolean;
-  workflows: Workflow[];
+  workflows: ClientWorkflow[];
   isCreatingWorkflow: boolean;
   onClose?: () => void;
-  onSubmit: (workflow: PartialWorkflow) => void;
+  onSubmit: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onChangeNotify?: () => void;
 };
 
-type FormValues = PartialWorkflow & { labels?: string[] };
-
-const getInitialValues = (initialWorkflow: PartialWorkflow): FormValues => {
-  const { description, labels } = JSON.parse(initialWorkflow.description || '{}');
-  let initialValues: FormValues = initialWorkflow;
-
-  if (description != null) {
-    initialValues = {
-      ...initialValues,
-      description,
-    };
-  }
-
-  if (labels != null) {
-    initialValues = {
-      ...initialValues,
-      labels,
-    };
-  }
-
-  return initialValues;
-};
+type FormValues = ClientWorkflow & { labels?: string[] };
 
 const validationSchema = (isCreatingWorkflow: boolean) =>
   yup.object({
@@ -84,7 +57,7 @@ const validationSchema = (isCreatingWorkflow: boolean) =>
 
 const WorkflowForm: FC<Props> = ({
   workflow,
-  onSubmit,
+  onSubmit, // eslint-disable-line @typescript-eslint/no-unused-vars
   onClose,
   workflows,
   canEditName,
@@ -92,19 +65,18 @@ const WorkflowForm: FC<Props> = ({
   onChangeNotify,
 }) => {
   const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
-    initialValues: getInitialValues(workflow),
+    initialValues: workflow,
     onSubmit: (formValues) => {
-      const updatedValues = omit(
-        {
-          ...formValues,
-          description: JSON.stringify({
-            description: formValues.description,
-            labels: formValues.labels,
-          }),
-        },
-        ['labels'],
-      );
-      onSubmit(updatedValues);
+      const editedWorkflow: ClientWorkflow<ExtendedTask> = {
+        ...workflow,
+        name: formValues.name,
+        description: formValues.description,
+        labels: formValues.labels,
+        version: Number(formValues.version),
+        restartable: formValues.restartable,
+        outputParameters: formValues.outputParameters,
+      };
+      onSubmit(editedWorkflow);
     },
     validationSchema: validationSchema(isCreatingWorkflow),
     validateOnBlur: true,
@@ -117,15 +89,7 @@ const WorkflowForm: FC<Props> = ({
     }
   };
 
-  const tagsInput = useTagsInput(
-    (function getLabels() {
-      try {
-        return JSON.parse(workflow.description || '{}').labels || [];
-      } catch (e) {
-        return [];
-      }
-    })(),
-  );
+  const tagsInput = useTagsInput(values.labels);
 
   useEffect(() => {
     setFieldValue('labels', tagsInput.selectedTags);
@@ -137,6 +101,7 @@ const WorkflowForm: FC<Props> = ({
   };
 
   const isNameInvalid = canEditName ? !isWorkflowNameAvailable(workflows, values.name) : false;
+  const outputParameters = values.outputParameters ?? [];
 
   return (
     <form
@@ -152,7 +117,7 @@ const WorkflowForm: FC<Props> = ({
       </FormControl>
       <FormControl id="description" my={6}>
         <FormLabel>Description</FormLabel>
-        <Textarea name="description" value={values.description} onChange={handleOnChange} />
+        <Textarea name="description" value={values.description || ''} onChange={handleOnChange} />
       </FormControl>
       <FormControl my={6}>
         <SearchByTagInput
@@ -167,15 +132,14 @@ const WorkflowForm: FC<Props> = ({
       </FormControl>
       <FormControl id="version" my={6} isRequired isInvalid={errors.version != null}>
         <FormLabel>Version</FormLabel>
-        <Input name="version" value={values.version} onChange={handleOnChange} />
+        <Input name="version" value={String(values.version)} onChange={handleOnChange} />
         <FormErrorMessage>{errors.version}</FormErrorMessage>
       </FormControl>
       {!isCreatingWorkflow && (
         <HStack spacing={2} my={6} alignItems="start">
           <FormControl id="timeoutPolicy" isRequired isInvalid={errors.timeoutPolicy != null}>
             <FormLabel>Timeout policy</FormLabel>
-            <Select name="timeoutPolicy" value={values.timeoutPolicy} onChange={handleOnChange}>
-              <option value="RETRY">RETRY</option>
+            <Select name="timeoutPolicy" value={values.timeoutPolicy ?? undefined} onChange={handleOnChange}>
               <option value="TIME_OUT_WF">TIME_OUT_WF</option>
               <option value="ALERT_ONLY">ALERT_ONLY</option>
             </Select>
@@ -190,7 +154,12 @@ const WorkflowForm: FC<Props> = ({
       )}
       <FormControl my={6} isInvalid={errors.restartable != null}>
         <Flex alignItems="center">
-          <Checkbox name="restartable" isChecked={values.restartable} onChange={handleOnChange} id="restartable" />
+          <Checkbox
+            name="restartable"
+            isChecked={values.restartable === null ? undefined : values.restartable}
+            onChange={handleOnChange}
+            id="restartable"
+          />
           <FormLabel htmlFor="restartable" mb={0} ml={2}>
             Restartable
           </FormLabel>
@@ -222,10 +191,8 @@ const WorkflowForm: FC<Props> = ({
               colorScheme="blue"
               icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
-                setFieldValue('outputParameters', {
-                  ...values.outputParameters,
-                  [newParam]: '',
-                });
+                const newParams = [...outputParameters, { key: newParam, value: newParam }];
+                setFieldValue('outputParameters', newParams);
                 setNewParam('');
                 handleOnChangeNotify();
               }}
@@ -234,19 +201,22 @@ const WorkflowForm: FC<Props> = ({
         </FormControl>
       </Box>
       <Box width="50%">
-        {Object.keys(values.outputParameters).map((key) => (
-          <FormControl id="param" my={2} key={key}>
-            <FormLabel>{key}</FormLabel>
+        {outputParameters.map((param) => (
+          <FormControl id="param" my={2} key={param.key}>
+            <FormLabel>{param.key}</FormLabel>
             <HStack spacing={2}>
               <Input
                 name="param"
                 variant="filled"
-                value={values.outputParameters[key]}
+                value={param.value}
                 onChange={(event) => {
-                  setFieldValue('outputParameters', {
-                    ...values.outputParameters,
-                    [key]: event.target.value,
+                  const newParams = outputParameters.map((p) => {
+                    if (p.key === param.key) {
+                      return { ...p, value: event.target.value };
+                    }
+                    return p;
                   });
+                  setFieldValue('outputParameters', newParams);
                   handleOnChangeNotify();
                 }}
               />
@@ -255,10 +225,8 @@ const WorkflowForm: FC<Props> = ({
                 colorScheme="red"
                 icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
                 onClick={() => {
-                  setFieldValue(
-                    'outputParameters',
-                    omitBy(values.outputParameters, (_, k) => k === key),
-                  );
+                  const newParams = outputParameters.filter((p) => p.key !== param.key);
+                  setFieldValue('outputParameters', newParams);
                   handleOnChangeNotify();
                 }}
               />

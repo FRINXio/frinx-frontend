@@ -3,7 +3,7 @@ import { omitNullValue } from '@frinx/shared/src';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { DeleteResourcePoolOptions } from '../../hooks/use-resource-pool-actions';
-import { GetPoolDetailQuery, GetPoolsQuery } from '../../__generated__/graphql';
+import { GetPoolDetailQuery } from '../../__generated__/graphql';
 import PoolsTable from '../pools-page/pools-table';
 
 type Props = {
@@ -19,7 +19,7 @@ const PoolDetailNestedPoolsTable: VoidFunctionComponent<Props> = ({
   resourcePool,
   poolId,
 }) => {
-  const nestedPools: GetPoolsQuery['QueryRootResourcePools'] = resourcePool.Resources.map((resource) =>
+  const nestedPools = resourcePool.Resources.map((resource) =>
     resource.NestedPool !== null ? resource.NestedPool : null,
   ).filter(omitNullValue);
 

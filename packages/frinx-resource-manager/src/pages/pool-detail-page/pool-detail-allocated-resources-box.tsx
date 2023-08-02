@@ -106,7 +106,6 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
               onFreeResource={freePoolResource}
               onNext={pagination.nextPage}
               onPrevious={pagination.previousPage}
-              paginationArgs={pagination.paginationArgs}
             />
           )}
         </>
@@ -119,7 +118,6 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
           onClaimResource={claimPoolResource}
           onNext={pagination.nextPage}
           onPrevious={pagination.previousPage}
-          paginationArgs={pagination.paginationArgs}
         />
       )}
     </Box>

@@ -1,8 +1,8 @@
-import { Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
-import React, { useMemo, VoidFunctionComponent } from 'react';
+import { Box, Button, Flex, Heading, HStack, Icon, Spacer } from '@chakra-ui/react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
-import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import {
@@ -13,35 +13,68 @@ import {
 } from '../../__generated__/graphql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import IpRangesTable from './ip-ranges-table';
+import Pagination from '../../components/pagination';
+import { usePagination } from '../../hooks/use-pagination';
+import SelectItemsPerPage from '../../components/select-items-per-page';
+import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 
 const GET_POOLS_QUERY = gql`
-  query GetPoolIpRanges {
-    QueryRootResourcePools {
-      id
-      Name
-      Tags {
-        id
-        Tag
-      }
-      ResourceType {
-        id
-        Name
-      }
-      PoolProperties
-      Resources {
-        id
-        NestedPool {
+  query GetPoolIpRanges(
+    $first: Int
+    $last: Int
+    $before: Cursor
+    $after: Cursor
+    $resourceTypeId: ID
+    $filterByResources: Map
+  ) {
+    QueryRootResourcePools(
+      first: $first
+      last: $last
+      before: $before
+      after: $after
+      resourceTypeId: $resourceTypeId
+      filterByResources: $filterByResources
+    ) {
+      edges {
+        node {
           id
+          Name
+          Tags {
+            id
+            Tag
+          }
           ResourceType {
             id
             Name
           }
+          PoolProperties
+          Resources {
+            id
+            NestedPool {
+              id
+              ResourceType {
+                id
+                Name
+              }
+            }
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
         }
       }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
+      pageInfo {
+        endCursor {
+          ID
+        }
+        hasNextPage
+        hasPreviousPage
+        startCursor {
+          ID
+        }
       }
+      totalCount
     }
   }
 `;
@@ -65,10 +98,24 @@ const getAddressesFromCIDR = (cidr: string, resourceTypeName: string) => ({
     : IPv6.broadcastAddressFromCIDR(cidr).toString(),
 });
 
+const ipv4PrefixId = '25769803776';
+const ipv6PrefixId = '25769803780';
+
 const IpamIpRangesPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
+  const [searchName, setSearchName] = useState<string>('');
+  const [isIpv4Prefix, setIsIpv4Prefix] = useState<boolean>(true);
+  const [paginationArgs, { nextPage, previousPage, firstPage, setItemsCount }] = usePagination();
+
   const [{ data, fetching, error }] = useQuery<GetPoolIpRangesQuery, GetPoolIpRangesQueryVariables>({
     query: GET_POOLS_QUERY,
+    variables: {
+      ...(paginationArgs?.first !== null && { first: paginationArgs.first }),
+      ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
+      ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
+      ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+      resourceTypeId: isIpv4Prefix ? ipv4PrefixId : ipv6PrefixId,
+    },
     context,
   });
 
@@ -76,25 +123,22 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
     DELETE_POOL_MUTATION,
   );
 
+  const allIpamIpRanges = (data?.QueryRootResourcePools.edges || [])
+    ?.map((e) => {
+      return e?.node ?? null;
+    })
+    .filter(omitNullValue);
+
   const { addToastNotification } = useNotifications();
   const [selectedTags, { clearAllTags, handleOnTagClick }] = useTags();
-  const { results, searchText, setSearchText } = useMinisearch({
-    items: data?.QueryRootResourcePools.filter(
-      (pool) => pool.ResourceType.Name === 'ipv4_prefix' || pool.ResourceType.Name === 'ipv6_prefix',
-    ),
-    searchFields: ['Name', 'PoolProperties'],
-    extractField: (document, fieldName) => {
-      if (fieldName === 'PoolProperties') {
-        return JSON.stringify(document[fieldName]);
-      }
-
-      return document[fieldName];
-    },
+  const { results, setSearchText } = useMinisearch({
+    items: allIpamIpRanges,
   });
 
   const handleOnClearSearch = () => {
     clearAllTags();
     setSearchText('');
+    firstPage();
   };
 
   const handleOnDeletePool = (resourcePoolId: string) => {
@@ -125,17 +169,13 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
       });
   };
 
-  if (fetching) {
-    return <Progress isIndeterminate size="sm" mt={-10} />;
-  }
-
   if (error != null) {
     return <Heading>There was problem with loading of ip ranges</Heading>;
   }
 
   const ipRanges = results
     .filter((result) =>
-      selectedTags.length > 0 ? result.Tags.some(({ Tag: tag }) => selectedTags.includes(tag)) : true,
+      selectedTags.length > 0 ? result.Tags.some(({ Tag: tag }: { Tag: string }) => selectedTags.includes(tag)) : true,
     )
     .map(({ Capacity, Name, PoolProperties, Tags, id, ResourceType, Resources }) => {
       const { network, broadcast } = getAddressesFromCIDR(
@@ -165,6 +205,10 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
       };
     });
 
+  const onSearchClick = () => {
+    setSearchText(searchName);
+  };
+
   return (
     <>
       <HStack mb={5}>
@@ -184,14 +228,44 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         </Button>
       </HStack>
       <SearchFilterPoolsBar
-        searchText={searchText}
-        setSearchText={setSearchText}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        onSearchClick={onSearchClick}
         clearAllTags={clearAllTags}
         selectedTags={selectedTags}
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
       />
-      <IpRangesTable ipRanges={ipRanges} onTagClick={handleOnTagClick} onDeleteBtnClick={handleOnDeletePool} />
+      <Ipv46PrefixSwitch
+        isIpv4={isIpv4Prefix}
+        setIsIpv4={setIsIpv4Prefix}
+        clearAllTags={clearAllTags}
+        firstPage={firstPage}
+      />
+
+      <IpRangesTable
+        fetching={fetching}
+        ipRanges={ipRanges}
+        onTagClick={handleOnTagClick}
+        onDeleteBtnClick={handleOnDeletePool}
+      />
+      <Flex align="center" justify="space-between">
+        {data && (
+          <Box marginTop={4} paddingX={4}>
+            <Pagination
+              onPrevious={previousPage(
+                data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
+              )}
+              onNext={nextPage(
+                data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
+              )}
+              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+            />
+          </Box>
+        )}
+        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+      </Flex>
     </>
   );
 };

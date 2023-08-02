@@ -22,7 +22,7 @@ import FeatherIcon from 'feather-icons-react';
 import React, { useMemo, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { getLocalDateFromUTC } from '../../helpers/time.helpers';
+import { getLocalDateFromUTC } from '@frinx/shared/src';
 import {
   BlueprintsQuery,
   BlueprintsQueryVariables,

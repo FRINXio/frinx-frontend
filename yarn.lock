@@ -2452,6 +2452,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.21.0":
+  version: 7.22.5
+  resolution: "@babel/runtime@npm:7.22.5"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 12a50b7de2531beef38840d17af50c55a094253697600cee255311222390c68eed704829308d4fd305e1b3dfbce113272e428e9d9d45b1730e0fede997eaceb1
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.16.7":
   version: 7.16.7
   resolution: "@babel/template@npm:7.16.7"
@@ -4608,6 +4617,7 @@ __metadata:
     html-webpack-harddisk-plugin: 2.0.0
     html-webpack-plugin: 5.5.0
     io-ts: 2.2.20
+    monaco-editor-webpack-plugin: ^7.1.0
     npm-run-all: 4.1.5
     react: 18.2.0
     react-dom: 18.2.0
@@ -4646,8 +4656,7 @@ __metadata:
     "@urql/exchange-retry": 1.0.0
     "@webpack-cli/serve": 1.7.0
     chakra-ui-autocomplete: ^1.4.5
-    date-fns: ^2.29.2
-    date-fns-tz: ^2.0.0
+    date-fns: ^2.29.3
     eslint: 8.36.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
@@ -4790,7 +4799,7 @@ __metadata:
     "@webpack-cli/serve": 1.7.0
     babel-loader: 8.3.0
     chakra-ui-autocomplete: ^1.4.5
-    date-fns: 2.29.3
+    date-fns: ^2.29.3
     date-fns-tz: 2.0.0
     eslint: 8.36.0
     eslint-config-prettier: 7.2.0
@@ -4914,6 +4923,8 @@ __metadata:
     "@typescript-eslint/parser": 5.54.1
     "@webpack-cli/serve": 1.7.0
     chakra-ui-autocomplete: ^1.4.5
+    date-fns: ^2.29.3
+    date-fns-tz: 2.0.0
     eslint: 8.36.0
     eslint-config-prettier: 7.2.0
     eslint-import-resolver-typescript: 2.7.1
@@ -4966,6 +4977,10 @@ __metadata:
     "@emotion/styled": 11.10.6
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/shared": "workspace:^"
+    "@graphql-codegen/cli": 2.16.5
+    "@graphql-codegen/introspection": 2.2.3
+    "@graphql-codegen/typescript": 2.8.8
+    "@graphql-codegen/typescript-operations": 2.5.13
     "@types/dagre": 0.7.48
     "@types/file-saver": 2.0.5
     "@types/react": 17.0.53
@@ -4973,6 +4988,8 @@ __metadata:
     "@types/uuid": 9.0.1
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
+    "@urql/exchange-multipart-fetch": 1.0.1
+    "@urql/exchange-retry": 1.0.0
     "@webpack-cli/serve": 1.7.0
     babel-loader: 8.3.0
     css-loader: 6.7.3
@@ -4999,6 +5016,7 @@ __metadata:
     react-router-dom: 6.9.0
     style-loader: 3.3.1
     typescript: 4.9.5
+    urql: 3.0.3
     uuid: 9.0.0
     vitest: 0.29.2
     webpack: 5.76.0
@@ -5026,7 +5044,16 @@ __metadata:
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@frinx/shared": ^0.0.1
     "@frinx/workflow-builder": ^1.0.0
+    "@graphql-codegen/cli": 2.16.5
+    "@graphql-codegen/introspection": 2.2.3
+    "@graphql-codegen/typescript": 2.8.8
+    "@graphql-codegen/typescript-operations": 2.5.13
     "@types/unescape-js": ^1.0.0
+<<<<<<< HEAD
+=======
+    "@urql/exchange-multipart-fetch": 1.0.1
+    "@urql/exchange-retry": 1.0.0
+>>>>>>> origin/main
     babel-loader: 8.3.0
     babel-preset-env: 1.7.0
     clipboard: ^2.0.4
@@ -5043,6 +5070,7 @@ __metadata:
     formik: ^2.2.9
     framer-motion: 6.2.8
     graphql: 15.8.0
+    graphql-ws: ^5.13.1
     jszip: ^3.2.2
     lodash: ^4.17.20
     match-sorter: ^6.3.0
@@ -5054,6 +5082,7 @@ __metadata:
     react-router-dom: 6.9.0
     typescript: 4.9.5
     unescape-js: ^1.1.4
+    urql: 3.0.3
   peerDependencies:
     "@chakra-ui/react": ^1.6.7 || ^2.0.0
     "@emotion/react": ^11.1.4
@@ -10242,7 +10271,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns-tz@npm:2.0.0, date-fns-tz@npm:^2.0.0":
+"date-fns-tz@npm:2.0.0":
   version: 2.0.0
   resolution: "date-fns-tz@npm:2.0.0"
   peerDependencies:
@@ -10251,17 +10280,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:2.29.3":
-  version: 2.29.3
-  resolution: "date-fns@npm:2.29.3"
-  checksum: e01cf5b62af04e05dfff921bb9c9933310ed0e1ae9a81eb8653452e64dc841acf7f6e01e1a5ae5644d0337e9a7f936175fd2cb6819dc122fdd9c5e86c56be484
-  languageName: node
-  linkType: hard
-
-"date-fns@npm:^2.29.2":
-  version: 2.29.2
-  resolution: "date-fns@npm:2.29.2"
-  checksum: 08bebcceb0a5dbadae4c55e6592b9d5c07dbd7833433c7e9a1d4a424300db32589b8b48e5979b32863c9b00a48d9bab6663e580c2a4f9f203d46cbf9113b5664
+"date-fns@npm:^2.29.3":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+  checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
   languageName: node
   linkType: hard
 
@@ -12684,6 +12708,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql-ws@npm:^5.13.1":
+  version: 5.13.1
+  resolution: "graphql-ws@npm:5.13.1"
+  peerDependencies:
+    graphql: ">=0.11 <=16"
+  checksum: 7a820c15d6d99f1b4c40b928131899a66edf2fdbca3db09a03dd7f6bde1e81f0a76ccda8e26254aabb0dc30f2a8c133cb0c5c5627c2dde8d032a8dc5a21f0ed3
+  languageName: node
+  linkType: hard
+
 "graphql-ws@npm:^5.4.1":
   version: 5.8.2
   resolution: "graphql-ws@npm:5.8.2"
@@ -14241,6 +14274,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"loader-utils@npm:^2.0.2":
+  version: 2.0.4
+  resolution: "loader-utils@npm:2.0.4"
+  dependencies:
+    big.js: ^5.2.2
+    emojis-list: ^3.0.0
+    json5: ^2.1.2
+  checksum: a5281f5fff1eaa310ad5e1164095689443630f3411e927f95031ab4fb83b4a98f388185bb1fe949e8ab8d4247004336a625e9255c22122b815bb9a4c5d8fc3b7
+  languageName: node
+  linkType: hard
+
 "local-pkg@npm:^0.4.2":
   version: 0.4.2
   resolution: "local-pkg@npm:0.4.2"
@@ -14822,6 +14866,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+<<<<<<< HEAD
+=======
+"monaco-editor-webpack-plugin@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "monaco-editor-webpack-plugin@npm:7.1.0"
+  dependencies:
+    loader-utils: ^2.0.2
+  peerDependencies:
+    monaco-editor: ">= 0.31.0"
+    webpack: ^4.5.0 || 5.x
+  checksum: e77cf5230c1b886fe0f1be3ecd8baea57795b93681783c5554bdf3aa256317a570bf546bbf17439f4c547182c9e70d8cb31d76715b3af0a8ec88e9cff054e4bd
+  languageName: node
+  linkType: hard
+
+>>>>>>> origin/main
 "monaco-editor@npm:^0.40.0":
   version: 0.40.0
   resolution: "monaco-editor@npm:0.40.0"

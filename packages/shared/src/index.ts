@@ -8,6 +8,8 @@ import callbackUtils from './helpers/workflow-api-callbacks';
 import unwrap from './helpers/unwrap';
 import type { TagsInputReturnType } from './hooks/use-tags-input';
 import type { Callbacks } from './helpers/workflow-api-callbacks';
+import ExecuteWorkflowModalFormInput from './components/execute-workflow-modal/execute-workflow-modal-form-input';
+import Pagination from './components/pagination/pagination';
 
 export * from './helpers/workflow-api.types';
 export * from './helpers/workflow.helpers';
@@ -28,4 +30,6 @@ export {
   Callbacks,
   callbackUtils,
   ExecuteWorkflowModal,
+  ExecuteWorkflowModalFormInput,
+  Pagination,
 };

@@ -67,7 +67,7 @@ type Props = {
   requiredPoolProperties?: RequiredPoolPropertiesQuery['QueryRequiredPoolProperties'];
   isLoadingRequiredPoolProperties: boolean;
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
-  resourcePools: SelectPoolsQuery;
+  resourcePools: SelectPoolsQuery | undefined;
   allocStrategies: AllocStrategy[];
 };
 
@@ -102,6 +102,8 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   onResourceTypeChange,
   requiredPoolProperties,
 }) => {
+  const [resTypeId, setResTypeId] = useState('');
+
   const navigate = useNavigate();
   const tagsInput = useTagsInput();
   const [validationSchema, setValidationSchema] = useState(
@@ -133,6 +135,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     });
 
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
+
+  const poolsData = resourcePools?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node;
+  });
 
   useEffect(() => {
     setValidationSchema(getSchemaForCreatePoolForm(values.poolType, isNested));
@@ -166,11 +172,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     }
   }, [values.poolProperties, setFieldValue]);
 
-  const { QueryResourcePools: pools } = resourcePools;
   const resourceTypeName = resourceTypes.find((rt) => rt.id === resourceTypeId)?.Name ?? null;
-  const parentResourceTypeName = pools.find((pool) => pool.id === parentPoolId)?.ResourceType.Name ?? null;
-  const availableResourceTypes = getAvailableResourceTypes(resourceTypes, pools, parentPoolId);
-  const availableAllocatedResources = getAvailableAllocatedResources(pools, parentPoolId);
+  const parentResourceTypeName = poolsData?.find((pool) => pool?.id === parentPoolId)?.ResourceType.Name ?? null;
+  const availableResourceTypes = getAvailableResourceTypes(resourceTypes, resourcePools, parentPoolId);
+  const availableAllocatedResources = getAvailableAllocatedResources(resourcePools, parentPoolId);
   const derivedFromAvailableResourceTypes = deriveResourceTypesFromAvailableResourceTypes(
     resourceTypes,
     availableResourceTypes,
@@ -186,9 +191,9 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     handleChange(e);
     setFieldValue('resourceTypeName', selectedResourceTypeName);
 
-    if (selectedResourceTypeName != null && isCustomResourceType(selectedResourceTypeName)) {
-      onResourceTypeChange(selectedResourceTypeName);
-    }
+    const selectedResourceTypeId = e.target.value;
+    setResTypeId(selectedResourceTypeId);
+    onResourceTypeChange(resTypeId);
   };
 
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
@@ -215,7 +220,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
           handleChange={handleChange}
           parentPoolId={parentPoolId}
           parentResourceId={parentResourceId}
-          pools={pools}
+          pools={resourcePools}
         />
       )}
       <HStack spacing={2} marginY={5}>
@@ -225,7 +230,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
             data-cy="create-pool-type"
             id="resourceType"
             name="resourceTypeId"
-            value={resourceTypeId}
+            value={resTypeId}
             onChange={handleOnResourceTypeChange}
             placeholder="Select resource type"
           >

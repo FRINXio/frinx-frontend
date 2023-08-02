@@ -1,0 +1,56 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836541",
+            "Name": "ateny2",
+            "Tags": [{ "id": "30064771103", "Tag": "ateny2", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803779", "Name": "vlan", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4094", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": 1, "to": 4094 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836543",
+            "Name": "ateny3",
+            "Tags": [{ "id": "30064771105", "Tag": "ateny3", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803779", "Name": "vlan", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4094", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": 1, "to": 4094 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836537",
+            "Name": "ateny",
+            "Tags": [{ "id": "30064771099", "Tag": "ateny", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803779", "Name": "vlan", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4094", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": 1, "to": 4094 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 3,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}

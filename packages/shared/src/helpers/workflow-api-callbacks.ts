@@ -3,6 +3,7 @@ import {
   ExecutedWorkflowResponse,
   Queue,
   ScheduledWorkflow,
+  ScheduleWorkflowInput,
   TaskDefinition,
   Workflow,
   WorkflowExecutionPayload,
@@ -14,7 +15,7 @@ export type Callbacks = {
   getWorkflows: () => Promise<Workflow[]>;
   getSchedules: () => Promise<ScheduledWorkflow[]>;
   getSchedule: (name: string, version: string) => Promise<ScheduledWorkflow>;
-  registerSchedule: (name: string, version: string, schedule: unknown) => Promise<unknown>;
+  registerSchedule: (name: string, version: string, schedule: ScheduleWorkflowInput) => Promise<unknown>;
   deleteSchedule: (name: string, version: string) => Promise<unknown>;
   registerTaskDefinition: (taskDefinitions: TaskDefinition[]) => Promise<TaskDefinition[]>;
   getTaskDefinitions: () => Promise<TaskDefinition[]>;

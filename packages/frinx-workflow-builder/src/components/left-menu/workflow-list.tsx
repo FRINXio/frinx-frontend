@@ -13,7 +13,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { createSubWorkflowTask, ExtendedTask, Workflow } from '@frinx/shared/src';
+import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import throttle from 'lodash/throttle';
 import MiniSearch from 'minisearch';
@@ -22,7 +22,7 @@ import { getFilteredResults, parseDescription, parseLabels } from './left-menu.h
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
-  workflows: Workflow[];
+  workflows: ClientWorkflow[];
 };
 
 const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) => {
@@ -69,10 +69,10 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
               </Tooltip>
             </Heading>
             <Text fontStyle="italic" color="gray.800">
-              {parseDescription(wf.description)}
+              {parseDescription(wf.description ?? '')}
             </Text>
             <Wrap marginTop={2} spacing={2}>
-              {parseLabels(wf.description)?.map((label) => (
+              {parseLabels(wf.description ?? '')?.map((label) => (
                 <WrapItem key={label}>
                   <Badge>{label}</Badge>
                 </WrapItem>
@@ -85,7 +85,7 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
               aria-label="Add task"
               icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
               onClick={() => {
-                onTaskAdd(createSubWorkflowTask(wf.name, wf.version.toString(), wf.inputParameters));
+                onTaskAdd(createSubWorkflowTask(wf.name, (wf.version ?? 1).toString(), wf.inputParameters ?? []));
               }}
             />
           </Box>

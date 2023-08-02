@@ -1,0 +1,56 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836545",
+            "Name": "roma3",
+            "Tags": [{ "id": "30064771107", "Tag": "roma3", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803778", "Name": "vlan_range", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4094", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": 1, "to": 4094 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836539",
+            "Name": "roma",
+            "Tags": [{ "id": "30064771101", "Tag": "roma", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803778", "Name": "vlan_range", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4094", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": 1, "to": 4094 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836542",
+            "Name": "roma2",
+            "Tags": [{ "id": "30064771104", "Tag": "roma2", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803778", "Name": "vlan_range", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4094", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": 1, "to": 4094 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 3,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}

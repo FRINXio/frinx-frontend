@@ -1,0 +1,30 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836546",
+            "Name": "madrid3",
+            "Tags": [{ "id": "30064771108", "Tag": "madrid3", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803784", "Name": "unique_id", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4094", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": 1, "idFormat": "{counter}", "to": 4094 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 1,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}

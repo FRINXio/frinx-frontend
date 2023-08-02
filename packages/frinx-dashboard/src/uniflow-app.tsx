@@ -1,5 +1,4 @@
-import { useMsal } from '@azure/msal-react';
-import { UniflowApi } from '@frinx/api';
+import { InventoryApi, UniflowApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext, refreshToken as getRefreshToken } from './auth-helpers';
 
@@ -17,7 +16,7 @@ const UniflowApp: FC = () => {
   useEffect(() => {
     Promise.all([import('@frinx/workflow-ui/src'), import('@frinx/workflow-builder/src')]).then(
       ([uniflowImport, builderImport]) => {
-        const { UniflowApp: App, getUniflowApiProvider } = uniflowImport;
+        const { UniflowApp: App, getUniflowApiProvider, InventoryAPIProvider } = uniflowImport;
         const { getBuilderApiProvider } = builderImport;
 
         const refreshToken = () => getRefreshToken(inProgress, accounts, instance);
@@ -30,6 +29,7 @@ const UniflowApp: FC = () => {
           BuilderApiProvider: getBuilderApiProvider(
             UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext, refreshToken }).client,
           ),
+          InventoryAPIProvider,
         });
       },
     );
@@ -39,14 +39,19 @@ const UniflowApp: FC = () => {
     return null;
   }
 
-  const { UniflowApiProvider, UniflowApp: App, BuilderApiProvider } = components;
+  const { UniflowApiProvider, UniflowApp: App, BuilderApiProvider, InventoryAPIProvider } = components;
 
   return (
-    <UniflowApiProvider>
-      <BuilderApiProvider>
-        <App />
-      </BuilderApiProvider>
-    </UniflowApiProvider>
+    <InventoryAPIProvider
+      client={InventoryApi.create({ authContext, url: window.__CONFIG__.inventoryApiURL }).client}
+      wsUrl={window.__CONFIG__.inventoryWsURL}
+    >
+      <UniflowApiProvider>
+        <BuilderApiProvider>
+          <App />
+        </BuilderApiProvider>
+      </UniflowApiProvider>
+    </InventoryAPIProvider>
   );
 };
 

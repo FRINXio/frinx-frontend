@@ -1,7 +1,19 @@
 import React, { FC } from 'react';
-import { Box, FormControl, FormLabel, Grid, Icon, Input, Select, Tag, Tooltip } from '@chakra-ui/react';
+import {
+  Box,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Grid,
+  Icon,
+  Input,
+  Select,
+  Tag,
+  Tooltip,
+} from '@chakra-ui/react';
 import { TaskDefinition } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
+import { FormikErrors } from 'formik';
 
 type Key = keyof TaskDefinition;
 
@@ -57,12 +69,13 @@ const FormSelect = ({ label, onChange, value, id, valuesList }: FormSelectProps)
 };
 
 type AddTaskModalFormProps = {
-  onChange: (fieldName: string, value: string | string[]) => void;
+  onChange: (fieldName: string, value: string | string[] | number) => void;
   onSubmit: () => void;
   task: TaskDefinition;
+  errors: FormikErrors<TaskDefinition>;
 };
 
-export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormProps) {
+export function AddTaskModalForm({ onChange, errors, onSubmit, task }: AddTaskModalFormProps) {
   const inputKeysRef = React.useRef<HTMLInputElement>(null);
   const outputKeysRef = React.useRef<HTMLInputElement>(null);
 
@@ -97,39 +110,61 @@ export function AddTaskModalForm({ onChange, onSubmit, task }: AddTaskModalFormP
   return (
     <form onSubmit={onSubmit}>
       <Grid gridTemplateColumns="1fr 1fr" columnGap={12} rowGap={2}>
-        <FormInput id="name" label="Name" onChange={onChange} value={task.name} />
-        <FormInput id="description" label="Description" onChange={onChange} value={task.description} />
-        <FormInput id="ownerEmail" label="Owner Email" onChange={onChange} value={task.ownerEmail} />
-        <FormInput id="retryCount" label="Retry Count" onChange={onChange} value={task.retryCount} type="number" />
+        <FormControl isInvalid={errors.name !== undefined}>
+          <FormInput id="name" label="Name" onChange={onChange} value={task.name} />
+          {errors.name && <FormErrorMessage>{errors.name}</FormErrorMessage>}
+        </FormControl>
+        <FormInput id="description" label="Description" onChange={onChange} value={task.description ?? ''} />
+        <FormInput id="ownerEmail" label="Owner Email" onChange={onChange} value={task.ownerEmail ?? ''} />
+        <FormInput
+          id="retryCount"
+          label="Retry Count"
+          onChange={onChange}
+          value={Number(task.retryCount) || undefined}
+          type="number"
+        />
         <FormSelect
           id="retryLogic"
           label="Retry Logic"
           onChange={onChange}
-          value={task.retryLogic}
+          value={task.retryLogic ?? 'FIXED'}
           valuesList={['FIXED', 'EXPONENTIAL_BACKOFF']}
         />
         <FormInput
           id="retryDelaySeconds"
           label="Retry Delay"
           onChange={onChange}
-          value={task.retryDelaySeconds}
+          value={Number(task.retryDelaySeconds) || ''}
           type="number"
         />
         <FormSelect
           id="timeoutPolicy"
           label="Timeout Policy"
           onChange={onChange}
-          value={task.timeoutPolicy}
+          value={task.timeoutPolicy ?? 'RETRY'}
           valuesList={['RETRY', 'TIME_OUT_WF', 'ALERT_ONLY']}
         />
-        <FormInput id="timeoutSeconds" label="Timeout" onChange={onChange} value={task.timeoutSeconds} type="number" />
-        <FormInput
-          id="responseTimeoutSeconds"
-          label="Response Timeout"
-          onChange={onChange}
-          value={task.responseTimeoutSeconds}
-          type="number"
-        />
+        <FormControl isInvalid={errors.timeoutSeconds !== undefined}>
+          <FormInput
+            id="timeoutSeconds"
+            label="Timeout"
+            onChange={onChange}
+            value={task.timeoutSeconds}
+            type="number"
+          />
+          {errors.timeoutSeconds && <FormErrorMessage>{errors.timeoutSeconds}</FormErrorMessage>}
+        </FormControl>
+        <FormControl isInvalid={errors.responseTimeoutSeconds !== undefined}>
+          <FormInput
+            id="responseTimeoutSeconds"
+            label="Response Timeout"
+            onChange={onChange}
+            value={Number(task.responseTimeoutSeconds) || ''}
+            type="number"
+          />{' '}
+          {errors.responseTimeoutSeconds && <FormErrorMessage>{errors.responseTimeoutSeconds}</FormErrorMessage>}
+        </FormControl>
+
         <FormControl>
           <FormLabel htmlFor="inputKeys">
             Input Keys

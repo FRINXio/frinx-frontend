@@ -1,0 +1,82 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        
+        {
+          "node": {
+            "id": "21474836530",
+            "Name": "ga",
+            "Tags": [{ "id": "30064771096", "Tag": "ga", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "Resources": [
+              {
+                "id": "17179869273",
+                "NestedPool": { "id": "21474836532", "Name": "mik", "__typename": "ResourcePool" },
+                "__typename": "Resource"
+              },
+              {
+                "id": "17179869274",
+                "NestedPool": { "id": "21474836533", "Name": "alex", "__typename": "ResourcePool" },
+                "__typename": "Resource"
+              },
+              { "id": "17179869275", "NestedPool": null, "__typename": "Resource" }
+            ],
+            "Capacity": { "freeCapacity": "65456", "utilizedCapacity": "74", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "address": "192.168.0.0", "prefix": 16, "subnet": false },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836525",
+            "Name": "tt",
+            "Tags": [{ "id": "30064771091", "Tag": "tt", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "Resources": [
+              {
+                "id": "17179869261",
+                "NestedPool": { "id": "21474836526", "Name": "tt1", "__typename": "ResourcePool" },
+                "__typename": "Resource"
+              },
+              {
+                "id": "17179869262",
+                "NestedPool": { "id": "21474836528", "Name": "tt2", "__typename": "ResourcePool" },
+                "__typename": "Resource"
+              }
+            ],
+            "Capacity": { "freeCapacity": "0", "utilizedCapacity": "4", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "address": "192.168.10.16", "prefix": 29, "subnet": false },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        
+        {
+          "node": {
+            "id": "21474836516",
+            "Name": "lv",
+            "Tags": [{ "id": "30064771092", "Tag": "lv", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "Resources": [{ "id": "17179869238", "NestedPool": null, "__typename": "Resource" }],
+            "Capacity": { "freeCapacity": "-1", "utilizedCapacity": "1", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "address": "192.168.10.16", "prefix": 30, "subnet": true },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+        
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 3,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}
