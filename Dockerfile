@@ -15,6 +15,9 @@ ENV NODE_ENV production
 RUN yarn run build
 
 FROM node:19.7.0-alpine
+
+ARG git_commit=unspecified
+LABEL git_commit="${git_commit}"
 LABEL org.opencontainers.image.source="https://github.com/FRINXio/frinx-frontend"
 
 ENV NODE_ENV production
