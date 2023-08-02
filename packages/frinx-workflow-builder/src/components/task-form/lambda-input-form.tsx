@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
-import { FormControl, FormErrorMessage, FormLabel, Input, useTheme } from '@chakra-ui/react';
-import { FormikErrors } from 'formik';
-import * as yup from 'yup';
+import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import { Editor, ExtendedTask, LambdaInputParams } from '@frinx/shared/src';
+import { FormikErrors } from 'formik';
+import React, { FC, useState } from 'react';
+import * as yup from 'yup';
 import AutocompleteTaskReferenceNameMenu from '../autocomplete-task-reference-name/autocomplete-task-reference-name-menu';
 
 export const LambdaInputParamsSchema = yup.object({
@@ -22,7 +22,6 @@ type Props = {
 
 const LambdaInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) => {
   const { lambdaValue, scriptExpression } = params;
-  const theme = useTheme();
   const [lambdaVal, setLambdaValue] = useState(lambdaValue);
 
   const handleOnChange = (updatedInputValue: string) => {
@@ -55,20 +54,15 @@ const LambdaInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) 
       <FormControl id="scriptExpression" my={6} isInvalid={errors.inputParameters?.scriptExpression != null}>
         <FormLabel>Script expression</FormLabel>
         <Editor
-          name="lambda-editor"
-          mode="javascript"
+          language="javascript"
           value={scriptExpression}
           onChange={(value) => {
             onChange({
               ...params,
-              scriptExpression: value,
+              scriptExpression: value ?? '',
             });
           }}
-          enableBasicAutocompletion
           height="200px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
         />
         <FormErrorMessage>{errors.inputParameters?.scriptExpression}</FormErrorMessage>
       </FormControl>
