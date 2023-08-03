@@ -223,11 +223,16 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
             </Select>
           </HStack>
           <Editor
-            name="condition"
-            mode={selectedConditionLanguage}
+            language={selectedConditionLanguage}
             value={values.condition ?? ''}
             onChange={(value) => {
               setFieldValue('condition', value);
+            }}
+            options={{
+              minimap: {
+                enabled: false,
+              },
+              autoIndent: 'full',
             }}
           />
           <FormHelperText>Function must return true or false</FormHelperText>

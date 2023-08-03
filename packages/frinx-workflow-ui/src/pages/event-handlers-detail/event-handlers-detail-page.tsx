@@ -232,12 +232,17 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
               </Select>
             </HStack>
             <Editor
-              readOnly
               value={eventHandler.condition ?? editorComment}
               height="400px"
               width="100%"
-              theme="tomorrow"
-              mode={selectedConditionLang || 'javascript'}
+              language={selectedConditionLang || 'javascript'}
+              options={{
+                minimap: {
+                  enabled: false,
+                },
+                autoIndent: 'full',
+                readOnly: true,
+              }}
             />
             <FormHelperText>
               Currently supporting only JavaScript and Python{' '}

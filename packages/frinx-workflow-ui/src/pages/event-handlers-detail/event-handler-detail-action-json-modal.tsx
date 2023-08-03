@@ -26,10 +26,16 @@ const EventHandlerDetailActionJsonModal: VoidFunctionComponent<Props> = ({ json,
         <ModalCloseButton />
         <ModalBody>
           <Editor
-            readOnly
-            mode="json"
             value={json == null || json.length === 0 ? '// any content was not provided to be shown' : json}
-            minLines={80}
+            height="200px"
+            language="json"
+            options={{
+              minimap: {
+                enabled: false,
+              },
+              autoIndent: 'full',
+              readOnly: true,
+            }}
           />
         </ModalBody>
 
