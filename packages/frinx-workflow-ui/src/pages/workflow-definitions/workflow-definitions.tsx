@@ -205,7 +205,7 @@ const WorkflowDefinitions = () => {
       });
   };
 
-  const sort = () => {
+  const onSort = () => {
     return orderBy.direction === 'DESC'
       ? setOrderBy({ ...orderBy, direction: 'ASC' })
       : setOrderBy({ ...orderBy, direction: 'DESC' });
@@ -274,7 +274,7 @@ const WorkflowDefinitions = () => {
       />
       <WorkflowDefinitionsTable
         workflows={workflows}
-        sort={sort}
+        onSort={onSort}
         orderBy={orderBy}
         definitionModal={definitionModal}
         diagramModal={diagramModal}

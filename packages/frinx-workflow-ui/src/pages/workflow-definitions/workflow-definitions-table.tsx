@@ -32,7 +32,7 @@ type OrderBy = {
 type Props = {
   workflows: ClientWorkflow[];
   allLabels: string[];
-  sort: () => void;
+  onSort: () => void;
   orderBy: OrderBy;
   executeWorkflowModal: UseDisclosureReturn;
   definitionModal: UseDisclosureReturn;
@@ -83,7 +83,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   onFavoriteClick,
   confirmDeleteModal,
   onLabelClick,
-  sort,
+  onSort,
   orderBy,
   workflows,
   allLabels,
@@ -105,7 +105,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size="lg" data-cy="tbl-workflows">
       <Thead>
         <Tr>
-          <Th cursor="pointer" onClick={sort}>
+          <Th cursor="pointer" onClick={onSort}>
             Name/Version{' '}
             <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
           </Th>
