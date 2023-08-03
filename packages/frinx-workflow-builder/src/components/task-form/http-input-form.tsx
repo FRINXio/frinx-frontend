@@ -37,7 +37,6 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
   const body = getBodyFromRequest(params);
 
   const [uriVal, setUriVal] = useState(uri);
-
   const handleOnChange = (updatedInputValue: string) => {
     setUriVal(updatedInputValue);
 
@@ -50,6 +49,8 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
       },
     });
   };
+
+  const language = contentType === 'application/json' ? 'json' : 'plaintext';
 
   return (
     <>
@@ -107,7 +108,7 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
       </FormControl>
       <FormControl id="contentType" my={6} isInvalid={errors.inputParameters?.http_request?.contentType != null}>
         <FormLabel>Content type</FormLabel>
-        <Input
+        <Select
           variant="filled"
           name="contentType"
           value={contentType}
@@ -122,7 +123,12 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
               },
             });
           }}
-        />
+        >
+          <option value="application/json">application/json</option>
+
+          <option value="text/plain">text/plain</option>
+        </Select>
+
         <FormErrorMessage>{errors.inputParameters?.http_request?.contentType}</FormErrorMessage>
       </FormControl>
       <FormControl id="timeout" my={6} isInvalid={errors.inputParameters?.http_request?.timeout != null}>
@@ -168,7 +174,8 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
         <FormControl id="body" my={6}>
           <FormLabel>Body</FormLabel>
           <Editor
-            value={JSON.stringify(body, null, 2) ?? ''}
+            language={language}
+            value={body ?? ''}
             onChange={(value) => {
               if (params.http_request.method === 'GET') {
                 return;
