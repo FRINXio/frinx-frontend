@@ -4,12 +4,13 @@ import SearchByTag from './components/search-by-tag/search-by-tag';
 import SearchByTagInput from './components/search-by-tag/search-by-tag-input';
 import ToastNotification from './components/toast-notification/toast-notification';
 import ExecuteWorkflowModal from './components/execute-workflow-modal/execute-workflow-modal';
+import type { Callbacks } from './helpers/workflow-api-callbacks';
 import callbackUtils from './helpers/workflow-api-callbacks';
 import unwrap from './helpers/unwrap';
 import type { TagsInputReturnType } from './hooks/use-tags-input';
-import type { Callbacks } from './helpers/workflow-api-callbacks';
 import ExecuteWorkflowModalFormInput from './components/execute-workflow-modal/execute-workflow-modal-form-input';
 import Pagination from './components/pagination/pagination';
+import ConfirmDeleteModal from './components/confirm-delete-modal/confirm-delete-modal';
 
 export * from './helpers/workflow-api.types';
 export * from './helpers/workflow.helpers';
@@ -32,4 +33,5 @@ export {
   ExecuteWorkflowModal,
   ExecuteWorkflowModalFormInput,
   Pagination,
+  ConfirmDeleteModal,
 };
