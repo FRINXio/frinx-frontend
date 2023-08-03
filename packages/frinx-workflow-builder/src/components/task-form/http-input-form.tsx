@@ -126,7 +126,7 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
         >
           <option value="application/json">application/json</option>
 
-          <option value="plain/text">plain/text</option>
+          <option value="text/plain">text/plain</option>
         </Select>
 
         <FormErrorMessage>{errors.inputParameters?.http_request?.contentType}</FormErrorMessage>
