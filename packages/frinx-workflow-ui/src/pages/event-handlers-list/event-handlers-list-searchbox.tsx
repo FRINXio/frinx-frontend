@@ -37,23 +37,23 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onS
     <Card p={10} mb={5}>
       <HStack spacing={4} mb={5}>
         <FormControl>
-          <FormLabel htmlFor="event">Event</FormLabel>
-          <Input
-            id="event"
-            name="event"
-            placeholder="Event on which event handler is executed"
-            value={values.event ?? ''}
-            onChange={handleChange}
-          />
-        </FormControl>
-
-        <FormControl>
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input
             id="name"
             name="name"
             placeholder="Name of event handler"
             value={values.name ?? ''}
+            onChange={handleChange}
+          />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel htmlFor="event">Event</FormLabel>
+          <Input
+            id="event"
+            name="event"
+            placeholder="Event on which event handler is executed"
+            value={values.event ?? ''}
             onChange={handleChange}
           />
         </FormControl>
