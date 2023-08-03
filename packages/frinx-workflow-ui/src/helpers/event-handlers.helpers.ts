@@ -1,4 +1,5 @@
 import { omit } from 'lodash';
+import { EventHandlerAction } from '../components/event-handler-form/event-handler-form';
 import { EventHandlerQuery } from '../__generated__/graphql';
 
 export function removeTypenamesFromEventHandlerAction(
@@ -17,6 +18,33 @@ export function removeTypenamesFromEventHandlerAction(
     ...(newAction.completeTask != null && {
       completeTask: omit(newAction.completeTask, '__typename'),
     }),
+  };
+}
+
+export function removeTypenamesFromActionTasks(action: EventHandlerAction) {
+  return {
+    completeTask: omit(
+      {
+        ...action.completeTask,
+        output: JSON.stringify(Object.fromEntries(action.completeTask?.output ?? [])),
+      },
+      ['__typename'],
+    ),
+    failTask: omit(
+      {
+        ...action.failTask,
+        output: JSON.stringify(Object.fromEntries(action.failTask?.output ?? [])),
+      },
+      ['__typename'],
+    ),
+    startWorkflow: omit(
+      {
+        ...action.startWorkflow,
+        input: JSON.stringify(Object.fromEntries(action.startWorkflow?.input ?? [])),
+        taskToDomain: JSON.stringify(Object.fromEntries(action.startWorkflow?.taskToDomain ?? [])),
+      },
+      ['__typename'],
+    ),
   };
 }
 

@@ -197,7 +197,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
 
         <HStack>
           <FormControl isInvalid={errors.evaluatorType != null}>
-            <FormLabel>Event</FormLabel>
+            <FormLabel>Evaluator type</FormLabel>
             <Input
               name="evaluatorType"
               placeholder="default"

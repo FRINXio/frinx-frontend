@@ -4,7 +4,6 @@ import { gql, useMutation, useQuery } from 'urql';
 import { useNavigate, useParams } from 'react-router-dom';
 import { unwrap, useNotifications } from '@frinx/shared';
 import { v4 as uuid } from 'uuid';
-import { omit } from 'lodash';
 import EventHandlerForm, { FormValues } from '../../components/event-handler-form/event-handler-form';
 import {
   EditEventHandlerMutation,
@@ -12,6 +11,7 @@ import {
   GetEventHandlerDetailQuery,
   GetEventHandlerDetailQueryVariables,
 } from '../../__generated__/graphql';
+import { removeTypenamesFromActionTasks } from '../../helpers/event-handlers.helpers';
 
 const GET_EVENT_HANDLER_QUERY = gql`
   query GetEventHandlerDetail($event: String!, $name: String!) {
@@ -79,30 +79,9 @@ const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
       event: formValues.event,
       input: {
         actions: formValues.actions.map((action) => ({
+          ...removeTypenamesFromActionTasks(action),
           action: action.action,
           expandInlineJSON: action.expandInlineJSON,
-          completeTask: omit(
-            {
-              ...action.completeTask,
-              output: JSON.stringify(Object.fromEntries(action.completeTask?.output ?? [])),
-            },
-            ['__typename'],
-          ),
-          failTask: omit(
-            {
-              ...action.failTask,
-              output: JSON.stringify(Object.fromEntries(action.failTask?.output ?? [])),
-            },
-            ['__typename'],
-          ),
-          startWorkflow: omit(
-            {
-              ...action.startWorkflow,
-              input: JSON.stringify(Object.fromEntries(action.startWorkflow?.input ?? [])),
-              taskToDomain: JSON.stringify(Object.fromEntries(action.startWorkflow?.taskToDomain ?? [])),
-            },
-            ['__typename'],
-          ),
         })),
         condition: formValues.condition,
         isActive: formValues.isActive,
