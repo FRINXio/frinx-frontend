@@ -15,7 +15,7 @@ const BulkActions: VoidFunctionComponent<Props> = ({
   areButtonsDisabled,
 }) => {
   return (
-    <HStack>
+    <HStack mt={0}>
       <Button
         data-cy="send-to-workflows"
         isDisabled={areButtonsDisabled}
