@@ -18,7 +18,7 @@ import WorkflowDefinitionsTable from './workflow-definitions-table';
 
 type OrderBy = {
   sortKey: 'name';
-  direction: 'asc' | 'desc';
+  direction: 'ASC' | 'DESC';
 };
 
 type DescriptionJSON = { labels: string[]; description: string };
@@ -104,7 +104,7 @@ const WorkflowDefinitions = () => {
     keyword: null,
     labels: [],
   });
-  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'asc' });
+  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'ASC' });
   const [activeWf, setActiveWf] = useState<ClientWorkflow>();
   const { addToastNotification } = useNotifications();
 
@@ -206,9 +206,9 @@ const WorkflowDefinitions = () => {
   };
 
   const sort = () => {
-    return orderBy.direction === 'desc'
-      ? setOrderBy({ ...orderBy, direction: 'asc' })
-      : setOrderBy({ ...orderBy, direction: 'desc' });
+    return orderBy.direction === 'DESC'
+      ? setOrderBy({ ...orderBy, direction: 'ASC' })
+      : setOrderBy({ ...orderBy, direction: 'DESC' });
   };
 
   if (isLoadingWorkflowDefinitions) {

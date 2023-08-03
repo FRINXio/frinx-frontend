@@ -26,7 +26,7 @@ import WorkflowLabels from '../../components/workflow-labels';
 
 type OrderBy = {
   sortKey: 'name';
-  direction: 'asc' | 'desc';
+  direction: 'ASC' | 'DESC';
 };
 
 type Props = {
@@ -107,7 +107,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
         <Tr>
           <Th cursor="pointer" onClick={sort}>
             Name/Version{' '}
-            <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+            <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
           </Th>
           <Th>Labels</Th>
           <Th whiteSpace="nowrap">Included in</Th>
@@ -147,7 +147,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                           setActiveWorkflow(workflow);
                         }}
                       >
-                        {`${getDependencies(workflow).length} `} Tree{' '}
+                        {`${getDependencies(workflow).length} `} Tree
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent>
