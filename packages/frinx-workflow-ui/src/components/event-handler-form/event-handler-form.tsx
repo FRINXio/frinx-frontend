@@ -16,7 +16,7 @@ import {
   Switch,
 } from '@chakra-ui/react';
 import { Editor } from '@frinx/shared';
-import EventHandlerFormActions from './event-handler-form-actions';
+import EventHandlerFormActions from './event-handler-form-actions/event-handler-form-actions';
 import { ActionTask, StartWorkflow } from '../../types/event-listeners.types';
 import { hasObjectUniqueKeys, isOfEntriesType } from '../../helpers/event-handlers.helpers';
 
