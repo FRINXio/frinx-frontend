@@ -197,7 +197,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
         </g>
         <NetNodes nodes={netNodes} />
       </svg>
-      {!!unconfirmedShortestPathNodeIds.length && (
+      {unconfirmedShortestPathNodeIds.filter(omitNullValue).length && (
         <Box position="absolute" top={2} left="2" background="transparent">
           <Button onClick={handleClearShortestPath} marginRight={2}>
             Clear shortest path
