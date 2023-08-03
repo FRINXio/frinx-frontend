@@ -82,16 +82,20 @@ const WORKFLOW_LIST_QUERY = gql`
       totalCount
     }
     taskDefinitions {
-      name
-      description
-      createdAt
-      retryCount
-      timeoutSeconds
-      timeoutPolicy
-      retryLogic
-      retryDelaySeconds
-      responseTimeoutSeconds
-      ownerEmail
+      edges {
+        node {
+          name
+          description
+          createdBy
+          retryCount
+          timeoutSeconds
+          timeoutPolicy
+          retryLogic
+          retryDelaySeconds
+          responseTimeoutSeconds
+          ownerEmail
+        }
+      }
     }
   }
   ${WorkflowFragment}
@@ -321,15 +325,17 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const { taskDefinitions } = workflowListData;
 
+  // console.log(workflow?.tasks);
+
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
       <ReactFlowProvider>
         <App
-          key={`${workflow.id}`}
+          key={workflow.id}
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
           workflows={clientWorkflowList}
-          taskDefinitions={taskDefinitions}
+          taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}

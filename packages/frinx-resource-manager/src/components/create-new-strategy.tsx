@@ -8,11 +8,6 @@ import {
   CreateAllocationStrategyPayload,
   MutationCreateAllocationStrategyArgs,
 } from '../__generated__/graphql';
-import 'ace-builds/webpack-resolver';
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/mode-python';
-import 'ace-builds/src-noconflict/theme-tomorrow';
-import 'ace-builds/src-noconflict/ext-language_tools';
 
 const query = gql`
   mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {
@@ -97,18 +92,10 @@ const CreateNewStrategy: FC<Props> = ({ onSaveButtonClick }) => {
               <Editor
                 height="450px"
                 width="100%"
-                mode={lang === 'js' ? 'javascript' : 'python'}
-                theme="tomorrow"
-                editorProps={{ $blockScrolling: true }}
+                language={lang === 'js' ? 'javascript' : 'python'}
                 value={script}
-                fontSize={16}
-                onChange={setScript}
-                setOptions={{
-                  enableBasicAutocompletion: true,
-                  enableLiveAutocompletion: true,
-                  enableSnippets: true,
-                  showLineNumbers: true,
-                  tabSize: 2,
+                onChange={(value) => {
+                  setScript(value ?? '');
                 }}
               />
             </FormControl>

@@ -1,4 +1,4 @@
-import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select, useTheme } from '@chakra-ui/react';
+import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import { Editor, ExtendedTask, HTTPInputParams, HTTPMethod } from '@frinx/shared/src';
 import { FormikErrors } from 'formik';
 import React, { FC, useState } from 'react';
@@ -35,10 +35,8 @@ function getBodyFromRequest(params: HTTPInputParams): string | null {
 const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) => {
   const { contentType, method, uri, timeout, headers } = params.http_request;
   const body = getBodyFromRequest(params);
-  const theme = useTheme();
 
   const [uriVal, setUriVal] = useState(uri);
-
   const handleOnChange = (updatedInputValue: string) => {
     setUriVal(updatedInputValue);
 
@@ -51,6 +49,8 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
       },
     });
   };
+
+  const language = contentType === 'application/json' ? 'json' : 'plaintext';
 
   return (
     <>
@@ -108,7 +108,7 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
       </FormControl>
       <FormControl id="contentType" my={6} isInvalid={errors.inputParameters?.http_request?.contentType != null}>
         <FormLabel>Content type</FormLabel>
-        <Input
+        <Select
           variant="filled"
           name="contentType"
           value={contentType}
@@ -123,7 +123,12 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
               },
             });
           }}
-        />
+        >
+          <option value="application/json">application/json</option>
+
+          <option value="text/plain">text/plain</option>
+        </Select>
+
         <FormErrorMessage>{errors.inputParameters?.http_request?.contentType}</FormErrorMessage>
       </FormControl>
       <FormControl id="timeout" my={6} isInvalid={errors.inputParameters?.http_request?.timeout != null}>
@@ -151,7 +156,6 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
       <FormControl id="headers">
         <FormLabel>Headers</FormLabel>
         <Editor
-          name="headers"
           value={JSON.stringify(headers, null, 2)}
           onChange={(value) => {
             onChange({
@@ -159,23 +163,19 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
               // eslint-disable-next-line @typescript-eslint/naming-convention
               http_request: {
                 ...params.http_request,
-                headers: JSON.parse(value),
+                headers: JSON.parse(value ?? ''),
               },
             });
           }}
-          enableBasicAutocompletion
           height="100px"
-          style={{
-            borderRadius: theme.radii.md,
-          }}
         />
       </FormControl>
       {method !== 'GET' && (
         <FormControl id="body" my={6}>
           <FormLabel>Body</FormLabel>
           <Editor
-            name="body"
-            value={JSON.stringify(body, null, 2) ?? ''}
+            language={language}
+            value={body ?? ''}
             onChange={(value) => {
               if (params.http_request.method === 'GET') {
                 return;
@@ -185,15 +185,11 @@ const HTTPInputsForm: FC<Props> = ({ params, errors, onChange, tasks, task }) =>
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 http_request: {
                   ...params.http_request,
-                  body: value,
+                  body: value ?? '',
                 },
               });
             }}
-            enableBasicAutocompletion
             height="200px"
-            style={{
-              borderRadius: theme.radii.md,
-            }}
           />
         </FormControl>
       )}

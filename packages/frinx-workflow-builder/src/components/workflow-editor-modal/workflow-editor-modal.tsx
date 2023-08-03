@@ -8,6 +8,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Button,
+  Box,
 } from '@chakra-ui/react';
 import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared/src';
 
@@ -33,38 +34,35 @@ const parseWorkflow = (workflow: ClientWorkflow<ExtendedTask>) => {
 
 const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onChangeNotify }) => {
   const [editedWorkflow, setEditedWorkflow] = useState(parseWorkflow(workflow));
-  const [isJsonValid, setIsJsonValid] = useState(true);
 
   const handleSave = () => {
     try {
       const parsedWorkflow = JSON.parse(editedWorkflow);
-      setIsJsonValid(true);
+      // console.log(parsedWorkflow);
       onSave(parsedWorkflow);
       onClose();
-    } catch (error) {
-      setIsJsonValid(false);
+    } catch {
+      // eslint-disable-next-line no-console
+      console.error('wrong json');
     }
   };
 
-  const handleChange = (value: string) => {
-    try {
-      setEditedWorkflow(value);
-      setIsJsonValid(true);
-      onChangeNotify();
-    } catch (error) {
-      setIsJsonValid(false);
-    }
+  const handleChange = (value: string | undefined) => {
+    // console.log(value);
+    setEditedWorkflow(value ?? '');
+    onChangeNotify();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="full" closeOnOverlayClick={false}>
       <ModalOverlay />
-      <ModalContent maxW="48rem">
+      <ModalContent maxW="75vw">
         <ModalHeader>Workflow editor</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Editor mode="json" value={editedWorkflow} onChange={handleChange} />
-          {!isJsonValid && <p>Bad JSON</p>}
+          <Box height="calc(100vh - 62px - 72px - 16px)">
+            <Editor language="json" value={editedWorkflow} onChange={handleChange} height="100%" />
+          </Box>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose} marginRight={2}>

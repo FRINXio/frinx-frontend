@@ -29,7 +29,6 @@
     "@types/uuid": "9.0.1",
     "@urql/exchange-multipart-fetch": "1.0.1",
     "@urql/exchange-retry": "1.0.0",
-    "ace-builds": "1.15.3",
     "dagre": "0.8.5",
     "feather-icons-react": "0.6.2",
     "file-saver": "2.0.5",

@@ -4617,6 +4617,7 @@ __metadata:
     html-webpack-harddisk-plugin: 2.0.0
     html-webpack-plugin: 5.5.0
     io-ts: 2.2.20
+    monaco-editor-webpack-plugin: ^7.1.0
     npm-run-all: 4.1.5
     react: 18.2.0
     react-dom: 18.2.0
@@ -4865,7 +4866,6 @@ __metadata:
     "@typescript-eslint/parser": 5.54.1
     "@urql/exchange-retry": 1.0.0
     "@webpack-cli/serve": 1.7.0
-    ace-builds: 1.15.3
     babel-loader: 8.3.0
     chakra-ui-autocomplete: ^1.4.5
     css-loader: 6.7.3
@@ -4916,6 +4916,7 @@ __metadata:
     "@emotion/react": 11.10.6
     "@emotion/styled": 11.10.6
     "@frinx/eslint-config-typescript": 19.0.4-build.1
+    "@monaco-editor/react": ^4.5.1
     "@types/react": 17.0.53
     "@types/react-dom": 18.0.11
     "@typescript-eslint/eslint-plugin": 5.54.1
@@ -4937,9 +4938,9 @@ __metadata:
     html-webpack-plugin: ^5.5.0
     lodash: ^4.17.21
     minisearch: ^6.0.0
+    monaco-editor: ^0.40.0
     npm-run-all: 4.1.5
     react: 18.2.0
-    react-ace: 10.1.0
     react-dom: 18.2.0
     react-flow-renderer: 10.3.17
     react-router-dom: 6.9.0
@@ -4990,7 +4991,6 @@ __metadata:
     "@urql/exchange-multipart-fetch": 1.0.1
     "@urql/exchange-retry": 1.0.0
     "@webpack-cli/serve": 1.7.0
-    ace-builds: 1.15.3
     babel-loader: 8.3.0
     css-loader: 6.7.3
     dagre: 0.8.5
@@ -5051,7 +5051,6 @@ __metadata:
     "@types/unescape-js": ^1.0.0
     "@urql/exchange-multipart-fetch": 1.0.1
     "@urql/exchange-retry": 1.0.0
-    ace-builds: ^1.4.12
     babel-loader: 8.3.0
     babel-preset-env: 1.7.0
     clipboard: ^2.0.4
@@ -5945,6 +5944,30 @@ __metadata:
   version: 2.0.4
   resolution: "@leichtgewicht/ip-codec@npm:2.0.4"
   checksum: 468de1f04d33de6d300892683d7c8aecbf96d1e2c5fe084f95f816e50a054d45b7c1ebfb141a1447d844b86a948733f6eebd92234da8581c84a1ad4de2946a2d
+  languageName: node
+  linkType: hard
+
+"@monaco-editor/loader@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "@monaco-editor/loader@npm:1.3.3"
+  dependencies:
+    state-local: ^1.0.6
+  peerDependencies:
+    monaco-editor: ">= 0.21.0 < 1"
+  checksum: 037dd4758651cb623482398fba884c0ddec1ed40502185f1fa417e54f47485291e236eb13bcdffb7bca292edd97ca8e3c51c2c3505e17a3184f4c6d11016fcac
+  languageName: node
+  linkType: hard
+
+"@monaco-editor/react@npm:^4.5.1":
+  version: 4.5.1
+  resolution: "@monaco-editor/react@npm:4.5.1"
+  dependencies:
+    "@monaco-editor/loader": ^1.3.3
+  peerDependencies:
+    monaco-editor: ">= 0.25.0 < 1"
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 989b98f5750f0b0ad54dc1dd7da8e92c67fcab55e89e26465ab7312fae87b3795f2e4603e7979e9545b7ad5d00fbcb3f21d20144d9e7eafa6f6989a76ad78c3a
   languageName: node
   linkType: hard
 
@@ -7587,27 +7610,6 @@ __metadata:
     mime-types: ~2.1.34
     negotiator: 0.6.3
   checksum: 50c43d32e7b50285ebe84b613ee4a3aa426715a7d131b65b786e2ead0fd76b6b60091b9916d3478a75f11f162628a2139991b6c03ab3f1d9ab7c86075dc8eab4
-  languageName: node
-  linkType: hard
-
-"ace-builds@npm:1.15.3":
-  version: 1.15.3
-  resolution: "ace-builds@npm:1.15.3"
-  checksum: 793cc2211401fbd3af092418af3b6dcae7ce6d3f312260e6888cf5db4992c087877b5a2808e47e5e105161d61de3cd55a32a8d93d997244ef46c868b9212a53a
-  languageName: node
-  linkType: hard
-
-"ace-builds@npm:^1.4.12":
-  version: 1.4.14
-  resolution: "ace-builds@npm:1.4.14"
-  checksum: 7e7fbfc6add7e250015bc3f6452a173b2b4722bb9d2ceaa7c5cc506d166906d6df72a595cee3d4c931f9814a480ce583026652a2285abdcd2c0881e92f34c5b0
-  languageName: node
-  linkType: hard
-
-"ace-builds@npm:^1.4.14":
-  version: 1.14.0
-  resolution: "ace-builds@npm:1.14.0"
-  checksum: 11d07e0875381ff8061beed336c52f2bc532fbf51fc4a410d97789b27e47d2094fbb779dffe00db00c6d781f3f72bdc83313b2ad6460e5b8e5fa8a343c5f3720
   languageName: node
   linkType: hard
 
@@ -10541,13 +10543,6 @@ __metadata:
     deep-diff: ^1.0.2
     lodash: 4
   checksum: e8062ffecb502ae451769382f63160bc2b004086150592406cc586d0de4eea09324fa2d5800d4f4cc5ef19e81b951b34e096d98acc0e4bcf434a7e2f6af87710
-  languageName: node
-  linkType: hard
-
-"diff-match-patch@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "diff-match-patch@npm:1.0.5"
-  checksum: 841522d01b09cccbc4e4402cf61514a81b906349a7d97b67222390f2d35cf5df277cb23959eeed212d5e46afb5629cebab41b87918672c5a05c11c73688630e3
   languageName: node
   linkType: hard
 
@@ -14276,6 +14271,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"loader-utils@npm:^2.0.2":
+  version: 2.0.4
+  resolution: "loader-utils@npm:2.0.4"
+  dependencies:
+    big.js: ^5.2.2
+    emojis-list: ^3.0.0
+    json5: ^2.1.2
+  checksum: a5281f5fff1eaa310ad5e1164095689443630f3411e927f95031ab4fb83b4a98f388185bb1fe949e8ab8d4247004336a625e9255c22122b815bb9a4c5d8fc3b7
+  languageName: node
+  linkType: hard
+
 "local-pkg@npm:^0.4.2":
   version: 0.4.2
   resolution: "local-pkg@npm:0.4.2"
@@ -14319,20 +14325,6 @@ __metadata:
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: a3f527d22c548f43ae31c861ada88b2637eb48ac6aa3eb56e82d44917971b8aa96fbb37aa60efea674dc4ee8c42074f90f7b1f772e9db375435f6c83a19b3bc6
-  languageName: node
-  linkType: hard
-
-"lodash.get@npm:^4.4.2":
-  version: 4.4.2
-  resolution: "lodash.get@npm:4.4.2"
-  checksum: e403047ddb03181c9d0e92df9556570e2b67e0f0a930fcbbbd779370972368f5568e914f913e93f3b08f6d492abc71e14d4e9b7a18916c31fa04bd2306efe545
-  languageName: node
-  linkType: hard
-
-"lodash.isequal@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "lodash.isequal@npm:4.5.0"
-  checksum: da27515dc5230eb1140ba65ff8de3613649620e8656b19a6270afe4866b7bd461d9ba2ac8a48dcc57f7adac4ee80e1de9f965d89d4d81a0ad52bb3eec2609644
   languageName: node
   linkType: hard
 
@@ -14868,6 +14860,25 @@ __metadata:
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
   checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
+  languageName: node
+  linkType: hard
+
+"monaco-editor-webpack-plugin@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "monaco-editor-webpack-plugin@npm:7.1.0"
+  dependencies:
+    loader-utils: ^2.0.2
+  peerDependencies:
+    monaco-editor: ">= 0.31.0"
+    webpack: ^4.5.0 || 5.x
+  checksum: e77cf5230c1b886fe0f1be3ecd8baea57795b93681783c5554bdf3aa256317a570bf546bbf17439f4c547182c9e70d8cb31d76715b3af0a8ec88e9cff054e4bd
+  languageName: node
+  linkType: hard
+
+"monaco-editor@npm:^0.40.0":
+  version: 0.40.0
+  resolution: "monaco-editor@npm:0.40.0"
+  checksum: 9f879c254bfb9907cc0b23d26bd4bcaaabf9a2cfbd9926574e06ea94f4b9e5807299db9cae1f35820da6242d5d13d9382cb9db48b1340c54ba06620c242c25c7
   languageName: node
   linkType: hard
 
@@ -16142,38 +16153,6 @@ __metadata:
     iconv-lite: 0.4.24
     unpipe: 1.0.0
   checksum: 5362adff1575d691bb3f75998803a0ffed8c64eabeaa06e54b4ada25a0cd1b2ae7f4f5ec46565d1bec337e08b5ac90c76eaa0758de6f72a633f025d754dec29e
-  languageName: node
-  linkType: hard
-
-"react-ace@npm:10.1.0":
-  version: 10.1.0
-  resolution: "react-ace@npm:10.1.0"
-  dependencies:
-    ace-builds: ^1.4.14
-    diff-match-patch: ^1.0.5
-    lodash.get: ^4.4.2
-    lodash.isequal: ^4.5.0
-    prop-types: ^15.7.2
-  peerDependencies:
-    react: ^0.13.0 || ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^0.13.0 || ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 8fc67e02f911dcc31cf474df97c06f2ba5b5f402d9ed425895e479e2daddf4894a2cd0e81744b37b7f2b07109cfe4470fc5ebeed305d648c596e3442142e4823
-  languageName: node
-  linkType: hard
-
-"react-ace@patch:react-ace@npm:10.1.0#.yarn/patches/react-ace-npm-10.1.0-48bccfeb30.patch::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 10.1.0
-  resolution: "react-ace@patch:react-ace@npm%3A10.1.0#.yarn/patches/react-ace-npm-10.1.0-48bccfeb30.patch::version=10.1.0&hash=c35143&locator=root-workspace-0b6124%40workspace%3A."
-  dependencies:
-    ace-builds: ^1.4.14
-    diff-match-patch: ^1.0.5
-    lodash.get: ^4.4.2
-    lodash.isequal: ^4.5.0
-    prop-types: ^15.7.2
-  peerDependencies:
-    react: ^0.13.0 || ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^0.13.0 || ^0.14.0 || ^15.0.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 3eb234e6b6b85109c065af561f7814238c5d005055bd2ae3ac108d76da03f563bb56d1817899b31e36540aa709b06075308ea122314dce228bfd6d1f25751d71
   languageName: node
   linkType: hard
 
@@ -17769,6 +17748,13 @@ __metadata:
     stack-generator: ^2.0.5
     stacktrace-gps: ^3.0.4
   checksum: 081e786d56188ac04ac6604c09cd863b3ca2b4300ec061366cf68c3e4ad9edaa34fb40deea03cc23a05f442aa341e9171f47313f19bd588f9bec6c505a396286
+  languageName: node
+  linkType: hard
+
+"state-local@npm:^1.0.6":
+  version: 1.0.7
+  resolution: "state-local@npm:1.0.7"
+  checksum: d1afcf1429e7e6eb08685b3a94be8797db847369316d4776fd51f3962b15b984dacc7f8e401ad20968e5798c9565b4b377afedf4e4c4d60fe7495e1cbe14a251
   languageName: node
   linkType: hard
 
