@@ -11,8 +11,6 @@ import {
   WorkflowInstanceDetailQuery,
   WorkflowInstanceDetailQueryVariables,
 } from '../../../../__generated__/graphql';
-import { SortProperty } from '../../executed-workflow-list';
-import { sortExecutedWorkflows } from '../../executed-workflow.helpers';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 
 const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
@@ -37,14 +35,12 @@ const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
 type Props = {
   workflows: NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>;
   selectedWorkflows: string[];
-  sort: SortProperty;
   onWorkflowSelect: (workflowId: string) => void;
   onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
   workflows,
-  sort,
   selectedWorkflows,
   onWorkflowSelect,
   onWorkflowStatusClick,
@@ -77,7 +73,7 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
 
   return (
     <>
-      {sortExecutedWorkflows(workflows.edges, sort).map(({ node: item }) => (
+      {workflows.edges.map(({ node: item }) => (
         <Fragment key={item.id}>
           <Tr>
             <Td>

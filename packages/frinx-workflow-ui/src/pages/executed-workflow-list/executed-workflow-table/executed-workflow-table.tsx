@@ -4,14 +4,14 @@ import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table/execut
 import ExecutedWorkflowTableHead from './executed-workflow-table-head';
 import ExecutedWorkflowHierarchicalTableItem from './executed-workflow-hierarchical-table/executed-workflow-hierarchical-table-item';
 import { ExecutedWorkflowStatus, ExecutedWorkflowsQuery } from '../../../__generated__/graphql';
-import { SortProperty } from '../executed-workflow-list';
+import { SortKey, OrderBy } from '../executed-workflow-list';
 
 type Props = {
   isFlat: boolean;
-  sort: SortProperty;
+  sort: OrderBy;
   workflows: ExecutedWorkflowsQuery;
   selectedWorkflows: string[];
-  onSortPropertyClick: (sortProperty: SortProperty) => void;
+  handleOnSort: (value: SortKey) => void;
   onSelectAllWorkflows: () => void;
   onWorkflowSelect: (workflowId: string) => void;
   onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
@@ -21,10 +21,10 @@ const ExecutedWorkflowTable: FC<Props> = ({
   isFlat,
   workflows,
   onSelectAllWorkflows,
-  onSortPropertyClick,
   onWorkflowSelect,
   onWorkflowStatusClick,
   selectedWorkflows,
+  handleOnSort,
   sort,
 }) => {
   const areAllWorkflowsSelected = workflows.executedWorkflows?.edges.length === selectedWorkflows.length;
@@ -35,10 +35,10 @@ const ExecutedWorkflowTable: FC<Props> = ({
     <Box marginBottom={10}>
       <Table background="white" size="md">
         <ExecutedWorkflowTableHead
+          sort={sort}
           onSelectAllWorkflows={onSelectAllWorkflows}
           areAllWorkflowsSelected={areAllWorkflowsSelected}
-          onSortPropertyClick={onSortPropertyClick}
-          sort={sort}
+          handleOnSort={handleOnSort}
         />
         {!areThereAnyExecutedWorkflows && <Text>There no executed workflows</Text>}
 
@@ -50,14 +50,12 @@ const ExecutedWorkflowTable: FC<Props> = ({
                 onWorkflowStatusClick={onWorkflowStatusClick}
                 selectedWorkflows={selectedWorkflows}
                 workflows={workflows}
-                sort={sort}
               />
             ) : (
               <ExecutedWorkflowHierarchicalTableItem
                 onWorkflowSelect={onWorkflowSelect}
                 selectedWorkflows={selectedWorkflows}
                 workflows={workflows.executedWorkflows}
-                sort={sort}
                 onWorkflowStatusClick={onWorkflowStatusClick}
               />
             )}

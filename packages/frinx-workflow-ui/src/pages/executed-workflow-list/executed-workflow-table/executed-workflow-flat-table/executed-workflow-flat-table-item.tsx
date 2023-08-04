@@ -4,20 +4,16 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { ExecutedWorkflowsQuery, ExecutedWorkflowStatus } from '../../../../__generated__/graphql';
 import ExecutedWorkflowStatusLabels from '../executed-workflow-status-labels';
-import { SortProperty } from '../../executed-workflow-list';
-import { sortExecutedWorkflows } from '../../executed-workflow.helpers';
 
 type Props = {
   workflows: ExecutedWorkflowsQuery;
   selectedWorkflows: string[];
-  sort: SortProperty;
   onWorkflowSelect: (workflowId: string) => void;
   onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowFlatTableItem: FC<Props> = ({
   workflows,
-  sort,
   selectedWorkflows,
   onWorkflowSelect,
   onWorkflowStatusClick,
@@ -32,7 +28,7 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({
 
   return (
     <>
-      {sortExecutedWorkflows(workflows.executedWorkflows.edges, sort).map(({ node }) => (
+      {workflows.executedWorkflows.edges.map(({ node }) => (
         <Tr key={node.id}>
           <Td>
             <Checkbox
