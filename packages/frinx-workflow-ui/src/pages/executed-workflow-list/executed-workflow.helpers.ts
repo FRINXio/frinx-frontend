@@ -11,7 +11,7 @@ import { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/execu
 
 export function makeSearchQueryVariableFromFilter(
   filter: ExecutedWorkflowSearchQuery,
-): ExecutedWorkflowsQueryVariables {
+): Partial<ExecutedWorkflowsQueryVariables> {
   const initialStatus: ExecutedWorkflowStatus[] = [];
   const status = filter.status.map((s) => {
     if (

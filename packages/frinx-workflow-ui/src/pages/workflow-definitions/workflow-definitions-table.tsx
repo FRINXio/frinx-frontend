@@ -16,15 +16,24 @@ import {
   PopoverHeader,
   PopoverBody,
   UseDisclosureReturn,
+  Icon,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
+import FeatherIcon from 'feather-icons-react';
 import { ClientWorkflow, jsonParse } from '@frinx/shared/src';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabels from '../../components/workflow-labels';
 
+type OrderBy = {
+  sortKey: 'name';
+  direction: 'ASC' | 'DESC';
+};
+
 type Props = {
   workflows: ClientWorkflow[];
   allLabels: string[];
+  onSort: () => void;
+  orderBy: OrderBy;
   executeWorkflowModal: UseDisclosureReturn;
   definitionModal: UseDisclosureReturn;
   diagramModal: UseDisclosureReturn;
@@ -74,6 +83,8 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   onFavoriteClick,
   confirmDeleteModal,
   onLabelClick,
+  onSort,
+  orderBy,
   workflows,
   allLabels,
   definitionModal,
@@ -94,7 +105,10 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
     <Table background="white" size="lg" data-cy="tbl-workflows">
       <Thead>
         <Tr>
-          <Th>Name/Version</Th>
+          <Th cursor="pointer" onClick={onSort}>
+            Name/Version{' '}
+            <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+          </Th>
           <Th>Labels</Th>
           <Th whiteSpace="nowrap">Included in</Th>
           <Th>Actions</Th>
@@ -133,7 +147,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                           setActiveWorkflow(workflow);
                         }}
                       >
-                        {`${getDependencies(workflow).length} `} Tree{' '}
+                        {`${getDependencies(workflow).length} `} Tree
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent>

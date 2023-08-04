@@ -614,6 +614,11 @@ export type ExecutedWorkflowTaskStatus =
   | 'SKIPPED'
   | 'TIMED_OUT';
 
+export type ExecutedWorkflowsOrderByInput = {
+  direction: SortExecutedWorkflowsDirection;
+  sortKey: SortExecutedWorkflowsBy;
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
@@ -623,6 +628,7 @@ export type FilterEventHandlerInput = {
   evaluatorType?: InputMaybe<Scalars['String']>;
   event?: InputMaybe<Scalars['String']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type FilterPollDataInput = {
@@ -1103,6 +1109,12 @@ export type NetNode = {
   networks: Array<NetNetwork>;
 };
 
+export type NetRoutingPaths = {
+  __typename?: 'NetRoutingPaths';
+  alternativePaths: Array<Array<Scalars['String']>>;
+  shortestPath: Array<Scalars['String']>;
+};
+
 export type NetTopology = {
   __typename?: 'NetTopology';
   edges: Array<GraphEdge>;
@@ -1209,6 +1221,7 @@ export type Query = {
   pollData: Maybe<PollDataConnection>;
   pools: PoolConnection;
   schedules: ScheduleConnection;
+  shortestPath: Maybe<NetRoutingPaths>;
   taskDefinitions: TaskDefinitionConnection;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -1287,6 +1300,7 @@ export type QueryEventHandlersByEventArgs = {
 
 
 export type QueryExecutedWorkflowsArgs = {
+  orderBy: ExecutedWorkflowsOrderByInput;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
 };
@@ -1340,6 +1354,12 @@ export type QuerySchedulesArgs = {
   filter?: InputMaybe<ScheduleFilterInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryShortestPathArgs = {
+  from: Scalars['String'];
+  to: Scalars['String'];
 };
 
 
@@ -1485,6 +1505,17 @@ export type SortDirection =
   | 'ASC'
   | 'DESC';
 
+export type SortExecutedWorkflowsBy =
+  | 'endTime'
+  | 'startTime'
+  | 'status'
+  | 'workflowId'
+  | 'workflowName';
+
+export type SortExecutedWorkflowsDirection =
+  | 'asc'
+  | 'desc';
+
 export type SortPollsBy =
   | 'lastPollTime'
   | 'queueName'
@@ -1538,7 +1569,7 @@ export type Tag = {
 export type TaskDefinition = Node & {
   __typename?: 'TaskDefinition';
   concurrentExecLimit: Maybe<Scalars['Int']>;
-  createTime: Maybe<Scalars['String']>;
+  createdAt: Maybe<Scalars['String']>;
   createdBy: Maybe<Scalars['String']>;
   description: Maybe<Scalars['String']>;
   id: Scalars['ID'];
@@ -1556,7 +1587,7 @@ export type TaskDefinition = Node & {
   retryLogic: Maybe<RetryLogic>;
   timeoutPolicy: Maybe<TaskTimeoutPolicy>;
   timeoutSeconds: Scalars['Int'];
-  updateTime: Maybe<Scalars['String']>;
+  updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
 };
 
@@ -1836,6 +1867,77 @@ export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetSchedulesQuery = { __typename?: 'Query', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } };
 
+export type GetEventHandlerDetailQueryVariables = Exact<{
+  event: Scalars['String'];
+  name: Scalars['String'];
+}>;
+
+
+export type GetEventHandlerDetailQuery = { __typename?: 'Query', eventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string, condition: string | null, isActive: boolean | null, evaluatorType: string | null, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null, expandInlineJSON: boolean | null, startWorkflow: { __typename?: 'ActionStartWorkflow', name: string | null, version: number | null, input: string | null, correlationId: string | null, taskToDomain: string | null } | null, completeTask: { __typename?: 'ActionCompleteTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null, failTask: { __typename?: 'ActionFailTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null }> } | null };
+
+export type EditEventHandlerMutationVariables = Exact<{
+  event: Scalars['String'];
+  name: Scalars['String'];
+  input: UpdateEventHandlerInput;
+}>;
+
+
+export type EditEventHandlerMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string } | null };
+
+export type EventHandlerQueryVariables = Exact<{
+  event: Scalars['String'];
+  name: Scalars['String'];
+}>;
+
+
+export type EventHandlerQuery = { __typename?: 'Query', eventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string, condition: string | null, evaluatorType: string | null, isActive: boolean | null, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null, expandInlineJSON: boolean | null, completeTask: { __typename?: 'ActionCompleteTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null, failTask: { __typename?: 'ActionFailTask', workflowId: string | null, taskId: string | null, output: string | null, taskRefName: string | null } | null, startWorkflow: { __typename?: 'ActionStartWorkflow', name: string | null, version: number | null, input: string | null, correlationId: string | null, taskToDomain: string | null } | null }> } | null };
+
+export type DeleteEventHandlerDetailMutationVariables = Exact<{
+  deleteEventHandlerId: Scalars['String'];
+}>;
+
+
+export type DeleteEventHandlerDetailMutation = { __typename?: 'Mutation', deleteEventHandler: { __typename?: 'IsOkResponse', isOk: boolean } | null };
+
+export type EditEventHandlerActionsMutationVariables = Exact<{
+  input: UpdateEventHandlerInput;
+  name: Scalars['String'];
+  event: Scalars['String'];
+}>;
+
+
+export type EditEventHandlerActionsMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
+
+export type CreateEventHandlerMutationVariables = Exact<{
+  input: CreateEventHandlerInput;
+}>;
+
+
+export type CreateEventHandlerMutation = { __typename?: 'Mutation', createEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
+
+export type GetEventHandlersQueryVariables = Exact<{
+  filter?: InputMaybe<FilterEventHandlerInput>;
+}>;
+
+
+export type GetEventHandlersQuery = { __typename?: 'Query', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', node: { __typename?: 'EventHandler', event: string, id: string, isActive: boolean | null, name: string, evaluatorType: string | null, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null }> } }> | null } | null };
+
+export type DeleteEventHandlerMutationVariables = Exact<{
+  deleteEventHandlerId: Scalars['String'];
+}>;
+
+
+export type DeleteEventHandlerMutation = { __typename?: 'Mutation', deleteEventHandler: { __typename?: 'IsOkResponse', isOk: boolean } | null };
+
+export type UpdateEventHandlerMutationVariables = Exact<{
+  input: UpdateEventHandlerInput;
+  name: Scalars['String'];
+  event: Scalars['String'];
+}>;
+
+
+export type UpdateEventHandlerMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
+
 export type ExecutedWorkflowDetailQueryVariables = Exact<{
   nodeId: Scalars['ID'];
 }>;
@@ -1894,6 +1996,7 @@ export type TerminateWorkflowMutationVariables = Exact<{
 export type TerminateWorkflowMutation = { __typename?: 'Mutation', terminateWorkflow: { __typename?: 'IsOkResponse', isOk: boolean } | null };
 
 export type ExecutedWorkflowsQueryVariables = Exact<{
+  orderBy: ExecutedWorkflowsOrderByInput;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
   pagination?: InputMaybe<PaginationArgs>;
 }>;
