@@ -20,7 +20,7 @@ const AppMenu: FC<Props> = ({ enabledServices }) => {
                 <AppMenuItem to="/workflow-manager/definitions">Definitions</AppMenuItem>
                 <AppMenuItem to="/workflow-manager/executed">Executed</AppMenuItem>
                 <AppMenuItem to="/workflow-manager/scheduled">Scheduled</AppMenuItem>
-                <AppMenuItem to="/workflow-manager/event-listeners">Event listeners</AppMenuItem>
+                <AppMenuItem to="/workflow-manager/event-handlers">Event handlers</AppMenuItem>
                 <AppMenuItem to="/workflow-manager/tasks">Tasks</AppMenuItem>
                 <AppMenuItem to="/workflow-manager/poll-data">Poll data</AppMenuItem>
               </>
