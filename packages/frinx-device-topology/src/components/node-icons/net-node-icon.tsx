@@ -12,7 +12,9 @@ type Props = {
   positions: PositionsWithGroupsMap<GrahpNetNodeInterface>;
   isCommon: boolean;
   isFocused: boolean;
+  isShortestPath: boolean;
   isSelectedForCommonSearch: boolean;
+  isSelectedForShortestPath: boolean;
   node: GraphNetNode;
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
@@ -27,7 +29,9 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
   isCommon,
+  isShortestPath,
   isSelectedForCommonSearch,
+  isSelectedForShortestPath,
   node,
   topologyMode,
   selectedEdge,
@@ -48,7 +52,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
     >
       <G>
         {node.networks.map((network) => {
-          return <NetNodeNetwork network={network} />;
+          return <NetNodeNetwork key={network.id} network={network} />;
         })}
       </G>
       <Circle
@@ -80,6 +84,15 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
           stroke="red.300"
         />
       )}
+      {isSelectedForShortestPath && (
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="blue.500"
+        />
+      )}
       {isCommon && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
@@ -89,13 +102,23 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
           stroke="green.300"
         />
       )}
+      {isShortestPath && (
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="blue.400"
+        />
+      )}
       <G>
-        {interfaceGroups.map(([, data]) => {
+        {interfaceGroups.map(([group, data]) => {
           const iPosition = data.position;
           const sourceInterface = data.interfaces.find((i) => i.id === selectedEdge?.source.interface);
           const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
           return (
             <NodeInterface
+              key={group}
               position={{
                 x: iPosition.x - x,
                 y: iPosition.y - y,
