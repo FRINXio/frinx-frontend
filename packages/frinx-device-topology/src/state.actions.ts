@@ -32,7 +32,7 @@ export type LabelItem = {
   value: string;
 };
 
-export type TopologyMode = 'NORMAL' | 'COMMON_NODES';
+export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH';
 
 export type StateAction =
   | {
@@ -73,6 +73,10 @@ export type StateAction =
       nodeIds: string[];
     }
   | {
+      type: 'ADD_REMOVE_UNCONFIRMED_NODE_ID_FOR_SHORTEST_PATH';
+      nodeId: string;
+    }
+  | {
       type: 'SET_NODE_IDS_TO_FIND_COMMON';
     }
   | {
@@ -93,6 +97,22 @@ export type StateAction =
   | {
       type: 'SET_SELECTED_NET_NODE';
       node: GraphNetNode | null;
+    }
+  | { type: 'CLEAR_SHORTEST_PATH_SEARCH' }
+  | {
+      type: 'FIND_SHORTEST_PATH';
+    }
+  // | {
+  //     type: 'SET_SHORTEST_PATH_IDS';
+  //     pathIds: string[];
+  //   }
+  | {
+      type: 'SET_ALTERNATIVE_PATHS';
+      alternativePaths: string[][];
+    }
+  | {
+      type: 'SET_SELECTED_ALTERNATIVE_PATH';
+      alternativePathIndex: number;
     };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
@@ -141,6 +161,7 @@ const NET_TOPOLOGY_QUERY = gql`
     netTopology {
       nodes {
         id
+        nodeId
         name
         interfaces {
           id
@@ -331,6 +352,13 @@ export function setUnconfirmedSelectedNodeIdsToFindCommonNode(nodeIds: string[])
   };
 }
 
+export function addRemoveUnconfirmedNodeIdForShortestPath(nodeId: string): StateAction {
+  return {
+    type: 'ADD_REMOVE_UNCONFIRMED_NODE_ID_FOR_SHORTEST_PATH',
+    nodeId,
+  };
+}
+
 export function setSelectedNodeIdsToFindCommonNode(): StateAction {
   return {
     type: 'SET_NODE_IDS_TO_FIND_COMMON',
@@ -369,4 +397,26 @@ export function setSelectedNetNode(node: GraphNetNode): StateAction {
     type: 'SET_SELECTED_NET_NODE',
     node,
   };
+}
+
+export function clearShortestPathSearch(): StateAction {
+  return {
+    type: 'CLEAR_SHORTEST_PATH_SEARCH',
+  };
+}
+
+export function findShortestPath(): StateAction {
+  return { type: 'FIND_SHORTEST_PATH' };
+}
+
+// export function setShortestPathIds(pathIds: string[]): StateAction {
+//   return { type: 'SET_SHORTEST_PATH_IDS', pathIds };
+// }
+
+export function setAlternativePaths(alternativePaths: string[][]): StateAction {
+  return { type: 'SET_ALTERNATIVE_PATHS', alternativePaths };
+}
+
+export function setSelectedAlternativePath(alternativePathIndex: number): StateAction {
+  return { type: 'SET_SELECTED_ALTERNATIVE_PATH', alternativePathIndex };
 }
