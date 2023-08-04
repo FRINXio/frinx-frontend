@@ -614,6 +614,11 @@ export type ExecutedWorkflowTaskStatus =
   | 'SKIPPED'
   | 'TIMED_OUT';
 
+export type ExecutedWorkflowsOrderByInput = {
+  direction: SortExecutedWorkflowsDirection;
+  sortKey: SortExecutedWorkflowsBy;
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
@@ -1295,6 +1300,7 @@ export type QueryEventHandlersByEventArgs = {
 
 
 export type QueryExecutedWorkflowsArgs = {
+  orderBy: ExecutedWorkflowsOrderByInput;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
 };
@@ -1498,6 +1504,17 @@ export type SortDeviceBy =
 export type SortDirection =
   | 'ASC'
   | 'DESC';
+
+export type SortExecutedWorkflowsBy =
+  | 'endTime'
+  | 'startTime'
+  | 'status'
+  | 'workflowId'
+  | 'workflowName';
+
+export type SortExecutedWorkflowsDirection =
+  | 'asc'
+  | 'desc';
 
 export type SortPollsBy =
   | 'lastPollTime'
@@ -1979,6 +1996,7 @@ export type TerminateWorkflowMutationVariables = Exact<{
 export type TerminateWorkflowMutation = { __typename?: 'Mutation', terminateWorkflow: { __typename?: 'IsOkResponse', isOk: boolean } | null };
 
 export type ExecutedWorkflowsQueryVariables = Exact<{
+  orderBy: ExecutedWorkflowsOrderByInput;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
   pagination?: InputMaybe<PaginationArgs>;
 }>;
