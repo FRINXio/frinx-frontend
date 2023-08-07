@@ -1,5 +1,6 @@
 import React, { ChangeEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import {
+  Box,
   Button,
   ButtonGroup,
   Container,
@@ -18,7 +19,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
-import { useNotifications } from '@frinx/shared';
+import { Pagination, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -30,6 +31,7 @@ import {
   UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
+import { usePagination } from '../../hooks/use-graphql-pagination';
 
 type Props = {
   onEventHandlerDetailClick: (event: string, name: string) => void;
@@ -37,19 +39,33 @@ type Props = {
 };
 
 const EVENT_HANDLERS_QUERY = gql`
-  query GetEventHandlers($filter: FilterEventHandlerInput) {
-    eventHandlers(filter: $filter) {
+  query GetEventHandlers(
+    $filter: FilterEventHandlerInput
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+    $orderBy: EventHandlersOrderByInput!
+  ) {
+    eventHandlers(filter: $filter, first: $first, after: $after, last: $last, before: $before, orderBy: $orderBy) {
       edges {
         node {
-          actions {
-            action
-          }
-          event
           id
           isActive
           name
           evaluatorType
+          event
+          actions {
+            action
+          }
         }
+        cursor
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
       }
     }
   }
@@ -78,6 +94,9 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   onEventHandlerEditClick,
 }) => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
+  const [orderBy, setOrderBy] = useState({ sortKey: 'name', direction: 'ASC' });
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+
   const navigate = useNavigate();
   const ctx = useMemo(
     () => ({
@@ -90,6 +109,8 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
     context: ctx,
     variables: {
       filter: eventHandlersFilter,
+      orderBy,
+      ...paginationArgs,
     },
   });
   const [, deleteEventHandler] = useMutation<DeleteEventHandlerMutation, DeleteEventHandlerMutationVariables>(
@@ -162,9 +183,16 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
         });
       });
   };
+  console.log(data);
+
+  const onSort = (sortKey: string) => {
+    return orderBy.direction === 'DESC'
+      ? setOrderBy({ sortKey, direction: 'ASC' })
+      : setOrderBy({ sortKey, direction: 'DESC' });
+  };
 
   return (
-    <Container mx="auto" maxWidth={1200}>
+    <Container mx="auto" mb={20} maxWidth={1200}>
       <HStack mb={5}>
         <Heading as="h1" size="lg">
           Event handlers
@@ -176,28 +204,34 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
           Create new handler
         </Button>
       </HStack>
-
       <EventHandlersListSearchbox
         filters={eventHandlersFilter}
         canDoSearch={!fetching}
         onSearchSubmit={setEventHandlersFilter}
       />
-
       {fetching && <Progress isIndeterminate size="xs" mt={-10} />}
-
       {(data == null || data.eventHandlers == null || error != null) && (
         <Text>We had a problem to load event handlers for you. Try again later please.</Text>
       )}
-
       {!fetching && data != null && data.eventHandlers != null && error == null && (
         <Table background="white">
           <Thead>
             <Tr>
-              <Th>Is active</Th>
-              <Th>Name</Th>
-              <Th>Event</Th>
-              <Th>Evaluator type</Th>
-              <Th>Action types</Th>
+              <Th cursor="pointer" onClick={() => onSort('isActive')}>
+                Is active
+              </Th>
+              <Th cursor="pointer" onClick={() => onSort('name')}>
+                Name
+              </Th>
+              <Th cursor="pointer" onClick={() => onSort('event')}>
+                Event
+              </Th>
+              <Th cursor="pointer" onClick={() => onSort('evaluatorType')}>
+                Evaluator type
+              </Th>
+              <Th cursor="pointer" onClick={() => onSort('actions')}>
+                Action types
+              </Th>
               <Th>Available actions</Th>
             </Tr>
           </Thead>
@@ -251,6 +285,16 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
               ))}
           </Tbody>
         </Table>
+      )}
+      {data && (
+        <Box my={4} paddingX={4}>
+          <Pagination
+            onPrevious={previousPage(data.eventHandlers.pageInfo.startCursor)}
+            onNext={nextPage(data.eventHandlers.pageInfo.endCursor)}
+            hasNextPage={data.eventHandlers.pageInfo.hasNextPage}
+            hasPreviousPage={data.eventHandlers.pageInfo.hasPreviousPage}
+          />
+        </Box>
       )}
     </Container>
   );

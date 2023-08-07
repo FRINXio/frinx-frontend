@@ -13,7 +13,7 @@ type CallbackFunctions = {
   firstPage: () => void;
 };
 
-export function usePagination(itemsPerPage = 20): [PaginationArgs, CallbackFunctions] {
+export function usePagination(itemsPerPage = 5): [PaginationArgs, CallbackFunctions] {
   const [state, setState] = useState<PaginationArgs>({
     first: itemsPerPage,
     after: undefined,
