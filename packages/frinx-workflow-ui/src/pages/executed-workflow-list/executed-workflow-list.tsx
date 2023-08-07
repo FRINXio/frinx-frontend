@@ -26,9 +26,20 @@ import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from '.
 
 export type SortProperty = { key: keyof ExecutedWorkflow; value: 'ASC' | 'DESC' };
 
+export type SortKey = 'workflowId' | 'workflowName' | 'startTime' | 'endTime' | 'status';
+
+export type OrderBy = {
+  sortKey: 'workflowId' | 'workflowName' | 'startTime' | 'endTime' | 'status';
+  direction: 'asc' | 'desc';
+};
+
 const EXECUTED_WORKFLOW_QUERY = gql`
-  query ExecutedWorkflows($searchQuery: ExecutedWorkflowSearchInput, $pagination: PaginationArgs) {
-    executedWorkflows(searchQuery: $searchQuery, pagination: $pagination) {
+  query ExecutedWorkflows(
+    $orderBy: ExecutedWorkflowsOrderByInput!
+    $searchQuery: ExecutedWorkflowSearchInput
+    $pagination: PaginationArgs
+  ) {
+    executedWorkflows(orderBy: $orderBy, searchQuery: $searchQuery, pagination: $pagination) {
       edges {
         cursor
         node {
@@ -107,9 +118,8 @@ const ExecutedWorkflowList = () => {
   const toast = useToast();
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
   const [isExecutingBulkOperation, setIsExecutingBulkOperation] = useState(false);
-
+  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'workflowName', direction: 'asc' });
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
-  const [sort, setSort] = useState<SortProperty>({ key: 'startTime', value: 'DESC' });
   const [isFlat, setIsFlat] = useState(false);
 
   const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<
@@ -123,6 +133,7 @@ const ExecutedWorkflowList = () => {
         size: makeFilterFromSearchParams(searchParams).workflowsPerPage,
         start: currentStartOfPage,
       },
+      orderBy,
     },
     context: ctx,
   });
@@ -167,20 +178,6 @@ const ExecutedWorkflowList = () => {
     } else {
       setSelectedWorkflows(data.executedWorkflows.edges.map(({ node }) => node.id));
     }
-  };
-
-  const handleOnSort = ({ key, value }: SortProperty) => {
-    if (key === sort.key && value === 'ASC') {
-      setSort({ key, value: 'DESC' });
-      return;
-    }
-
-    if (key === sort.key && value === 'DESC') {
-      setSort({ key, value: 'ASC' });
-      return;
-    }
-
-    setSort({ key, value: 'DESC' });
   };
 
   const handleOnBulkOperation = async (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
@@ -254,6 +251,12 @@ const ExecutedWorkflowList = () => {
     setCurrentStartOfPage(currentStartOfPage - workflowsPerPage);
   };
 
+  const handleOnSort = (sortKey: SortKey) => {
+    return orderBy.direction === 'desc'
+      ? setOrderBy({ sortKey, direction: 'asc' })
+      : setOrderBy({ sortKey, direction: 'desc' });
+  };
+
   return (
     <Container maxWidth={1200} mx="auto">
       <VStack spacing={10} alignItems="stretch">
@@ -285,9 +288,9 @@ const ExecutedWorkflowList = () => {
         {data != null && data.executedWorkflows != null && !isLoadingWorkflows && (
           <ExecutedWorkflowsTable
             onSelectAllWorkflows={handleOnAllWorkflowsSelect}
-            onSortPropertyClick={handleOnSort}
-            sort={sort}
+            handleOnSort={handleOnSort}
             workflows={data}
+            sort={orderBy}
             onWorkflowSelect={handleOnWorkflowSelect}
             selectedWorkflows={selectedWorkflows}
             isFlat={isFlat}

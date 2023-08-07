@@ -49,6 +49,8 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
             'unknown',
         );
 
+        const isShortestPath = false;
+
         return (
           <Edge
             controlPoints={controlPoints}
@@ -58,6 +60,7 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
             onClick={handleEdgeClick}
             key={edge.id}
             isUnknown={isUnknown}
+            isShortestPath={isShortestPath}
           />
         );
       })}

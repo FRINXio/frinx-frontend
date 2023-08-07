@@ -23,7 +23,8 @@ ENV PORT 8888
 
 EXPOSE 8888
 
-ARG COMMIT_HASH
+ARG COMMIT_HASH=unspecified
+LABEL git_commit=$COMMIT_HASH
 ENV COMMIT_HASH=$COMMIT_HASH
 
 COPY --from=build /build/yarn.lock /build/yarn.lock

@@ -102,12 +102,13 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         />
       )}
       <G>
-        {interfaceGroups.map(([, data]) => {
+        {interfaceGroups.map(([group, data]) => {
           const iPosition = data.position;
           const sourceInterface = data.interfaces.find((i) => i.id === selectedEdge?.source.interface);
           const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
           return (
             <NodeInterface
+              key={`group-${group}`}
               position={{
                 x: iPosition.x - x,
                 y: iPosition.y - y,
