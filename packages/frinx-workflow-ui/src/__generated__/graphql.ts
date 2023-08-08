@@ -492,6 +492,11 @@ export type EventHandlerEdge = {
   node: EventHandler;
 };
 
+export type EventHandlersOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortEventHandlersBy;
+};
+
 export type ExecuteNewWorkflowInput = {
   correlationId?: InputMaybe<Scalars['String']>;
   externalInputPayloadStoragePath?: InputMaybe<Scalars['String']>;
@@ -1107,6 +1112,7 @@ export type NetNode = {
   interfaces: Array<NetInterface>;
   name: Scalars['String'];
   networks: Array<NetNetwork>;
+  nodeId: Scalars['String'];
 };
 
 export type NetRoutingPaths = {
@@ -1286,6 +1292,7 @@ export type QueryEventHandlersArgs = {
   filter?: InputMaybe<FilterEventHandlerInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy: EventHandlersOrderByInput;
 };
 
 
@@ -1300,7 +1307,7 @@ export type QueryEventHandlersByEventArgs = {
 
 
 export type QueryExecutedWorkflowsArgs = {
-  orderBy: ExecutedWorkflowsOrderByInput;
+  orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
 };
@@ -1399,6 +1406,7 @@ export type QueryWorkflowsArgs = {
   filter?: InputMaybe<FilterWorkflowsInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WorkflowsOrderByInput>;
 };
 
 
@@ -1505,6 +1513,13 @@ export type SortDirection =
   | 'ASC'
   | 'DESC';
 
+export type SortEventHandlersBy =
+  | 'actions'
+  | 'evaluatorType'
+  | 'event'
+  | 'isActive'
+  | 'name';
+
 export type SortExecutedWorkflowsBy =
   | 'endTime'
   | 'startTime'
@@ -1524,6 +1539,9 @@ export type SortPollsBy =
 export type SortPollsDirection =
   | 'asc'
   | 'desc';
+
+export type SortWorkflowsBy =
+  | 'name';
 
 export type StartWorkflowRequestInput = {
   workflow: ExecuteNewWorkflowInput;
@@ -1841,6 +1859,11 @@ export type WorkflowTaskType =
   | 'USER_DEFINED'
   | 'WAIT';
 
+export type WorkflowsOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortWorkflowsBy;
+};
+
 export type Zone = Node & {
   __typename?: 'Zone';
   createdAt: Scalars['String'];
@@ -1917,10 +1940,15 @@ export type CreateEventHandlerMutation = { __typename?: 'Mutation', createEventH
 
 export type GetEventHandlersQueryVariables = Exact<{
   filter?: InputMaybe<FilterEventHandlerInput>;
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+  orderBy: EventHandlersOrderByInput;
 }>;
 
 
-export type GetEventHandlersQuery = { __typename?: 'Query', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', node: { __typename?: 'EventHandler', event: string, id: string, isActive: boolean | null, name: string, evaluatorType: string | null, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null }> } }> | null } | null };
+export type GetEventHandlersQuery = { __typename?: 'Query', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', cursor: string, node: { __typename?: 'EventHandler', id: string, isActive: boolean | null, name: string, evaluatorType: string | null, event: string, actions: Array<{ __typename?: 'EventHandlerAction', action: EventHandlerActionEnum | null }> } }> | null, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } | null };
 
 export type DeleteEventHandlerMutationVariables = Exact<{
   deleteEventHandlerId: Scalars['String'];
@@ -2103,6 +2131,7 @@ export type WorkflowsQueryVariables = Exact<{
   last?: InputMaybe<Scalars['Int']>;
   before?: InputMaybe<Scalars['String']>;
   filter?: InputMaybe<FilterWorkflowsInput>;
+  orderBy: WorkflowsOrderByInput;
 }>;
 
 

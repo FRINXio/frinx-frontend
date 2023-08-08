@@ -38,6 +38,11 @@ type Props = {
   onEventHandlerEditClick: (event: string, name: string) => void;
 };
 
+type OrderBy = {
+  sortKey: 'name' | 'isActive' | 'event' | 'evaluatorType' | 'actions';
+  direction: 'ASC' | 'DESC';
+};
+
 const EVENT_HANDLERS_QUERY = gql`
   query GetEventHandlers(
     $filter: FilterEventHandlerInput
@@ -94,7 +99,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   onEventHandlerEditClick,
 }) => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
-  const [orderBy, setOrderBy] = useState({ sortKey: 'name', direction: 'ASC' });
+  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'ASC' });
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
   const navigate = useNavigate();
@@ -183,9 +188,8 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
         });
       });
   };
-  console.log(data);
 
-  const onSort = (sortKey: string) => {
+  const onSort = (sortKey: OrderBy['sortKey']) => {
     return orderBy.direction === 'DESC'
       ? setOrderBy({ sortKey, direction: 'ASC' })
       : setOrderBy({ sortKey, direction: 'DESC' });
@@ -286,7 +290,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
           </Tbody>
         </Table>
       )}
-      {data && (
+      {data?.eventHandlers && (
         <Box my={4} paddingX={4}>
           <Pagination
             onPrevious={previousPage(data.eventHandlers.pageInfo.startCursor)}
