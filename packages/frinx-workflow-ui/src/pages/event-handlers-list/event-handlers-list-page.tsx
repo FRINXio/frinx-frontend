@@ -40,7 +40,7 @@ type Props = {
 };
 
 type OrderBy = {
-  sortKey: 'name' | 'isActive' | 'event' | 'evaluatorType' | 'actions';
+  sortKey: 'name' | 'isActive' | 'event' | 'evaluatorType';
   direction: 'ASC' | 'DESC';
 };
 
@@ -234,9 +234,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
               <Th cursor="pointer" onClick={() => onSort('evaluatorType')}>
                 Evaluator type
               </Th>
-              <Th cursor="pointer" onClick={() => onSort('actions')}>
-                Action types
-              </Th>
+              <Th cursor="pointer">Action types</Th>
               <Th>Available actions</Th>
             </Tr>
           </Thead>
