@@ -4,6 +4,7 @@ import {
   Button,
   ButtonGroup,
   Container,
+  Flex,
   Heading,
   HStack,
   IconButton,
@@ -20,6 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
 import { Pagination, useNotifications } from '@frinx/shared';
+import { SelectItemsPerPage } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -100,7 +102,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
 }) => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'ASC' });
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage, setItemsCount, firstPage }] = usePagination();
 
   const navigate = useNavigate();
   const ctx = useMemo(
@@ -291,14 +293,22 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
         </Table>
       )}
       {data?.eventHandlers && (
-        <Box my={4} paddingX={4}>
-          <Pagination
-            onPrevious={previousPage(data.eventHandlers.pageInfo.startCursor)}
-            onNext={nextPage(data.eventHandlers.pageInfo.endCursor)}
-            hasNextPage={data.eventHandlers.pageInfo.hasNextPage}
-            hasPreviousPage={data.eventHandlers.pageInfo.hasPreviousPage}
+        <Flex justify="space-between">
+          <Box my={4} paddingX={4}>
+            <Pagination
+              onPrevious={previousPage(data.eventHandlers.pageInfo.startCursor)}
+              onNext={nextPage(data.eventHandlers.pageInfo.endCursor)}
+              hasNextPage={data.eventHandlers.pageInfo.hasNextPage}
+              hasPreviousPage={data.eventHandlers.pageInfo.hasPreviousPage}
+            />
+          </Box>
+          <SelectItemsPerPage
+            firstPage={firstPage}
+            first={paginationArgs.first}
+            last={paginationArgs.last}
+            setItemsCount={setItemsCount}
           />
-        </Box>
+        </Flex>
       )}
     </Container>
   );

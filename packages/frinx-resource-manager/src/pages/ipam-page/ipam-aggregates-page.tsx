@@ -2,7 +2,7 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
-import { useMinisearch, useTags, useNotifications, omitNullValue } from '@frinx/shared/src';
+import { useMinisearch, useTags, useNotifications, omitNullValue, SelectItemsPerPage } from '@frinx/shared/src';
 import {
   DeleteIpPoolMutation,
   DeleteIpPoolMutationVariables,
@@ -13,7 +13,6 @@ import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import AggregatesTable from './aggregates-table';
 import Pagination from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination';
-import SelectItemsPerPage from '../../components/select-items-per-page';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 
 const GET_IP_POOLS = gql`
@@ -238,7 +237,12 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
             />
           </Box>
         )}
-        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+        <SelectItemsPerPage
+          firstPage={firstPage}
+          first={paginationArgs.first}
+          last={paginationArgs.last}
+          setItemsCount={setItemsCount}
+        />
       </Flex>
     </>
   );

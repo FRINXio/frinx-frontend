@@ -11,6 +11,7 @@ import type { TagsInputReturnType } from './hooks/use-tags-input';
 import ExecuteWorkflowModalFormInput from './components/execute-workflow-modal/execute-workflow-modal-form-input';
 import Pagination from './components/pagination/pagination';
 import ConfirmDeleteModal from './components/confirm-delete-modal/confirm-delete-modal';
+import SelectItemsPerPage from './components/select-items-per-page/select-items-per-page';
 
 export * from './helpers/workflow-api.types';
 export * from './helpers/workflow.helpers';
@@ -25,6 +26,7 @@ export {
   Editor,
   SearchByTagInput,
   SearchByTag,
+  SelectItemsPerPage,
   LabelsInput,
   TagsInputReturnType,
   unwrap,
