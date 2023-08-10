@@ -547,7 +547,7 @@ const DeviceList: VoidFunctionComponent = () => {
                     </Button>
                     <Button
                       mb={6}
-                      data-cy="search-button"
+                      data-cy="clear-button"
                       onClick={clearFilter}
                       colorScheme="red"
                       variant="outline"
