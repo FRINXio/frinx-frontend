@@ -65,8 +65,8 @@ const WORKFLOW_DETAIL_QUERY = gql`
 `;
 
 const WORKFLOW_LIST_QUERY = gql`
-  query WorkflowList {
-    workflows {
+  query WorkflowList($filter: FilterWorkflowsInput) {
+    workflows(filter: $filter) {
       edges {
         cursor
         node {
@@ -145,10 +145,14 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   );
   const { workflowId, version } = useParams<{ workflowId: string; version: string }>();
   const [workflow, setWorkflow] = useState<ClientWorkflow<ExtendedTask> | null>(null);
+  const [filter, setFilter] = useState<string>('');
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
   const [{ data: workflowListData }] = useQuery<WorkflowListQuery>({
     query: WORKFLOW_LIST_QUERY,
+    variables: {
+      filter: { keyword: filter },
+    },
   });
 
   const [{ data: workflowData }] = useQuery<WorkflowQuery, WorkflowQueryVariables>({
@@ -331,6 +335,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     <TaskActionsProvider>
       <ReactFlowProvider>
         <App
+          setFilter={setFilter}
+          filter={filter}
           key={workflow.id}
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}

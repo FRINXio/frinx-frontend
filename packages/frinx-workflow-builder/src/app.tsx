@@ -62,6 +62,8 @@ const edgeTypes = {
 };
 
 type Props = {
+  setFilter: React.Dispatch<React.SetStateAction<string>>;
+  filter: string;
   workflow: ClientWorkflow<ExtendedTask>;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
@@ -78,6 +80,8 @@ type Props = {
 
 const App: VoidFunctionComponent<Props> = ({
   workflow,
+  setFilter,
+  filter,
   onWorkflowChange,
   workflows,
   taskDefinitions,
@@ -405,7 +409,13 @@ const App: VoidFunctionComponent<Props> = ({
           </Flex>
         </Flex>
         <Box minHeight="60vh" maxHeight="100vh">
-          <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
+          <LeftMenu
+            onTaskAdd={handleAddButtonClick}
+            setFilter={setFilter}
+            filter={filter}
+            workflows={workflows}
+            taskDefinitions={taskDefinitions}
+          />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
           <EdgeRemoveContext.Provider value={removeEdgeContextValue}>

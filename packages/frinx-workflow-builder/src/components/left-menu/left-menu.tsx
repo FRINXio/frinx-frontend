@@ -6,12 +6,14 @@ import TaskList from './task-list';
 import WorkflowList from './workflow-list';
 
 type Props = {
+  setFilter: React.Dispatch<React.SetStateAction<string>>;
   onTaskAdd: (task: ExtendedTask) => void;
+  filter: string;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
 };
 
-const LeftMenu: FC<Props> = memo(({ onTaskAdd, workflows, taskDefinitions }) => {
+const LeftMenu: FC<Props> = memo(({ onTaskAdd, filter, setFilter, workflows, taskDefinitions }) => {
   return (
     <Box background="white" boxShadow="base" px={4} py={10} height="100%">
       <Tabs display="flex" flexDirection="column" height="100%" isLazy>
@@ -53,7 +55,7 @@ const LeftMenu: FC<Props> = memo(({ onTaskAdd, workflows, taskDefinitions }) => 
             <TaskList onTaskAdd={onTaskAdd} taskDefinitions={taskDefinitions} />
           </TabPanel>
           <TabPanel>
-            <WorkflowList onTaskAdd={onTaskAdd} workflows={workflows} />
+            <WorkflowList filter={filter} onTaskAdd={onTaskAdd} setFilter={setFilter} workflows={workflows} />
           </TabPanel>
         </TabPanels>
       </Tabs>

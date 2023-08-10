@@ -15,26 +15,19 @@ import {
 } from '@chakra-ui/react';
 import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
-import throttle from 'lodash/throttle';
-import MiniSearch from 'minisearch';
+// import throttle from 'lodash/throttle';
+// import MiniSearch from 'minisearch';
 import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
 import { getFilteredResults, parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
+  setFilter: React.Dispatch<React.SetStateAction<string>>;
+  filter: string;
 };
 
-const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) => {
-  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name', 'description'], idField: 'name' }));
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    minisearch.addAll(workflows);
-  }, [workflows, minisearch]);
-
-  const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), workflows), 60);
-  const result = searchTerm.length > 2 ? searchFn() : workflows;
+const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, setFilter, filter, workflows }) => {
 
   return (
     <Box>
@@ -44,16 +37,16 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
         </InputLeftElement>
         <Input
           type="text"
-          value={searchTerm}
+          value={filter}
           onChange={(e) => {
-            setSearchTerm(e.target.value);
+            setFilter(e.target.value);
           }}
           placeholder="Search workflows"
         />
       </InputGroup>
-      {result?.map((wf) => (
+      {workflows?.map((wf) => (
         <Flex
-          key={wf.name}
+          key={wf.id}
           alignItems="stretch"
           border="1px"
           borderColor="gray.200"
