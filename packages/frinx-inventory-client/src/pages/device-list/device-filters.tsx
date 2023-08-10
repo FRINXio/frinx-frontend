@@ -17,7 +17,7 @@ const DeviceFilter: VoidFunctionComponent<Props> = ({
   isCreationDisabled,
 }) => {
   return (
-    <Box zIndex={999} m={0} p={0}>
+    <Box m={0} p={0}>
       <SearchByLabelInput
         items={labels}
         selectedLabels={selectedLabels}
