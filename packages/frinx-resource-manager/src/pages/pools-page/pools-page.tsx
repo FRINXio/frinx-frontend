@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { omitNullValue, useMinisearch, useNotifications, useTags, SelectItemsPerPage } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags, SelectItemsPerPage } from '@frinx/shared';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,

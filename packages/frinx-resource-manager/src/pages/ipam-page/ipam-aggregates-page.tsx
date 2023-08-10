@@ -2,7 +2,7 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
-import { useMinisearch, useTags, useNotifications, omitNullValue, SelectItemsPerPage } from '@frinx/shared/src';
+import { useMinisearch, useTags, useNotifications, omitNullValue, SelectItemsPerPage } from '@frinx/shared';
 import {
   DeleteIpPoolMutation,
   DeleteIpPoolMutationVariables,
