@@ -11,6 +11,7 @@ type CallbackFunctions = {
   nextPage: (cursor: string | null) => () => void;
   previousPage: (cursor: string | null) => () => void;
   firstPage: () => void;
+  setItemsCount: (value: number) => void;
 };
 
 export function usePagination(itemsPerPage = 20): [PaginationArgs, CallbackFunctions] {
@@ -50,5 +51,13 @@ export function usePagination(itemsPerPage = 20): [PaginationArgs, CallbackFunct
       }),
     [itemsPerPage],
   );
-  return [state, { nextPage, previousPage, firstPage }];
+  const setItemsCount = (devices: number) => {
+    if (state.first) {
+      setState((prevState) => ({ ...prevState, first: devices }));
+    }
+    if (state.last) {
+      setState((prevState) => ({ ...prevState, last: devices }));
+    }
+  };
+  return [state, { nextPage, previousPage, setItemsCount, firstPage }];
 }

@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags, SelectItemsPerPage } from '@frinx/shared';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
@@ -18,7 +18,6 @@ import PoolsTable from './pools-table';
 import { usePagination } from '../../hooks/use-pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import Pagination from '../../components/pagination';
-import SelectItemsPerPage from '../../components/select-items-per-page';
 
 type InputValues = { [key: string]: string };
 
@@ -272,7 +271,12 @@ const PoolsPage: VoidFunctionComponent = () => {
             />
           </Box>
         )}
-        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+        <SelectItemsPerPage
+          first={paginationArgs.first}
+          onItemsPerPageChange={firstPage}
+          last={paginationArgs.last}
+          setItemsCount={setItemsCount}
+        />
       </Flex>
     </>
   );

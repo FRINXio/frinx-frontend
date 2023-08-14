@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
-import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags, SelectItemsPerPage } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
@@ -8,7 +8,6 @@ import { useMutation, useQuery } from 'urql';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 import Pagination from '../../components/pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
-import SelectItemsPerPage from '../../components/select-items-per-page';
 import { usePagination } from '../../hooks/use-pagination';
 import {
   DeletePoolMutation,
@@ -276,7 +275,12 @@ const IpamPoolPage: VoidFunctionComponent = () => {
             />
           </Box>
         )}
-        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+        <SelectItemsPerPage
+          onItemsPerPageChange={firstPage}
+          first={paginationArgs.first}
+          last={paginationArgs.last}
+          setItemsCount={setItemsCount}
+        />
       </Flex>
     </>
   );
