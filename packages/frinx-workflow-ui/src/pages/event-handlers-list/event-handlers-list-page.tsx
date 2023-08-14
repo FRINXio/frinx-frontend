@@ -51,7 +51,7 @@ const EVENT_HANDLERS_QUERY = gql`
     $after: String
     $last: Int
     $before: String
-    $orderBy: EventHandlersOrderByInput!
+    $orderBy: EventHandlersOrderByInput
   ) {
     eventHandlers(filter: $filter, first: $first, after: $after, last: $last, before: $before, orderBy: $orderBy) {
       edges {
@@ -190,7 +190,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
       });
   };
 
-  const onSort = (sortKey: OrderBy['sortKey']) => {
+  const handleSort = (sortKey: OrderBy['sortKey']) => {
     return orderBy.direction === 'DESC'
       ? setOrderBy({ sortKey, direction: 'ASC' })
       : setOrderBy({ sortKey, direction: 'DESC' });
@@ -222,16 +222,16 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
         <Table background="white">
           <Thead>
             <Tr>
-              <Th cursor="pointer" onClick={() => onSort('isActive')}>
+              <Th cursor="pointer" onClick={() => handleSort('isActive')}>
                 Is active
               </Th>
-              <Th cursor="pointer" onClick={() => onSort('name')}>
+              <Th cursor="pointer" onClick={() => handleSort('name')}>
                 Name
               </Th>
-              <Th cursor="pointer" onClick={() => onSort('event')}>
+              <Th cursor="pointer" onClick={() => handleSort('event')}>
                 Event
               </Th>
-              <Th cursor="pointer" onClick={() => onSort('evaluatorType')}>
+              <Th cursor="pointer" onClick={() => handleSort('evaluatorType')}>
                 Evaluator type
               </Th>
               <Th>Action types</Th>
