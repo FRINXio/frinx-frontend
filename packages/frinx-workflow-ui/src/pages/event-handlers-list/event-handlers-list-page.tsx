@@ -234,7 +234,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
               <Th cursor="pointer" onClick={() => onSort('evaluatorType')}>
                 Evaluator type
               </Th>
-              <Th cursor="pointer">Action types</Th>
+              <Th>Action types</Th>
               <Th>Available actions</Th>
             </Tr>
           </Thead>
@@ -300,7 +300,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
             />
           </Box>
           <SelectItemsPerPage
-            firstPage={firstPage}
+            onItemsPerPageChange={firstPage}
             first={paginationArgs.first}
             last={paginationArgs.last}
             setItemsCount={setItemsCount}

@@ -4,13 +4,13 @@ import React, { VoidFunctionComponent } from 'react';
 type Props = {
   first: number | undefined;
   last: number | undefined;
-  firstPage: () => void;
+  onItemsPerPageChange: () => void;
   setItemsCount: (value: number) => void;
 };
 
 const itemCountOptions = [5, 10, 20, 50, 100];
 
-const SelectItemsPerPage: VoidFunctionComponent<Props> = ({ first, last, firstPage, setItemsCount }) => {
+const SelectItemsPerPage: VoidFunctionComponent<Props> = ({ first, last, onItemsPerPageChange, setItemsCount }) => {
   return (
     <Select
       mt={4}
@@ -18,7 +18,7 @@ const SelectItemsPerPage: VoidFunctionComponent<Props> = ({ first, last, firstPa
       data-cy="select-page-items-count"
       value={first ?? last}
       onChange={(e) => {
-        firstPage();
+        onItemsPerPageChange();
         setItemsCount(Number(e.target.value));
       }}
       variant="outline"
