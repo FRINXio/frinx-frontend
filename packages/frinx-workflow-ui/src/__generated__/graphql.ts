@@ -1292,7 +1292,7 @@ export type QueryEventHandlersArgs = {
   filter?: InputMaybe<FilterEventHandlerInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
-  orderBy: EventHandlersOrderByInput;
+  orderBy?: InputMaybe<EventHandlersOrderByInput>;
 };
 
 
@@ -1514,7 +1514,6 @@ export type SortDirection =
   | 'DESC';
 
 export type SortEventHandlersBy =
-  | 'actions'
   | 'evaluatorType'
   | 'event'
   | 'isActive'
@@ -1944,7 +1943,7 @@ export type GetEventHandlersQueryVariables = Exact<{
   after?: InputMaybe<Scalars['String']>;
   last?: InputMaybe<Scalars['Int']>;
   before?: InputMaybe<Scalars['String']>;
-  orderBy: EventHandlersOrderByInput;
+  orderBy?: InputMaybe<EventHandlersOrderByInput>;
 }>;
 
 
