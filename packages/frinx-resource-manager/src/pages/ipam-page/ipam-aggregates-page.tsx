@@ -238,7 +238,7 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
           </Box>
         )}
         <SelectItemsPerPage
-          firstPage={firstPage}
+          onItemsPerPageChange={firstPage}
           first={paginationArgs.first}
           last={paginationArgs.last}
           setItemsCount={setItemsCount}

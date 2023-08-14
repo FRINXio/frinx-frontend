@@ -273,7 +273,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         )}
         <SelectItemsPerPage
           first={paginationArgs.first}
-          firstPage={firstPage}
+          onItemsPerPageChange={firstPage}
           last={paginationArgs.last}
           setItemsCount={setItemsCount}
         />
