@@ -313,14 +313,13 @@ const ExecutedWorkflowList = () => {
             }}
           />
         )}
-
-        <Pagination
-          hasNextPage={data?.executedWorkflows?.pageInfo.hasNextPage ?? false}
-          hasPreviousPage={data?.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
-          onNext={handleOnNext}
-          onPrevious={handleOnPrevious}
-        />
       </VStack>
+      <Pagination
+        hasNextPage={data?.executedWorkflows?.pageInfo.hasNextPage ?? false}
+        hasPreviousPage={data?.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
+        onNext={handleOnNext}
+        onPrevious={handleOnPrevious}
+      />
     </Container>
   );
 };

@@ -1,10 +1,9 @@
-import { Box, Container, Table, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue, Pagination } from '@frinx/shared/src';
+import { Container, Table, Tbody, Td, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
+import { omitNullValue, Pagination, usePagination } from '@frinx/shared/src';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { gql, useQuery } from 'urql';
 import PollDataSearchbox from '../../components/poll-data-searchbox';
-import { usePagination } from '../../hooks/use-graphql-pagination';
 import { PollDataQuery, PollDataQueryVariables } from '../../__generated__/graphql';
 
 type Filter = {
@@ -149,23 +148,15 @@ const PollDataPage = () => {
             );
           })}
         </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>
-              {pollData?.pollData?.pageInfo && (
-                <Box marginTop={4} paddingX={4}>
-                  <Pagination
-                    onPrevious={previousPage(pollData.pollData.pageInfo.startCursor)}
-                    onNext={nextPage(pollData.pollData.pageInfo.endCursor)}
-                    hasNextPage={pollData.pollData.pageInfo.hasNextPage}
-                    hasPreviousPage={pollData.pollData.pageInfo.hasPreviousPage}
-                  />
-                </Box>
-              )}
-            </Th>
-          </Tr>
-        </Tfoot>
       </Table>
+      {pollData?.pollData?.pageInfo && (
+        <Pagination
+          onPrevious={previousPage(pollData.pollData.pageInfo.startCursor)}
+          onNext={nextPage(pollData.pollData.pageInfo.endCursor)}
+          hasNextPage={pollData.pollData.pageInfo.hasNextPage}
+          hasPreviousPage={pollData.pollData.pageInfo.hasPreviousPage}
+        />
+      )}
     </Container>
   );
 };

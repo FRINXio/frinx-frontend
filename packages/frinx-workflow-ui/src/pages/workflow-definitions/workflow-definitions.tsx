@@ -1,9 +1,8 @@
-import { Box, Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow, Task, useNotifications, Pagination } from '@frinx/shared/src';
+import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
+import { jsonParse, ClientWorkflow, Task, useNotifications, Pagination, usePagination } from '@frinx/shared/src';
 import { debounce } from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
-import { usePagination } from '../../hooks/use-graphql-pagination';
 import {
   DeleteWorkflowMutation,
   DeleteWorkflowMutationVariables,
@@ -290,14 +289,12 @@ const WorkflowDefinitions = () => {
         allLabels={labelsData?.workflowLabels ?? []}
       />
       {workflowsData && (
-        <Box marginTop={4} paddingX={4}>
-          <Pagination
-            onPrevious={previousPage(workflowsData.workflows.pageInfo.startCursor)}
-            onNext={nextPage(workflowsData.workflows.pageInfo.endCursor)}
-            hasNextPage={workflowsData.workflows.pageInfo.hasNextPage}
-            hasPreviousPage={workflowsData.workflows.pageInfo.hasPreviousPage}
-          />
-        </Box>
+        <Pagination
+          onPrevious={previousPage(workflowsData.workflows.pageInfo.startCursor)}
+          onNext={nextPage(workflowsData.workflows.pageInfo.endCursor)}
+          hasNextPage={workflowsData.workflows.pageInfo.hasNextPage}
+          hasPreviousPage={workflowsData.workflows.pageInfo.hasPreviousPage}
+        />
       )}
     </Container>
   );
