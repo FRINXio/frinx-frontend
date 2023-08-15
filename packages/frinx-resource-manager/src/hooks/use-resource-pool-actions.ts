@@ -1,7 +1,8 @@
-import { useNotifications, unwrap } from '@frinx/shared/src';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';
+import { usePagination, CallbackFunctions, PaginationArgs, useNotifications, unwrap } from '@frinx/shared/src';
+
 import {
   ClaimResourceMutation,
   ClaimResourceMutationVariables,
@@ -20,7 +21,6 @@ import {
   ClaimResourceWithAltIdMutation,
   ClaimResourceWithAltIdMutationVariables,
 } from '../__generated__/graphql';
-import { CallbackFunctions, PaginationArgs, usePagination } from './use-pagination';
 
 export type AlternativeIdValue = string | number | (string | number)[];
 

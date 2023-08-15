@@ -14,7 +14,7 @@ export type CallbackFunctions = {
   setItemsCount: (value: number) => void;
 };
 
-export function usePagination(itemsPerPage = 20): [PaginationArgs, CallbackFunctions] {
+export default function usePagination(itemsPerPage = 20): [PaginationArgs, CallbackFunctions] {
   const [state, setState] = useState<PaginationArgs>({
     first: itemsPerPage,
     after: undefined,

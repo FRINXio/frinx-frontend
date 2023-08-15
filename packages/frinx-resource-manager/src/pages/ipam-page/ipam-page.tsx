@@ -5,10 +5,10 @@ import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
+import { usePagination } from '@frinx/shared/src';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 import Pagination from '../../components/pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
-import { usePagination } from '../../hooks/use-pagination';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
