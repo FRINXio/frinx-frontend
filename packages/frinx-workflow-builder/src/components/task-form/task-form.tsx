@@ -116,9 +116,11 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
     setFieldValue('decisionCases', newDecisionCases);
   };
 
+  const isInputParamsTabOpen = 'inputParameters' in values;
+
   return (
     <form onSubmit={handleSubmit}>
-      <Tabs size="md" isLazy>
+      <Tabs size="md" isLazy defaultIndex={isInputParamsTabOpen ? 1 : 0}>
         <TabList>
           <Tab>General settings</Tab>
           {'inputParameters' in values && <Tab>Input parameters</Tab>}

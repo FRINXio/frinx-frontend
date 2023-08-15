@@ -176,6 +176,8 @@ const App: VoidFunctionComponent<Props> = ({
       };
     });
 
+    selectTask({ actionType: 'edit', task: t });
+
     onWorkflowChange({
       ...workflow,
       tasks: [...workflow.tasks, t],
