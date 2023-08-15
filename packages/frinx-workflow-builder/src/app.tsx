@@ -125,6 +125,7 @@ const App: VoidFunctionComponent<Props> = ({
       nodes: applyNodeChanges(changes, els.nodes),
     }));
   }, []);
+
   const onEdgesChange = useCallback(
     (changes) =>
       setElements((els) => ({
@@ -143,6 +144,11 @@ const App: VoidFunctionComponent<Props> = ({
           els.nodes.filter((n) => n.data.task?.id !== id),
         ),
       };
+    });
+
+    onWorkflowChange({
+      ...workflow,
+      tasks: workflow.tasks.filter((t) => t.id !== id),
     });
   };
 
