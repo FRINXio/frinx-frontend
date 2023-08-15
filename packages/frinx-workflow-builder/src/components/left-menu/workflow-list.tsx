@@ -13,7 +13,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared/src';
+import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import throttle from 'lodash/throttle';
 import MiniSearch from 'minisearch';
@@ -26,10 +26,11 @@ type Props = {
 };
 
 const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) => {
-  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name', 'description'], idField: 'name' }));
+  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name', 'description'], idField: 'id' }));
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    minisearch.removeAll();
     minisearch.addAll(workflows);
   }, [workflows, minisearch]);
 
@@ -53,7 +54,7 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
       </InputGroup>
       {result?.map((wf) => (
         <Flex
-          key={wf.name}
+          key={wf.id}
           alignItems="stretch"
           border="1px"
           borderColor="gray.200"
