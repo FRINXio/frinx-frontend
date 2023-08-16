@@ -10,7 +10,7 @@ import { clean, MAIN_FILE_NAME, makeConfig, MODULE_FILE_NAME, PACKAGE_NAME, TYPE
 const formattedPackageName = chalk.bold(PACKAGE_NAME);
 
 await oraPromise(clean, {
-  text: `Cleaning ${formattedPackageName} dist folder.`,
+  text: chalk.yellow(`Cleaning ${formattedPackageName} dist folder.`),
 });
 
 const perf = executionTime();
@@ -29,14 +29,14 @@ async function build() {
   return perf.stop('build');
 }
 
-console.log(chalk.yellow(`📦 Started building ${formattedPackageName} package.`));
+console.log(chalk.blue(`📦 Started building ${formattedPackageName} package.`));
 await oraPromise(build, {
   successText: (result) =>
-    chalk.greenBright(`Finished building ${formattedPackageName} in ${chalk.bold(result.preciseWords)}.`),
-  text: `Building ${formattedPackageName}.`,
+    chalk.green(`Finished building ${formattedPackageName} package in ${chalk.bold(result.preciseWords)}.`),
+  text: chalk.yellow(`Building ${formattedPackageName}.`),
 });
 
-console.log(chalk.yellow('🤖 Started building', formattedPackageName, 'types.'));
+console.log(chalk.blue('🤖 Started building', formattedPackageName, 'types.'));
 
 perf.start('types');
 
@@ -59,7 +59,7 @@ function buildTypes() {
 }
 
 await oraPromise(buildTypes, {
-  text: `Building ${formattedPackageName} types.`,
+  text: chalk.yellow(`Building ${formattedPackageName} types.`),
   successText: (result) =>
-    chalk.greenBright(`Finished building ${formattedPackageName} types in ${chalk.bold(result.preciseWords)}.`),
+    chalk.green(`Finished building ${formattedPackageName} types in ${chalk.bold(result.preciseWords)}.`),
 });

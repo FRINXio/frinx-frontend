@@ -1,5 +1,5 @@
 import * as esbuild from 'esbuild';
-import { makeConfig, prepareFiles } from './common.mjs';
+import { makeConfig, PACKAGE_NAME, prepareFiles } from './common.mjs';
 
 await prepareFiles();
 
@@ -13,4 +13,4 @@ await ctx.watch();
 await ctx.serve({ port: 8000 });
 
 // eslint-disable-next-line no-console
-console.log('Watching for changes in @frinx/dashboard package.');
+console.log(`Watching for changes in ${PACKAGE_NAME} package.`);

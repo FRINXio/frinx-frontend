@@ -9,7 +9,6 @@ export function fullPath(...parts) {
 const BUILD_CLIENT_PATH = '../../build-client';
 
 export async function prepareFiles() {
-  console.log(fullPath(BUILD_CLIENT_PATH, 'static'));
   await rm(BUILD_CLIENT_PATH, { recursive: true, force: true });
   await mkdir(fullPath(BUILD_CLIENT_PATH, 'static'), { recursive: true });
   await copyFile(fullPath('../../public/index.html'), fullPath(BUILD_CLIENT_PATH, 'index.html'));

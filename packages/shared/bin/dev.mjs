@@ -1,5 +1,5 @@
 import * as esbuild from 'esbuild';
-import { makeConfig, MODULE_FILE_NAME } from './common.mjs';
+import { makeConfig, MODULE_FILE_NAME, PACKAGE_NAME } from './common.mjs';
 
 const ctx = await esbuild.context({
   ...makeConfig(false),
@@ -10,4 +10,4 @@ const ctx = await esbuild.context({
 await ctx.watch();
 
 // eslint-disable-next-line no-console
-console.log('Watching for changes in @frinx/shared package.');
+console.log(`Watching for changes in ${PACKAGE_NAME} package.`);
