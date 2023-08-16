@@ -5,15 +5,17 @@ export function fullPath(...parts) {
   return path.join(process.cwd(), ...parts);
 }
 
+const BUILD_CLIENT_PATH = fullPath('../../build-client');
+
 export async function prepareFiles() {
-  await rm(fullPath('../../build-client'), { recursive: true, force: true });
-  await mkdir(fullPath('../../build-client/static'), { recursive: true });
-  await copyFile(fullPath('../../public/index.html'), fullPath('../../build-client/index.html'));
-  await copyFile(fullPath('../../public/favicon.ico'), fullPath('../../build-client/static/favicon.ico'));
-  await copyFile(fullPath('../../public/l3vpn-options.js'), fullPath('../../build-client/static/l3vpn-options.js'));
+  await rm(BUILD_CLIENT_PATH, { recursive: true, force: true });
+  await mkdir(fullPath(BUILD_CLIENT_PATH, 'static'), { recursive: true });
+  await copyFile(fullPath('../../public/index.html'), fullPath(BUILD_CLIENT_PATH, 'index.html'));
+  await copyFile(fullPath('../../public/favicon.ico'), fullPath(BUILD_CLIENT_PATH, 'static/favicon.ico'));
+  await copyFile(fullPath('../../public/l3vpn-options.js'), fullPath(BUILD_CLIENT_PATH, 'static/l3vpn-options.js'));
   await copyFile(
     fullPath('../../node_modules/@frinxio/gamma/dist/l3vpn-options.js'),
-    fullPath('../../build-client/static/l3vpn-options.js'),
+    fullPath(BUILD_CLIENT_PATH, 'static/l3vpn-options.js'),
   );
 }
 
@@ -31,6 +33,6 @@ export function makeConfig(isProd) {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     loader: { '.svg': 'file', '.png': 'file', '.woff': 'file', '.woff2': 'file' },
     publicPath: '/static/',
-    outdir: fullPath('../../build-client/static'),
+    outdir: fullPath(BUILD_CLIENT_PATH, 'static'),
   };
 }

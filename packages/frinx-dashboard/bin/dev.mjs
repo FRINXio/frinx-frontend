@@ -5,6 +5,7 @@ await prepareFiles();
 
 const ctx = await esbuild.context({
   ...makeConfig(false),
+  logLevel: 'info',
 });
 
 await ctx.watch();
@@ -12,4 +13,4 @@ await ctx.watch();
 await ctx.serve({ port: 8000 });
 
 // eslint-disable-next-line no-console
-console.log('Watching for changes in @frinx/dashboard package...');
+console.log('Watching for changes in @frinx/dashboard package.');
