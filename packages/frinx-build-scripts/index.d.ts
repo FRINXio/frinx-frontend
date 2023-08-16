@@ -10,3 +10,9 @@ export class Builder {
 
   buildTypes: (script: string) => Promise<void>;
 }
+
+export async function makeContextAndWatch(options: {
+  moduleFileName: string;
+  external?: string[];
+  packageName: string;
+}): Promise<void>;

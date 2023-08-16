@@ -19,7 +19,7 @@ const ALL_SERVICES: ServiceKey[] = [
   'isDeviceTopologyEnabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
-  ['isUniflowEnabled', () => import('@frinx/workflow-ui/src')],
+  ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
   ['isInventoryEnabled', () => import('@frinx/inventory-client')],
   ['isResourceManagerEnabled', () => import('@frinx/resource-manager')],
   ['isL3VPNEnabled', () => import('@frinxio/gamma')],

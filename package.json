@@ -35,7 +35,7 @@
     "build": "run-s build:shared build:api build:topology build:inventory build:resource build:workflow build:builder build:dashboard build:server",
     "dev:server": "cd packages/frinx-frontend-server && yarn run dev",
     "dev": "run-p dev:shared dev:api dev:topology dev:inventory dev:resource dev:workflow dev:builder dev:dashboard dev:server",
-    "turbo": "turbo run typegen type-check lint",
+    "turbo": "turbo run type-check lint",
     "pr": "run-s formatter:check version:check turbo",
     "version:check": "node ./version-check.mjs",
     "typegen": "turbo run typegen"
