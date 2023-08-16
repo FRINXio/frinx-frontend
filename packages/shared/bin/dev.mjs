@@ -1,7 +1,5 @@
 import * as esbuild from 'esbuild';
-import { clean, makeConfig, MODULE_FILE_NAME } from './common.mjs';
-
-clean();
+import { makeConfig, MODULE_FILE_NAME } from './common.mjs';
 
 const ctx = await esbuild.context({
   ...makeConfig(false),

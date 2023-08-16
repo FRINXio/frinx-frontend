@@ -1,17 +1,30 @@
-import * as esbuild from 'esbuild';
+/* eslint-disable no-console */
 import chalk from 'chalk';
+import * as esbuild from 'esbuild';
 import executionTime from 'execution-time';
-import { makeConfig, prepareFiles } from './common.mjs';
+import { oraPromise } from 'ora';
+import { makeConfig, PACKAGE_NAME, prepareFiles } from './common.mjs';
+
+const formattedPackageName = chalk.bold(PACKAGE_NAME);
+
+await oraPromise(prepareFiles, {
+  text: `Preparing ${formattedPackageName} output folder.`,
+});
 
 const perf = executionTime();
 
-console.log(chalk.yellow('🚀 Start building', chalk.bold('@frinx/dashboard'), 'package...'));
 perf.start();
-await prepareFiles();
 
-await esbuild.build({
-  ...makeConfig(true),
-  define: { IS_PRODUCTION: 'true' },
+async function build() {
+  await esbuild.build({
+    ...makeConfig(true),
+    define: { IS_PRODUCTION: 'true' },
+  });
+  return perf.stop();
+}
+
+console.log(chalk.yellow(`📦 Started building ${formattedPackageName} package.`));
+await oraPromise(build, {
+  successText: (result) => `Finished building ${formattedPackageName} in ${chalk.bold(result.preciseWords)}.`,
+  text: `Building ${formattedPackageName}.`,
 });
-const result = perf.stop();
-console.log(chalk.green('👏 Finished', chalk.bold('@frinx/dashboard'), 'in', result.preciseWords));

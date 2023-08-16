@@ -36,7 +36,7 @@ await oraPromise(build, {
   text: `Building ${formattedPackageName}.`,
 });
 
-console.log(chalk.yellow('🏗 Started building', formattedPackageName, 'types.'));
+console.log(chalk.yellow('🤖 Started building', formattedPackageName, 'types.'));
 
 perf.start('types');
 

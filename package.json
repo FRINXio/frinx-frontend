@@ -24,7 +24,7 @@
     "build": "run-s build:shared build:api build:dashboard build:server",
     "dev:client": "cd packages/frinx-dashboard && yarn run dev",
     "dev:server": "cd packages/frinx-frontend-server && yarn run dev",
-    "dev": "run-p dev:api dev:shared dev:client dev:server",
+    "dev": "run-p dev:shared dev:api dev:client dev:server",
     "turbo": "turbo run typegen type-check lint",
     "pr": "run-s formatter:check version:check turbo",
     "version:check": "node ./version-check.mjs"

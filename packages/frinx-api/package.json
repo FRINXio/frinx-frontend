@@ -10,8 +10,8 @@
   "author": "Frinx.io",
   "license": "MIT",
   "scripts": {
-    "dev": "NODE_ENV=development node ./bin/dev.mjs",
-    "build:esbuild": "NODE_ENV=production node ./bin/build.mjs",
+    "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
+    "build:esbuild": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",
     "build": "run-s build:esbuild typegen",
     "typegen": "tsc --declaration --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
     "lint": "eslint --ext .ts 'src/**/*.ts' --max-warnings 0",
