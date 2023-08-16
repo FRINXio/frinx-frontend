@@ -4816,7 +4816,6 @@ __metadata:
     eslint-plugin-import: 2.27.5
     express: 4.18.2
     helmet: 6.0.1
-    http-proxy-middleware: 2.0.6
     pino: 8.11.0
     pino-pretty: 9.4.0
     ts-node-dev: 1.1.8
@@ -12957,7 +12956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-middleware@npm:2.0.6, http-proxy-middleware@npm:^2.0.3":
+"http-proxy-middleware@npm:^2.0.3":
   version: 2.0.6
   resolution: "http-proxy-middleware@npm:2.0.6"
   dependencies:
