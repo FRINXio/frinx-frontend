@@ -16,6 +16,7 @@
     "formatter": "prettier --write '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' 'cypress/**/*.js' 'cypress/**/*.ts' package.json",
     "dedubcheck": "dedubcheck",
     "build:api": "cd packages/frinx-api && yarn rollup -c",
+    "build:shared": "cd packages/shared && yarn run build",
     "build:dashboard": "cd packages/frinx-dashboard && yarn run build",
     "build:server": "cd packages/frinx-frontend-server && yarn run build",
     "build": "run-s build:dashboard build:server",
