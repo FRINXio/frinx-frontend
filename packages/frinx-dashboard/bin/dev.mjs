@@ -5,6 +5,7 @@ await prepareFiles();
 
 const ctx = await esbuild.context({
   ...makeConfig(false),
+  define: { IS_PRODUCTION: 'false' },
   outdir: fullPath('../../build-client/static'),
 });
 

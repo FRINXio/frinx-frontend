@@ -5,5 +5,6 @@ await prepareFiles();
 
 await esbuild.build({
   ...makeConfig(true),
+  define: { IS_PRODUCTION: 'true' },
   outdir: fullPath('../../build-client/static'),
 });

@@ -1,11 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { unwrap } from '@frinx/shared/src';
+import { unwrap } from '@frinx/shared';
 import { AuthContext } from './auth-helpers';
 import Root from './root';
 import { ServiceKey } from './types';
 
-if (window.IS_PRODUCTION === 'false') {
+if (window.IS_PRODUCTION !== 'true') {
   new EventSource('http://localhost:8000/esbuild').addEventListener('change', () => {
     window.location.reload();
   });
