@@ -43,9 +43,6 @@ class DashboardApp {
         return importFn();
       }),
     );
-    await import('./set-public-path').then(({ setWebpackPublicPath }) => {
-      setWebpackPublicPath();
-    });
     this.isInitialized = true;
 
     return this;
