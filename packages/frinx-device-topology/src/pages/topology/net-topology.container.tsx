@@ -3,6 +3,7 @@ import { omitNullValue } from '@frinx/shared';
 import { partition } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useQuery } from 'urql';
+import ActionControls from '../../components/action-controls/action-controls';
 import Edge from '../../components/edge/edge';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import {
@@ -13,7 +14,6 @@ import {
   setMode,
   setSelectedAlternativePath,
   setSelectedEdge,
-  // setShortestPathIds,
 } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { ShortestPathQuery, ShortestPathQueryVariables } from '../../__generated__/graphql';
@@ -63,6 +63,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     selectedShortestPathNodeIds,
     alternativeShortestPaths,
     selectedAlternativeShortestPathIndex,
+    isWeightVisible,
   } = state;
 
   const [{ data: shorthestPathData, fetching: isShortestPathFetching }] = useQuery<
@@ -78,7 +79,6 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
   });
 
   useEffect(() => {
-    // dispatch(setShortestPathIds(shorthestPathData?.shortestPath?.shortestPath ?? []));
     dispatch(setAlternativePaths(shorthestPathData?.shortestPath?.alternativePaths ?? []));
   }, [dispatch, shorthestPathData]);
 
@@ -191,13 +191,14 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
                 key={edge.id}
                 isUnknown={isUnknown}
                 isShortestPath={isShortestPathEdge}
+                isWeightVisible={isWeightVisible}
               />
             );
           })}
         </g>
         <NetNodes nodes={netNodes} />
       </svg>
-      {unconfirmedShortestPathNodeIds.filter(omitNullValue).length && (
+      {unconfirmedShortestPathNodeIds.filter(omitNullValue).length > 0 && (
         <Box position="absolute" top={2} left="2" background="transparent">
           <Button onClick={handleClearShortestPath} marginRight={2}>
             Clear shortest path
@@ -222,6 +223,9 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
           )}
         </Box>
       )}
+      <Box position="absolute" top={2} right={2}>
+        <ActionControls />
+      </Box>
     </Box>
   );
 };

@@ -113,6 +113,10 @@ export type StateAction =
   | {
       type: 'SET_SELECTED_ALTERNATIVE_PATH';
       alternativePathIndex: number;
+    }
+  | {
+      type: 'SET_WEIGHT_VISIBILITY';
+      isVisible: boolean;
     };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
@@ -419,4 +423,11 @@ export function setAlternativePaths(alternativePaths: string[][]): StateAction {
 
 export function setSelectedAlternativePath(alternativePathIndex: number): StateAction {
   return { type: 'SET_SELECTED_ALTERNATIVE_PATH', alternativePathIndex };
+}
+
+export function setWeightVisibility(isVisible: boolean): StateAction {
+  return {
+    type: 'SET_WEIGHT_VISIBILITY',
+    isVisible,
+  };
 }

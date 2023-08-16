@@ -38,6 +38,7 @@ export type State = {
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
+  isWeightVisible: boolean;
 };
 
 export const initialState: State = {
@@ -63,6 +64,7 @@ export const initialState: State = {
   netEdges: [],
   netNodePositions: {},
   netInterfaceGroupPositions: {},
+  isWeightVisible: false,
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -221,6 +223,10 @@ export function stateReducer(state: State, action: StateAction): State {
           ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
         ];
         acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_WEIGHT_VISIBILITY': {
+        acc.isWeightVisible = action.isVisible;
         return acc;
       }
       default:
