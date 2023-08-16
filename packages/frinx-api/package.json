@@ -10,7 +10,10 @@
   "author": "Frinx.io",
   "license": "MIT",
   "scripts": {
-    "build": "NODE_ENV=production rollup -c",
+    "dev": "NODE_ENV=development node ./bin/dev.mjs",
+    "build:esbuild": "NODE_ENV=production node ./bin/build.mjs",
+    "build": "run-s build:esbuild typegen",
+    "typegen": "tsc --declaration --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
     "lint": "eslint --ext .ts 'src/**/*.ts' --max-warnings 0",
     "type-check": "tsc --noEmit"
   },
@@ -22,14 +25,10 @@
   "devDependencies": {
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
     "@frinx/shared": "workspace:^",
-    "@rollup/plugin-commonjs": "^22.0.0",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-typescript": "11.0.0",
     "@typescript-eslint/eslint-plugin": "5.54.1",
     "@typescript-eslint/parser": "5.54.1",
     "@urql/exchange-retry": "1.0.0",
-    "esbuild": "0.17.11",
+    "esbuild": "^0.19.2",
     "eslint": "8.36.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-import-resolver-typescript": "2.7.1",
@@ -37,9 +36,6 @@
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
-    "rollup": "2.79.1",
-    "rollup-plugin-dts": "4.2.3",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
     "typescript": "4.9.5",
     "urql": "3.0.3"
   }

@@ -15,7 +15,8 @@
     "formatter:check": "prettier -l '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' 'cypress/**/*.js' 'cypress/**/*.ts' package.json",
     "formatter": "prettier --write '*.md' 'packages/**/*.js' 'packages/**/*.ts' 'packages/**/*.tsx' 'packages/*/package.json' 'cypress/**/*.js' 'cypress/**/*.ts' package.json",
     "dedubcheck": "dedubcheck",
-    "build:api": "cd packages/frinx-api && yarn rollup -c",
+    "build:api": "cd packages/frinx-api && yarn run build",
+    "dev:api": "cd packages/frinx-api && yarn run dev",
     "build:shared": "cd packages/shared && yarn run build",
     "dev:shared": "cd packages/shared && yarn run dev",
     "build:dashboard": "cd packages/frinx-dashboard && yarn run build",
@@ -23,7 +24,7 @@
     "build": "run-s build:shared build:api build:dashboard build:server",
     "dev:client": "cd packages/frinx-dashboard && yarn run dev",
     "dev:server": "cd packages/frinx-frontend-server && yarn run dev",
-    "dev": "run-p build:api dev:shared dev:client dev:server",
+    "dev": "run-p dev:api dev:shared dev:client dev:server",
     "turbo": "turbo run typegen type-check lint",
     "pr": "run-s formatter:check version:check turbo",
     "version:check": "node ./version-check.mjs"

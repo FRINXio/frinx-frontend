@@ -31,5 +31,6 @@ export function makeConfig(isProd) {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     loader: { '.svg': 'file', '.png': 'file', '.woff': 'file', '.woff2': 'file' },
     publicPath: '/static/',
+    outdir: fullPath('../../build-client/static'),
   };
 }

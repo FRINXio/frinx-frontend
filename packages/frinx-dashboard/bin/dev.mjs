@@ -1,11 +1,10 @@
 import * as esbuild from 'esbuild';
-import { fullPath, makeConfig, prepareFiles } from './common.mjs';
+import { makeConfig, prepareFiles } from './common.mjs';
 
 await prepareFiles();
 
 const ctx = await esbuild.context({
   ...makeConfig(false),
-  outdir: fullPath('../../build-client/static'),
 });
 
 await ctx.watch();
