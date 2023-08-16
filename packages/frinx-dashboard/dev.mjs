@@ -24,6 +24,7 @@ const ctx = await esbuild.context({
   splitting: true,
   treeShaking: true,
   format: 'esm',
+  define: { IS_PRODUCTION: false },
   // eslint-disable-next-line @typescript-eslint/naming-convention
   outExtension: { '.js': '.mjs' },
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -33,6 +34,8 @@ const ctx = await esbuild.context({
 });
 
 await ctx.watch();
+// needed for hot reload
+await ctx.serve({ port: 8000 });
 
 // eslint-disable-next-line no-console
 console.log('Watching for changes...');

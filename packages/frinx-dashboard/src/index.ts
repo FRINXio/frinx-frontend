@@ -5,6 +5,12 @@ import { AuthContext } from './auth-helpers';
 import Root from './root';
 import { ServiceKey } from './types';
 
+if (!window.IS_PRODUCTION) {
+  new EventSource('http://localhost:8000/esbuild').addEventListener('change', () => {
+    window.location.reload();
+  });
+}
+
 const ALL_SERVICES: ServiceKey[] = [
   'isUniflowEnabled' as const,
   'isInventoryEnabled' as const,
