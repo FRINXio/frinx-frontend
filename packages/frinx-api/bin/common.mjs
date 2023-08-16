@@ -19,3 +19,4 @@ export function makeConfig(isProd) {
 
 export const MODULE_FILE_NAME = fullPath(pkg.module);
 export const MAIN_FILE_NAME = fullPath(pkg.main);
+export const PACKAGE_NAME = pkg.name;
