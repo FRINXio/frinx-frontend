@@ -1,13 +1,8 @@
-import * as esbuild from 'esbuild';
-import { makeConfig, MODULE_FILE_NAME, PACKAGE_NAME } from './common.mjs';
+import { makeContextAndWatch } from '@frinx/build-scripts';
+import pkg from '../package.json' assert { type: 'json' };
 
-const ctx = await esbuild.context({
-  ...makeConfig(false),
-  outfile: MODULE_FILE_NAME,
-  logLevel: 'info',
+await makeContextAndWatch({
+  packageName: pkg.name,
+  moduleFileName: pkg.module,
+  external: [...Object.keys(pkg.peerDependencies), ...Object.keys(pkg.dependencies)],
 });
-
-await ctx.watch();
-
-// eslint-disable-next-line no-console
-console.log(`Watching for changes in ${PACKAGE_NAME} package.`);

@@ -1,0 +1,14 @@
+{
+  "name": "@frinx/build-scripts",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.mjs",
+  "module": "index.mjs",
+  "typings": "index.d.ts",
+  "author": "Frinx.io",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "esbuild": "^0.19.2",
+    "ora": "^7.0.1"
+  }
+}
