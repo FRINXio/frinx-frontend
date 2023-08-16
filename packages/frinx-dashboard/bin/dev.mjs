@@ -13,4 +13,4 @@ await ctx.watch();
 await ctx.serve({ port: 8000 });
 
 // eslint-disable-next-line no-console
-console.log('Watching for changes...');
+console.log('Watching for changes in @frinx/dashboard package...');

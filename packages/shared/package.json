@@ -10,6 +10,7 @@
     "dist/*"
   ],
   "scripts": {
+    "dev": "NODE_ENV=development node ./bin/dev.mjs",
     "build:esbuild": "NODE_ENV=production node ./bin/build.mjs",
     "build": "run-s build:esbuild typegen",
     "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",

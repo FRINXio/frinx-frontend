@@ -39,7 +39,7 @@
   },
   "scripts": {
     "copy:gamma": "cp ../../public/l3vpn-options.js ../../build-client/",
-    "dev": "run-s copy:gamma build:api dev:esbuild",
+    "dev": "run-s copy:gamma dev:esbuild",
     "dev:esbuild": "NODE_ENV=development node ./bin/dev.mjs",
     "build:api": "cd ../frinx-api && yarn run build",
     "build:esbuild": "NODE_ENV=production node ./bin/build.mjs",

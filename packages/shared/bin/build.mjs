@@ -1,28 +1,12 @@
 import * as esbuild from 'esbuild';
-import path from 'node:path';
-import pkg from '../package.json' assert { type: 'json' };
-
-function fullPath(...parts) {
-  return path.join(process.cwd(), ...parts);
-}
-
-const COMMON_CONFIG = {
-  entryPoints: ['src/index.ts'],
-  bundle: true,
-  write: true,
-  minify: false,
-  sourcemap: false,
-  treeShaking: true,
-  format: 'esm',
-  external: [...Object.keys(pkg.peerDependencies), ...Object.keys(pkg.dependencies)],
-};
+import { MAIN_FILE_NAME, makeConfig, MODULE_FILE_NAME } from './common.mjs';
 
 await esbuild.build({
-  ...COMMON_CONFIG,
-  outfile: fullPath(pkg.module),
+  ...makeConfig(true),
+  outfile: MODULE_FILE_NAME,
 });
 
 await esbuild.build({
-  ...COMMON_CONFIG,
-  outfile: fullPath(pkg.main),
+  ...makeConfig(true),
+  outfile: MAIN_FILE_NAME,
 });
