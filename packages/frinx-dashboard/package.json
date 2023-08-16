@@ -41,9 +41,7 @@
     "copy:gamma": "cp ../../public/l3vpn-options.js ../../build-client/",
     "dev": "run-s copy:gamma dev:esbuild",
     "dev:esbuild": "NODE_ENV=development node ./bin/dev.mjs",
-    "build:api": "cd ../frinx-api && yarn run build",
-    "build:esbuild": "NODE_ENV=production node ./bin/build.mjs",
-    "build": "run-s build:api build:esbuild",
+    "build": "NODE_ENV=production node ./bin/build.mjs",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit"
   },
