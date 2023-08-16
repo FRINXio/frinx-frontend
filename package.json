@@ -19,7 +19,7 @@
     "build:shared": "cd packages/shared && yarn run build",
     "build:dashboard": "cd packages/frinx-dashboard && yarn run build",
     "build:server": "cd packages/frinx-frontend-server && yarn run build",
-    "build": "run-s build:dashboard build:server",
+    "build": "run-s build:shared build:dashboard build:server",
     "dev:client": "cd packages/frinx-dashboard && yarn run dev",
     "dev:server": "cd packages/frinx-frontend-server && yarn run dev",
     "dev": "run-p dev:client dev:server",

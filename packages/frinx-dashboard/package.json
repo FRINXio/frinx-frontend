@@ -8,8 +8,8 @@
     "@azure/msal-react": "1.5.4",
     "@chakra-ui/react": "2.5.1",
     "@chakra-ui/system": "2.5.1",
-    "@emotion/react": "11.10.6",
-    "@emotion/styled": "11.10.6",
+    "@emotion/react": "11.11.0",
+    "@emotion/styled": "11.11.0",
     "@fontsource/roboto": "^5.0.8",
     "@formspree/react": "^2.4.0",
     "@frinx/api": "workspace:^",
@@ -40,9 +40,9 @@
   "scripts": {
     "copy:gamma": "cp ../../public/l3vpn-options.js ../../build-client/",
     "dev": "run-s copy:gamma build:api dev:esbuild",
-    "dev:esbuild": "NODE_ENV=development node dev.mjs",
+    "dev:esbuild": "NODE_ENV=development node ./bin/dev.mjs",
     "build:api": "cd ../frinx-api && yarn run build",
-    "build:esbuild": "NODE_ENV=production node build.mjs",
+    "build:esbuild": "NODE_ENV=production node ./bin/build.mjs",
     "build": "run-s build:api build:esbuild",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc --noEmit"
