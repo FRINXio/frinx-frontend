@@ -37,7 +37,8 @@
     "dev": "run-p dev:shared dev:api dev:topology dev:inventory dev:resource dev:workflow dev:builder dev:dashboard dev:server",
     "turbo": "turbo run typegen type-check lint",
     "pr": "run-s formatter:check version:check turbo",
-    "version:check": "node ./version-check.mjs"
+    "version:check": "node ./version-check.mjs",
+    "typegen": "turbo run typegen"
   },
   "devDependencies": {
     "dedubcheck": "0.0.8",
