@@ -61,4 +61,4 @@ class DashboardApp {
   }
 }
 
-window.dashboardApp = new DashboardApp();
+export const dashboardApp = new DashboardApp();
