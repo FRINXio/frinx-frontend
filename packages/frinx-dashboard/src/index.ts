@@ -5,7 +5,7 @@ import { AuthContext } from './auth-helpers';
 import Root from './root';
 import { ServiceKey } from './types';
 
-if (!window.IS_PRODUCTION) {
+if (window.IS_PRODUCTION === 'false') {
   new EventSource('http://localhost:8000/esbuild').addEventListener('change', () => {
     window.location.reload();
   });

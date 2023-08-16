@@ -24,7 +24,7 @@ const ctx = await esbuild.context({
   splitting: true,
   treeShaking: true,
   format: 'esm',
-  define: { IS_PRODUCTION: false },
+  define: { IS_PRODUCTION: 'false' },
   // eslint-disable-next-line @typescript-eslint/naming-convention
   outExtension: { '.js': '.mjs' },
   // eslint-disable-next-line @typescript-eslint/naming-convention

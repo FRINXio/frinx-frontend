@@ -25,7 +25,7 @@ await esbuild.build({
   splitting: true,
   treeShaking: true,
   format: 'esm',
-  define: { IS_PRODUCTION: false },
+  define: { IS_PRODUCTION: 'true' },
   // eslint-disable-next-line @typescript-eslint/naming-convention
   outExtension: { '.js': '.mjs' },
   // eslint-disable-next-line @typescript-eslint/naming-convention
