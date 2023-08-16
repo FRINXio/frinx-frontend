@@ -1,8 +1,5 @@
 import express, { RequestHandler } from 'express';
 import path from 'path';
-// NOTE: this proxy-handler could in theory go into
-// dev-only and do some dev-only magic here
-import { createProxyMiddleware } from 'http-proxy-middleware';
 import isDev from '../is-dev';
 
 const isProd = !isDev;
