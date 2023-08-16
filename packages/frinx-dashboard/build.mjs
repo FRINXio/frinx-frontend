@@ -22,6 +22,11 @@ await esbuild.build({
   write: true,
   minify: true,
   sourcemap: false,
+  splitting: true,
+  treeShaking: true,
+  format: 'esm',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  outExtension: { '.js': '.mjs' },
   // eslint-disable-next-line @typescript-eslint/naming-convention
   loader: { '.svg': 'file', '.png': 'file', '.woff': 'file', '.woff2': 'file' },
   publicPath: '/static/',
