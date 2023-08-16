@@ -13,7 +13,7 @@ import {
   Progress,
   useDisclosure,
 } from '@chakra-ui/react';
-import { callbackUtils, ExecuteWorkflowModal, unwrap, useNotifications, Workflow } from '@frinx/shared/src';
+import { callbackUtils, ExecuteWorkflowModal, unwrap, useNotifications, Workflow } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';

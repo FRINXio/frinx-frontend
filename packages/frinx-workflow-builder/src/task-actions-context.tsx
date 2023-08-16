@@ -1,5 +1,5 @@
 import React, { createContext, FC, useContext, useEffect, useState, useMemo } from 'react';
-import { ExtendedSubworkflowTask, ExtendedTask, unwrap } from '@frinx/shared/src';
+import { ExtendedSubworkflowTask, ExtendedTask, unwrap } from '@frinx/shared';
 
 export type SelectedTask =
   | {

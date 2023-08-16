@@ -3,7 +3,7 @@ import { IPv4, IPv6 } from 'ipaddr.js';
 import { compact } from 'lodash';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
-import { useMinisearch, useTags } from '@frinx/shared/src';
+import { useMinisearch, useTags } from '@frinx/shared';
 import SearchFilterPoolsBar from '../../../components/search-filter-pools-bar';
 import useResourcePoolActions from '../../../hooks/use-resource-pool-actions';
 import IpRangesTable from '../ip-ranges-table';

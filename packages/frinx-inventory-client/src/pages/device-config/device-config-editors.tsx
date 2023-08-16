@@ -15,7 +15,7 @@ import {
   Portal,
   Text,
 } from '@chakra-ui/react';
-import { Editor } from '@frinx/shared/src';
+import { Editor } from '@frinx/shared';
 import { format } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 import FeatherIcon from 'feather-icons-react';

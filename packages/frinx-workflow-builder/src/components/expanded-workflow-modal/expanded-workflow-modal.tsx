@@ -16,7 +16,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { callbackUtils, Workflow, Task, getElementsFromWorkflow, convertTaskToExtendedTask } from '@frinx/shared/src';
+import { callbackUtils, Workflow, Task, getElementsFromWorkflow, convertTaskToExtendedTask } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';

@@ -1,4 +1,4 @@
-import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared/src';
+import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
 import { createClient as createWSClient } from 'graphql-ws';

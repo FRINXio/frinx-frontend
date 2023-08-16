@@ -9,7 +9,7 @@ import {
   Task,
   ClientWorkflow,
   DescriptionJSON,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { ReactFlowProvider } from 'react-flow-renderer';

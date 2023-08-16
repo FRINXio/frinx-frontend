@@ -2,7 +2,7 @@ import { Box, Heading, Progress } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { unwrap, useNotifications, useMinisearch, useTags, omitNullValue } from '@frinx/shared/src';
+import { unwrap, useNotifications, useMinisearch, useTags, omitNullValue } from '@frinx/shared';
 import PageContainer from '../components/page-container';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {

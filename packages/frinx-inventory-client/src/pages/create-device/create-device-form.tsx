@@ -14,7 +14,7 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
-import { Editor } from '@frinx/shared/src';
+import { Editor } from '@frinx/shared';
 import parse from 'json-templates';
 import {
   DeviceBlueprintsQuery,

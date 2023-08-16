@@ -1,7 +1,7 @@
 import React, { useEffect, VoidFunctionComponent } from 'react';
 import { Button, FormControl, FormErrorMessage, FormLabel, HStack, Input, Select, Spacer } from '@chakra-ui/react';
 import { FormikErrors, FormikValues, useFormik } from 'formik';
-import { Editor, unwrap } from '@frinx/shared/src';
+import { Editor, unwrap } from '@frinx/shared';
 import * as yup from 'yup';
 import { omit } from 'lodash';
 import {

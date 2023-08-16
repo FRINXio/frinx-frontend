@@ -1,4 +1,4 @@
-import { useNotifications, unwrap } from '@frinx/shared/src';
+import { useNotifications, unwrap } from '@frinx/shared';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';

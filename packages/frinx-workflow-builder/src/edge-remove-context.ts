@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { unwrap } from '@frinx/shared/src';
+import { unwrap } from '@frinx/shared';
 
 type EdgeRemoveContextProps = {
   removeEdge: (id: string) => void;

@@ -16,7 +16,7 @@ import {
   ModalOverlay,
   Select,
 } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { ChangeEvent, FormEvent, useMemo, useRef, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
