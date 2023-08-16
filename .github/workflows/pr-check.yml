@@ -24,5 +24,9 @@ jobs:
         run: yarn install --immutable
       - name: Check code formatting
         run: yarn run formatter:check
+      - name: Build dependencies (@frinx/shared)
+        run: yarn run build:shared
+      - name: Build dependencies (@frinx/api)
+        run: yarn run build:api
       - name: Run PR check
         run: yarn run pr
