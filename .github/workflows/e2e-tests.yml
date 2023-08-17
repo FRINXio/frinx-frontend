@@ -89,18 +89,18 @@ jobs:
     #         }
     #     }'
 
-    # - name: Start job notification
-    #   run: |
-    #     docker run \
-    #       -e state=pending \
-    #       -e target_url=https://argo-frinx.csf.elisa.fi/workflows/ \
-    #       -e description="Workflow for argo workflow to take job" \
-    #       -e context="Argo Workflows" \
-    #       -e access_token="${{ secrets.ARGO_WF_NOTIFICATION_GH_TOKEN }}" \
-    #       -e organisation=FRINXio \
-    #       -e app_repo="gitops-demo-azure" \
-    #       -e git_sha="${{ github.event.pull_request.head.sha }}" \
-    #       ghcr.io/sendible-labs/ci-github-notifier:stable
+      - name: Start job notification
+        run: |
+          docker run \
+            -e state=pending \
+            -e target_url=https://argo-frinx.csf.elisa.fi/workflows/ \
+            -e description="Workflow for argo workflow to take job" \
+            -e context="Argo Workflows" \
+            -e access_token="${{ secrets.ARGO_WF_NOTIFICATION_GH_TOKEN }}" \
+            -e organisation=FRINXio \
+            -e app_repo="frinx-frontend" \
+            -e git_sha="${{ github.event.pull_request.head.sha }}" \
+            ghcr.io/sendible-labs/ci-github-notifier:stable
 
       - name: Print url
         if: ${{ github.event.inputs.keep_fm == 'true' }}
