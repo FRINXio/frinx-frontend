@@ -17,13 +17,7 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import {
-  isWorkflowNameAvailable,
-  SearchByTagInput,
-  useTagsInput,
-  ClientWorkflow,
-  ExtendedTask,
-} from '@frinx/shared/src';
+import { isWorkflowNameAvailable, SearchByTagInput, useTagsInput, ClientWorkflow, ExtendedTask } from '@frinx/shared';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 

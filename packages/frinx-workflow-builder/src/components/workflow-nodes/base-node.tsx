@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Theme, Tooltip, useTheme } from '@chakra-ui/react';
-import { NodeData, TaskType, unwrap } from '@frinx/shared/src';
+import { NodeData, TaskType, unwrap } from '@frinx/shared';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Handle, NodeProps, Position } from 'react-flow-renderer';
 import { useTaskActions } from '../../task-actions-context';

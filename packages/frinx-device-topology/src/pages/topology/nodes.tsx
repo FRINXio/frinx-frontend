@@ -1,4 +1,4 @@
-import { unwrap } from '@frinx/shared/src';
+import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
 import NodeIcon from '../../components/node-icons/node-icon';
 import { GraphNodeWithDiff } from '../../helpers/topology-helpers';

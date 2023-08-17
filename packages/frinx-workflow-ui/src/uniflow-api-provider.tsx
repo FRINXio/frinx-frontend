@@ -1,5 +1,5 @@
 import React, { createContext, FC, useRef } from 'react';
-import { callbackUtils, Callbacks, CustomToastProvider } from '@frinx/shared/src';
+import { callbackUtils, Callbacks, CustomToastProvider } from '@frinx/shared';
 import { cacheExchange, ClientOptions, createClient, dedupExchange, subscriptionExchange, Provider } from 'urql';
 import { createClient as createWSClient } from 'graphql-ws';
 import { retryExchange } from '@urql/exchange-retry';

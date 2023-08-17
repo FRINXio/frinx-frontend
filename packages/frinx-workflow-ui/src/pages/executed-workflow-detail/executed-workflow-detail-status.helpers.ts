@@ -1,10 +1,4 @@
-import {
-  callbackUtils,
-  ExecutedWorkflowResponse,
-  TaskStatus,
-  useAsyncGenerator,
-  WorkflowStatus,
-} from '@frinx/shared/src';
+import { callbackUtils, ExecutedWorkflowResponse, TaskStatus, useAsyncGenerator, WorkflowStatus } from '@frinx/shared';
 
 async function getWorkflowExecOutput(
   workflowId: string,

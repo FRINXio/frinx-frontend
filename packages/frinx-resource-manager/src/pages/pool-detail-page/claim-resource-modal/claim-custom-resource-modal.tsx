@@ -13,7 +13,7 @@ import {
   ModalFooter,
   Button,
 } from '@chakra-ui/react';
-import { Editor } from '@frinx/shared/src';
+import { Editor } from '@frinx/shared';
 import { FormikErrors, useFormik } from 'formik';
 import React, { FC } from 'react';
 import * as yup from 'yup';

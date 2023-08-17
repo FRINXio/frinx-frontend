@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { Editor } from '@frinx/shared/src';
+import { Editor } from '@frinx/shared';
 
 type ViewStrategyScriptProps = {
   script: string;

@@ -16,7 +16,7 @@ import {
 import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import FeatherIcon from 'feather-icons-react';
 import unescapeJs from 'unescape-js';
-import { callbackUtils } from '@frinx/shared/src';
+import { callbackUtils } from '@frinx/shared';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 
 type Props = {

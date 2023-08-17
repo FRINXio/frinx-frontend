@@ -10,7 +10,7 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
-import { Editor } from '@frinx/shared/src';
+import { Editor } from '@frinx/shared';
 
 type Props = {
   script?: string;

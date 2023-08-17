@@ -1,5 +1,5 @@
 import { Box, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
-import { Editor, ExtendedTask, GraphQLInputParams } from '@frinx/shared/src';
+import { Editor, ExtendedTask, GraphQLInputParams } from '@frinx/shared';
 import { FormikErrors } from 'formik';
 import React, { FC, useState } from 'react';
 import * as yup from 'yup';
