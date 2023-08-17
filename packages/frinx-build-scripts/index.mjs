@@ -5,6 +5,7 @@ import executionTime from 'execution-time';
 import { exec } from 'node:child_process';
 import path from 'node:path';
 import { oraPromise } from 'ora';
+import { dtsPlugin } from 'esbuild-plugin-d.ts';
 import { clean, makeConfig } from './common.mjs';
 
 export class Builder {
@@ -75,6 +76,7 @@ export async function makeContextAndWatch(options) {
     ...makeConfig({ isProd: false, external: options.external ?? [] }),
     outfile: options.moduleFileName,
     logLevel: 'info',
+    plugins: [dtsPlugin()],
   });
 
   await ctx.watch();
