@@ -104,9 +104,9 @@ jobs:
 
       - name: Print url
         run: |
-          echo ${{ steps.var.outputs.short_sha }}
-          echo "::notice file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+          echo 
+          echo "::notice Frinx-machine is deployed at ui-${{ steps.var.outputs.short_sha }}-frinx.csf.elisa.fi"
 
       - name: Print url
         run: |
-          echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+          echo "::warning please delete the instance after use(Resume workflow in argo-workflow)!"
