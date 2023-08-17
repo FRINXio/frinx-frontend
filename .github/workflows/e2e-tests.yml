@@ -46,7 +46,7 @@ jobs:
       # - name: Build and push latest
       #   id: docker_build
       #   env:
-      #     TAG: $(git rev-parse --short HEAD)
+      #     TAG: ${{ steps.sha.outputs.short_sha }}
       #   uses: docker/build-push-action@v4
       #   with:
       #     push: true
