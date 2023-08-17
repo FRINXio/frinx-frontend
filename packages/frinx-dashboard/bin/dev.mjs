@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import * as esbuild from 'esbuild';
 import { makeConfig, PACKAGE_NAME, prepareFiles } from './common.mjs';
 
@@ -9,6 +10,9 @@ const ctx = await esbuild.context({
 });
 
 await ctx.watch();
+
+/* eslint-disable no-console */
+console.log(chalk.red('Ignore the running dev server, its purpose is only hot reload.'));
 // needed for hot reload
 await ctx.serve({ port: 8000 });
 
