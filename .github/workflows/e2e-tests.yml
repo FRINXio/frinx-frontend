@@ -65,38 +65,38 @@ jobs:
       #       PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }}
       #       PRIVATE_NPM_TOKEN=${{ secrets.PUBLISH_TOKEN }}
 
-    # - name: Invoke argo-event hook
-    #   run: |
-    #     curl --location --request POST '${{ secrets.ARGO_EVENT_URL }}' \
-    #     --header 'Authorization: ${{ secrets.ARGO_EVENT_SECRET }}' \
-    #     --header 'Content-Type: application/json' \
-    #     --data-raw '{
-    #         "title": "${{ github.event.pull_request.title }}",
-    #         "pr_number": "${{ github.event.number }}",
-    #         "event": "${{ github.event_name }}",
-    #         "repository": "${{ github.event.repository.name }}",
-    #         "owner": "${{ github.repository_owner }}",
-    #         "commit": "${{ github.event.pull_request.head.sha }}",
-    #         "commit_short": "${{ steps.vars.outputs.short_sha }}",
-    #         "ref": "${{ github.ref }}",
-    #         "head": "${{ github.head_ref }}",
-    #         "workflow": "${{ github.workflow }}",
-    #         "slack_channel": "common/slack-webhook/fx_env_demo_azure",
-    #         "path": "/workspace/frinx-machine/staging/app/",
-    #         "internal_page": "true",
-    #         "cypress": {
-    #           "branch": "ui-1.0.38+",
-    #           "spec": "cypress/e2e/0-check-main-page/*,cypress/e2e/l3vpn-tests/*,cypress/e2e/topology-discovery/*",
-    #           "host": "localhost:8080",
-    #           "auth0_username": "common/test_aad_credentials/username",
-    #           "auth0_password": "common/test_aad_credentials/password",
-    #           "auth0_tenant_id": "common/test_aad_credentials/tenant_id",
-    #           "auth0_scope": "openid profile User.Read.All offline_access",
-    #           "auth0_client_id": "common/azure-auth/AZURE_KRAKEND_PLUGIN_CLIENT_ID",
-    #           "auth0_client_secret": "common/azure-auth/AZURE_KRAKEND_PLUGIN_CLIENT_SECRET",    
-    #           "numTestsKeptInMemory": 0
-    #         }
-    #     }'
+      - name: Invoke argo-event hook
+        run: |
+          curl --location --request POST '${{ secrets.ARGO_EVENT_URL }}' \
+          --header 'Authorization: ${{ secrets.ARGO_EVENT_SECRET }}' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "title": "${{ github.event.pull_request.title }}",
+              "pr_number": "${{ github.event.number }}",
+              "event": "${{ github.event_name }}",
+              "repository": "${{ github.event.repository.name }}",
+              "owner": "${{ github.repository_owner }}",
+              "commit": "${{ github.event.pull_request.head.sha }}",
+              "commit_short": "${{ steps.vars.outputs.short_sha }}",
+              "ref": "${{ github.ref }}",
+              "head": "${{ github.head_ref }}",
+              "workflow": "${{ github.workflow }}",
+              "slack_channel": "common/slack-webhook/fx_env_demo_azure",
+              "path": "/workspace/frinx-machine/staging/app/",
+              "internal_page": "true",
+              "cypress": {
+                "branch": "ui-1.0.38+",
+                "spec": "cypress/e2e/0-check-main-page/*",
+                "host": "localhost:8080",
+                "auth0_username": "",
+                "auth0_password": "",
+                "auth0_tenant_id": "",
+                "auth0_scope": "",
+                "auth0_client_id": "",
+                "auth0_client_secret": "",    
+                "numTestsKeptInMemory": 0
+              }
+          }'
 
       - name: Start job notification
         run: |
