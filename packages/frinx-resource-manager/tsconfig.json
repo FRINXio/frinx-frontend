@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": ["yup.d.ts", "custom.d.ts", "src"],
+  "include": ["yup.d.ts", "custom.d.ts", "feather-icons-react.d.ts", "src"],
   "exclude": ["node_modules"]
 }
