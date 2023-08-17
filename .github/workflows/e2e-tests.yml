@@ -4,7 +4,7 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
-      uninstall_fm:
+      keep_fm:
         description: 'Keep Frinx-machine instance'     
         required: true
         default: 'true'
@@ -103,10 +103,11 @@ jobs:
     #       ghcr.io/sendible-labs/ci-github-notifier:stable
 
       - name: Print url
+        if: ${{ github.event.inputs.keep_fm == 'true' }}
         run: |
-          echo 
-          echo "::notice::Frinx-machine is deployed at ui-${{ steps.var.outputs.short_sha }}-frinx.csf.elisa.fi"
+          echo "::notice::Frinx-machine is deployed at ui-${{ steps.var.outputs.short_sha }}-frinx.csf.elisa.fi(behind Elisa VPN)"
 
       - name: Print url
+        if: ${{ github.event.inputs.keep_fm == 'true' }}
         run: |
           echo "::warning::Please delete the instance after use(Resume workflow in argo-workflow)!"
