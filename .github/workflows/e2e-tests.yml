@@ -2,22 +2,13 @@ name: E2E tests
 
 on:
   pull_request:
-    inputs:
-      keep_fm:
-        description: 'Keep Frinx-machine instance'     
-        required: true
-        default: 'true'
-      host:
-        description: 'frinx-machine helm-chart branch'
-        required: true
-        default: 'main'
   workflow_dispatch:
     inputs:
       keep_fm:
         description: 'Keep Frinx-machine instance'     
         required: true
         default: 'true'
-      host:
+      fm_branch:
         description: 'frinx-machine helm-chart branch'
         required: true
         default: 'main'
@@ -84,6 +75,7 @@ jobs:
               "slack_channel": "common/slack-webhook/fx_env_demo_azure",
               "path": "/workspace/frinx-machine/staging/app/",
               "internal_page": "true",
+              "fm_branch": "${{ github.event.inputs.fm_branch || 'main' }}",
               "cypress": {
                 "branch": "ui-1.0.38+",
                 "spec": "cypress/e2e/0-check-main-page/*",
