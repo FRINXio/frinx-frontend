@@ -112,11 +112,11 @@ jobs:
             ghcr.io/sendible-labs/ci-github-notifier:stable
 
       - name: Print url
-        if: ${{ github.event.inputs.keep_fm == 'true' }}
+        if: ${{ github.event.inputs.keep_fm || 'true' == 'true' }}
         run: |
           echo "::notice::Frinx-machine is deployed at ui-${{ steps.var.outputs.short_sha }}-frinx.csf.elisa.fi(behind Elisa VPN)"
 
       - name: Print url
-        if: ${{ github.event.inputs.keep_fm == 'true' }}
+        if: ${{ github.event.inputs.keep_fm || 'true' == 'true' }}
         run: |
           echo "::warning::Please delete the instance after use(Resume workflow in argo-workflow)!"
