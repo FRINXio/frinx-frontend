@@ -68,7 +68,7 @@ jobs:
               "repository": "${{ github.event.repository.name }}",
               "owner": "${{ github.repository_owner }}",
               "commit": "${{ github.event.pull_request.head.sha }}",
-              "commit_short": "${{ steps.vars.outputs.short_sha }}",
+              "commit_short": "${{ steps.var.outputs.short_sha }}",
               "ref": "${{ github.ref }}",
               "head": "${{ github.head_ref }}",
               "workflow": "${{ github.workflow }}",
