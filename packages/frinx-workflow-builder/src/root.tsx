@@ -65,7 +65,7 @@ const WORKFLOW_DETAIL_QUERY = gql`
 `;
 
 const WORKFLOW_LIST_QUERY = gql`
-  query WorkflowList($filter: FilterWorkflowsInput) {
+  query WorkflowList($filter: FilterWorkflowsInput, $taskDefinitionsFilter: FilterTaskDefinitionsInput) {
     workflows(filter: $filter) {
       edges {
         cursor
@@ -81,7 +81,7 @@ const WORKFLOW_LIST_QUERY = gql`
       }
       totalCount
     }
-    taskDefinitions {
+    taskDefinitions(filter: $taskDefinitionsFilter) {
       edges {
         node {
           name
@@ -145,13 +145,18 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   );
   const { workflowId, version } = useParams<{ workflowId: string; version: string }>();
   const [workflow, setWorkflow] = useState<ClientWorkflow<ExtendedTask> | null>(null);
-  const [filter, setFilter] = useState<string>('');
+  const [workflowFilter, setWorkflowFilter] = useState<string>('');
+  const [taskdefsFilter, setTaskdefsFilter] = useState<string>('');
+
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
   const [{ data: workflowListData }] = useQuery<WorkflowListQuery>({
     query: WORKFLOW_LIST_QUERY,
     variables: {
-      filter: { keyword: filter },
+      filter: { keyword: workflowFilter },
+      taskDefinitionsFilter: {
+        keyword: taskdefsFilter,
+      },
     },
   });
 
@@ -335,8 +340,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     <TaskActionsProvider>
       <ReactFlowProvider>
         <App
-          setFilter={setFilter}
-          filter={filter}
+          workflowFilter={workflowFilter}
+          setWorkflowFilter={setWorkflowFilter}
+          setTaskdefsFilter={setTaskdefsFilter}
           key={workflow.id}
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}

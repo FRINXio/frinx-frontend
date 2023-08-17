@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Heading,
   Icon,
@@ -15,20 +16,17 @@ import {
 } from '@chakra-ui/react';
 import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared/src';
 import FeatherIcon from 'feather-icons-react';
-// import throttle from 'lodash/throttle';
-// import MiniSearch from 'minisearch';
-import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
-import { getFilteredResults, parseDescription, parseLabels } from './left-menu.helpers';
+import React, { useState, VoidFunctionComponent } from 'react';
+import { parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
-  setFilter: React.Dispatch<React.SetStateAction<string>>;
-  filter: string;
+  setWorkflowFilter: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, setFilter, filter, workflows }) => {
-
+const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, setWorkflowFilter, workflows }) => {
+  const [searchInput, setSearchInput] = useState('');
   return (
     <Box>
       <InputGroup>
@@ -37,13 +35,35 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, setFilter, filt
         </InputLeftElement>
         <Input
           type="text"
-          value={filter}
+          value={searchInput}
           onChange={(e) => {
-            setFilter(e.target.value);
+            setSearchInput(e.target.value);
           }}
           placeholder="Search workflows"
         />
       </InputGroup>
+      <Flex justify="space-between" my={3} gap={2}>
+        <Button
+          colorScheme="blue"
+          color="white"
+          onClick={() => {
+            setWorkflowFilter(searchInput);
+          }}
+        >
+          Search
+        </Button>
+        <Button
+          colorScheme="red"
+          variant="outline"
+          onClick={() => {
+            setWorkflowFilter('');
+            setSearchInput('');
+          }}
+        >
+          Reset
+        </Button>
+      </Flex>
+
       {workflows?.map((wf) => (
         <Flex
           key={wf.id}

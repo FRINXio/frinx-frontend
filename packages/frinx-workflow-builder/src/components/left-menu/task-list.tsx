@@ -1,4 +1,4 @@
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import {
   Box,
   Flex,
@@ -13,21 +13,20 @@ import {
   Badge,
   WrapItem,
   Icon,
+  Button,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { convertTaskDefinition, ExtendedTask, TaskDefinition, useMinisearch } from '@frinx/shared/src';
+import { convertTaskDefinition, ExtendedTask, TaskDefinition } from '@frinx/shared/src';
 import { parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   taskDefinitions: TaskDefinition[];
+  setTaskdefsFilter: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) => {
-  const { results, searchText, setSearchText } = useMinisearch({
-    items: taskDefinitions.map((td) => ({ ...td, Name: td.name })),
-    searchFields: ['name', 'description'],
-  });
+const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, setTaskdefsFilter }) => {
+  const [searchInput, setSearchInput] = useState('');
 
   return (
     <Box>
@@ -37,18 +36,38 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions }) 
         </InputLeftElement>
         <Input
           type="text"
-          value={searchText}
+          value={searchInput}
           onChange={(e) => {
-            setSearchText(e.target.value);
+            setSearchInput(e.target.value);
           }}
           placeholder="Search tasks"
         />
       </InputGroup>
-      {results?.map((tskDefinition) => (
+      <Flex justify="space-between" my={3} gap={2}>
+        <Button
+          colorScheme="blue"
+          color="white"
+          onClick={() => {
+            setTaskdefsFilter(searchInput);
+          }}
+        >
+          Search
+        </Button>
+        <Button
+          colorScheme="red"
+          variant="outline"
+          onClick={() => {
+            setTaskdefsFilter('');
+            setSearchInput('');
+          }}
+        >
+          Reset
+        </Button>
+      </Flex>
+      {taskDefinitions?.map((tskDefinition) => (
         <Flex
           key={tskDefinition.name}
           alignItems="stretch"
-          // height={16}
           border="1px"
           borderColor="gray.200"
           px={4}

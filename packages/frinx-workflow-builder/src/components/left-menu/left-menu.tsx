@@ -6,21 +6,33 @@ import TaskList from './task-list';
 import WorkflowList from './workflow-list';
 
 type Props = {
-  setFilter: React.Dispatch<React.SetStateAction<string>>;
+  setWorkflowFilter: React.Dispatch<React.SetStateAction<string>>;
+  setTaskdefsFilter: React.Dispatch<React.SetStateAction<string>>;
   onTaskAdd: (task: ExtendedTask) => void;
-  filter: string;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
 };
 
-const LeftMenu: FC<Props> = memo(({ onTaskAdd, filter, setFilter, workflows, taskDefinitions }) => {
+const LeftMenu: FC<Props> = memo(({ onTaskAdd, setWorkflowFilter, setTaskdefsFilter, workflows, taskDefinitions }) => {
   return (
     <Box background="white" boxShadow="base" px={4} py={10} height="100%">
       <Tabs display="flex" flexDirection="column" height="100%" isLazy>
         <TabList>
           <Tab>System tasks</Tab>
-          <Tab>Tasks</Tab>
-          <Tab>Workflows</Tab>
+          <Tab
+            onClick={() => {
+              setWorkflowFilter('');
+            }}
+          >
+            Tasks
+          </Tab>
+          <Tab
+            onClick={() => {
+              setTaskdefsFilter('');
+            }}
+          >
+            Workflows
+          </Tab>
         </TabList>
         <TabPanels flex={1} overflowY="auto">
           <TabPanel py={6}>
@@ -52,10 +64,10 @@ const LeftMenu: FC<Props> = memo(({ onTaskAdd, filter, setFilter, workflows, tas
             ))}
           </TabPanel>
           <TabPanel>
-            <TaskList onTaskAdd={onTaskAdd} taskDefinitions={taskDefinitions} />
+            <TaskList setTaskdefsFilter={setTaskdefsFilter} onTaskAdd={onTaskAdd} taskDefinitions={taskDefinitions} />
           </TabPanel>
           <TabPanel>
-            <WorkflowList filter={filter} onTaskAdd={onTaskAdd} setFilter={setFilter} workflows={workflows} />
+            <WorkflowList setWorkflowFilter={setWorkflowFilter} onTaskAdd={onTaskAdd} workflows={workflows} />
           </TabPanel>
         </TabPanels>
       </Tabs>
