@@ -20,14 +20,13 @@ import {
   useNotifications,
   Workflow,
   ConfirmDeleteModal,
+  usePagination,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
-import Pagination from '../../components/pagination';
-import { usePagination } from '../../hooks/use-pagination';
 import {
   DeleteDeviceMutation,
   DeleteDeviceMutationVariables,
@@ -589,15 +588,12 @@ const DeviceList: VoidFunctionComponent = () => {
                 installLoadingMap={installLoadingMap}
                 onDeviceSelection={handleDeviceSelection}
               />
-
-              <Box marginTop={4} paddingX={4}>
-                <Pagination
-                  onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
-                  onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
-                  hasNextPage={deviceData.devices.pageInfo.hasNextPage}
-                  hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
-                />
-              </Box>
+              <Pagination
+                onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
+                onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
+                hasNextPage={deviceData.devices.pageInfo.hasNextPage}
+                hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
+              />
             </>
           )}
         </Box>
