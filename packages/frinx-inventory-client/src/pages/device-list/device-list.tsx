@@ -22,7 +22,7 @@ import {
   usePagination,
   Pagination,
   ConfirmDeleteModal,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';

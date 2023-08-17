@@ -1,13 +1,19 @@
 import { Box, Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
-import { omitNullValue, useMinisearch, useNotifications, useTags, SelectItemsPerPage } from '@frinx/shared';
+import {
+  omitNullValue,
+  useMinisearch,
+  useNotifications,
+  useTags,
+  SelectItemsPerPage,
+  Pagination,
+  usePagination,
+} from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { usePagination } from '@frinx/shared/src';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
-import Pagination from '../../components/pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import {
   DeletePoolMutation,

@@ -1,5 +1,5 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue, usePagination, Pagination, TaskDefinition, useNotifications } from '@frinx/shared/src';
+import { omitNullValue, usePagination, Pagination, TaskDefinition, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import { gql, useMutation, useQuery } from 'urql';

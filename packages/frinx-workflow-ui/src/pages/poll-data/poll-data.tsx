@@ -1,5 +1,5 @@
 import { Container, Table, Tbody, Td, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue, Pagination, usePagination } from '@frinx/shared/src';
+import { omitNullValue, Pagination, usePagination } from '@frinx/shared';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { gql, useQuery } from 'urql';

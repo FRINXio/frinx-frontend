@@ -19,7 +19,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
-import { usePagination, Pagination, useNotifications, SelectItemsPerPage } from '@frinx/shared/src';
+import { usePagination, Pagination, useNotifications, SelectItemsPerPage } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { useNavigate } from 'react-router-dom';
 import {
