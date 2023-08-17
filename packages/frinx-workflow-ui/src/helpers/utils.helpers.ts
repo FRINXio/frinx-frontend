@@ -1,6 +1,6 @@
 import unescapeJs from 'unescape-js';
 import { format } from 'date-fns';
-import { getLocalDateFromUTC } from '@frinx/shared/src';
+import { getLocalDateFromUTC } from '@frinx/shared';
 
 export function makeURLSearchParamsFromObject<T extends string | number | string[] | boolean>(
   obj: Record<string, T>,

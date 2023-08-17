@@ -14,7 +14,7 @@ import {
   Select,
   Spacer,
 } from '@chakra-ui/react';
-import { Editor } from '@frinx/shared/src';
+import { Editor } from '@frinx/shared';
 
 import { Device, DeviceSizeEnum, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
 import { DeviceServiceState, Label, LabelsQuery, ZonesQuery, DeviceSize } from '../../__generated__/graphql';

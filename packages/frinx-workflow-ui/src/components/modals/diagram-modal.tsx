@@ -9,7 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { convertWorkflowTaskToExtendedTask, getElementsFromWorkflow } from '@frinx/shared/src';
+import { convertWorkflowTaskToExtendedTask, getElementsFromWorkflow } from '@frinx/shared';
 import React, { VoidFunctionComponent } from 'react';
 import ReactFlow, { Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import { getLayoutedElements } from '../../helpers/layout.helpers';

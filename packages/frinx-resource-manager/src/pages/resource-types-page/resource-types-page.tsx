@@ -1,5 +1,5 @@
 import { Flex, Heading, Progress, Text } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import gql from 'graphql-tag';
 import React, { useMemo, VoidFunctionComponent, useCallback } from 'react';
 import { useMutation, useQuery } from 'urql';

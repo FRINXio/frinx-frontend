@@ -13,5 +13,5 @@
     "rootDir": "src"
   },
   "include": ["src"],
-  "exclude": [".eslintrc.js", "babel.config.js", "babel-register-ts.js"]
+  "exclude": [".eslintrc.js"]
 }

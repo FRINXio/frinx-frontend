@@ -1,4 +1,4 @@
-import { unwrap } from '@frinx/shared/src';
+import { unwrap } from '@frinx/shared';
 import React, { createContext, FC, useContext, useMemo } from 'react';
 import useThunkReducer, { CustomDispatch } from './use-thunk-reducer';
 import { StateAction } from './state.actions';

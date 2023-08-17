@@ -11,7 +11,7 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
-import { callbackUtils, jsonParse, Workflow } from '@frinx/shared/src';
+import { callbackUtils, jsonParse, Workflow } from '@frinx/shared';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 
 type Props = {
