@@ -19,14 +19,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set short git commit SHA
-        id: vars
+      # - name: Set short git commit SHA
+      #   id: vars
+      #   run: |
+      #     calculatedSha=$(git rev-parse --short HEAD)
+      #     echo "::set-output name=short_sha::$calculatedSha"
+
+      - name: Save sha
+        id: sha
         run: |
           calculatedSha=$(git rev-parse --short HEAD)
-          echo "::set-output name=short_sha::$calculatedSha"
+          echo "short_sha=$calculatedSha" >> $GITHUB_OUTPUT
 
       - name: Confirm git commit SHA output
-        run: echo ${{ steps.vars.outputs.short_sha }}
+        run: echo ${{ steps.sha.outputs.short_sha }}
 
       # - name: Login to DockerHub
       #   uses: docker/login-action@v2
