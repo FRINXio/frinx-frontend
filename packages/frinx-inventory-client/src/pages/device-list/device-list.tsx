@@ -208,6 +208,12 @@ const DeviceList: VoidFunctionComponent = () => {
     );
   }
 
+  const clearFilter = () => {
+    setSearchText('');
+    setDeviceNameFilter(null);
+    setSelectedLabels([]);
+  };
+
   const handleUninstallButtonClick = (deviceId: string) => {
     setInstallLoadingMap((m) => {
       return {
@@ -523,7 +529,7 @@ const DeviceList: VoidFunctionComponent = () => {
           {deviceData && (
             <>
               <Box>
-                <Flex>
+                <Flex justify="space-between">
                   <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
                     <Box flex={1}>
                       <DeviceFilter
@@ -538,6 +544,17 @@ const DeviceList: VoidFunctionComponent = () => {
                     </Box>
                     <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
                       Search
+                    </Button>
+                    <Button
+                      mb={6}
+                      data-cy="clear-button"
+                      onClick={clearFilter}
+                      colorScheme="red"
+                      variant="outline"
+                      marginLeft="2"
+                      mt={10}
+                    >
+                      Clear
                     </Button>
                   </Form>
                   <Flex width="50%" justify="flex-end">

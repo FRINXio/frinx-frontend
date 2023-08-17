@@ -2,7 +2,7 @@ import { Box, Button, Flex, Heading, HStack, Icon, Spacer } from '@chakra-ui/rea
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
-import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags, SelectItemsPerPage } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import {
@@ -15,7 +15,6 @@ import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import IpRangesTable from './ip-ranges-table';
 import Pagination from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination';
-import SelectItemsPerPage from '../../components/select-items-per-page';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 
 const GET_POOLS_QUERY = gql`
@@ -264,7 +263,12 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
             />
           </Box>
         )}
-        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+        <SelectItemsPerPage
+          onItemsPerPageChange={firstPage}
+          first={paginationArgs.first}
+          last={paginationArgs.last}
+          setItemsCount={setItemsCount}
+        />
       </Flex>
     </>
   );
