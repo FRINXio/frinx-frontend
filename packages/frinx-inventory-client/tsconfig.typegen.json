@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": "src",
     "target": "esnext",
     "module": "esnext",
     "lib": ["es5", "es6", "es7", "ESNext", "dom"],
@@ -7,7 +8,7 @@
     "declaration": true,
     "outDir": "dist",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -17,7 +18,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true
   },
   "include": ["feather-icons-react.d.ts", "src"],
   "exclude": ["node_modules"]
