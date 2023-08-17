@@ -448,6 +448,7 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   onFormSubmit={handleFormSubmit}
                   tasks={workflow.tasks}
+                  workflows={workflows}
                 />
               </Box>
             </RightDrawer>

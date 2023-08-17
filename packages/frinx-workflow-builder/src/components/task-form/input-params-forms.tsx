@@ -1,4 +1,9 @@
+import { FormikErrors } from 'formik';
+import React, { ReactNode } from 'react';
+import * as yup from 'yup';
+import { Text } from '@chakra-ui/react';
 import {
+  ClientWorkflow,
   DecisionInputParams,
   EventInputParams,
   ExtendedTask,
@@ -14,10 +19,7 @@ import {
   TerminateInputParams,
   WhileInputParams,
   SetVariableInputParams,
-} from '@frinx/shared/src';
-import { FormikErrors } from 'formik';
-import React, { ReactNode } from 'react';
-import * as yup from 'yup';
+} from '@frinx/shared';
 import { GraphExtendedTask } from '../../helpers/types';
 import DecisionInputForm, { DecisionInputParamsSchema } from './decision-input-form';
 import EventInputForm, { EventInputParamsSchema } from './event-input-form';
@@ -30,6 +32,7 @@ import SetVariableInputsForm, { SetVariableInputParamsSchema } from './set-varia
 import LambdaInputsForm, { LambdaInputParamsSchema } from './lambda-input-form';
 import TerminateInputForm, { TerminateInputParamsSchema } from './terminate-input-form';
 import WhileInputForm, { WhileInputParamsSchema } from './while-input-form';
+import SubworkflowTaskForm from './subworkflow-task-form';
 
 const SettingsSchema = yup.object().shape({
   taskReferenceName: yup.string().required('Please enter task reference name'),
@@ -70,6 +73,7 @@ export function getValidationSchema(task: ExtendedTask) {
 }
 
 export function renderInputParamForm(
+  workflows: ClientWorkflow[],
   task: GraphExtendedTask,
   errors: FormikErrors<GraphExtendedTask>,
   onChange: (p: InputParameters) => void,
@@ -180,7 +184,21 @@ export function renderInputParamForm(
       return <GenericInputForm params={task.inputParameters} onChange={onChange} tasks={tasks} task={task} />;
     }
     if (task.type === 'SUB_WORKFLOW') {
-      return <GenericInputForm params={task.inputParameters} onChange={onChange} tasks={tasks} task={task} />;
+      const workflow = workflows.find(
+        (wf) => wf.name === task.subWorkflowParam.name && wf.version === task.subWorkflowParam.version,
+      );
+
+      if (workflow == null) {
+        return (
+          <Text>
+            Workflow {task.subWorkflowParam.name} with version {task.subWorkflowParam.version} not found
+          </Text>
+        );
+      } else {
+        return (
+          <SubworkflowTaskForm taskInputParameters={task.inputParameters} workflow={workflow} onChange={onChange} />
+        );
+      }
     }
     if (task.type === 'DO_WHILE') {
       const whileInputErrors = errors as FormikErrors<{ inputParameters: WhileInputParams }>;

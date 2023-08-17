@@ -22,7 +22,14 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
-import { convertTaskToExtendedTask, ExtendedTask, getRandomString, InputParameters } from '@frinx/shared/src';
+import {
+  ClientWorkflow,
+  Task,
+  convertTaskToExtendedTask,
+  ExtendedTask,
+  getRandomString,
+  InputParameters,
+} from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { FormikErrors, useFormik } from 'formik';
 import produce from 'immer';
@@ -33,6 +40,7 @@ import { getValidationSchema, renderInputParamForm } from './input-params-forms'
 type Props = {
   task: ExtendedTask;
   tasks: ExtendedTask[];
+  workflows: ClientWorkflow<Task>[];
   onClose: () => void;
   onFormSubmit: (task: ExtendedTask) => void;
 };
@@ -84,7 +92,7 @@ function getDecisionCaseError(
   return null;
 }
 
-const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
+const TaskForm: FC<Props> = ({ workflows, task, tasks, onClose, onFormSubmit }) => {
   const { errors, values, handleSubmit, handleChange, isSubmitting, isValid, setFieldValue } =
     useFormik<GraphExtendedTask>({
       initialValues: convertExtendedTaskToGraphExtendedTask(task),
@@ -258,7 +266,7 @@ const TaskForm: FC<Props> = ({ task, tasks, onClose, onFormSubmit }) => {
             )}
           </TabPanel>
           {'inputParameters' in values && (
-            <TabPanel>{renderInputParamForm(values, errors, handleUpdateInputParameters, tasks)}</TabPanel>
+            <TabPanel>{renderInputParamForm(workflows, values, errors, handleUpdateInputParameters, tasks)}</TabPanel>
           )}
         </TabPanels>
       </Tabs>
