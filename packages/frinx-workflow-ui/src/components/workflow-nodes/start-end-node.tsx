@@ -1,5 +1,5 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { EndTask, StartTask } from '@frinx/shared/src';
+import { EndTask, StartTask } from '@frinx/shared';
 import React, { memo, VoidFunctionComponent } from 'react';
 import { Position, Handle, NodeProps } from 'react-flow-renderer';
 

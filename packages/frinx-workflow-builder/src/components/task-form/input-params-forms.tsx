@@ -14,7 +14,7 @@ import {
   TerminateInputParams,
   WhileInputParams,
   SetVariableInputParams,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import { FormikErrors } from 'formik';
 import React, { ReactNode } from 'react';
 import * as yup from 'yup';

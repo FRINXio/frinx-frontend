@@ -11,7 +11,7 @@ import {
   Tag,
   Tooltip,
 } from '@chakra-ui/react';
-import { TaskDefinition } from '@frinx/shared/src';
+import { TaskDefinition } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { FormikErrors } from 'formik';
 

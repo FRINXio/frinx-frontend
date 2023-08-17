@@ -9,7 +9,7 @@ import {
   NodeData,
   TaskDefinition,
   useNotifications,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import produce from 'immer';
 import { zip } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';

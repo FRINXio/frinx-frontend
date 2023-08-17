@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from 'urql';
 import { Heading, Flex, Box } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import {
   CreateAllocationStrategyAndResourceTypeMutation,
   CreateAllocationStrategyAndResourceTypeMutationVariables,

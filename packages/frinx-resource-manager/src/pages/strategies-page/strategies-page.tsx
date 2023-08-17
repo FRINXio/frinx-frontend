@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, Icon, Progress } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useCallback, useMemo, useState, VoidFunctionComponent } from 'react';

@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React, { ChangeEvent, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
-import { LabelsInput, unwrap } from '@frinx/shared/src';
+import { LabelsInput, unwrap } from '@frinx/shared';
 import { FormikErrors, FormikValues } from 'formik';
 import FeatherIcon from 'feather-icons-react';
 

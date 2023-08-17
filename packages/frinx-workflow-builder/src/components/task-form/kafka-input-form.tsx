@@ -1,5 +1,5 @@
 import { FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
-import { Editor, ExtendedTask, KafkaPublishInputParams, SerializerEnum } from '@frinx/shared/src';
+import { Editor, ExtendedTask, KafkaPublishInputParams, SerializerEnum } from '@frinx/shared';
 import { FormikErrors } from 'formik';
 import React, { FC } from 'react';
 import * as yup from 'yup';

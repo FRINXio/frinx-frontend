@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Thead, Tr, Th, Tbody, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { TaskDefinition } from '@frinx/shared/src';
+import { TaskDefinition } from '@frinx/shared';
 
 type TaskTableProps = {
   tasks: TaskDefinition[];

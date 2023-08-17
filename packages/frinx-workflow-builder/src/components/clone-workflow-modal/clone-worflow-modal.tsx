@@ -11,7 +11,7 @@ import {
   Input,
   useToast,
 } from '@chakra-ui/react';
-import { ClientWorkflow, isWorkflowNameAvailable } from '@frinx/shared/src';
+import { ClientWorkflow, isWorkflowNameAvailable } from '@frinx/shared';
 import { isEmpty } from 'lodash';
 import React, { FC, FormEvent, useRef, useState } from 'react';
 

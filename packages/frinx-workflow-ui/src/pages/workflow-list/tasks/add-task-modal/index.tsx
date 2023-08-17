@@ -11,7 +11,7 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import { TaskDefinition } from '@frinx/shared/src';
+import { TaskDefinition } from '@frinx/shared';
 import * as yup from 'yup';
 import { AddTaskModalForm } from './add-task-modal-form';
 

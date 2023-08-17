@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import { ClientWorkflow, jsonParse } from '@frinx/shared/src';
+import { ClientWorkflow, jsonParse } from '@frinx/shared';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabels from '../../components/workflow-labels';
 

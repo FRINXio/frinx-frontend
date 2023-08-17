@@ -13,12 +13,18 @@ import {
   Progress,
   useDisclosure,
 } from '@chakra-ui/react';
-import { callbackUtils, ExecuteWorkflowModal, unwrap, useNotifications, Workflow } from '@frinx/shared/src';
+import {
+  callbackUtils,
+  ExecuteWorkflowModal,
+  unwrap,
+  useNotifications,
+  Workflow,
+  ConfirmDeleteModal,
+} from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { ConfirmDeleteModal } from '@frinx/shared';
 import ImportCSVModal from '../../components/import-csv-modal';
 import Pagination from '../../components/pagination';
 import { usePagination } from '../../hooks/use-pagination';

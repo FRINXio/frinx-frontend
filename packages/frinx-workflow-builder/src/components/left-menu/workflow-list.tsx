@@ -14,7 +14,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared/src';
+import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { parseDescription, parseLabels } from './left-menu.helpers';

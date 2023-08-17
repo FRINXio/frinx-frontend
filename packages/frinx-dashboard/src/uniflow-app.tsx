@@ -2,7 +2,7 @@ import { InventoryApi, UniflowApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
 
-type UniflowComponents = Omit<typeof import('@frinx/workflow-ui/src'), 'getUniflowApiProvider'> & {
+type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
   UniflowApiProvider: FC;
 };
 type BuilderComponents = {
@@ -13,7 +13,7 @@ const UniflowApp: FC = () => {
   const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
 
   useEffect(() => {
-    Promise.all([import('@frinx/workflow-ui/src'), import('@frinx/workflow-builder/src')]).then(
+    Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder')]).then(
       ([uniflowImport, builderImport]) => {
         const { UniflowApp: App, getUniflowApiProvider, InventoryAPIProvider } = uniflowImport;
         const { getBuilderApiProvider } = builderImport;

@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Icon, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
-import { ClientWorkflow, createSystemTasks, createTask, ExtendedTask, TaskDefinition } from '@frinx/shared/src';
+import { ClientWorkflow, createSystemTasks, createTask, ExtendedTask, TaskDefinition } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { FC, memo } from 'react';
 import TaskList from './task-list';

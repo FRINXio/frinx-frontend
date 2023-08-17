@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["src", "*.ts", "*.js"],
+  "include": ["src", "*.ts", "*.js", "bin/*.mjs"],
   "exclude": ["node_modules"]
 }

@@ -1,5 +1,5 @@
 import { Table, Thead, Tr, Th, Tbody, Td, Button, Tooltip, HStack, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue } from '@frinx/shared/src';
+import { omitNullValue } from '@frinx/shared';
 import React, { FC, useState } from 'react';
 import AlternativeIdModal from '../../components/alternative-id-modal/alternative-id-modal';
 import Pagination from '../../components/pagination';
