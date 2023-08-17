@@ -105,8 +105,8 @@ jobs:
       - name: Print url
         run: |
           echo 
-          echo "::notice Frinx-machine is deployed at ui-${{ steps.var.outputs.short_sha }}-frinx.csf.elisa.fi"
+          echo "::notice::Frinx-machine is deployed at ui-${{ steps.var.outputs.short_sha }}-frinx.csf.elisa.fi"
 
       - name: Print url
         run: |
-          echo "::warning please delete the instance after use(Resume workflow in argo-workflow)!"
+          echo "::warning::Please delete the instance after use(Resume workflow in argo-workflow)!"
