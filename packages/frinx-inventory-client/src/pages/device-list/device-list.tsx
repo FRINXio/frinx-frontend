@@ -21,6 +21,7 @@ import {
   Workflow,
   ConfirmDeleteModal,
   usePagination,
+  Pagination,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
