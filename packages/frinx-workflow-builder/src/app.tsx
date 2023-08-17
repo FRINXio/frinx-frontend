@@ -62,8 +62,8 @@ const edgeTypes = {
 };
 
 type Props = {
-  setWorkflowFilter: React.Dispatch<React.SetStateAction<string>>;
-  setTaskdefsFilter: React.Dispatch<React.SetStateAction<string>>;
+  onWorkflowSearch: React.Dispatch<React.SetStateAction<string>>;
+  onTaskdefsSearch: React.Dispatch<React.SetStateAction<string>>;
   workflowFilter: string;
   workflow: ClientWorkflow<ExtendedTask>;
   workflows: ClientWorkflow[];
@@ -81,8 +81,8 @@ type Props = {
 
 const App: VoidFunctionComponent<Props> = ({
   workflow,
-  setWorkflowFilter,
-  setTaskdefsFilter,
+  onWorkflowSearch,
+  onTaskdefsSearch,
   onWorkflowChange,
   workflows,
   taskDefinitions,
@@ -412,8 +412,8 @@ const App: VoidFunctionComponent<Props> = ({
         <Box minHeight="60vh" maxHeight="100vh">
           <LeftMenu
             onTaskAdd={handleAddButtonClick}
-            setWorkflowFilter={setWorkflowFilter}
-            setTaskdefsFilter={setTaskdefsFilter}
+            onWorkflowSearch={onWorkflowSearch}
+            onTaskdefsSearch={onTaskdefsSearch}
             workflows={workflows}
             taskDefinitions={taskDefinitions}
           />

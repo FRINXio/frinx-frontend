@@ -6,14 +6,14 @@ import TaskList from './task-list';
 import WorkflowList from './workflow-list';
 
 type Props = {
-  setWorkflowFilter: React.Dispatch<React.SetStateAction<string>>;
-  setTaskdefsFilter: React.Dispatch<React.SetStateAction<string>>;
+  onWorkflowSearch: React.Dispatch<React.SetStateAction<string>>;
+  onTaskdefsSearch: React.Dispatch<React.SetStateAction<string>>;
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
 };
 
-const LeftMenu: FC<Props> = memo(({ onTaskAdd, setWorkflowFilter, setTaskdefsFilter, workflows, taskDefinitions }) => {
+const LeftMenu: FC<Props> = memo(({ onTaskAdd, onWorkflowSearch, onTaskdefsSearch, workflows, taskDefinitions }) => {
   return (
     <Box background="white" boxShadow="base" px={4} py={10} height="100%">
       <Tabs display="flex" flexDirection="column" height="100%" isLazy>
@@ -21,14 +21,14 @@ const LeftMenu: FC<Props> = memo(({ onTaskAdd, setWorkflowFilter, setTaskdefsFil
           <Tab>System tasks</Tab>
           <Tab
             onClick={() => {
-              setWorkflowFilter('');
+              onWorkflowSearch('');
             }}
           >
             Tasks
           </Tab>
           <Tab
             onClick={() => {
-              setTaskdefsFilter('');
+              onTaskdefsSearch('');
             }}
           >
             Workflows
@@ -64,10 +64,10 @@ const LeftMenu: FC<Props> = memo(({ onTaskAdd, setWorkflowFilter, setTaskdefsFil
             ))}
           </TabPanel>
           <TabPanel>
-            <TaskList setTaskdefsFilter={setTaskdefsFilter} onTaskAdd={onTaskAdd} taskDefinitions={taskDefinitions} />
+            <TaskList onTaskdefsSearch={onTaskdefsSearch} onTaskAdd={onTaskAdd} taskDefinitions={taskDefinitions} />
           </TabPanel>
           <TabPanel>
-            <WorkflowList setWorkflowFilter={setWorkflowFilter} onTaskAdd={onTaskAdd} workflows={workflows} />
+            <WorkflowList onWorkflowSearch={onWorkflowSearch} onTaskAdd={onTaskAdd} workflows={workflows} />
           </TabPanel>
         </TabPanels>
       </Tabs>

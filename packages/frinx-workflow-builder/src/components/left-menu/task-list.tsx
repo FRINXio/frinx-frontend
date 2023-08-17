@@ -22,10 +22,10 @@ import { parseDescription, parseLabels } from './left-menu.helpers';
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   taskDefinitions: TaskDefinition[];
-  setTaskdefsFilter: React.Dispatch<React.SetStateAction<string>>;
+  onTaskdefsSearch: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, setTaskdefsFilter }) => {
+const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, onTaskdefsSearch }) => {
   const [searchInput, setSearchInput] = useState('');
 
   return (
@@ -48,7 +48,7 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, se
           colorScheme="blue"
           color="white"
           onClick={() => {
-            setTaskdefsFilter(searchInput);
+            onTaskdefsSearch(searchInput);
           }}
         >
           Search
@@ -57,7 +57,7 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, se
           colorScheme="red"
           variant="outline"
           onClick={() => {
-            setTaskdefsFilter('');
+            onTaskdefsSearch('');
             setSearchInput('');
           }}
         >
