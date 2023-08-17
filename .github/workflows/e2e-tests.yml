@@ -34,11 +34,13 @@ jobs:
           latestVersion=$(git describe --tags --abbrev=0 --match="v[0-9]*" | sed -e 's/^v//')
           echo "short_sha=$calculatedSha" >> $GITHUB_OUTPUT
           echo "latest_version=$latestVersion" >> $GITHUB_OUTPUT
+          echo "image_tag=$latestVersion-$calculatedSha" >> $GITHUB_OUTPUT
 
       - name: Confirm git commit SHA output
         run: |
           echo ${{ steps.var.outputs.short_sha }}
           echo ${{ steps.var.outputs.latest_version }}
+          echo ${{ steps.var.outputs.image_tag }}
 
       # - name: Login to DockerHub
       #   uses: docker/login-action@v2
