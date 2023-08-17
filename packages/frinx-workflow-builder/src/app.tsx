@@ -62,8 +62,8 @@ const edgeTypes = {
 };
 
 type Props = {
-  workflowSearchHandler: (value: string) => void;
-  taskdefSearchHandler: (value: string) => void;
+  onWorkflowSearch: (value: string) => void;
+  onTaskdefSearch: (value: string) => void;
   workflowFilter: string;
   workflow: ClientWorkflow<ExtendedTask>;
   workflows: ClientWorkflow[];
@@ -81,8 +81,8 @@ type Props = {
 
 const App: VoidFunctionComponent<Props> = ({
   workflow,
-  workflowSearchHandler,
-  taskdefSearchHandler,
+  onWorkflowSearch,
+  onTaskdefSearch,
   onWorkflowChange,
   workflows,
   taskDefinitions,
@@ -412,8 +412,8 @@ const App: VoidFunctionComponent<Props> = ({
         <Box minHeight="60vh" maxHeight="100vh">
           <LeftMenu
             onTaskAdd={handleAddButtonClick}
-            workflowSearchHandler={workflowSearchHandler}
-            taskdefSearchHandler={taskdefSearchHandler}
+            handleOnWorkflowSearch={onWorkflowSearch}
+            handleOnTaskdefSearch={onTaskdefSearch}
             workflows={workflows}
             taskDefinitions={taskDefinitions}
           />

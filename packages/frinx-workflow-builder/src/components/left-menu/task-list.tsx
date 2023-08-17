@@ -23,10 +23,10 @@ import { parseDescription, parseLabels } from './left-menu.helpers';
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   taskDefinitions: TaskDefinition[];
-  taskdefSearchHandler: (value: string) => void;
+  handleOnTaskdefSearch: (value: string) => void;
 };
 
-const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, taskdefSearchHandler }) => {
+const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, handleOnTaskdefSearch }) => {
   const [searchInput, setSearchInput] = useState('');
 
   return (
@@ -49,7 +49,7 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, ta
           colorScheme="blue"
           color="white"
           onClick={() => {
-            taskdefSearchHandler(searchInput);
+            handleOnTaskdefSearch(searchInput);
           }}
         >
           Search
@@ -57,7 +57,7 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, ta
         <Button
           variant="outline"
           onClick={() => {
-            taskdefSearchHandler('');
+            handleOnTaskdefSearch('');
             setSearchInput('');
           }}
         >

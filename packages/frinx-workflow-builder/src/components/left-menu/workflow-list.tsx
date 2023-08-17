@@ -23,10 +23,10 @@ import { parseDescription, parseLabels } from './left-menu.helpers';
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
-  workflowSearchHandler: (value: string) => void;
+  handleOnWorkflowSearch: (value: string) => void;
 };
 
-const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflowSearchHandler, workflows }) => {
+const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, handleOnWorkflowSearch, workflows }) => {
   const [searchInput, setSearchInput] = useState('');
   return (
     <Box>
@@ -48,7 +48,7 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflowSearchH
           colorScheme="blue"
           color="white"
           onClick={() => {
-            workflowSearchHandler(searchInput);
+            handleOnWorkflowSearch(searchInput);
           }}
         >
           Search
@@ -56,7 +56,7 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflowSearchH
         <Button
           variant="outline"
           onClick={() => {
-            workflowSearchHandler('');
+            handleOnWorkflowSearch('');
             setSearchInput('');
           }}
         >

@@ -6,15 +6,15 @@ import TaskList from './task-list';
 import WorkflowList from './workflow-list';
 
 type Props = {
-  workflowSearchHandler: (value: string) => void;
-  taskdefSearchHandler: (value: string) => void;
+  handleOnWorkflowSearch: (value: string) => void;
+  handleOnTaskdefSearch: (value: string) => void;
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
 };
 
 const LeftMenu: FC<Props> = memo(
-  ({ onTaskAdd, workflowSearchHandler, taskdefSearchHandler, workflows, taskDefinitions }) => {
+  ({ onTaskAdd, handleOnWorkflowSearch, handleOnTaskdefSearch, workflows, taskDefinitions }) => {
     return (
       <Box background="white" boxShadow="base" px={4} py={10} height="100%">
         <Tabs display="flex" flexDirection="column" height="100%" isLazy>
@@ -22,14 +22,14 @@ const LeftMenu: FC<Props> = memo(
             <Tab>System tasks</Tab>
             <Tab
               onClick={() => {
-                workflowSearchHandler('');
+                handleOnWorkflowSearch('');
               }}
             >
               Tasks
             </Tab>
             <Tab
               onClick={() => {
-                taskdefSearchHandler('');
+                handleOnTaskdefSearch('');
               }}
             >
               Workflows
@@ -66,13 +66,17 @@ const LeftMenu: FC<Props> = memo(
             </TabPanel>
             <TabPanel>
               <TaskList
-                taskdefSearchHandler={taskdefSearchHandler}
+                handleOnTaskdefSearch={handleOnTaskdefSearch}
                 onTaskAdd={onTaskAdd}
                 taskDefinitions={taskDefinitions}
               />
             </TabPanel>
             <TabPanel>
-              <WorkflowList workflowSearchHandler={workflowSearchHandler} onTaskAdd={onTaskAdd} workflows={workflows} />
+              <WorkflowList
+                handleOnWorkflowSearch={handleOnWorkflowSearch}
+                onTaskAdd={onTaskAdd}
+                workflows={workflows}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>
