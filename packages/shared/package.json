@@ -12,9 +12,9 @@
   "scripts": {
     "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
     "build": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",
-    "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist src/index.ts",
+    "typegen": "tsc -p ./tsconfig.typegen.json",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc",
     "test": "vitest"
   },
   "devDependencies": {
