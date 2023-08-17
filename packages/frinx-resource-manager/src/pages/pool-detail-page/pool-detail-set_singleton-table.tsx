@@ -1,7 +1,7 @@
 import { Table, Thead, Tr, Th, Tbody, Td, ButtonGroup, Button } from '@chakra-ui/react';
 import { keys } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
-import Pagination from '../../components/pagination';
+import { Pagination } from '@frinx/shared';
 import { AllocatedResourcesQuery, Maybe, Resource } from '../../__generated__/graphql';
 
 type PoolResources = Array<

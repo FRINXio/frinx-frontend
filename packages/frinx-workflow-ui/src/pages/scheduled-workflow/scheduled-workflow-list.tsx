@@ -10,7 +10,6 @@ import {
   Table,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
@@ -32,6 +31,7 @@ import {
   Task,
   EditScheduledWorkflow,
   Pagination,
+  usePagination,
 } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
@@ -44,7 +44,6 @@ import {
   WorkflowsQuery,
   WorkflowsQueryVariables,
 } from '../../__generated__/graphql';
-import { usePagination as graphlUsePagination } from '../../hooks/use-graphql-pagination';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
 const WORKFLOWS_QUERY = gql`
@@ -127,7 +126,7 @@ function ScheduledWorkflowList() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<EditScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
-  const [paginationArgs, { nextPage, previousPage }] = graphlUsePagination();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
   const [{ data: workflows }] = useQuery<WorkflowsQuery, WorkflowsQueryVariables>({
     query: WORKFLOWS_QUERY,
@@ -369,18 +368,12 @@ function ScheduledWorkflowList() {
                 </Tr>
               ))}
             </Tbody>
-            <Tfoot>
-              <Tr>
-                <Th>
-                  <Pagination
-                    onPrevious={previousPage(scheduledWorkflows.schedules.pageInfo.startCursor)}
-                    onNext={nextPage(scheduledWorkflows.schedules.pageInfo.endCursor)}
-                    hasNextPage={scheduledWorkflows.schedules.pageInfo.hasNextPage}
-                    hasPreviousPage={scheduledWorkflows.schedules.pageInfo.hasPreviousPage}
-                  />
-                </Th>
-              </Tr>
-            </Tfoot>
+            <Pagination
+              onPrevious={previousPage(scheduledWorkflows.schedules.pageInfo.startCursor)}
+              onNext={nextPage(scheduledWorkflows.schedules.pageInfo.endCursor)}
+              hasNextPage={scheduledWorkflows.schedules.pageInfo.hasNextPage}
+              hasPreviousPage={scheduledWorkflows.schedules.pageInfo.hasPreviousPage}
+            />
           </>
         )}
       </Table>

@@ -2,7 +2,15 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import ipaddr from 'ipaddr.js';
-import { useMinisearch, useTags, useNotifications, omitNullValue, SelectItemsPerPage } from '@frinx/shared';
+import {
+  useMinisearch,
+  useTags,
+  useNotifications,
+  omitNullValue,
+  SelectItemsPerPage,
+  Pagination,
+  usePagination,
+} from '@frinx/shared';
 import {
   DeleteIpPoolMutation,
   DeleteIpPoolMutationVariables,
@@ -11,8 +19,6 @@ import {
 } from '../../__generated__/graphql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import AggregatesTable from './aggregates-table';
-import Pagination from '../../components/pagination';
-import { usePagination } from '../../hooks/use-pagination';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 
 const GET_IP_POOLS = gql`
