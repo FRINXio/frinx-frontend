@@ -73,7 +73,7 @@ jobs:
               "head": "${{ github.head_ref }}",
               "workflow": "${{ github.workflow }}",
               "slack_channel": "common/slack-webhook/fx_env_demo_azure",
-              "path": "/workspace/frinx-machine/staging/app/",
+              "path": "/workspace/charts/frinx-machine/",
               "internal_page": "true",
               "fm_branch": "${{ github.event.inputs.fm_branch || 'main' }}",
               "cypress": {
