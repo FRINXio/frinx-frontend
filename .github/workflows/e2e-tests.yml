@@ -56,11 +56,6 @@ jobs:
       #       PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }}
       #       PRIVATE_NPM_TOKEN=${{ secrets.PUBLISH_TOKEN }}
 
-      - name: debug
-        run: |
-          pwd
-          ls -la
-
     # - name: Invoke argo-event hook
     #   run: |
     #     curl --location --request POST '${{ secrets.ARGO_EVENT_URL }}' \
@@ -114,4 +109,4 @@ jobs:
 
       - name: Print url
         run: |
-          ::warning file={name},line={line},endLine={endLine},title={title}::{message}
+          echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
