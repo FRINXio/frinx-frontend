@@ -26,13 +26,17 @@ jobs:
       #     echo "::set-output name=short_sha::$calculatedSha"
 
       - name: Save sha
-        id: sha
+        id: var
         run: |
           calculatedSha=$(git rev-parse --short HEAD)
+          latestVersion=$(git describe --tags --abbrev=0 --match="v[0-9]*" | sed -e 's/^v//')
           echo "short_sha=$calculatedSha" >> $GITHUB_OUTPUT
+          echo "latest_version=$latestVersion" >> $GITHUB_OUTPUT
 
       - name: Confirm git commit SHA output
-        run: echo ${{ steps.sha.outputs.short_sha }}
+        run: |
+          echo ${{ steps.var.outputs.short_sha }}
+          echo ${{ steps.var.outputs.latest_version }}
 
       # - name: Login to DockerHub
       #   uses: docker/login-action@v2
