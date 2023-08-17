@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       uninstall_fm:
-        description: 'Option to uninstall Frinx-machine'     
+        description: 'Keep Frinx-machine instance'     
         required: true
         default: 'true'
       host:
@@ -106,3 +106,12 @@ jobs:
     #       -e app_repo="gitops-demo-azure" \
     #       -e git_sha="${{ github.event.pull_request.head.sha }}" \
     #       ghcr.io/sendible-labs/ci-github-notifier:stable
+
+      - name: Print url
+        run: |
+          echo ${{ steps.var.outputs.short_sha }}
+          echo "::notice file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+
+      - name: Print url
+        run: |
+          ::warning file={name},line={line},endLine={endLine},title={title}::{message}
