@@ -1,0 +1,43 @@
+name: E2E tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      uninstall_fm:
+        description: 'Option to uninstall Frinx-machine'     
+        required: true
+        default: 'true'
+      host:
+        description: 'frinx-machine helm-chart branch'
+        required: true
+        default: 'main'
+
+jobs:
+  trigger-e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push latest
+        id: docker_build
+        env:
+          TAG: $(git rev-parse --short HEAD)
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: |
+            frinx/frinx-frontend:${{ env.TAG }}
+          build-args: |
+            COMMIT_HASH=${{ github.sha }}
+            PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }}
+            PRIVATE_NPM_TOKEN=${{ secrets.PUBLISH_TOKEN }}
