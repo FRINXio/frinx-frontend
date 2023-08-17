@@ -2,6 +2,7 @@ import {
   Badge,
   Box,
   Button,
+  Divider,
   Flex,
   Heading,
   Icon,
@@ -22,10 +23,10 @@ import { parseDescription, parseLabels } from './left-menu.helpers';
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
-  onWorkflowSearch: React.Dispatch<React.SetStateAction<string>>;
+  workflowSearchHandler: (value: string) => void;
 };
 
-const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, onWorkflowSearch, workflows }) => {
+const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflowSearchHandler, workflows }) => {
   const [searchInput, setSearchInput] = useState('');
   return (
     <Box>
@@ -47,23 +48,22 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, onWorkflowSearc
           colorScheme="blue"
           color="white"
           onClick={() => {
-            onWorkflowSearch(searchInput);
+            workflowSearchHandler(searchInput);
           }}
         >
           Search
         </Button>
         <Button
-          colorScheme="red"
           variant="outline"
           onClick={() => {
-            onWorkflowSearch('');
+            workflowSearchHandler('');
             setSearchInput('');
           }}
         >
           Reset
         </Button>
       </Flex>
-
+      <Divider />
       {workflows?.map((wf) => (
         <Flex
           key={wf.id}

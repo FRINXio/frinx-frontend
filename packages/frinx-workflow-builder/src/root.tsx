@@ -341,8 +341,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       <ReactFlowProvider>
         <App
           workflowFilter={workflowFilter}
-          onWorkflowSearch={setWorkflowFilter}
-          onTaskdefsSearch={setTaskdefsFilter}
+          workflowSearchHandler={setWorkflowFilter}
+          taskdefSearchHandler={setTaskdefsFilter}
           key={workflow.id}
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}

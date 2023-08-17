@@ -6,73 +6,79 @@ import TaskList from './task-list';
 import WorkflowList from './workflow-list';
 
 type Props = {
-  onWorkflowSearch: React.Dispatch<React.SetStateAction<string>>;
-  onTaskdefsSearch: React.Dispatch<React.SetStateAction<string>>;
+  workflowSearchHandler: (value: string) => void;
+  taskdefSearchHandler: (value: string) => void;
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
 };
 
-const LeftMenu: FC<Props> = memo(({ onTaskAdd, onWorkflowSearch, onTaskdefsSearch, workflows, taskDefinitions }) => {
-  return (
-    <Box background="white" boxShadow="base" px={4} py={10} height="100%">
-      <Tabs display="flex" flexDirection="column" height="100%" isLazy>
-        <TabList>
-          <Tab>System tasks</Tab>
-          <Tab
-            onClick={() => {
-              onWorkflowSearch('');
-            }}
-          >
-            Tasks
-          </Tab>
-          <Tab
-            onClick={() => {
-              onTaskdefsSearch('');
-            }}
-          >
-            Workflows
-          </Tab>
-        </TabList>
-        <TabPanels flex={1} overflowY="auto">
-          <TabPanel py={6}>
-            {createSystemTasks().map((label) => (
-              <Flex
-                key={label}
-                alignItems="center"
-                height={16}
-                border="1px"
-                borderColor="gray.200"
-                px={4}
-                my={4}
-                borderRadius="md"
-                userSelect="none"
-              >
-                <Heading as="h4" size="xs">
-                  {label}
-                </Heading>
-                <Box marginLeft="auto">
-                  <IconButton
-                    aria-label="Add task"
-                    icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
-                    onClick={() => {
-                      onTaskAdd(createTask(label));
-                    }}
-                  />
-                </Box>
-              </Flex>
-            ))}
-          </TabPanel>
-          <TabPanel>
-            <TaskList onTaskdefsSearch={onTaskdefsSearch} onTaskAdd={onTaskAdd} taskDefinitions={taskDefinitions} />
-          </TabPanel>
-          <TabPanel>
-            <WorkflowList onWorkflowSearch={onWorkflowSearch} onTaskAdd={onTaskAdd} workflows={workflows} />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-    </Box>
-  );
-});
+const LeftMenu: FC<Props> = memo(
+  ({ onTaskAdd, workflowSearchHandler, taskdefSearchHandler, workflows, taskDefinitions }) => {
+    return (
+      <Box background="white" boxShadow="base" px={4} py={10} height="100%">
+        <Tabs display="flex" flexDirection="column" height="100%" isLazy>
+          <TabList>
+            <Tab>System tasks</Tab>
+            <Tab
+              onClick={() => {
+                workflowSearchHandler('');
+              }}
+            >
+              Tasks
+            </Tab>
+            <Tab
+              onClick={() => {
+                taskdefSearchHandler('');
+              }}
+            >
+              Workflows
+            </Tab>
+          </TabList>
+          <TabPanels flex={1} overflowY="auto">
+            <TabPanel py={6}>
+              {createSystemTasks().map((label) => (
+                <Flex
+                  key={label}
+                  alignItems="center"
+                  height={16}
+                  border="1px"
+                  borderColor="gray.200"
+                  px={4}
+                  my={4}
+                  borderRadius="md"
+                  userSelect="none"
+                >
+                  <Heading as="h4" size="xs">
+                    {label}
+                  </Heading>
+                  <Box marginLeft="auto">
+                    <IconButton
+                      aria-label="Add task"
+                      icon={<Icon as={FeatherIcon} icon="plus" size={20} />}
+                      onClick={() => {
+                        onTaskAdd(createTask(label));
+                      }}
+                    />
+                  </Box>
+                </Flex>
+              ))}
+            </TabPanel>
+            <TabPanel>
+              <TaskList
+                taskdefSearchHandler={taskdefSearchHandler}
+                onTaskAdd={onTaskAdd}
+                taskDefinitions={taskDefinitions}
+              />
+            </TabPanel>
+            <TabPanel>
+              <WorkflowList workflowSearchHandler={workflowSearchHandler} onTaskAdd={onTaskAdd} workflows={workflows} />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
+    );
+  },
+);
 
 export default LeftMenu;

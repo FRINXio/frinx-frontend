@@ -14,6 +14,7 @@ import {
   WrapItem,
   Icon,
   Button,
+  Divider,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { convertTaskDefinition, ExtendedTask, TaskDefinition } from '@frinx/shared';
@@ -22,10 +23,10 @@ import { parseDescription, parseLabels } from './left-menu.helpers';
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   taskDefinitions: TaskDefinition[];
-  onTaskdefsSearch: React.Dispatch<React.SetStateAction<string>>;
+  taskdefSearchHandler: (value: string) => void;
 };
 
-const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, onTaskdefsSearch }) => {
+const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, taskdefSearchHandler }) => {
   const [searchInput, setSearchInput] = useState('');
 
   return (
@@ -48,22 +49,22 @@ const TaskList: VoidFunctionComponent<Props> = ({ onTaskAdd, taskDefinitions, on
           colorScheme="blue"
           color="white"
           onClick={() => {
-            onTaskdefsSearch(searchInput);
+            taskdefSearchHandler(searchInput);
           }}
         >
           Search
         </Button>
         <Button
-          colorScheme="red"
           variant="outline"
           onClick={() => {
-            onTaskdefsSearch('');
+            taskdefSearchHandler('');
             setSearchInput('');
           }}
         >
           Reset
         </Button>
       </Flex>
+      <Divider />
       {taskDefinitions?.map((tskDefinition) => (
         <Flex
           key={tskDefinition.name}
