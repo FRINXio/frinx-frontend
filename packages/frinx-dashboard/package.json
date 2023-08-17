@@ -41,7 +41,7 @@
     "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
     "build": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc"
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
