@@ -2,6 +2,15 @@ name: E2E tests
 
 on:
   pull_request:
+    inputs:
+      keep_fm:
+        description: 'Keep Frinx-machine instance'     
+        required: true
+        default: 'true'
+      host:
+        description: 'frinx-machine helm-chart branch'
+        required: true
+        default: 'main'
   workflow_dispatch:
     inputs:
       keep_fm:
