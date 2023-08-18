@@ -50,13 +50,11 @@ export class Builder {
       const { moduleResolution, ...rest } = options;
       const host = ts.createCompilerHost(rest);
       host.writeFile = async (filename, contents) => {
-        console.log(filename);
         await outputFile(resolve(process.cwd(), filename), contents);
       };
 
       const program = ts.createProgram(filenames, rest, host);
       program.emit();
-
       return this.perf.stop('types');
     };
 
