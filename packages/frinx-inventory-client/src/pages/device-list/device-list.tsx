@@ -14,7 +14,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import {
-  callbackUtils,
   ExecuteWorkflowModal,
   unwrap,
   useNotifications,
@@ -427,32 +426,9 @@ const DeviceList: VoidFunctionComponent = () => {
     setSelectedWorkflow(wf);
   };
 
-  const handleOnExecuteWorkflow = (values: Record<string, unknown>) => {
-    if (selectedWorkflow == null) {
-      addToastNotification({
-        content: 'We cannot execute undefined workflow',
-        type: 'error',
-      });
-
-      return null;
-    }
-
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
-    return executeWorkflow({
-      input: values,
-      name: selectedWorkflow.name,
-      version: selectedWorkflow.version,
-    })
-      .then((res) => {
-        addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
-      })
-      .catch(() => {
-        addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
-        return null;
-      });
-  };
+  // TODO use GraphQL
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const handleOnExecuteWorkflow = async () => {};
 
   const labels = labelsData?.labels?.edges ?? [];
   const areSelectedAll =
