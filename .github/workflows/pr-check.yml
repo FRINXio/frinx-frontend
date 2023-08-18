@@ -24,7 +24,7 @@ jobs:
         run: yarn install --immutable
       - name: Check code formatting
         run: yarn run formatter:check
-      - name: Typegen
-        run: yarn run typegen
+      - name: Build
+        run: yarn run build
       - name: Run PR check
         run: yarn run pr
