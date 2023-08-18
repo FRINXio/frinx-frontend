@@ -18,7 +18,7 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import { useTagsInput, SearchByTagInput } from '@frinx/shared/src';
+import { useTagsInput, SearchByTagInput } from '@frinx/shared';
 import { useNavigate } from 'react-router-dom';
 import PoolValuesForm from './pool-values-form';
 import PoolPropertiesForm from './pool-properties-form';

@@ -4,7 +4,7 @@ import FeatherIcon from 'feather-icons-react';
 import { FormikErrors } from 'formik';
 import * as yup from 'yup';
 import { omitBy } from 'lodash';
-import { DecisionInputParams } from '@frinx/shared/src';
+import { DecisionInputParams } from '@frinx/shared';
 
 export const DecisionInputParamsSchema = yup.object({
   caseValueParam: yup.string().when('isCaseExpressionEnabled', {

@@ -22,9 +22,6 @@ declare module 'feather-icons-react' {
   export default content;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-declare let __webpack_public_path__: string;
-
 declare module 'diff-arrays-of-objects' {
   function diff<T>(
     first: T[],

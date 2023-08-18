@@ -9,7 +9,7 @@ import {
   getElementsFromWorkflow,
   jsonParse,
   unwrap,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './index';
 import { ControlExecutedWorkflowSubscription, Workflow } from '../__generated__/graphql';

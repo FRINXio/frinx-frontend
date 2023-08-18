@@ -18,8 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
-    "noEmit": false
+    "noEmit": true
   },
-  "include": ["feather-icons-react.d.ts", "src", "*.ts", "*.js", ".eslintrc.js"],
+  "include": ["custom.d.ts", "feather-icons-react.d.ts", "src"],
   "exclude": ["node_modules"]
 }

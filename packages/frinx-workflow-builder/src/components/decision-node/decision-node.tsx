@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Text, Theme, Tooltip, useTheme } from '@chakra-ui/react';
-import { ExtendedDecisionTask } from '@frinx/shared/src';
+import { ExtendedDecisionTask } from '@frinx/shared';
 import React, { memo, useEffect, VoidFunctionComponent } from 'react';
 import { Position, Handle, NodeProps, useUpdateNodeInternals } from 'react-flow-renderer';
 import { useTaskActions } from '../../task-actions-context';

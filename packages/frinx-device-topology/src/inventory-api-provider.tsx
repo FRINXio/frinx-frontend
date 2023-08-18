@@ -1,5 +1,5 @@
 import { retryExchange } from '@urql/exchange-retry';
-import { CustomToastProvider } from '@frinx/shared/src';
+import { CustomToastProvider } from '@frinx/shared';
 import React, { createContext, FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, dedupExchange, fetchExchange, Provider } from 'urql';
 

@@ -10,7 +10,7 @@ import {
   Button,
   Box,
 } from '@chakra-ui/react';
-import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared/src';
+import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared';
 
 type Props = {
   isOpen: boolean;

@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { ConfirmDeleteModal } from '@frinx/shared';
+import { ConfirmDeleteModal } from '@frinx/shared/src';
 
 type Props = {
   isOpen: boolean;

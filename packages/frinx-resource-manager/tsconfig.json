@@ -18,8 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
-    "noEmit": false
+    "noEmit": true
   },
-  "include": ["yup.d.ts", "custom.d.ts", "src"],
-  "exclude": ["**/node_modules", "**/__generated__/**", ".eslintrc.js"]
+  "include": ["yup.d.ts", "custom.d.ts", "feather-icons-react.d.ts", "src"],
+  "exclude": ["node_modules"]
 }

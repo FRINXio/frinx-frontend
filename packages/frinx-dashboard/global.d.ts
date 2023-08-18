@@ -8,6 +8,8 @@ declare const COMMIT_HASH: string;
 
 /* eslint-disable */
 declare interface Window {
+  IS_PRODUCTION: 'true' | 'false';
+
   __CONFIG__: Readonly<{
     isAuthEnabled: boolean;
     authClientId: string;

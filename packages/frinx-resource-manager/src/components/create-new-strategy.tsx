@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { useMutation } from 'urql';
 import { Box, Button, Container, FormControl, FormLabel, Heading, Input, Select } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import { Editor } from '@frinx/shared/src';
+import { Editor } from '@frinx/shared';
 import {
   AllocationStrategyLang,
   CreateAllocationStrategyPayload,
