@@ -11,7 +11,7 @@ type Props = {
 const Pagination: VoidFunctionComponent<Props> = (props) => {
   const { hasNextPage, hasPreviousPage, onPrevious, onNext } = props;
   return (
-    <Box padding={1}>
+    <Box p={4}>
       <HStack spacing="2" divider={<StackDivider borderColor="gray" />}>
         {hasPreviousPage ? (
           <Button data-cy="device-list-prev" color="blue.600" onClick={onPrevious} variant="link" outline="none">
