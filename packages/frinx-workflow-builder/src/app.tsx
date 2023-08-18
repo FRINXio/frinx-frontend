@@ -412,8 +412,8 @@ const App: VoidFunctionComponent<Props> = ({
         <Box minHeight="60vh" maxHeight="100vh">
           <LeftMenu
             onTaskAdd={handleAddButtonClick}
-            handleOnWorkflowSearch={onWorkflowSearch}
-            handleOnTaskdefSearch={onTaskdefSearch}
+            onWorkflowSearch={onWorkflowSearch}
+            onTaskdefSearch={onTaskdefSearch}
             workflows={workflows}
             taskDefinitions={taskDefinitions}
           />

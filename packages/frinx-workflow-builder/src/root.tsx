@@ -286,6 +286,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     return null;
   }
 
+  const handleOnWorkflowSearch = (keyword: string) => {
+    setWorkflowFilter(keyword);
+  };
+  const handleOnTaskdefSearch = (keyword: string) => {
+    setTaskdefsFilter(keyword);
+  };
+
   const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
     const { node } = e;
     const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
@@ -341,8 +348,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       <ReactFlowProvider>
         <App
           workflowFilter={workflowFilter}
-          onWorkflowSearch={setWorkflowFilter}
-          onTaskdefSearch={setTaskdefsFilter}
+          onWorkflowSearch={handleOnWorkflowSearch}
+          onTaskdefSearch={handleOnTaskdefSearch}
           key={workflow.id}
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
