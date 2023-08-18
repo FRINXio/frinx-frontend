@@ -17,9 +17,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "isolatedModules": true,
-    "noEmit": false
+    "isolatedModules": true
   },
-  "include": ["feather-icons-react.d.ts", "src", "*.ts", "*.js", ".eslintrc.js"],
+  "include": ["feather-icons-react.d.ts", "src"],
   "exclude": ["node_modules"]
 }

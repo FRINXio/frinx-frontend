@@ -1,5 +1,5 @@
 import { Box, Container, Heading, Progress } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import React, { FC, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {

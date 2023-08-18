@@ -14,7 +14,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import { Link, useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import {

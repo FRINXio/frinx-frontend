@@ -1,6 +1,6 @@
 import { HStack, Select, Spacer, Button } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { SearchByTag } from '@frinx/shared/src';
+import { SearchByTag } from '@frinx/shared';
 import { Searchbar } from './searchbar';
 import SearchByAllocatedResources from './search-by-allocated-resources';
 

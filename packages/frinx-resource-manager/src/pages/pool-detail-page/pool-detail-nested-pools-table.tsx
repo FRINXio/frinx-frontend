@@ -1,5 +1,5 @@
 import { Box, HStack, Heading, Spacer, Button } from '@chakra-ui/react';
-import { omitNullValue } from '@frinx/shared/src';
+import { omitNullValue } from '@frinx/shared';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { DeleteResourcePoolOptions } from '../../hooks/use-resource-pool-actions';

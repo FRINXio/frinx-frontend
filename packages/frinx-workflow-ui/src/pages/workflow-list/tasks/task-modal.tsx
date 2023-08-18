@@ -10,7 +10,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { Editor, jsonParse, TaskDefinition } from '@frinx/shared/src';
+import { Editor, jsonParse, TaskDefinition } from '@frinx/shared';
 
 type TaskConfigModalProps = {
   isOpen: boolean;
