@@ -13,7 +13,7 @@ import {
   parseInputParameters,
 } from './helpers/workflow.helpers';
 import type { TagsInputReturnType } from './hooks/use-tags-input';
-import ExecuteWorkflowModalFormInput from './components/execute-workflow-modal/execute-workflow-modal-form-input';
+import ExecuteWorkflowModalFormInput from './components/workflow-inputs-form/workflow-form-input';
 import Pagination from './components/pagination/pagination';
 import ConfirmDeleteModal from './components/confirm-delete-modal/confirm-delete-modal';
 import SelectItemsPerPage from './components/select-items-per-page/select-items-per-page';

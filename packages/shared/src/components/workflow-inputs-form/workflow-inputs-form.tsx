@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Grid, GridItem } from '@chakra-ui/react';
-import ExecuteWorkflowModalFormInput from '../execute-workflow-modal/execute-workflow-modal-form-input';
+import WorkflowFormInput from './workflow-form-input';
 import { InputParameter } from '../../helpers/workflow.helpers';
 
 type Props = {
@@ -20,7 +20,7 @@ const WorkflowInputsForm: VoidFunctionComponent<Props> = ({
     <Grid templateColumns="repeat(2, 1fr)" gap={5}>
       {inputParameterKeys.map((inputParameterKey) => (
         <GridItem key={inputParameterKey}>
-          <ExecuteWorkflowModalFormInput
+          <WorkflowFormInput
             inputParameterKey={inputParameterKey}
             onChange={onChange}
             values={values}
