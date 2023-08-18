@@ -1,7 +1,7 @@
 import { Box, HStack, Heading, Spacer, Button, Progress, Text } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { PaginationArgs } from '../../hooks/use-pagination';
+import { PaginationArgs } from '@frinx/shared/src';
 import { AllocatedResourcesQuery, GetPoolDetailQuery } from '../../__generated__/graphql';
 import AlternativeIdForm, { AlternativeId } from './claim-resource-modal/alternative-id-form';
 import PoolDetailAllocatingTable from './pool-detail-allocating-table';

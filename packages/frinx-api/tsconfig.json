@@ -17,8 +17,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
-    "noEmit": false
+    "noEmit": true
   },
-  "include": ["src", "*.ts", "*.js", "bin/*.mjs"],
-  "exclude": ["**/node_modules"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
