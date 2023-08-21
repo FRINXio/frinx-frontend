@@ -9,7 +9,7 @@ import {
   WorkflowPayload,
   EListener,
   ScheduleWorkflowInput,
-} from '@frinx/shared/src/helpers/workflow-api.types';
+} from '@frinx/shared';
 import { isArrayTypeOf, isEventListener, isQueue, isTaskDefinition, isWorkflow } from './type-guards';
 import { ApiHelpers } from '../api-helpers';
 

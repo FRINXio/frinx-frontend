@@ -17,7 +17,7 @@ import {
   HStack,
   Spacer,
 } from '@chakra-ui/react';
-import { jsonParse } from '@frinx/shared/src';
+import { jsonParse } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';

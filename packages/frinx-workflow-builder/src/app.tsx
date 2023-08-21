@@ -9,7 +9,7 @@ import {
   NodeData,
   TaskDefinition,
   useNotifications,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import produce from 'immer';
 import { zip } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -62,6 +62,9 @@ const edgeTypes = {
 };
 
 type Props = {
+  onWorkflowSearch: (value: string) => void;
+  onTaskdefSearch: (value: string) => void;
+  workflowFilter: string;
   workflow: ClientWorkflow<ExtendedTask>;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
@@ -78,6 +81,8 @@ type Props = {
 
 const App: VoidFunctionComponent<Props> = ({
   workflow,
+  onWorkflowSearch,
+  onTaskdefSearch,
   onWorkflowChange,
   workflows,
   taskDefinitions,
@@ -405,7 +410,13 @@ const App: VoidFunctionComponent<Props> = ({
           </Flex>
         </Flex>
         <Box minHeight="60vh" maxHeight="100vh">
-          <LeftMenu onTaskAdd={handleAddButtonClick} workflows={workflows} taskDefinitions={taskDefinitions} />
+          <LeftMenu
+            onTaskAdd={handleAddButtonClick}
+            onWorkflowSearch={onWorkflowSearch}
+            onTaskdefSearch={onTaskdefSearch}
+            workflows={workflows}
+            taskDefinitions={taskDefinitions}
+          />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
           <EdgeRemoveContext.Provider value={removeEdgeContextValue}>

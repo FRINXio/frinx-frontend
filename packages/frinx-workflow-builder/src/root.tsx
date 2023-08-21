@@ -9,7 +9,7 @@ import {
   Task,
   ClientWorkflow,
   DescriptionJSON,
-} from '@frinx/shared/src';
+} from '@frinx/shared';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { ReactFlowProvider } from 'react-flow-renderer';
@@ -65,8 +65,8 @@ const WORKFLOW_DETAIL_QUERY = gql`
 `;
 
 const WORKFLOW_LIST_QUERY = gql`
-  query WorkflowList {
-    workflows {
+  query WorkflowList($filter: FilterWorkflowsInput, $taskDefinitionsFilter: FilterTaskDefinitionsInput) {
+    workflows(filter: $filter) {
       edges {
         cursor
         node {
@@ -81,7 +81,7 @@ const WORKFLOW_LIST_QUERY = gql`
       }
       totalCount
     }
-    taskDefinitions {
+    taskDefinitions(filter: $taskDefinitionsFilter) {
       edges {
         node {
           name
@@ -145,10 +145,19 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   );
   const { workflowId, version } = useParams<{ workflowId: string; version: string }>();
   const [workflow, setWorkflow] = useState<ClientWorkflow<ExtendedTask> | null>(null);
+  const [workflowFilter, setWorkflowFilter] = useState<string>('');
+  const [taskdefsFilter, setTaskdefsFilter] = useState<string>('');
+
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
   const [{ data: workflowListData }] = useQuery<WorkflowListQuery>({
     query: WORKFLOW_LIST_QUERY,
+    variables: {
+      filter: { keyword: workflowFilter },
+      taskDefinitionsFilter: {
+        keyword: taskdefsFilter,
+      },
+    },
   });
 
   const [{ data: workflowData }] = useQuery<WorkflowQuery, WorkflowQueryVariables>({
@@ -277,6 +286,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     return null;
   }
 
+  const handleOnWorkflowSearch = (keyword: string) => {
+    setWorkflowFilter(keyword);
+  };
+  const handleOnTaskdefSearch = (keyword: string) => {
+    setTaskdefsFilter(keyword);
+  };
+
   const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
     const { node } = e;
     const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
@@ -331,6 +347,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     <TaskActionsProvider>
       <ReactFlowProvider>
         <App
+          workflowFilter={workflowFilter}
+          onWorkflowSearch={handleOnWorkflowSearch}
+          onTaskdefSearch={handleOnTaskdefSearch}
           key={workflow.id}
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}

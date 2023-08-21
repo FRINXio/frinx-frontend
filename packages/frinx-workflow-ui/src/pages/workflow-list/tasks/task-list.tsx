@@ -1,20 +1,9 @@
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  useDisclosure,
-} from '@chakra-ui/react';
-import { omitNullValue, Pagination, TaskDefinition, useNotifications } from '@frinx/shared/src';
+import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
+import { omitNullValue, usePagination, Pagination, TaskDefinition, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { orderBy } from 'lodash';
 import { gql, useMutation, useQuery } from 'urql';
 import React, { useMemo, useState } from 'react';
-import { usePagination } from '../../../hooks/use-graphql-pagination';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
@@ -271,14 +260,12 @@ const TaskList = () => {
         sortArray={sortArray}
       />
       {taskData && (
-        <Box marginTop={4} paddingX={4}>
-          <Pagination
-            onPrevious={previousPage(taskData?.taskDefinitions.pageInfo.startCursor)}
-            onNext={nextPage(taskData.taskDefinitions.pageInfo.endCursor)}
-            hasNextPage={taskData.taskDefinitions.pageInfo.hasNextPage}
-            hasPreviousPage={taskData.taskDefinitions.pageInfo.hasPreviousPage}
-          />
-        </Box>
+        <Pagination
+          onPrevious={previousPage(taskData?.taskDefinitions.pageInfo.startCursor)}
+          onNext={nextPage(taskData.taskDefinitions.pageInfo.endCursor)}
+          hasNextPage={taskData.taskDefinitions.pageInfo.hasNextPage}
+          hasPreviousPage={taskData.taskDefinitions.pageInfo.hasPreviousPage}
+        />
       )}
     </Container>
   );

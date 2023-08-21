@@ -1,5 +1,5 @@
 import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
-import { useNotifications, Pagination } from '@frinx/shared/src';
+import { useNotifications, Pagination } from '@frinx/shared';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
@@ -313,14 +313,13 @@ const ExecutedWorkflowList = () => {
             }}
           />
         )}
-
-        <Pagination
-          hasNextPage={data?.executedWorkflows?.pageInfo.hasNextPage ?? false}
-          hasPreviousPage={data?.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
-          onNext={handleOnNext}
-          onPrevious={handleOnPrevious}
-        />
       </VStack>
+      <Pagination
+        hasNextPage={data?.executedWorkflows?.pageInfo.hasNextPage ?? false}
+        hasPreviousPage={data?.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
+        onNext={handleOnNext}
+        onPrevious={handleOnPrevious}
+      />
     </Container>
   );
 };

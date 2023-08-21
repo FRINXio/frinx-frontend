@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ClientWorkflow, Editor } from '@frinx/shared/src';
+import { ClientWorkflow, Editor } from '@frinx/shared';
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 
 type Props = {

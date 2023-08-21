@@ -1,6 +1,8 @@
 import {
   Badge,
   Box,
+  Button,
+  Divider,
   Flex,
   Heading,
   Icon,
@@ -13,29 +15,19 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared/src';
+import { ClientWorkflow, createSubWorkflowTask, ExtendedTask } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import throttle from 'lodash/throttle';
-import MiniSearch from 'minisearch';
-import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
-import { getFilteredResults, parseDescription, parseLabels } from './left-menu.helpers';
+import React, { useState, VoidFunctionComponent } from 'react';
+import { parseDescription, parseLabels } from './left-menu.helpers';
 
 type Props = {
   onTaskAdd: (task: ExtendedTask) => void;
   workflows: ClientWorkflow[];
+  onWorkflowSearch: (value: string) => void;
 };
 
-const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) => {
-  const { current: minisearch } = useRef(new MiniSearch({ fields: ['name', 'description'], idField: 'name' }));
-  const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    minisearch.addAll(workflows);
-  }, [workflows, minisearch]);
-
-  const searchFn = throttle(() => getFilteredResults(minisearch.search(searchTerm, { prefix: true }), workflows), 60);
-  const result = searchTerm.length > 2 ? searchFn() : workflows;
-
+const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, onWorkflowSearch, workflows }) => {
+  const [searchInput, setSearchInput] = useState('');
   return (
     <Box>
       <InputGroup>
@@ -44,16 +36,37 @@ const WorkflowList: VoidFunctionComponent<Props> = ({ onTaskAdd, workflows }) =>
         </InputLeftElement>
         <Input
           type="text"
-          value={searchTerm}
+          value={searchInput}
           onChange={(e) => {
-            setSearchTerm(e.target.value);
+            setSearchInput(e.target.value);
           }}
           placeholder="Search workflows"
         />
       </InputGroup>
-      {result?.map((wf) => (
+      <Flex justify="space-between" my={3} gap={2}>
+        <Button
+          colorScheme="blue"
+          color="white"
+          onClick={() => {
+            onWorkflowSearch(searchInput);
+          }}
+        >
+          Search
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            onWorkflowSearch('');
+            setSearchInput('');
+          }}
+        >
+          Reset
+        </Button>
+      </Flex>
+      <Divider />
+      {workflows?.map((wf) => (
         <Flex
-          key={wf.name}
+          key={wf.id}
           alignItems="stretch"
           border="1px"
           borderColor="gray.200"

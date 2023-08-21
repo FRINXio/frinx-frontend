@@ -1,4 +1,4 @@
-import { ExtendedDecisionTask, ExtendedTask } from '@frinx/shared/src';
+import { ExtendedDecisionTask, ExtendedTask } from '@frinx/shared';
 
 export type GraphExtendedDecisionTask = Omit<ExtendedDecisionTask, 'decisionCases'> & {
   isCaseExpressionEnabled: boolean;

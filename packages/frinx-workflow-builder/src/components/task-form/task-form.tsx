@@ -22,7 +22,7 @@ import {
   TabPanels,
   Tabs,
 } from '@chakra-ui/react';
-import { convertTaskToExtendedTask, ExtendedTask, getRandomString, InputParameters } from '@frinx/shared/src';
+import { convertTaskToExtendedTask, ExtendedTask, getRandomString, InputParameters } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { FormikErrors, useFormik } from 'formik';
 import produce from 'immer';

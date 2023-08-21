@@ -1,5 +1,5 @@
 import React, { createContext, FC, useRef } from 'react';
-import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared/src';
+import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared';
 import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
 import { retryExchange } from '@urql/exchange-retry';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';

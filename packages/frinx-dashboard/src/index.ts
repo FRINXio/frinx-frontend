@@ -1,9 +1,15 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { unwrap } from '@frinx/shared/src';
+import { unwrap } from '@frinx/shared';
 import { AuthContext } from './auth-helpers';
 import Root from './root';
 import { ServiceKey } from './types';
+
+if (window.IS_PRODUCTION !== 'true') {
+  new EventSource('http://localhost:8000/esbuild').addEventListener('change', () => {
+    window.location.reload();
+  });
+}
 
 const ALL_SERVICES: ServiceKey[] = [
   'isUniflowEnabled' as const,
@@ -13,11 +19,11 @@ const ALL_SERVICES: ServiceKey[] = [
   'isDeviceTopologyEnabled' as const,
 ];
 const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
-  ['isUniflowEnabled', () => import('@frinx/workflow-ui/src')],
-  ['isInventoryEnabled', () => import('@frinx/inventory-client/src')],
-  ['isResourceManagerEnabled', () => import('@frinx/resource-manager/src')],
+  ['isUniflowEnabled', () => import('@frinx/workflow-ui')],
+  ['isInventoryEnabled', () => import('@frinx/inventory-client')],
+  ['isResourceManagerEnabled', () => import('@frinx/resource-manager')],
   ['isL3VPNEnabled', () => import('@frinxio/gamma')],
-  ['isDeviceTopologyEnabled', () => import('@frinx/device-topology/src')],
+  ['isDeviceTopologyEnabled', () => import('@frinx/device-topology')],
 ]);
 
 class DashboardApp {
@@ -43,9 +49,6 @@ class DashboardApp {
         return importFn();
       }),
     );
-    await import('./set-public-path').then(({ setWebpackPublicPath }) => {
-      setWebpackPublicPath();
-    });
     this.isInitialized = true;
 
     return this;
@@ -64,4 +67,4 @@ class DashboardApp {
   }
 }
 
-window.dashboardApp = new DashboardApp();
+export const dashboardApp = new DashboardApp();

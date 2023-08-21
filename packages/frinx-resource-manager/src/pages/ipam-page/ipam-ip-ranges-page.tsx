@@ -2,7 +2,15 @@ import { Box, Button, Flex, Heading, HStack, Icon, Spacer } from '@chakra-ui/rea
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import { IPv4, IPv6 } from 'ipaddr.js';
-import { omitNullValue, useMinisearch, useNotifications, useTags, SelectItemsPerPage } from '@frinx/shared';
+import {
+  omitNullValue,
+  useMinisearch,
+  useNotifications,
+  useTags,
+  SelectItemsPerPage,
+  Pagination,
+  usePagination,
+} from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import {
@@ -13,8 +21,6 @@ import {
 } from '../../__generated__/graphql';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import IpRangesTable from './ip-ranges-table';
-import Pagination from '../../components/pagination';
-import { usePagination } from '../../hooks/use-pagination';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 
 const GET_POOLS_QUERY = gql`

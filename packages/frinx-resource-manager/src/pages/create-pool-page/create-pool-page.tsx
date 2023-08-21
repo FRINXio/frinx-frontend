@@ -1,7 +1,7 @@
 import React, { useState, VoidFunctionComponent } from 'react';
 import { Client, useClient, useQuery } from 'urql';
 import { Box, Flex, Heading, Progress } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared/src';
+import { useNotifications } from '@frinx/shared';
 import gql from 'graphql-tag';
 import {
   CreateAllocationPoolMutation,

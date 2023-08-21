@@ -14,7 +14,7 @@ import {
   MenuList,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { callbackUtils, useNotifications } from '@frinx/shared/src';
+import { callbackUtils, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { saveAs } from 'file-saver';
 import JSZip from 'jszip';
