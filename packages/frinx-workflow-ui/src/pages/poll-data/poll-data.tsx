@@ -1,11 +1,12 @@
-import { Box, Container, Table, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
+import { Box, Container, Icon, Table, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue, Pagination } from '@frinx/shared';
+import FeatherIcon from 'feather-icons-react';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { gql, useQuery } from 'urql';
 import PollDataSearchbox from '../../components/poll-data-searchbox';
 import { usePagination } from '../../hooks/use-graphql-pagination';
-import { PollDataQuery, PollDataQueryVariables } from '../../__generated__/graphql';
+import { PollDataQuery, PollDataQueryVariables, PollsOrderByInput } from '../../__generated__/graphql';
 
 type Filter = {
   queueName?: string;
@@ -13,11 +14,6 @@ type Filter = {
   domain?: string;
   beforeDate?: string;
   afterDate?: string;
-};
-
-type OrderBy = {
-  sortKey: 'queueName' | 'workerId' | 'lastPollTime';
-  direction: 'asc' | 'desc';
 };
 
 const POLL_DATA_QUERY = gql`
@@ -71,7 +67,7 @@ const initialValues = {
 };
 
 const PollDataPage = () => {
-  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'lastPollTime', direction: 'asc' });
+  const [orderBy, setOrderBy] = useState<PollsOrderByInput>({ sortKey: 'queueName', direction: 'asc' });
   const [filter, setFilter] = useState<Filter | null>(initialValues);
   const [inputs, setInputs] = useState<Filter>(initialValues);
 
@@ -127,12 +123,21 @@ const PollDataPage = () => {
           <Tr>
             <Th cursor="pointer" onClick={() => sort('queueName')}>
               Name (Domain)
+              {orderBy.sortKey === 'queueName' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+              )}
             </Th>
             <Th cursor="pointer" textAlign="center" onClick={() => sort('lastPollTime')}>
               Last Poll Time
+              {orderBy.sortKey === 'lastPollTime' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+              )}
             </Th>
             <Th cursor="pointer" textAlign="center" onClick={() => sort('workerId')}>
               Last Polled By
+              {orderBy.sortKey === 'workerId' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+              )}
             </Th>
           </Tr>
         </Thead>

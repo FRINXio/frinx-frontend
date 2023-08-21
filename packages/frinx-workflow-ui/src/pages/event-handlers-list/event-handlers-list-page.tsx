@@ -7,6 +7,7 @@ import {
   Flex,
   Heading,
   HStack,
+  Icon,
   IconButton,
   Progress,
   Spacer,
@@ -26,8 +27,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   DeleteEventHandlerMutation,
   DeleteEventHandlerMutationVariables,
+  EventHandlersOrderByInput,
   GetEventHandlersQuery,
   GetEventHandlersQueryVariables,
+  SortEventHandlersBy,
   UpdateEventHandlerMutation,
   UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
@@ -37,11 +40,6 @@ import { usePagination } from '../../hooks/use-graphql-pagination';
 type Props = {
   onEventHandlerDetailClick: (event: string, name: string) => void;
   onEventHandlerEditClick: (event: string, name: string) => void;
-};
-
-type OrderBy = {
-  sortKey: 'name' | 'isActive' | 'event' | 'evaluatorType';
-  direction: 'ASC' | 'DESC';
 };
 
 const EVENT_HANDLERS_QUERY = gql`
@@ -100,7 +98,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   onEventHandlerEditClick,
 }) => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
-  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'ASC' });
+  const [orderBy, setOrderBy] = useState<EventHandlersOrderByInput>({ sortKey: 'name', direction: 'ASC' });
   const [paginationArgs, { nextPage, previousPage, setItemsCount, firstPage }] = usePagination();
 
   const navigate = useNavigate();
@@ -190,7 +188,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
       });
   };
 
-  const handleSort = (sortKey: OrderBy['sortKey']) => {
+  const handleSort = (sortKey: SortEventHandlersBy) => {
     return orderBy.direction === 'DESC'
       ? setOrderBy({ sortKey, direction: 'ASC' })
       : setOrderBy({ sortKey, direction: 'DESC' });
@@ -224,15 +222,27 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
             <Tr>
               <Th cursor="pointer" onClick={() => handleSort('isActive')}>
                 Is active
+                {orderBy.sortKey === 'isActive' && (
+                  <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+                )}
               </Th>
               <Th cursor="pointer" onClick={() => handleSort('name')}>
                 Name
+                {orderBy.sortKey === 'name' && (
+                  <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+                )}
               </Th>
               <Th cursor="pointer" onClick={() => handleSort('event')}>
                 Event
+                {orderBy.sortKey === 'event' && (
+                  <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+                )}
               </Th>
               <Th cursor="pointer" onClick={() => handleSort('evaluatorType')}>
                 Evaluator type
+                {orderBy.sortKey === 'evaluatorType' && (
+                  <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+                )}
               </Th>
               <Th>Action types</Th>
               <Th>Available actions</Th>
