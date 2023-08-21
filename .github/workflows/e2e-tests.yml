@@ -75,7 +75,7 @@ jobs:
               "slack_channel": "common/slack-webhook/fx_env_demo_azure",
               "path": "/workspace/charts/frinx-machine/",
               "keep_fm": "${{ github.event.inputs.keep_fm || 'true' }}",
-              "fm_branch": "${{ github.event.inputs.fm_branch || 'main' }}",
+              "fm_branch": "${{ github.event.inputs.fm_branch || 'ui-latest' }}",
               "image_tag": "${{ steps.var.outputs.image_tag }}",
               "cypress": {
                 "branch": "ui-1.0.38+",
