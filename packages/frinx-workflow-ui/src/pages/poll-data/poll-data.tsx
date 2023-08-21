@@ -8,7 +8,6 @@ import PollDataSearchbox from '../../components/poll-data-searchbox';
 import { usePagination } from '../../hooks/use-graphql-pagination';
 import { PollDataQuery, PollDataQueryVariables, PollsOrderByInput } from '../../__generated__/graphql';
 
-
 type Filter = {
   queueName?: string;
   workerId?: string;
