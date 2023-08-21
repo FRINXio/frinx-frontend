@@ -15,7 +15,7 @@ const ActionControls: VoidFunctionComponent = () => {
     <Box background="white" padding="0.5em">
       <FormControl display="flex" alignItems="center">
         <FormLabel htmlFor="isVisible" mb={0} fontSize="sm" fontWeight="normal">
-          show weights
+          show weights for active node
         </FormLabel>
         <Switch id="isVisible" isChecked={isWeightVisible} onChange={handleSwitchVisibility} size="sm" />
       </FormControl>

@@ -15,6 +15,16 @@ import {
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS';
+export type NodeInfo = {
+  weight: number | null;
+  name: string | null;
+};
+export type ShortestPathInfo = {
+  weight: number | null;
+  nodes: NodeInfo[];
+};
+export type ShortestPath = ShortestPathInfo[];
+
 export type State = {
   topologyLayer: TopologyLayer;
   mode: TopologyMode;
@@ -32,7 +42,7 @@ export type State = {
   commonNodeIds: string[];
   unconfirmedShortestPathNodeIds: [string | null, string | null];
   selectedShortestPathNodeIds: [string | null, string | null];
-  alternativeShortestPaths: string[][];
+  alternativeShortestPaths: ShortestPath;
   selectedAlternativeShortestPathIndex: number;
   netNodes: GraphNetNode[];
   netEdges: GraphEdgeWithDiff[];

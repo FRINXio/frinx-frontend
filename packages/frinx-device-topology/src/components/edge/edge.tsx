@@ -14,10 +14,12 @@ type Props = {
   isUnknown: boolean;
   isShortestPath: boolean;
   isWeightVisible?: boolean;
+  weight: number | null;
 };
 
 const G = chakra('g');
 const Circle = chakra('circle');
+const Text = chakra('text');
 
 const Edge: VoidFunctionComponent<Props> = ({
   edge,
@@ -28,6 +30,7 @@ const Edge: VoidFunctionComponent<Props> = ({
   isUnknown,
   isShortestPath,
   isWeightVisible,
+  weight,
 }) => {
   const { start, end } = linePoints;
   const [weightPosition, setWeightPosition] = useState<Position | null>(null);
@@ -72,8 +75,10 @@ const Edge: VoidFunctionComponent<Props> = ({
       />
       {isWeightVisible && weightPosition !== null && (
         <G transform={`translate3d(${weightPosition.x}px, ${weightPosition.y}px, 0)`} transformOrigin="center center">
-          <Circle r="5" fill="transparent" strokeWidth={3} stroke="blue.500" />
-          <Box>11</Box>
+          <Circle r="15" fill="white" strokeWidth={2} stroke={getEdgeColor(edge.change, isUnknown, isShortestPath)} />
+          <Text textAnchor="middle" y="5">
+            {weight}
+          </Text>
         </G>
       )}
     </g>
@@ -92,16 +97,22 @@ const Edge: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       {isWeightVisible && (
-        <Circle
+        <G
           transform={`translate3d(${(start.x + end.x) / 2}px, ${(start.y + end.y) / 2}px, 0)`}
           transformOrigin="center center"
-          r="5"
-          x={`${(start.x + end.x) / 2}px`}
-          y={`${(start.y + end.y) / 2}px`}
-          fill="transparent"
-          strokeWidth={3}
-          stroke="blue.500"
-        />
+        >
+          <Circle
+            r="15"
+            x={`${(start.x + end.x) / 2}px`}
+            y={`${(start.y + end.y) / 2}px`}
+            fill="white"
+            strokeWidth={2}
+            stroke={getEdgeColor(edge.change, isUnknown, isShortestPath)}
+          />
+          <Text textAnchor="middle" y="5">
+            {weight}
+          </Text>
+        </G>
       )}
     </g>
   );
