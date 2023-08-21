@@ -1,7 +1,6 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue, usePagination, Pagination, TaskDefinition, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import { orderBy } from 'lodash';
 import { gql, useMutation, useQuery } from 'urql';
 import React, { useMemo, useState } from 'react';
 import AddTaskModal from './add-task-modal';
@@ -15,6 +14,11 @@ import {
   TaskDefinitionsQuery,
   TaskDefinitionsQueryVariables,
 } from '../../../__generated__/graphql';
+
+type OrderBy = {
+  sortKey: 'name' | 'timeoutPolicy' | 'timeoutSeconds' | 'responseTimeoutSeconds' | 'retryCount' | 'retryLogic';
+  direction: 'ASC' | 'DESC';
+};
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -35,8 +39,15 @@ const taskDefinition: TaskDefinition = {
 };
 
 const TASK_DEFINITIONS_QUERY = gql`
-  query TaskDefinitions($filter: FilterTaskDefinitionsInput, $before: String, $last: Int, $after: String, $first: Int) {
-    taskDefinitions(filter: $filter, before: $before, last: $last, after: $after, first: $first) {
+  query TaskDefinitions(
+    $filter: FilterTaskDefinitionsInput
+    $orderBy: TasksOrderByInput
+    $before: String
+    $last: Int
+    $after: String
+    $first: Int
+  ) {
+    taskDefinitions(filter: $filter, orderBy: $orderBy, before: $before, last: $last, after: $after, first: $first) {
       edges {
         node {
           id
@@ -85,7 +96,7 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
 
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
-  const [sorted, setSorted] = useState(false);
+  const [orderBy, setOrderBy] = useState<OrderBy | undefined>(undefined);
   const [task, setTask] = useState<TaskDefinition>();
   const [keyword, setKeyword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -101,6 +112,7 @@ const TaskList = () => {
       filter: {
         keyword,
       },
+      orderBy,
     },
   });
 
@@ -118,7 +130,9 @@ const TaskList = () => {
     CREATE_TASK_DEFINITION_MUTATION,
   );
 
-  const sortedTasks = taskDefinitions.sort((a, b) => a.name.localeCompare(b.name)) || [].filter(omitNullValue);
+  const handleSort = (value: OrderBy['sortKey']) => {
+    setOrderBy({ sortKey: value, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
+  };
 
   const handleTaskModal = (tsk: TaskDefinition) => {
     setTask(tsk);
@@ -150,12 +164,6 @@ const TaskList = () => {
           content: err?.message,
         });
       });
-  };
-
-  const sortArray = (key: string) => {
-    const sortedArray = sorted ? orderBy(sortedTasks, [key], ['desc']) : orderBy(sortedTasks, [key], ['asc']);
-    setSorted(!sorted);
-    return sortedArray;
   };
 
   const addTask = (tsk: TaskDefinition) => {
@@ -254,10 +262,10 @@ const TaskList = () => {
       </Flex>
 
       <TaskTable
-        tasks={sortedTasks}
+        tasks={taskDefinitions}
         onTaskConfigClick={handleTaskModal}
         onTaskDelete={handleDeleteTask}
-        sortArray={sortArray}
+        onSort={handleSort}
       />
       {taskData && (
         <Pagination

@@ -3,34 +3,36 @@ import { Table, Thead, Tr, Th, Tbody, Icon, IconButton, Stack, Td } from '@chakr
 import FeatherIcon from 'feather-icons-react';
 import { TaskDefinition } from '@frinx/shared';
 
+type SortKey = 'name' | 'timeoutPolicy' | 'timeoutSeconds' | 'responseTimeoutSeconds' | 'retryCount' | 'retryLogic';
+
 type TaskTableProps = {
   tasks: TaskDefinition[];
-  sortArray: (fieldName: string) => void;
+  onSort: (fieldName: SortKey) => void;
   onTaskDelete: (task: TaskDefinition) => void;
   onTaskConfigClick: (task: TaskDefinition) => void;
 };
 
-export default function TaskTable({ sortArray, tasks, onTaskConfigClick, onTaskDelete }: TaskTableProps) {
+export default function TaskTable({ onSort, tasks, onTaskConfigClick, onTaskDelete }: TaskTableProps) {
   return (
     <Table background="white">
       <Thead>
         <Tr>
-          <Th onClick={() => sortArray('name')} cursor="pointer">
+          <Th onClick={() => onSort('name')} cursor="pointer">
             Name/Version
           </Th>
-          <Th onClick={() => sortArray('timeoutPolicy')} cursor="pointer">
+          <Th onClick={() => onSort('timeoutPolicy')} cursor="pointer">
             Timeout Policy
           </Th>
-          <Th onClick={() => sortArray('timeoutSeconds')} cursor="pointer">
+          <Th onClick={() => onSort('timeoutSeconds')} cursor="pointer">
             Timeout Seconds
           </Th>
-          <Th onClick={() => sortArray('responseTimeoutSeconds')} cursor="pointer">
+          <Th onClick={() => onSort('responseTimeoutSeconds')} cursor="pointer">
             Response Timeout
           </Th>
-          <Th onClick={() => sortArray('retryCount')} cursor="pointer">
+          <Th onClick={() => onSort('retryCount')} cursor="pointer">
             Retry Count
           </Th>
-          <Th onClick={() => sortArray('retryLogic')} cursor="pointer">
+          <Th onClick={() => onSort('retryLogic')} cursor="pointer">
             Retry Logic
           </Th>
           <Th textAlign="center">Actions</Th>
