@@ -1,4 +1,4 @@
-import { Box, Container, Icon, Table, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
+import { Container, Icon, Table, Tbody, Td, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue, Pagination, usePagination } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import moment from 'moment';
