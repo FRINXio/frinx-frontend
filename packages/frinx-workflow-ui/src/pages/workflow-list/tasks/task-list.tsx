@@ -13,12 +13,9 @@ import {
   DeleteTaskMutationVariables,
   TaskDefinitionsQuery,
   TaskDefinitionsQueryVariables,
+  TasksOrderByInput,
+  SortTasksBy,
 } from '../../../__generated__/graphql';
-
-type OrderBy = {
-  sortKey: 'name' | 'timeoutPolicy' | 'timeoutSeconds' | 'responseTimeoutSeconds' | 'retryCount' | 'retryLogic';
-  direction: 'ASC' | 'DESC';
-};
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -96,7 +93,7 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
 
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
-  const [orderBy, setOrderBy] = useState<OrderBy | undefined>(undefined);
+  const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);
   const [task, setTask] = useState<TaskDefinition>();
   const [keyword, setKeyword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -130,7 +127,7 @@ const TaskList = () => {
     CREATE_TASK_DEFINITION_MUTATION,
   );
 
-  const handleSort = (value: OrderBy['sortKey']) => {
+  const handleSort = (value: SortTasksBy) => {
     setOrderBy({ sortKey: value, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
   };
 
@@ -222,7 +219,7 @@ const TaskList = () => {
         task={taskDefinition}
       />
       {task && <TaskConfigModal isOpen={taskConfigModal.isOpen} onClose={taskConfigModal.onClose} task={task} />}
-      <Flex marginBottom={8}>
+      <Flex justify="space-between" gap="20px" marginBottom={8}>
         <InputGroup>
           <InputLeftElement>
             <Icon size={20} as={FeatherIcon} icon="Search" color="grey" />
@@ -234,9 +231,8 @@ const TaskList = () => {
             background="white"
           />
         </InputGroup>
-        <Flex gap={2}>
+        <Flex gap={1}>
           <Button
-            marginLeft={4}
             colorScheme="blue"
             onClick={() => {
               setKeyword(searchTerm);
@@ -245,7 +241,6 @@ const TaskList = () => {
             Search
           </Button>
           <Button
-            marginLeft={4}
             colorScheme="red"
             variant="outline"
             onClick={() => {
@@ -255,7 +250,7 @@ const TaskList = () => {
           >
             Reset
           </Button>
-          <Button marginLeft={4} colorScheme="blue" variant="outline" onClick={addTaskModal.onOpen}>
+          <Button colorScheme="blue" variant="outline" onClick={addTaskModal.onOpen}>
             New
           </Button>
         </Flex>
@@ -266,6 +261,7 @@ const TaskList = () => {
         onTaskConfigClick={handleTaskModal}
         onTaskDelete={handleDeleteTask}
         onSort={handleSort}
+        orderBy={orderBy}
       />
       {taskData && (
         <Pagination
