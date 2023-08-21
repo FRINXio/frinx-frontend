@@ -1,8 +1,7 @@
 import { Table, Thead, Tr, Th, Tbody, Td, Button, Tooltip, HStack, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue } from '@frinx/shared';
+import { omitNullValue, Pagination } from '@frinx/shared';
 import React, { FC, useState } from 'react';
 import AlternativeIdModal from '../../components/alternative-id-modal/alternative-id-modal';
-import Pagination from '../../components/pagination';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 
 type AllocatedResources = AllocatedResourcesQuery['QueryResourcesByAltId'];

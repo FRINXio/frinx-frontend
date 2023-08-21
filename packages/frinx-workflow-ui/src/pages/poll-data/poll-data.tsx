@@ -8,6 +8,7 @@ import PollDataSearchbox from '../../components/poll-data-searchbox';
 import { usePagination } from '../../hooks/use-graphql-pagination';
 import { PollDataQuery, PollDataQueryVariables, PollsOrderByInput } from '../../__generated__/graphql';
 
+
 type Filter = {
   queueName?: string;
   workerId?: string;
@@ -154,23 +155,15 @@ const PollDataPage = () => {
             );
           })}
         </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>
-              {pollData?.pollData?.pageInfo && (
-                <Box marginTop={4} paddingX={4}>
-                  <Pagination
-                    onPrevious={previousPage(pollData.pollData.pageInfo.startCursor)}
-                    onNext={nextPage(pollData.pollData.pageInfo.endCursor)}
-                    hasNextPage={pollData.pollData.pageInfo.hasNextPage}
-                    hasPreviousPage={pollData.pollData.pageInfo.hasPreviousPage}
-                  />
-                </Box>
-              )}
-            </Th>
-          </Tr>
-        </Tfoot>
       </Table>
+      {pollData?.pollData?.pageInfo && (
+        <Pagination
+          onPrevious={previousPage(pollData.pollData.pageInfo.startCursor)}
+          onNext={nextPage(pollData.pollData.pageInfo.endCursor)}
+          hasNextPage={pollData.pollData.pageInfo.hasNextPage}
+          hasPreviousPage={pollData.pollData.pageInfo.hasPreviousPage}
+        />
+      )}
     </Container>
   );
 };

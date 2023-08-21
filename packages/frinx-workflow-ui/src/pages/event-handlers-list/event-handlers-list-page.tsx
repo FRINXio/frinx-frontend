@@ -1,6 +1,5 @@
 import React, { ChangeEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import {
-  Box,
   Button,
   ButtonGroup,
   Container,
@@ -21,7 +20,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
-import { Pagination, useNotifications, SelectItemsPerPage } from '@frinx/shared';
+import { usePagination, Pagination, useNotifications, SelectItemsPerPage } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -35,7 +34,6 @@ import {
   UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
-import { usePagination } from '../../hooks/use-graphql-pagination';
 
 type Props = {
   onEventHandlerDetailClick: (event: string, name: string) => void;
@@ -195,7 +193,7 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Container mx="auto" mb={20} maxWidth={1200}>
+    <Container mx="auto" maxWidth={1200}>
       <HStack mb={5}>
         <Heading as="h1" size="lg">
           Event handlers
@@ -301,14 +299,12 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
       )}
       {data?.eventHandlers && (
         <Flex justify="space-between">
-          <Box my={4} paddingX={4}>
-            <Pagination
-              onPrevious={previousPage(data.eventHandlers.pageInfo.startCursor)}
-              onNext={nextPage(data.eventHandlers.pageInfo.endCursor)}
-              hasNextPage={data.eventHandlers.pageInfo.hasNextPage}
-              hasPreviousPage={data.eventHandlers.pageInfo.hasPreviousPage}
-            />
-          </Box>
+          <Pagination
+            onPrevious={previousPage(data.eventHandlers.pageInfo.startCursor)}
+            onNext={nextPage(data.eventHandlers.pageInfo.endCursor)}
+            hasNextPage={data.eventHandlers.pageInfo.hasNextPage}
+            hasPreviousPage={data.eventHandlers.pageInfo.hasPreviousPage}
+          />
           <SelectItemsPerPage
             onItemsPerPageChange={firstPage}
             first={paginationArgs.first}

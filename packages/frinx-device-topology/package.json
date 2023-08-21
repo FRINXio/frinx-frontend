@@ -13,11 +13,11 @@
     "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
     "build": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc",
     "codegen": "cp ../../../frinx-inventory-server/src/schema/api.graphql ./ && graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "test": "vitest",
-    "typegen": "tsc --declaration --jsx react --esModuleInterop true --target ESNext --moduleResolution node --outDir dist feather-icons-react.d.ts custom.d.ts src/index.ts"
+    "typegen": "tsc -p ./tsconfig.typegen.json"
   },
   "devDependencies": {
     "@chakra-ui/react": "2.5.1",
