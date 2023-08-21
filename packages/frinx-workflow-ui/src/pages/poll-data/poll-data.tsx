@@ -1,11 +1,10 @@
 import { Box, Container, Icon, Table, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue, Pagination } from '@frinx/shared';
+import { omitNullValue, Pagination, usePagination } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { gql, useQuery } from 'urql';
 import PollDataSearchbox from '../../components/poll-data-searchbox';
-import { usePagination } from '../../hooks/use-graphql-pagination';
 import { PollDataQuery, PollDataQueryVariables, PollsOrderByInput } from '../../__generated__/graphql';
 
 type Filter = {
