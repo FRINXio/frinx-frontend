@@ -130,6 +130,7 @@ const App: VoidFunctionComponent<Props> = ({
       nodes: applyNodeChanges(changes, els.nodes),
     }));
   }, []);
+
   const onEdgesChange = useCallback(
     (changes) =>
       setElements((els) => ({
@@ -148,6 +149,11 @@ const App: VoidFunctionComponent<Props> = ({
           els.nodes.filter((n) => n.data.task?.id !== id),
         ),
       };
+    });
+
+    onWorkflowChange({
+      ...workflow,
+      tasks: workflow.tasks.filter((t) => t.id !== id),
     });
   };
 
@@ -180,6 +186,8 @@ const App: VoidFunctionComponent<Props> = ({
         nodes: [...els.nodes, newElement],
       };
     });
+
+    selectTask({ actionType: 'edit', task: t });
 
     onWorkflowChange({
       ...workflow,
@@ -451,6 +459,7 @@ const App: VoidFunctionComponent<Props> = ({
                   }}
                   onFormSubmit={handleFormSubmit}
                   tasks={workflow.tasks}
+                  workflows={workflows}
                 />
               </Box>
             </RightDrawer>
