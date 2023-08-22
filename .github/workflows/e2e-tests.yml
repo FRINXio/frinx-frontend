@@ -1,7 +1,6 @@
-name: E2E tests
+name: E2E tests trigger
 
 on:
-  pull_request:
   workflow_dispatch:
     inputs:
       keep_fm:
@@ -74,8 +73,8 @@ jobs:
               "workflow": "${{ github.workflow }}",
               "slack_channel": "common/slack-webhook/fx_env_demo_azure",
               "path": "/workspace/charts/frinx-machine/",
-              "keep_fm": "${{ github.event.inputs.keep_fm || 'true' }}",
-              "fm_branch": "${{ github.event.inputs.fm_branch || 'ui-latest' }}",
+              "keep_fm": "${{ github.event.inputs.keep_fm }}",
+              "fm_branch": "${{ github.event.inputs.fm_branch }}",
               "image_tag": "${{ steps.var.outputs.image_tag }}",
               "cypress": {
                 "branch": "ui-1.0.38+",
@@ -108,8 +107,4 @@ jobs:
         if: ${{ github.event.inputs.keep_fm || 'true' == 'true' }}
         run: |
           echo "::notice::Frinx-machine is deployed at ui-${{ steps.var.outputs.short_sha }}-frinx.csf.elisa.fi(behind Elisa VPN)"
-
-      - name: Print url
-        if: ${{ github.event.inputs.keep_fm || 'true' == 'true' }}
-        run: |
           echo "::warning::Please delete the instance after use(Resume workflow in argo-workflow)!"
