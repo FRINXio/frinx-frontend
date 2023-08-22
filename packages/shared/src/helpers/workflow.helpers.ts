@@ -2,7 +2,7 @@ import { utcToZonedTime } from 'date-fns-tz';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
-import { Workflow, ExtendedTask, ClientWorkflow } from './workflow-api.types';
+import { Workflow, ExtendedTask, ClientWorkflow, Task, SubworkflowTask } from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
@@ -141,4 +141,12 @@ export function createEmptyWorkflow(): Pick<
 
 export function getLocalDateFromUTC(date: string): Date {
   return utcToZonedTime(date, Intl.DateTimeFormat().resolvedOptions().timeZone);
+}
+
+export function isTaskWithInputParameters(task: Task): task is SubworkflowTask {
+  if (task.type === 'SUB_WORKFLOW') {
+    return true;
+  }
+
+  return false;
 }

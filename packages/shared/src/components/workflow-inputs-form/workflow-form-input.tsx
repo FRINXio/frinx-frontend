@@ -24,7 +24,7 @@ type Props = {
   onChange: (key: string, value: string | boolean | number) => void;
 };
 
-const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
+const WorkflowFormInput: VoidFunctionComponent<Props> = ({
   inputParameterKey,
   onChange,
   values,
@@ -106,4 +106,4 @@ const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
   );
 };
 
-export default ExecuteWorkflowModalFormInput;
+export default WorkflowFormInput;
