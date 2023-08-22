@@ -102,13 +102,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-react@npm:1.5.4":
-  version: 1.5.4
-  resolution: "@azure/msal-react@npm:1.5.4"
+"@azure/msal-react@npm:1.5.10":
+  version: 1.5.10
+  resolution: "@azure/msal-react@npm:1.5.10"
   peerDependencies:
-    "@azure/msal-browser": ^2.34.0
+    "@azure/msal-browser": ^2.38.1
     react: ^16.8.0 || ^17 || ^18
-  checksum: 53dd7352666d220645cef78648a0e0b92ecc73c54702c82e09c0644e0b666ea22ed007082027bca9903a4e4bf68d30caaedad0278c2dbcecd99bea23b840ca5f
+  checksum: 58ce1995bb4162bf49d90e0d46f406785c0ab93abd24cd0303c99e6395405e07c369b6b69d284bf9442f6473150ca32de8d75710d75ed94a4ebd02f1e0d973d8
   languageName: node
   linkType: hard
 
@@ -2838,7 +2838,7 @@ __metadata:
   dependencies:
     "@azure/msal-browser": 2.34.0
     "@azure/msal-common": 6.4.0
-    "@azure/msal-react": 1.5.4
+    "@azure/msal-react": 1.5.10
     "@chakra-ui/react": 2.5.1
     "@chakra-ui/system": 2.5.1
     "@emotion/react": 11.11.0
@@ -2854,7 +2854,7 @@ __metadata:
     "@frinx/workflow-builder": "workspace:^"
     "@frinx/workflow-ui": "workspace:^"
     "@frinxio/gamma": 0.0.30
-    "@types/node": 16.18.14
+    "@types/node": 16.18.41
     "@types/react": 17.0.53
     "@types/react-dom": 18.0.11
     "@types/url-join": 4.0.1
@@ -3012,7 +3012,7 @@ __metadata:
     express: 4.18.2
     helmet: 6.0.1
     pino: 8.11.0
-    pino-pretty: 9.4.0
+    pino-pretty: 9.4.1
     ts-node-dev: 1.1.8
     typescript: 4.9.5
   languageName: unknown
@@ -4879,10 +4879,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:16.18.14":
-  version: 16.18.14
-  resolution: "@types/node@npm:16.18.14"
-  checksum: 7865c1c3e7c7d2fef6103c6dfa181755dc48365024253d6acc460e884508b5937a222aa8bd04835988ff0bdc47867e2ada78859c0a7f9c65b44884316f3b469c
+"@types/node@npm:16.18.41":
+  version: 16.18.41
+  resolution: "@types/node@npm:16.18.41"
+  checksum: b12650d8e4289edafcf0453c8a66c00d6397d465a48b1c683babba4f16f92a6418f678e98a85751e3fef78d23c2b07f641df8da14bf5428ad8282b57b2695243
   languageName: node
   linkType: hard
 
@@ -11864,9 +11864,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-pretty@npm:9.4.0":
-  version: 9.4.0
-  resolution: "pino-pretty@npm:9.4.0"
+"pino-pretty@npm:9.4.1":
+  version: 9.4.1
+  resolution: "pino-pretty@npm:9.4.1"
   dependencies:
     colorette: ^2.0.7
     dateformat: ^4.6.3
@@ -11884,7 +11884,7 @@ __metadata:
     strip-json-comments: ^3.1.1
   bin:
     pino-pretty: bin.js
-  checksum: 4870d44879048219003b0c6f28181ca871e62c1d9679b07b3f3d703e961284b5b0df495e4be95954a0e467ded34f2323bc9cf3280c3a143311b364a733a08e03
+  checksum: 0fa272382398afe0854f5cdd94263cb311a3bf038dfa1fad5c9ddff6612d7ec108f5e7e8b7ee070ed953354ab0c542f1f165f976a2229933c44c7f6a783f4990
   languageName: node
   linkType: hard
 
