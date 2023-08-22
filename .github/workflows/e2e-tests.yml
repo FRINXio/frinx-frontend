@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       keep_fm:
-        description: 'Keep Frinx-machine instance'     
+        description: 'Keep Frinx-machine instance'
         required: true
-        default: 'true'
+        default: 'false' 
+        type: choice
+        options:
+        - true
+        - false
       fm_branch:
         description: 'frinx-machine helm-chart branch'
         required: true
