@@ -22,20 +22,20 @@ import { getLocalDateFromUTC } from '@frinx/shared';
 import { DevicesQuery } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 
-type SortedBy = 'name' | 'created';
+type SortedBy = 'name' | 'createdAt' | 'serviceState' | 'isInstalled';
 type Direction = 'ASC' | 'DESC';
-type Sorting = {
-  sortedBy: SortedBy;
+type OrderBy = {
+  sortKey: SortedBy;
   direction: Direction;
-};
+} | null;
 
 type Props = {
-  sorting: Sorting | null;
+  orderBy: OrderBy;
   devices: DevicesQuery['devices']['edges'];
   selectedDevices: Set<string>;
   areSelectedAll: boolean;
   installLoadingMap: Record<string, boolean>;
-  onSortingClick: (sortedBy: SortedBy) => void;
+  onSort: (sortedBy: SortedBy) => void;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onDeleteBtnClick: (deviceId: string) => void;
@@ -43,18 +43,11 @@ type Props = {
   onSelectAll: (checked: boolean) => void;
 };
 
-function getSortingIcon(direction: Direction) {
-  if (direction === 'ASC') {
-    return <Icon as={FeatherIcon} size={12} icon="triangle" />;
-  }
-  return <Icon as={FeatherIcon} size={12} icon="triangle" style={{ transform: 'rotate(180deg)' }} />;
-}
-
 const DeviceTable: VoidFunctionComponent<Props> = ({
-  sorting,
+  orderBy,
   devices,
   selectedDevices,
-  onSortingClick,
+  onSort,
   onInstallButtonClick,
   onUninstallButtonClick,
   onDeleteBtnClick,
@@ -71,14 +64,11 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
             <Checkbox isChecked={areSelectedAll} onChange={(e) => onSelectAll(e.target.checked)} mr={2} />
           </Th>
           <Th>
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              cursor="pointer"
-              onClick={() => onSortingClick('name')}
-            >
+            <Flex alignItems="center" justifyContent="space-between" cursor="pointer" onClick={() => onSort('name')}>
               <Text>Name</Text>
-              {sorting?.sortedBy === 'name' && getSortingIcon(sorting.direction)}
+              {orderBy?.sortKey === 'name' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+              )}
             </Flex>
           </Th>
           <Th>
@@ -86,15 +76,45 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               alignItems="center"
               justifyContent="space-between"
               cursor="pointer"
-              onClick={() => onSortingClick('created')}
+              onClick={() => onSort('createdAt')}
             >
               <Text>Created</Text>
-              {sorting?.sortedBy === 'created' && getSortingIcon(sorting.direction)}
+              {orderBy?.sortKey === 'createdAt' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+              )}
             </Flex>
           </Th>
-          <Th>Zone</Th>
-          <Th>Service state</Th>
-          <Th>Installation</Th>
+          <Th>
+            <Flex alignItems="center" justifyContent="space-between">
+              <Text>Zone</Text>
+            </Flex>
+          </Th>
+          <Th>
+            <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              cursor="pointer"
+              onClick={() => onSort('serviceState')}
+            >
+              <Text>Service State</Text>
+              {orderBy?.sortKey === 'serviceState' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+              )}
+            </Flex>
+          </Th>
+          <Th>
+            <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              cursor="pointer"
+              onClick={() => onSort('isInstalled')}
+            >
+              <Text>Installation</Text>
+              {orderBy?.sortKey === 'isInstalled' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+              )}
+            </Flex>
+          </Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
