@@ -132,7 +132,7 @@ const DELETE_DEVICE_MUTATION = gql`
   }
 `;
 
-type SortedBy = 'name' | 'createdAt' | 'serviceState' | 'isInstalled';
+type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;

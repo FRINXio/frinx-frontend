@@ -22,7 +22,7 @@ import { getLocalDateFromUTC } from '@frinx/shared';
 import { DevicesQuery } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 
-type SortedBy = 'name' | 'createdAt' | 'serviceState' | 'isInstalled';
+type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type OrderBy = {
   sortKey: SortedBy;
@@ -102,19 +102,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               )}
             </Flex>
           </Th>
-          <Th>
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              cursor="pointer"
-              onClick={() => onSort('isInstalled')}
-            >
-              <Text>Installation</Text>
-              {orderBy?.sortKey === 'isInstalled' && (
-                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
-              )}
-            </Flex>
-          </Th>
+          <Th>Installation</Th>
           <Th>Actions</Th>
         </Tr>
       </Thead>
