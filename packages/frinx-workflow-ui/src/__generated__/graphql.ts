@@ -624,6 +624,11 @@ export type ExecutedWorkflowsOrderByInput = {
   sortKey: SortExecutedWorkflowsBy;
 };
 
+export type ExternaStorage = {
+  __typename?: 'ExternaStorage';
+  data: Scalars['String'];
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
@@ -1220,6 +1225,7 @@ export type Query = {
   eventHandlers: Maybe<EventHandlerConnection>;
   eventHandlersByEvent: Maybe<EventHandlerConnection>;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
+  externalStorage: Maybe<ExternaStorage>;
   labels: LabelConnection;
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
@@ -1310,6 +1316,11 @@ export type QueryExecutedWorkflowsArgs = {
   orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+};
+
+
+export type QueryExternalStorageArgs = {
+  path: Scalars['String'];
 };
 
 
@@ -1964,6 +1975,13 @@ export type UpdateEventHandlerMutationVariables = Exact<{
 
 
 export type UpdateEventHandlerMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
+
+export type ExternalStorageQueryVariables = Exact<{
+  path: Scalars['String'];
+}>;
+
+
+export type ExternalStorageQuery = { __typename?: 'Query', externalStorage: { __typename?: 'ExternaStorage', data: string } | null };
 
 export type ExecutedWorkflowDetailQueryVariables = Exact<{
   nodeId: Scalars['ID'];
