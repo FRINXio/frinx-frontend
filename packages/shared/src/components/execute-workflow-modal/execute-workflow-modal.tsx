@@ -1,8 +1,6 @@
 import {
   Button,
   ButtonGroup,
-  Grid,
-  GridItem,
   Heading,
   Modal,
   ModalBody,
@@ -14,17 +12,12 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react';
-import { useFormik } from 'formik';
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Workflow, ClientWorkflow } from '../../helpers/workflow-api.types';
-import {
-  getDynamicInputParametersFromWorkflow,
-  getInitialValuesFromParsedInputParameters,
-  jsonParse,
-  parseInputParameters,
-} from '../../helpers/workflow.helpers';
-import ExecuteWorkflowModalFormInput from './execute-workflow-modal-form-input';
+import { jsonParse } from '../../helpers/workflow.helpers';
+import { useWorkflowInputsForm } from '../../hooks';
+import WorkflowInputsForm from '../workflow-inputs-form/workflow-inputs-form';
 
 type Props = {
   workflow: Workflow | ClientWorkflow;
@@ -35,28 +28,22 @@ type Props = {
 
 const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const { name, description } = workflow;
-  const parsedInputParameters = parseInputParameters(workflow.inputParameters);
-  const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executedWorkflowId, setExecutedWorkflowId] = useState<string | void | null>(null);
-  const { values, handleSubmit, submitForm, isSubmitting, setSubmitting, setFieldValue } = useFormik<
-    Record<string, unknown>
-  >({
-    enableReinitialize: true,
-    initialValues: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
-    validateOnChange: false,
-    validateOnBlur: false,
-    onSubmit: async (formData) => {
-      setIsExecuting(true);
 
-      const id = await onSubmit(formData);
-      setExecutedWorkflowId(id);
-      setIsExecuting(false);
-      setSubmitting(false);
-    },
-  });
+  const { values, inputParameterKeys, parsedInputParameters, submitForm, isSubmitting, setSubmitting, handleChange } =
+    useWorkflowInputsForm({
+      workflow,
+      onSubmit: async (formData) => {
+        setIsExecuting(true);
 
-  const inputParametersKeys = Object.keys(values);
+        const id = await onSubmit(formData);
+
+        setSubmitting(false);
+        setIsExecuting(false);
+        setExecutedWorkflowId(id);
+      },
+    });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl">
@@ -72,24 +59,12 @@ const ExecuteWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }
           </Text>
         </ModalHeader>
         <ModalBody maxHeight="3xl" overflowY="auto">
-          {inputParametersKeys == null || inputParametersKeys.length === 0 ? (
-            <Text>To successfully execute this workflow there are not provided any input parameters</Text>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <Grid templateColumns="repeat(2, 1fr)" gap={5}>
-                {inputParametersKeys.map((inputParameterKey) => (
-                  <GridItem key={inputParameterKey}>
-                    <ExecuteWorkflowModalFormInput
-                      inputParameterKey={inputParameterKey}
-                      onChange={setFieldValue}
-                      values={values}
-                      parsedInputParameters={parsedInputParameters}
-                    />
-                  </GridItem>
-                ))}
-              </Grid>
-            </form>
-          )}
+          <WorkflowInputsForm
+            values={values}
+            inputParameterKeys={inputParameterKeys}
+            parsedInputParameters={parsedInputParameters}
+            onChange={handleChange}
+          />
         </ModalBody>
         <ModalFooter>
           {executedWorkflowId != null && (
