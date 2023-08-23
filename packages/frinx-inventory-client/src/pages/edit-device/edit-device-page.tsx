@@ -115,7 +115,7 @@ type Props = {
 
 type FormValues = {
   zoneId: string;
-  mountParameters: string;
+  mountParameters: string | null;
   labelIds: string[];
   serviceState: DeviceServiceState;
   vendor: string | null;
@@ -202,7 +202,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
     vendor: device.vendor,
     host: device.address,
     model: device.model,
-    mountParameters: unwrap(device.mountParameters),
+    mountParameters: device.mountParameters,
     serviceState: device.serviceState as ServiceState,
     zone: {
       id: device.zone.id,
