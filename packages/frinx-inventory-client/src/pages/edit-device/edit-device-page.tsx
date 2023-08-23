@@ -153,7 +153,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
       id: unwrap(deviceId),
       input: {
         labelIds: values.labelIds,
-        ...(values.mountParameters && { mountParameters: JSON.stringify(values.mountParameters) }),
+        ...(values.mountParameters && { mountParameters: values.mountParameters }),
         serviceState: values.serviceState,
         model: values.model,
         vendor: values.vendor,

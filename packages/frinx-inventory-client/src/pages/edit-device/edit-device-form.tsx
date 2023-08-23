@@ -210,9 +210,9 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           width="100%"
           language="json"
           onChange={(value) => {
-            setFieldValue('mountParameters', value);
+            setFieldValue('mountParameters', JSON.stringify(value));
           }}
-          value={values.mountParameters ?? ''}
+          value={jsonParse(values.mountParameters) ?? ''}
         />
       </FormControl>
 
