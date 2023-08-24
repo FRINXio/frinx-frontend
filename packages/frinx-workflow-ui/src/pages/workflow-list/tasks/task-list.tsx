@@ -16,6 +16,7 @@ import {
   TasksOrderByInput,
   SortTasksBy,
 } from '../../../__generated__/graphql';
+import { omitBy, isNull } from 'lodash';
 
 const taskDefinition: TaskDefinition = {
   name: '',
@@ -103,17 +104,6 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
   }
 `;
 
-function filterNullProperties(obj: Record<string, unknown>): Record<string, unknown> {
-  const filteredObj: Record<string, unknown> = {};
-
-  Object.keys(obj).forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(obj, key) && obj[key] !== null) {
-      filteredObj[key] = obj[key];
-    }
-  });
-  return filteredObj;
-}
-
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
   const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);
@@ -155,7 +145,7 @@ const TaskList = () => {
   };
 
   const handleTaskModal = (tsk: TaskDefinition) => {
-    const filteredTaskData = filterNullProperties(tsk);
+    const filteredTaskData = omitBy(tsk, isNull);
 
     setTask(filteredTaskData);
     taskConfigModal.onOpen();
