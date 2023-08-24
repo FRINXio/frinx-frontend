@@ -57,24 +57,6 @@ type FormValues = {
   port: number;
 };
 
-// const getWhenOptions = (keyName: string, errorMessage: string) => {
-//   if (keyName === 'port_number') {
-//     return {
-//       is: (blueprintParams: string[]) => {
-//         return blueprintParams.includes(keyName);
-//       },
-//       then: yup.number().required(errorMessage),
-//     };
-//   }
-
-//   return {
-//     is: (blueprintParams: string[]) => {
-//       return blueprintParams.includes(keyName);
-//     },
-//     then: yup.string().required(errorMessage),
-//   };
-// };
-
 const deviceSchema = yup.object({
   name: yup.string().required('Please enter name of device'),
   zoneId: yup.string().required('Please enter zone of device'),
