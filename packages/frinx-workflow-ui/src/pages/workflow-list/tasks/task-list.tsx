@@ -3,6 +3,7 @@ import { omitNullValue, usePagination, Pagination, TaskDefinition, useNotificati
 import FeatherIcon from 'feather-icons-react';
 import { gql, useMutation, useQuery } from 'urql';
 import React, { useMemo, useState } from 'react';
+import { omitBy, isNull } from 'lodash';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
@@ -16,7 +17,6 @@ import {
   TasksOrderByInput,
   SortTasksBy,
 } from '../../../__generated__/graphql';
-import { omitBy, isNull } from 'lodash';
 
 const taskDefinition: TaskDefinition = {
   name: '',
