@@ -15,6 +15,16 @@ import {
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS';
+export type NodeInfo = {
+  weight: number | null;
+  name: string | null;
+};
+export type ShortestPathInfo = {
+  weight: number | null;
+  nodes: NodeInfo[];
+};
+export type ShortestPath = ShortestPathInfo[];
+
 export type State = {
   topologyLayer: TopologyLayer;
   mode: TopologyMode;
@@ -32,12 +42,13 @@ export type State = {
   commonNodeIds: string[];
   unconfirmedShortestPathNodeIds: [string | null, string | null];
   selectedShortestPathNodeIds: [string | null, string | null];
-  alternativeShortestPaths: string[][];
+  alternativeShortestPaths: ShortestPath;
   selectedAlternativeShortestPathIndex: number;
   netNodes: GraphNetNode[];
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
+  isWeightVisible: boolean;
 };
 
 export const initialState: State = {
@@ -63,6 +74,7 @@ export const initialState: State = {
   netEdges: [],
   netNodePositions: {},
   netInterfaceGroupPositions: {},
+  isWeightVisible: false,
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -221,6 +233,10 @@ export function stateReducer(state: State, action: StateAction): State {
           ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
         ];
         acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_WEIGHT_VISIBILITY': {
+        acc.isWeightVisible = action.isVisible;
         return acc;
       }
       default:

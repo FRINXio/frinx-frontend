@@ -39,6 +39,7 @@ export type SourceTarget = {
 };
 export type GraphEdge = {
   id: string;
+  weight: number | null;
   source: SourceTarget;
   target: SourceTarget;
 };

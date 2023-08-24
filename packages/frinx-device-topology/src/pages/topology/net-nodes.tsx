@@ -31,7 +31,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     }
   };
 
-  const shortestPathIds = alternativeShortestPaths[selectedAlternativeShortestPathIndex] ?? [];
+  const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex);
 
   return (
     <g>
@@ -44,7 +44,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
           isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}
           isSelectedForShortestPath={unconfirmedShortestPathNodeIds.includes(node.id)}
           isCommon={commonNodeIds.includes(node.name)}
-          isShortestPath={shortestPathIds.includes(node.nodeId)}
+          isShortestPath={shortestPathInfo?.nodes.map((n) => n.name).includes(node.nodeId) ?? false}
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}
