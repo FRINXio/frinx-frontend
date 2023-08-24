@@ -89,7 +89,7 @@ const LABELS_QUERY = gql`
 type FormValues = {
   name: string;
   zoneId: string;
-  mountParameters: string;
+  mountParameters: string | null;
   labelIds: string[];
   serviceState: DeviceServiceState;
   blueprintId: string | null;

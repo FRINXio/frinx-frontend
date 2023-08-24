@@ -1508,8 +1508,11 @@ export type Snapshot = {
 };
 
 export type SortDeviceBy =
-  | 'CREATED_AT'
-  | 'NAME';
+  | 'createdAt'
+  | 'isInstalled'
+  | 'name'
+  | 'serviceState'
+  | 'zone';
 
 export type SortDirection =
   | 'ASC'
