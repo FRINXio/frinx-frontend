@@ -3,6 +3,7 @@ import { omitNullValue } from '@frinx/shared';
 import { partition } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useQuery } from 'urql';
+import ActionControls from '../../components/action-controls/action-controls';
 import Edge from '../../components/edge/edge';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import {
@@ -13,9 +14,9 @@ import {
   setMode,
   setSelectedAlternativePath,
   setSelectedEdge,
-  // setShortestPathIds,
 } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
+import { ShortestPath, ShortestPathInfo } from '../../state.reducer';
 import { ShortestPathQuery, ShortestPathQueryVariables } from '../../__generated__/graphql';
 import {
   getControlPoints,
@@ -33,13 +34,17 @@ const EDGE_GAP = 75;
 const SHORTEST_PATH_QUERY = gql`
   query ShortestPath($from: String!, $to: String!) {
     shortestPath(from: $from, to: $to) {
-      shortestPath
-      alternativePaths
+      weight
+      nodes {
+        weight
+        name
+      }
     }
   }
 `;
 
-const isShortestPadhPredicate = (shortestPathIds: string[], edge: GraphEdgeWithDiff): boolean => {
+const isShortestPathPredicate = (shortestPathInfo: ShortestPathInfo | null, edge: GraphEdgeWithDiff): boolean => {
+  const shortestPathIds = shortestPathInfo?.nodes.map((n) => n.name).filter(omitNullValue) ?? [];
   const fromInterfaceIndex = shortestPathIds.findIndex((deviceInterface) => deviceInterface === edge.source.interface);
   if (fromInterfaceIndex === -1) {
     return false;
@@ -63,6 +68,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     selectedShortestPathNodeIds,
     alternativeShortestPaths,
     selectedAlternativeShortestPathIndex,
+    isWeightVisible,
   } = state;
 
   const [{ data: shorthestPathData, fetching: isShortestPathFetching }] = useQuery<
@@ -78,8 +84,19 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
   });
 
   useEffect(() => {
-    // dispatch(setShortestPathIds(shorthestPathData?.shortestPath?.shortestPath ?? []));
-    dispatch(setAlternativePaths(shorthestPathData?.shortestPath?.alternativePaths ?? []));
+    const shortestPath: ShortestPath =
+      shorthestPathData?.shortestPath.map((d) => {
+        return {
+          weight: d.weight,
+          nodes: d.nodes
+            .map((n) => ({
+              weight: n.weight,
+              name: n.name,
+            }))
+            .filter((n) => n.name != null),
+        };
+      }) ?? [];
+    dispatch(setAlternativePaths(shortestPath));
   }, [dispatch, shorthestPathData]);
 
   useEffect(() => {
@@ -140,10 +157,10 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     dispatch(setSelectedAlternativePath(Number(value)));
   };
 
-  const selectedAlternativeIds = alternativeShortestPaths[selectedAlternativeShortestPathIndex] ?? [];
+  const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex) ?? null;
 
   const [shortestPathEdges, nonShortestPathEdges] = partition(netEdges, (edge) =>
-    isShortestPadhPredicate(selectedAlternativeIds, edge),
+    isShortestPathPredicate(shortestPathInfo, edge),
   );
   const sortedNetEdges = [...nonShortestPathEdges, ...shortestPathEdges];
 
@@ -191,13 +208,15 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
                 key={edge.id}
                 isUnknown={isUnknown}
                 isShortestPath={isShortestPathEdge}
+                isWeightVisible={(isWeightVisible && isActive) || isShortestPathEdge}
+                weight={edge.weight}
               />
             );
           })}
         </g>
         <NetNodes nodes={netNodes} />
       </svg>
-      {unconfirmedShortestPathNodeIds.filter(omitNullValue).length && (
+      {unconfirmedShortestPathNodeIds.filter(omitNullValue).length > 0 && (
         <Box position="absolute" top={2} left="2" background="transparent">
           <Button onClick={handleClearShortestPath} marginRight={2}>
             Clear shortest path
@@ -215,13 +234,18 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
             >
               {[...alternativeShortestPaths.keys()].map((key) => (
                 <option key={`alternative-key-${key}`} value={key}>
-                  {key === 0 ? 'shortest path' : `alternative path ${key}`}
+                  {key === 0
+                    ? `shortest path (weight: ${alternativeShortestPaths[key].weight ?? '-'})`
+                    : `alternative path ${key} (weight: ${alternativeShortestPaths[key].weight ?? '-'})`}
                 </option>
               ))}
             </Select>
           )}
         </Box>
       )}
+      <Box position="absolute" top={2} right={2}>
+        <ActionControls />
+      </Box>
     </Box>
   );
 };

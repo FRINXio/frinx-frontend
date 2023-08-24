@@ -1,7 +1,7 @@
 import { Client, gql } from 'urql';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
 import { BackupGraphNode, GraphEdge, GraphNetNode, GraphNode, Position } from './pages/topology/graph.helpers';
-import { State, TopologyLayer } from './state.reducer';
+import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
   NetTopologyQuery,
@@ -108,11 +108,15 @@ export type StateAction =
   //   }
   | {
       type: 'SET_ALTERNATIVE_PATHS';
-      alternativePaths: string[][];
+      alternativePaths: ShortestPath;
     }
   | {
       type: 'SET_SELECTED_ALTERNATIVE_PATH';
       alternativePathIndex: number;
+    }
+  | {
+      type: 'SET_WEIGHT_VISIBILITY';
+      isVisible: boolean;
     };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
@@ -182,6 +186,7 @@ const NET_TOPOLOGY_QUERY = gql`
       }
       edges {
         id
+        weight
         source {
           nodeId
           interface
@@ -248,7 +253,12 @@ export function getNodesAndEdges(client: Client, labels: LabelItem[]): ReturnTyp
       .toPromise()
       .then((data) => {
         const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
-        dispatch(setNodesAndEdges({ nodes, edges }));
+        // we need to supply edges with null weight
+        const edgesWithWeight = edges.map((e) => ({
+          ...e,
+          weight: null,
+        }));
+        dispatch(setNodesAndEdges({ nodes, edges: edgesWithWeight }));
       });
   };
 }
@@ -338,7 +348,11 @@ export function getBackupNodesAndEdges(client: Client, version: string): ReturnT
         dispatch(
           setBackupNodesAndEdges({
             nodes: data.data?.topologyVersionData.nodes ?? [],
-            edges: data.data?.topologyVersionData.edges ?? [],
+            edges:
+              data.data?.topologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
           }),
         );
       });
@@ -413,10 +427,17 @@ export function findShortestPath(): StateAction {
 //   return { type: 'SET_SHORTEST_PATH_IDS', pathIds };
 // }
 
-export function setAlternativePaths(alternativePaths: string[][]): StateAction {
+export function setAlternativePaths(alternativePaths: ShortestPath): StateAction {
   return { type: 'SET_ALTERNATIVE_PATHS', alternativePaths };
 }
 
 export function setSelectedAlternativePath(alternativePathIndex: number): StateAction {
   return { type: 'SET_SELECTED_ALTERNATIVE_PATH', alternativePathIndex };
+}
+
+export function setWeightVisibility(isVisible: boolean): StateAction {
+  return {
+    type: 'SET_WEIGHT_VISIBILITY',
+    isVisible,
+  };
 }

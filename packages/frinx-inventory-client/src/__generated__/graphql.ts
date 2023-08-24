@@ -673,6 +673,7 @@ export type GraphEdge = {
   id: Scalars['ID'];
   source: EdgeSourceTarget;
   target: EdgeSourceTarget;
+  weight: Maybe<Scalars['Int']>;
 };
 
 export type GraphEdgeStatus =
@@ -1117,10 +1118,16 @@ export type NetNode = {
   nodeId: Scalars['String'];
 };
 
-export type NetRoutingPaths = {
-  __typename?: 'NetRoutingPaths';
-  alternativePaths: Array<Array<Scalars['String']>>;
-  shortestPath: Array<Scalars['String']>;
+export type NetRoutingPathNode = {
+  __typename?: 'NetRoutingPathNode';
+  nodes: Array<NetRoutingPathNodeInfo>;
+  weight: Maybe<Scalars['Int']>;
+};
+
+export type NetRoutingPathNodeInfo = {
+  __typename?: 'NetRoutingPathNodeInfo';
+  name: Maybe<Scalars['String']>;
+  weight: Maybe<Scalars['Int']>;
 };
 
 export type NetTopology = {
@@ -1229,7 +1236,7 @@ export type Query = {
   pollData: Maybe<PollDataConnection>;
   pools: PoolConnection;
   schedules: ScheduleConnection;
-  shortestPath: Maybe<NetRoutingPaths>;
+  shortestPath: Array<NetRoutingPathNode>;
   taskDefinitions: TaskDefinitionConnection;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -1378,6 +1385,7 @@ export type QueryTaskDefinitionsArgs = {
   filter?: InputMaybe<FilterTaskDefinitionsInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TasksOrderByInput>;
 };
 
 
@@ -1508,8 +1516,9 @@ export type Snapshot = {
 };
 
 export type SortDeviceBy =
-  | 'CREATED_AT'
-  | 'NAME';
+  | 'createdAt'
+  | 'name'
+  | 'serviceState';
 
 export type SortDirection =
   | 'ASC'
@@ -1540,6 +1549,14 @@ export type SortPollsBy =
 export type SortPollsDirection =
   | 'asc'
   | 'desc';
+
+export type SortTasksBy =
+  | 'name'
+  | 'responseTimeoutSeconds'
+  | 'retryCount'
+  | 'retryLogic'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds';
 
 export type SortWorkflowsBy =
   | 'name';
@@ -1644,6 +1661,11 @@ export type TaskTimeoutPolicy =
   | 'ALERT_ONLY'
   | 'RETRY'
   | 'TIME_OUT_WF';
+
+export type TasksOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortTasksBy;
+};
 
 export type TerminateWorkflowInput = {
   reason?: InputMaybe<Scalars['String']>;
@@ -2081,6 +2103,13 @@ export type DeleteDeviceMutationVariables = Exact<{
 
 
 export type DeleteDeviceMutation = { __typename?: 'Mutation', deleteDevice: { __typename?: 'DeleteDevicePayload', device: { __typename?: 'Device', id: string } | null } };
+
+export type ExecuteModalWorkflowByNameMutationVariables = Exact<{
+  input: ExecuteWorkflowByName;
+}>;
+
+
+export type ExecuteModalWorkflowByNameMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };
 
 export type ModalWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
 
