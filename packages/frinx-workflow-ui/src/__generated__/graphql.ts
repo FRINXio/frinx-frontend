@@ -1387,6 +1387,7 @@ export type QueryTaskDefinitionsArgs = {
   filter?: InputMaybe<FilterTaskDefinitionsInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TasksOrderByInput>;
 };
 
 
@@ -1550,6 +1551,14 @@ export type SortPollsDirection =
   | 'asc'
   | 'desc';
 
+export type SortTasksBy =
+  | 'name'
+  | 'responseTimeoutSeconds'
+  | 'retryCount'
+  | 'retryLogic'
+  | 'timeoutPolicy'
+  | 'timeoutSeconds';
+
 export type SortWorkflowsBy =
   | 'name';
 
@@ -1653,6 +1662,11 @@ export type TaskTimeoutPolicy =
   | 'ALERT_ONLY'
   | 'RETRY'
   | 'TIME_OUT_WF';
+
+export type TasksOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortTasksBy;
+};
 
 export type TerminateWorkflowInput = {
   reason?: InputMaybe<Scalars['String']>;
@@ -2176,6 +2190,7 @@ export type UpdateWorkflowMutation = { __typename?: 'Mutation', updateWorkflow: 
 
 export type TaskDefinitionsQueryVariables = Exact<{
   filter?: InputMaybe<FilterTaskDefinitionsInput>;
+  orderBy?: InputMaybe<TasksOrderByInput>;
   before?: InputMaybe<Scalars['String']>;
   last?: InputMaybe<Scalars['Int']>;
   after?: InputMaybe<Scalars['String']>;
