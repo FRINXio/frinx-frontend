@@ -14,7 +14,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import {
-  callbackUtils,
   ExecuteWorkflowModal,
   unwrap,
   useNotifications,
@@ -33,6 +32,8 @@ import {
   DeleteDeviceMutationVariables,
   DevicesQuery,
   DevicesQueryVariables,
+  ExecuteModalWorkflowByNameMutation,
+  ExecuteModalWorkflowByNameMutationVariables,
   FilterLabelsQuery,
   InstallDeviceMutation,
   InstallDeviceMutationVariables,
@@ -132,6 +133,12 @@ const DELETE_DEVICE_MUTATION = gql`
   }
 `;
 
+const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
+  mutation ExecuteModalWorkflowByName($input: ExecuteWorkflowByName!) {
+    executeWorkflowByName(input: $input)
+  }
+`;
+
 type SortedBy = 'name' | 'created';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -201,6 +208,10 @@ const DeviceList: VoidFunctionComponent = () => {
     UNINSTALL_DEVICE_MUTATION,
   );
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
+  const [, executeWorkflow] = useMutation<
+    ExecuteModalWorkflowByNameMutation,
+    ExecuteModalWorkflowByNameMutationVariables
+  >(EXECUTE_MODAL_WORKFLOW_MUTATION);
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
 
@@ -437,16 +448,16 @@ const DeviceList: VoidFunctionComponent = () => {
       return null;
     }
 
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
     return executeWorkflow({
-      input: values,
-      name: selectedWorkflow.name,
-      version: selectedWorkflow.version,
+      input: {
+        workflowName: selectedWorkflow.name,
+        workflowVersion: selectedWorkflow.version,
+        inputParameters: JSON.stringify(values),
+      },
     })
       .then((res) => {
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
+        return res.data?.executeWorkflowByName;
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });

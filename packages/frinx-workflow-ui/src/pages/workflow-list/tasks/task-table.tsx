@@ -2,36 +2,56 @@ import React from 'react';
 import { Table, Thead, Tr, Th, Tbody, Icon, IconButton, Stack, Td } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { TaskDefinition } from '@frinx/shared';
+import { TasksOrderByInput, SortTasksBy } from '../../../__generated__/graphql';
 
 type TaskTableProps = {
   tasks: TaskDefinition[];
-  sortArray: (fieldName: string) => void;
+  orderBy: TasksOrderByInput | null;
+  onSort: (fieldName: SortTasksBy) => void;
   onTaskDelete: (task: TaskDefinition) => void;
   onTaskConfigClick: (task: TaskDefinition) => void;
 };
 
-export default function TaskTable({ sortArray, tasks, onTaskConfigClick, onTaskDelete }: TaskTableProps) {
+export default function TaskTable({ onSort, tasks, orderBy, onTaskConfigClick, onTaskDelete }: TaskTableProps) {
   return (
     <Table background="white">
       <Thead>
         <Tr>
-          <Th onClick={() => sortArray('name')} cursor="pointer">
+          <Th onClick={() => onSort('name')} cursor="pointer">
             Name/Version
+            {orderBy?.sortKey === 'name' && (
+              <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
           </Th>
-          <Th onClick={() => sortArray('timeoutPolicy')} cursor="pointer">
+          <Th onClick={() => onSort('timeoutPolicy')} cursor="pointer">
             Timeout Policy
+            {orderBy?.sortKey === 'timeoutPolicy' && (
+              <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
           </Th>
-          <Th onClick={() => sortArray('timeoutSeconds')} cursor="pointer">
+          <Th onClick={() => onSort('timeoutSeconds')} cursor="pointer">
             Timeout Seconds
+            {orderBy?.sortKey === 'timeoutSeconds' && (
+              <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
           </Th>
-          <Th onClick={() => sortArray('responseTimeoutSeconds')} cursor="pointer">
+          <Th onClick={() => onSort('responseTimeoutSeconds')} cursor="pointer">
             Response Timeout
+            {orderBy?.sortKey === 'responseTimeoutSeconds' && (
+              <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
           </Th>
-          <Th onClick={() => sortArray('retryCount')} cursor="pointer">
+          <Th onClick={() => onSort('retryCount')} cursor="pointer">
             Retry Count
+            {orderBy?.sortKey === 'retryCount' && (
+              <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
           </Th>
-          <Th onClick={() => sortArray('retryLogic')} cursor="pointer">
+          <Th onClick={() => onSort('retryLogic')} cursor="pointer">
             Retry Logic
+            {orderBy?.sortKey === 'retryLogic' && (
+              <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
           </Th>
           <Th textAlign="center">Actions</Th>
         </Tr>
