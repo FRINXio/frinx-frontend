@@ -14,7 +14,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import {
-  callbackUtils,
   ExecuteWorkflowModal,
   unwrap,
   useNotifications,
@@ -33,6 +32,8 @@ import {
   DeleteDeviceMutationVariables,
   DevicesQuery,
   DevicesQueryVariables,
+  ExecuteModalWorkflowByNameMutation,
+  ExecuteModalWorkflowByNameMutationVariables,
   FilterLabelsQuery,
   InstallDeviceMutation,
   InstallDeviceMutationVariables,
@@ -132,37 +133,18 @@ const DELETE_DEVICE_MUTATION = gql`
   }
 `;
 
-type SortedBy = 'name' | 'created';
+const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
+  mutation ExecuteModalWorkflowByName($input: ExecuteWorkflowByName!) {
+    executeWorkflowByName(input: $input)
+  }
+`;
+
+type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
-  sortedBy: SortedBy;
+  sortKey: SortedBy;
   direction: Direction;
 };
-
-function getSorting(sorting: Sorting | null, sortedBy: SortedBy): Sorting | null {
-  if (!sorting) {
-    return {
-      sortedBy,
-      direction: 'ASC',
-    };
-  }
-
-  if (sortedBy === sorting.sortedBy) {
-    if (sorting.direction === 'DESC') {
-      return null;
-    }
-
-    return {
-      ...sorting,
-      direction: 'DESC',
-    };
-  }
-
-  return {
-    sortedBy,
-    direction: 'ASC',
-  };
-}
 
 const Form = chakra('form');
 
@@ -171,11 +153,11 @@ const DeviceList: VoidFunctionComponent = () => {
   const deleteModalDisclosure = useDisclosure();
   const { addToastNotification } = useNotifications();
   const deleteSelectedDevicesModal = useDisclosure();
+  const [orderBy, setOrderBy] = useState<Sorting | null>(null);
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
   const [selectedDevices, setSelectedDevices] = useState<Set<string>>(new Set());
-  const [sorting, setSorting] = useState<Sorting | null>(null);
   const [searchText, setSearchText] = useState<string | null>(null);
   const [deviceNameFilter, setDeviceNameFilter] = useState<string | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -185,12 +167,7 @@ const DeviceList: VoidFunctionComponent = () => {
     variables: {
       labels: selectedLabels.map((label) => label.label),
       deviceName: deviceNameFilter,
-      orderBy: sorting
-        ? {
-            sortKey: sorting.sortedBy === 'name' ? 'NAME' : 'CREATED_AT',
-            direction: sorting.direction,
-          }
-        : undefined,
+      orderBy,
       ...paginationArgs,
     },
     context,
@@ -201,8 +178,16 @@ const DeviceList: VoidFunctionComponent = () => {
     UNINSTALL_DEVICE_MUTATION,
   );
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
+  const [, executeWorkflow] = useMutation<
+    ExecuteModalWorkflowByNameMutation,
+    ExecuteModalWorkflowByNameMutationVariables
+  >(EXECUTE_MODAL_WORKFLOW_MUTATION);
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
+
+  const handleSort = (sortKey: SortedBy) => {
+    setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
+  };
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
@@ -410,12 +395,6 @@ const DeviceList: VoidFunctionComponent = () => {
     }
   };
 
-  const handleSortingChange = (sortedBy: SortedBy) => {
-    const newSorting = getSorting(sorting, sortedBy);
-    firstPage();
-    setSorting(newSorting);
-  };
-
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
     firstPage();
@@ -437,16 +416,16 @@ const DeviceList: VoidFunctionComponent = () => {
       return null;
     }
 
-    const { executeWorkflow } = callbackUtils.getCallbacks;
-
     return executeWorkflow({
-      input: values,
-      name: selectedWorkflow.name,
-      version: selectedWorkflow.version,
+      input: {
+        workflowName: selectedWorkflow.name,
+        workflowVersion: selectedWorkflow.version,
+        inputParameters: JSON.stringify(values),
+      },
     })
       .then((res) => {
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.text;
+        return res.data?.executeWorkflowByName;
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
@@ -577,12 +556,12 @@ const DeviceList: VoidFunctionComponent = () => {
               </Box>
               <DeviceTable
                 data-cy="device-table"
-                sorting={sorting}
                 devices={deviceData?.devices.edges}
                 areSelectedAll={areSelectedAll}
                 onSelectAll={handleSelectionOfAllDevices}
                 selectedDevices={selectedDevices}
-                onSortingClick={handleSortingChange}
+                orderBy={orderBy}
+                onSort={handleSort}
                 onInstallButtonClick={(deviceId) => installDevices([deviceId])}
                 onUninstallButtonClick={handleUninstallButtonClick}
                 onDeleteBtnClick={handleDeleteBtnClick}
