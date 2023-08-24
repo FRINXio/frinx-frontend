@@ -2082,6 +2082,13 @@ export type DeleteDeviceMutationVariables = Exact<{
 
 export type DeleteDeviceMutation = { __typename?: 'Mutation', deleteDevice: { __typename?: 'DeleteDevicePayload', device: { __typename?: 'Device', id: string } | null } };
 
+export type ExecuteModalWorkflowByNameMutationVariables = Exact<{
+  input: ExecuteWorkflowByName;
+}>;
+
+
+export type ExecuteModalWorkflowByNameMutation = { __typename?: 'Mutation', executeWorkflowByName: string | null };
+
 export type BlueprintQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;

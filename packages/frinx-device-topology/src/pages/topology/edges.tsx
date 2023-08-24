@@ -61,6 +61,7 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
             key={edge.id}
             isUnknown={isUnknown}
             isShortestPath={isShortestPath}
+            weight={null}
           />
         );
       })}
