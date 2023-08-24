@@ -139,37 +139,12 @@ const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
   }
 `;
 
-type SortedBy = 'name' | 'created';
+type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
-  sortedBy: SortedBy;
+  sortKey: SortedBy;
   direction: Direction;
 };
-
-function getSorting(sorting: Sorting | null, sortedBy: SortedBy): Sorting | null {
-  if (!sorting) {
-    return {
-      sortedBy,
-      direction: 'ASC',
-    };
-  }
-
-  if (sortedBy === sorting.sortedBy) {
-    if (sorting.direction === 'DESC') {
-      return null;
-    }
-
-    return {
-      ...sorting,
-      direction: 'DESC',
-    };
-  }
-
-  return {
-    sortedBy,
-    direction: 'ASC',
-  };
-}
 
 const Form = chakra('form');
 
@@ -178,11 +153,11 @@ const DeviceList: VoidFunctionComponent = () => {
   const deleteModalDisclosure = useDisclosure();
   const { addToastNotification } = useNotifications();
   const deleteSelectedDevicesModal = useDisclosure();
+  const [orderBy, setOrderBy] = useState<Sorting | null>(null);
   const [deviceIdToDelete, setDeviceIdToDelete] = useState<string | null>(null);
   const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
   const [selectedDevices, setSelectedDevices] = useState<Set<string>>(new Set());
-  const [sorting, setSorting] = useState<Sorting | null>(null);
   const [searchText, setSearchText] = useState<string | null>(null);
   const [deviceNameFilter, setDeviceNameFilter] = useState<string | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -192,12 +167,7 @@ const DeviceList: VoidFunctionComponent = () => {
     variables: {
       labels: selectedLabels.map((label) => label.label),
       deviceName: deviceNameFilter,
-      orderBy: sorting
-        ? {
-            sortKey: sorting.sortedBy === 'name' ? 'NAME' : 'CREATED_AT',
-            direction: sorting.direction,
-          }
-        : undefined,
+      orderBy,
       ...paginationArgs,
     },
     context,
@@ -214,6 +184,10 @@ const DeviceList: VoidFunctionComponent = () => {
   >(EXECUTE_MODAL_WORKFLOW_MUTATION);
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
+
+  const handleSort = (sortKey: SortedBy) => {
+    setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
+  };
 
   if ((isFetchingDevices && deviceData == null) || isFetchingLabels) {
     return (
@@ -421,12 +395,6 @@ const DeviceList: VoidFunctionComponent = () => {
     }
   };
 
-  const handleSortingChange = (sortedBy: SortedBy) => {
-    const newSorting = getSorting(sorting, sortedBy);
-    firstPage();
-    setSorting(newSorting);
-  };
-
   const handleSearchSubmit = (e: FormEvent) => {
     e.preventDefault();
     firstPage();
@@ -588,12 +556,12 @@ const DeviceList: VoidFunctionComponent = () => {
               </Box>
               <DeviceTable
                 data-cy="device-table"
-                sorting={sorting}
                 devices={deviceData?.devices.edges}
                 areSelectedAll={areSelectedAll}
                 onSelectAll={handleSelectionOfAllDevices}
                 selectedDevices={selectedDevices}
-                onSortingClick={handleSortingChange}
+                orderBy={orderBy}
+                onSort={handleSort}
                 onInstallButtonClick={(deviceId) => installDevices([deviceId])}
                 onUninstallButtonClick={handleUninstallButtonClick}
                 onDeleteBtnClick={handleDeleteBtnClick}
