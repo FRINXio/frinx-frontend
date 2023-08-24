@@ -138,7 +138,7 @@ const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
     executeWorkflowByName(input: $input)
   }
 `;
-        
+
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
