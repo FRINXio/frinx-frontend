@@ -49,12 +49,24 @@ const TASK_DEFINITIONS_QUERY = gql`
         node {
           id
           name
-          timeoutPolicy
           timeoutSeconds
-          responseTimeoutSeconds
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          description
           retryCount
+          pollTimeoutSeconds
+          inputKeys
+          outputKeys
+          inputTemplate
+          timeoutPolicy
           retryLogic
           retryDelaySeconds
+          responseTimeoutSeconds
+          concurrentExecLimit
+          rateLimitFrequencyInSeconds
+          rateLimitPerFrequency
           ownerEmail
         }
       }
@@ -91,10 +103,21 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
   }
 `;
 
+function filterNullProperties(obj: Record<string, unknown>): Record<string, unknown> {
+  const filteredObj: Record<string, unknown> = {};
+
+  Object.keys(obj).forEach((key) => {
+    if (Object.prototype.hasOwnProperty.call(obj, key) && obj[key] !== null) {
+      filteredObj[key] = obj[key];
+    }
+  });
+  return filteredObj;
+}
+
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
   const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);
-  const [task, setTask] = useState<TaskDefinition>();
+  const [task, setTask] = useState<Partial<TaskDefinition> | undefined>();
   const [keyword, setKeyword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const { addToastNotification } = useNotifications();
@@ -132,7 +155,9 @@ const TaskList = () => {
   };
 
   const handleTaskModal = (tsk: TaskDefinition) => {
-    setTask(tsk);
+    const filteredTaskData = filterNullProperties(tsk);
+
+    setTask(filteredTaskData);
     taskConfigModal.onOpen();
   };
 
