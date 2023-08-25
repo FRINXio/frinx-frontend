@@ -106,7 +106,7 @@ jobs:
             -e access_token="${{ secrets.ARGO_WF_NOTIFICATION_GH_TOKEN }}" \
             -e organisation=FRINXio \
             -e app_repo="frinx-frontend" \
-            -e git_sha="${{ github.event.pull_request.head.sha }}" \
+            -e git_sha="${{ steps.var.outputs.sha }}" \
             ghcr.io/sendible-labs/ci-github-notifier:stable
 
       - name: Print url
