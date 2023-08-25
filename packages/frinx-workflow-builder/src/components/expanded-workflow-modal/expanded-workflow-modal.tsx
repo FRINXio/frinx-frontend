@@ -16,15 +16,58 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { callbackUtils, Workflow, Task, getElementsFromWorkflow, convertTaskToExtendedTask } from '@frinx/shared';
+import { Workflow, Task, getElementsFromWorkflow, convertTaskToExtendedTask } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useMemo, useRef, useState } from 'react';
 import ReactFlow, { Background, BackgroundVariant, Controls, MiniMap, ReactFlowProvider } from 'react-flow-renderer';
 import { Link } from 'react-router-dom';
+import { gql, useQuery } from 'urql';
+import { convertWorkflowFragmentToClientWorkflow } from '../../helpers/convert';
 import { getLayoutedElements } from '../../helpers/layout.helpers';
+import { GetExpandedWorkflowsQuery, GetExpandedWorkflowsQueryVariables } from '../../__generated__/graphql';
 import BaseNode from '../workflow-nodes/base-node';
 import DecisionNode from '../workflow-nodes/decision-node';
 import StartEndNode from '../workflow-nodes/start-end-node';
+
+// TODO; can we somehow reuse WorkflwoFragment from root.tsx?
+// app wont build when try to use that one
+export const ExpandedWorkflowFragment = gql`
+  fragment ExpandedWorkflowFragment on Workflow {
+    id
+    name
+    description
+    version
+    createdAt
+    updatedAt
+    createdBy
+    updatedBy
+    tasks
+    hasSchedule
+    inputParameters
+    outputParameters {
+      key
+      value
+    }
+    restartable
+    timeoutSeconds
+    timeoutPolicy
+    ownerEmail
+    variables
+  }
+`;
+
+const EXPANDED_WORKFLOWS_MODAL = gql`
+  query GetExpandedWorkflows($filter: FilterWorkflowsInput) {
+    workflows(filter: $filter) {
+      edges {
+        node {
+          ...ExpandedWorkflowFragment
+        }
+      }
+    }
+  }
+  ${ExpandedWorkflowFragment}
+`;
 
 const nodeTypes = {
   decision: DecisionNode,
@@ -60,31 +103,38 @@ const ExpandedWorkflowDiagram: FC<{ workflow: Workflow<Task> }> = ({ workflow })
 };
 
 const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClose }) => {
-  const [workflowState, setWorkflowState] = useState<Workflow<Task> | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const ref = useRef<HTMLButtonElement | null>(null);
+  const [{ data: workflowsData }] = useQuery<GetExpandedWorkflowsQuery, GetExpandedWorkflowsQueryVariables>({
+    query: EXPANDED_WORKFLOWS_MODAL,
+    variables: {
+      filter: {
+        keyword: workflowName,
+      },
+    },
+  });
 
-  useEffect(() => {
-    const { getWorkflow } = callbackUtils.getCallbacks;
-    getWorkflow(workflowName, String(workflowVersion)).then((wf) => {
-      setWorkflowState(wf);
-    });
+  if (workflowsData?.workflows == null) {
+    return null;
+  }
 
-    return () => {
-      setWorkflowState(null);
-    };
-  }, [workflowName, workflowVersion]);
+  // we got from server all versions with workflowName, so we need filter the one with workflowVersion
+  const workflows = workflowsData.workflows.edges
+    .filter((e) => e.node.version === workflowVersion)
+    .map((e) => convertWorkflowFragmentToClientWorkflow(e.node));
 
-  return workflowState ? (
+  const [workflow] = workflows;
+
+  return (
     <>
       <Modal isOpen onClose={onClose} size="full" closeOnOverlayClick={false} isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{workflowState.name}</ModalHeader>
+          <ModalHeader>{workflow.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box height="81.97vh">
-              <ExpandedWorkflowDiagram workflow={workflowState} />
+              <ExpandedWorkflowDiagram workflow={workflow} />
             </Box>
           </ModalBody>
           <ModalFooter>
@@ -124,7 +174,7 @@ const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClo
                 colorScheme="blue"
                 marginLeft={3}
                 as={Link}
-                to={`../builder/${workflowState.name}/${workflowState.version}`}
+                to={`../builder/${workflow.name}/${workflow.version}`}
               >
                 Edit
               </Button>
@@ -133,7 +183,7 @@ const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClo
         </AlertDialogOverlay>
       </AlertDialog>
     </>
-  ) : null;
+  );
 };
 
 export default ExpandedWorkflowModal;
