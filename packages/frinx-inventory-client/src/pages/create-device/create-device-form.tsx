@@ -4,6 +4,8 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Grid,
+  GridItem,
   HStack,
   Input,
   Select,
@@ -11,7 +13,7 @@ import {
   Switch,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor } from '@frinx/shared';
@@ -40,7 +42,7 @@ type Props = {
 type FormValues = {
   name: string;
   zoneId: string;
-  mountParameters: string;
+  mountParameters: string | null;
   labelIds: string[];
   serviceState: DeviceServiceState;
   blueprintId: string | null;
@@ -53,25 +55,6 @@ type FormValues = {
   version: string;
   vendor: string;
   port: number;
-  blueprintParams?: string[];
-};
-
-const getWhenOptions = (keyName: string, errorMessage: string) => {
-  if (keyName === 'port_number') {
-    return {
-      is: (blueprintParams: string[]) => {
-        return blueprintParams.includes(keyName);
-      },
-      then: yup.number().required(errorMessage),
-    };
-  }
-
-  return {
-    is: (blueprintParams: string[]) => {
-      return blueprintParams.includes(keyName);
-    },
-    then: yup.string().required(errorMessage),
-  };
 };
 
 const deviceSchema = yup.object({
@@ -83,17 +66,11 @@ const deviceSchema = yup.object({
   blueprintParams: yup.array().of(yup.string()),
   address: yup.string(),
   blueprintId: yup.string().nullable(),
-  port: yup
-    .number()
-    .typeError('Number is required')
-    .min(0, 'Minimal value is 0')
-    .when('blueprintParams', getWhenOptions('port_number', 'Port number is required by the blueprint')),
-  deviceType: yup
-    .string()
-    .when('blueprintParams', getWhenOptions('device_type', 'Device type is required by the blueprint')),
-  version: yup.string().when('blueprintParams', getWhenOptions('version', 'Version is required by the blueprint')),
-  username: yup.string().when('blueprintParams', getWhenOptions('user', 'Username is required by the blueprint')),
-  password: yup.string().when('blueprintParams', getWhenOptions('password', 'Password is required by the blueprint')),
+  port: yup.number().typeError('Number is required').min(0, 'Minimal value is 0'),
+  deviceType: yup.string(),
+  version: yup.string(),
+  username: yup.string(),
+  password: yup.string(),
   deviceSize: yup.lazy((deviceSize) => {
     if (deviceSize === '') {
       return yup.string();
@@ -129,10 +106,6 @@ const INITIAL_VALUES: FormValues = {
   port: 0,
 };
 
-const isMountParamsEmpty = (value: string): boolean => {
-  return value === '' || value === '{}';
-};
-
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   deviceNameError,
   onFormSubmit,
@@ -142,6 +115,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   blueprints,
   isSubmitting,
 }) => {
+  const [blueprintParameterValues, setBlueprintParameterValues] = useState<Record<string, string>>({});
   const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
   const [isUsingBlueprints, setIsUsingBlueprints] = useState(false);
   const { errors, values, handleSubmit, handleChange, setFieldValue } = useFormik<FormValues>({
@@ -150,23 +124,20 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (data) => {
+      const blueprintParameters = parse(
+        blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
+      );
+
       const updatedData = {
         ...data,
         labelIds: selectedLabels.map((label) => label.value),
         port: Number(data.port),
-        mountParameters: isMountParamsEmpty(data.mountParameters) ? null : JSON.parse(data.mountParameters),
+        mountParameters: blueprintParameters(blueprintParameterValues),
       };
-      const { blueprintParams, ...rest } = updatedData;
-      onFormSubmit(rest);
+
+      onFormSubmit(updatedData);
     },
   });
-
-  useEffect(() => {
-    const blueprintParameters = parse(
-      blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
-    ).parameters.map(({ key }) => key);
-    setFieldValue('blueprintParams', blueprintParameters);
-  }, [blueprints, setFieldValue, values.blueprintId]);
 
   const handleLabelCreation = (labelName: Item) => {
     onLabelCreate(labelName.label).then((label) => {
@@ -181,6 +152,14 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       setSelectedLabels([...new Set(selectedItems)]);
     }
   };
+
+  const blueprintParameters = parse(
+    blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
+  ).parameters.map(({ key }) => key);
+
+  const isBlueprintValuesValid =
+    Object.keys(blueprintParameterValues).length === blueprintParameters.length &&
+    Object.values(blueprintParameterValues).every((value) => value !== '');
 
   return (
     <form onSubmit={handleSubmit}>
@@ -261,7 +240,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       </HStack>
 
       <HStack my={6} alignItems="start">
-        <FormControl isRequired={values.blueprintParams?.includes('device_type')}>
+        <FormControl>
           <FormLabel>Device type</FormLabel>
           <Input
             data-cy="add-device-type"
@@ -273,7 +252,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.deviceType}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isRequired={values.blueprintParams?.includes('version')}>
+        <FormControl>
           <FormLabel>Version</FormLabel>
           <Input
             data-cy="add-device-version"
@@ -287,7 +266,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       </HStack>
 
       <HStack my={6} alignItems="flex-start">
-        <FormControl isRequired={values.blueprintParams?.includes('user')}>
+        <FormControl>
           <FormLabel>Username</FormLabel>
           <Input
             data-cy="add-device-username"
@@ -299,7 +278,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.username}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isRequired={values.blueprintParams?.includes('password')}>
+        <FormControl>
           <FormLabel>Password</FormLabel>
           <Input
             data-cy="add-device-password"
@@ -313,7 +292,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       </HStack>
 
       <HStack my={6} alignItems="flex-start">
-        <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.address != null}>
+        <FormControl isInvalid={errors.address != null}>
           <FormLabel>Address / DNS</FormLabel>
           <Input
             data-cy="add-device-address"
@@ -324,7 +303,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           />
           <FormErrorMessage>{errors.address}</FormErrorMessage>
         </FormControl>
-        <FormControl isRequired={values.blueprintParams?.includes('user')} isInvalid={errors.port != null}>
+        <FormControl isInvalid={errors.port != null}>
           <FormLabel>Port</FormLabel>
           <Input data-cy="add-device-port" name="port" onChange={handleChange} placeholder="22" value={values.port} />
           <FormErrorMessage>{errors.port}</FormErrorMessage>
@@ -357,26 +336,49 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       </FormControl>
 
       {isUsingBlueprints ? (
-        <FormControl marginY={6}>
-          <Select
-            data-cy="add-device-blueprint"
-            name="blueprintId"
-            id="blueprintId"
-            placeholder="Select blueprint"
-            onChange={(e) => {
-              handleChange(e);
-            }}
-            value={values.blueprintId || ''}
-          >
-            {blueprints.map(({ node: blueprint }) => {
-              return (
-                <option key={blueprint.id} value={blueprint.id}>
-                  {blueprint.name}
-                </option>
-              );
-            })}
-          </Select>
-        </FormControl>
+        <>
+          <FormControl marginY={6}>
+            <Select
+              data-cy="add-device-blueprint"
+              name="blueprintId"
+              id="blueprintId"
+              placeholder="Select blueprint"
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              value={values.blueprintId || ''}
+            >
+              {blueprints.map(({ node: blueprint }) => {
+                return (
+                  <option key={blueprint.id} value={blueprint.id}>
+                    {blueprint.name}
+                  </option>
+                );
+              })}
+            </Select>
+          </FormControl>
+
+          <Grid templateColumns="repeat(3, 1fr)" gap={1.5}>
+            {blueprintParameters.map((key) => (
+              <GridItem>
+                <FormControl key={key} marginY={6} isRequired>
+                  <FormLabel>{key}</FormLabel>
+                  <Input
+                    name={key}
+                    onChange={(e) =>
+                      setBlueprintParameterValues((prev) => ({
+                        ...prev,
+                        [key]: e.target.value,
+                      }))
+                    }
+                    placeholder={key}
+                    value={blueprintParameterValues[key] ?? ''}
+                  />
+                </FormControl>
+              </GridItem>
+            ))}
+          </Grid>
+        </>
       ) : (
         <FormControl my={6}>
           <FormLabel data-cy="ace-editor">Mount parameters</FormLabel>
@@ -387,7 +389,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}
-            value={values.mountParameters}
+            value={values.mountParameters ?? ''}
           />
         </FormControl>
       )}
@@ -395,7 +397,13 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <Divider my={6} />
       <HStack mb={6}>
         <Spacer />
-        <Button data-cy="add-device-button" type="submit" colorScheme="blue" isLoading={isSubmitting}>
+        <Button
+          data-cy="add-device-button"
+          type="submit"
+          colorScheme="blue"
+          isLoading={isSubmitting}
+          isDisabled={!isBlueprintValuesValid}
+        >
           Add device
         </Button>
       </HStack>

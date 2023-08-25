@@ -14,7 +14,7 @@ import {
   Select,
   Spacer,
 } from '@chakra-ui/react';
-import { Editor } from '@frinx/shared';
+import { Editor, jsonParse } from '@frinx/shared';
 
 import { Device, DeviceSizeEnum, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
 import { DeviceServiceState, Label, LabelsQuery, ZonesQuery, DeviceSize } from '../../__generated__/graphql';
@@ -22,7 +22,7 @@ import SearchByLabelInput from '../../components/search-by-label-input';
 
 type FormValues = {
   zoneId: string;
-  mountParameters: string;
+  mountParameters: string | null;
   labelIds: string[];
   serviceState: DeviceServiceState;
   deviceSize: DeviceSize;
@@ -66,10 +66,6 @@ const EditDeviceFormSchema = yup.object().shape({
   }),
 });
 
-const isMountParamsEmpty = (value: string): boolean => {
-  return value === '' || value === '{}';
-};
-
 const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel }): JSX.Element => {
   const INITIAL_VALUES = useMemo(() => {
     return {
@@ -96,9 +92,12 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
         const updatedData = {
           ...data,
           labelIds: selectedLabels.map((label) => label.value),
-          mountParameters: isMountParamsEmpty(data.mountParameters) ? null : JSON.parse(data.mountParameters),
+          mountParameters: jsonParse(data.mountParameters) ?? null,
         };
-        onUpdate(updatedData);
+        onUpdate({
+          ...updatedData,
+          mountParameters: JSON.stringify(updatedData.mountParameters),
+        });
         setSubmitting(false);
       },
     });
@@ -211,9 +210,9 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           width="100%"
           language="json"
           onChange={(value) => {
-            setFieldValue('mountParameters', value);
+            setFieldValue('mountParameters', JSON.stringify(value));
           }}
-          value={values.mountParameters}
+          value={jsonParse(values.mountParameters) ?? ''}
         />
       </FormControl>
 
