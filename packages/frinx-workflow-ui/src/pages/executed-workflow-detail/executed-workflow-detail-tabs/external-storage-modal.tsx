@@ -13,11 +13,20 @@ import {
   Text,
   Textarea,
 } from '@chakra-ui/react';
-import React, { VoidFunctionComponent, useState, useEffect } from 'react';
+import React, { VoidFunctionComponent, useState } from 'react';
 import FeatherIcon from 'feather-icons-react';
 import unescapeJs from 'unescape-js';
-import { callbackUtils } from '@frinx/shared';
+import { gql, useQuery } from 'urql';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
+import { ExternalStorageQuery, ExternalStorageQueryVariables } from '../../../__generated__/graphql';
+
+const EXTERNAL_STORAGE = gql`
+  query ExternalStorage($path: String!) {
+    externalStorage(path: $path) {
+      data
+    }
+  }
+`;
 
 type Props = {
   storagePath: string;
@@ -27,23 +36,24 @@ type Props = {
 };
 
 const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, storagePath, title }) => {
-  const [payload, setPayload] = useState<string | null>(null);
-  const [isEscaped, setIsEscaped] = useState(false);
+  const [{ data }] = useQuery<ExternalStorageQuery, ExternalStorageQueryVariables>({
+    query: EXTERNAL_STORAGE,
+    variables: {
+      path: storagePath,
+    },
+  });
 
-  useEffect(() => {
-    const { getExternalStorage } = callbackUtils.getCallbacks;
-    getExternalStorage(storagePath).then((res) => {
-      setPayload(JSON.stringify(res, null, 2));
-    });
-  }, [storagePath]);
+  const [isEscaped, setIsEscaped] = useState(false);
 
   const handleEscapeChange = () => {
     setIsEscaped((prev) => !prev);
   };
 
-  if (!payload) {
+  if (!data) {
     return null;
   }
+
+  const payload = data.externalStorage?.data ?? '';
 
   const value = isEscaped ? payload : unescapeJs(payload);
 
