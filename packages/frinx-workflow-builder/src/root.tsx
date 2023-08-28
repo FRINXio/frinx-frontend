@@ -52,6 +52,8 @@ export const WorkflowFragment = gql`
     restartable
     timeoutSeconds
     timeoutPolicy
+    ownerEmail
+    variables
   }
 `;
 

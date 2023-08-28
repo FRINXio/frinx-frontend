@@ -27,8 +27,10 @@ jobs:
       - name: Create image tag
         id: var
         run: |
+          sha=$(git rev-parse HEAD)
           calculatedSha=$(git rev-parse --short HEAD)
           latestVersion=$(git describe --tags --abbrev=0 --match="v[0-9]*" | sed -e 's/^v//')
+          echo "sha=$sha" >> $GITHUB_OUTPUT
           echo "short_sha=$calculatedSha" >> $GITHUB_OUTPUT
           echo "image_tag=$latestVersion-$calculatedSha" >> $GITHUB_OUTPUT
 
@@ -65,12 +67,12 @@ jobs:
           --header 'Authorization: ${{ secrets.ARGO_EVENT_SECRET }}' \
           --header 'Content-Type: application/json' \
           --data-raw '{
-              "title": "${{ github.event.pull_request.title }}",
-              "pr_number": "${{ github.event.number }}",
+              "title": "",
+              "pr_number": "${{ github.run_id }}",
               "event": "${{ github.event_name }}",
               "repository": "${{ github.event.repository.name }}",
               "owner": "${{ github.repository_owner }}",
-              "commit": "${{ github.event.pull_request.head.sha }}",
+              "commit": "${{ steps.var.outputs.sha }}",
               "commit_short": "${{ steps.var.outputs.short_sha }}",
               "ref": "${{ github.ref }}",
               "head": "${{ github.head_ref }}",
@@ -104,7 +106,7 @@ jobs:
             -e access_token="${{ secrets.ARGO_WF_NOTIFICATION_GH_TOKEN }}" \
             -e organisation=FRINXio \
             -e app_repo="frinx-frontend" \
-            -e git_sha="${{ github.event.pull_request.head.sha }}" \
+            -e git_sha="${{ steps.var.outputs.sha }}" \
             ghcr.io/sendible-labs/ci-github-notifier:stable
 
       - name: Print url
