@@ -14,7 +14,7 @@ import { Editor, jsonParse, TaskDefinition } from '@frinx/shared';
 
 type TaskConfigModalProps = {
   isOpen: boolean;
-  task: TaskDefinition;
+  task: Partial<TaskDefinition>;
   onClose: () => void;
 };
 

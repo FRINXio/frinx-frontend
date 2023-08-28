@@ -624,6 +624,11 @@ export type ExecutedWorkflowsOrderByInput = {
   sortKey: SortExecutedWorkflowsBy;
 };
 
+export type ExternaStorage = {
+  __typename?: 'ExternaStorage';
+  data: Scalars['String'];
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
@@ -1220,6 +1225,7 @@ export type Query = {
   eventHandlers: Maybe<EventHandlerConnection>;
   eventHandlersByEvent: Maybe<EventHandlerConnection>;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
+  externalStorage: Maybe<ExternaStorage>;
   labels: LabelConnection;
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
@@ -1310,6 +1316,11 @@ export type QueryExecutedWorkflowsArgs = {
   orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+};
+
+
+export type QueryExternalStorageArgs = {
+  path: Scalars['String'];
 };
 
 
@@ -1979,6 +1990,13 @@ export type UpdateEventHandlerMutationVariables = Exact<{
 
 export type UpdateEventHandlerMutation = { __typename?: 'Mutation', updateEventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null };
 
+export type ExternalStorageQueryVariables = Exact<{
+  path: Scalars['String'];
+}>;
+
+
+export type ExternalStorageQuery = { __typename?: 'Query', externalStorage: { __typename?: 'ExternaStorage', data: string } | null };
+
 export type ExecutedWorkflowDetailQueryVariables = Exact<{
   nodeId: Scalars['ID'];
 }>;
@@ -2180,7 +2198,7 @@ export type TaskDefinitionsQueryVariables = Exact<{
 }>;
 
 
-export type TaskDefinitionsQuery = { __typename?: 'Query', taskDefinitions: { __typename?: 'TaskDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', id: string, name: string, timeoutPolicy: TaskTimeoutPolicy | null, timeoutSeconds: number, responseTimeoutSeconds: number | null, retryCount: number | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, ownerEmail: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+export type TaskDefinitionsQuery = { __typename?: 'Query', taskDefinitions: { __typename?: 'TaskDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', id: string, name: string, timeoutSeconds: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, description: string | null, retryCount: number | null, pollTimeoutSeconds: number | null, inputKeys: Array<string> | null, outputKeys: Array<string> | null, inputTemplate: string | null, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, concurrentExecLimit: number | null, rateLimitFrequencyInSeconds: number | null, rateLimitPerFrequency: number | null, ownerEmail: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 export type DeleteTaskMutationVariables = Exact<{
   name: Scalars['String'];
