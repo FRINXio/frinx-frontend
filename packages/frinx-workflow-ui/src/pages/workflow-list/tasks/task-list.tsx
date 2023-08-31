@@ -3,6 +3,7 @@ import { omitNullValue, usePagination, Pagination, TaskDefinition, useNotificati
 import FeatherIcon from 'feather-icons-react';
 import { gql, useMutation, useQuery } from 'urql';
 import React, { useMemo, useState } from 'react';
+import { omitBy, isNull } from 'lodash';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
@@ -49,12 +50,24 @@ const TASK_DEFINITIONS_QUERY = gql`
         node {
           id
           name
-          timeoutPolicy
           timeoutSeconds
-          responseTimeoutSeconds
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          description
           retryCount
+          pollTimeoutSeconds
+          inputKeys
+          outputKeys
+          inputTemplate
+          timeoutPolicy
           retryLogic
           retryDelaySeconds
+          responseTimeoutSeconds
+          concurrentExecLimit
+          rateLimitFrequencyInSeconds
+          rateLimitPerFrequency
           ownerEmail
         }
       }
@@ -94,7 +107,7 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
   const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);
-  const [task, setTask] = useState<TaskDefinition>();
+  const [task, setTask] = useState<Partial<TaskDefinition> | undefined>();
   const [keyword, setKeyword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const { addToastNotification } = useNotifications();
@@ -132,7 +145,9 @@ const TaskList = () => {
   };
 
   const handleTaskModal = (tsk: TaskDefinition) => {
-    setTask(tsk);
+    const filteredTaskData = omitBy(tsk, isNull);
+
+    setTask(filteredTaskData);
     taskConfigModal.onOpen();
   };
 
