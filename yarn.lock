@@ -2855,8 +2855,8 @@ __metadata:
     "@frinx/workflow-ui": "workspace:^"
     "@frinxio/gamma": 0.0.30
     "@types/node": 16.18.41
-    "@types/react": 17.0.53
-    "@types/react-dom": 18.0.11
+    "@types/react": 17.0.65
+    "@types/react-dom": 18.2.7
     "@types/url-join": 4.0.1
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
@@ -2903,8 +2903,8 @@ __metadata:
     "@graphql-codegen/introspection": 2.2.3
     "@graphql-codegen/typescript": 2.8.8
     "@graphql-codegen/typescript-operations": 2.5.13
-    "@types/react": 17.0.53
-    "@types/react-dom": 18.0.11
+    "@types/react": 17.0.65
+    "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
     "@urql/exchange-retry": 1.0.0
@@ -3033,8 +3033,8 @@ __metadata:
     "@graphql-codegen/typescript": 2.8.8
     "@graphql-codegen/typescript-operations": 2.5.13
     "@types/json-templates": 3.0.0
-    "@types/react": 17.0.53
-    "@types/react-dom": 18.0.11
+    "@types/react": 17.0.65
+    "@types/react-dom": 18.2.7
     "@types/xterm": ^3.0.0
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
@@ -3091,8 +3091,8 @@ __metadata:
     "@graphql-codegen/introspection": 2.2.3
     "@graphql-codegen/typescript": 2.8.8
     "@graphql-codegen/typescript-operations": 2.5.13
-    "@types/react": 17.0.53
-    "@types/react-dom": 18.0.11
+    "@types/react": 17.0.65
+    "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
     "@urql/exchange-retry": 1.0.0
@@ -3140,8 +3140,8 @@ __metadata:
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 19.0.4-build.1
     "@monaco-editor/react": ^4.5.1
-    "@types/react": 17.0.53
-    "@types/react-dom": 18.0.11
+    "@types/react": 17.0.65
+    "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
     chakra-ui-autocomplete: ^1.4.5
@@ -3197,8 +3197,8 @@ __metadata:
     "@graphql-codegen/typescript-operations": 2.5.13
     "@types/dagre": 0.7.49
     "@types/file-saver": 2.0.5
-    "@types/react": 17.0.53
-    "@types/react-dom": 18.0.11
+    "@types/react": 17.0.65
+    "@types/react-dom": 18.2.7
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
@@ -4944,23 +4944,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:18.0.11":
-  version: 18.0.11
-  resolution: "@types/react-dom@npm:18.0.11"
+"@types/react-dom@npm:18.2.7":
+  version: 18.2.7
+  resolution: "@types/react-dom@npm:18.2.7"
   dependencies:
     "@types/react": "*"
-  checksum: 579691e4d5ec09688087568037c35edf8cfb1ab3e07f6c60029280733ee7b5c06d66df6fcc90786702c93ac8cb13bc7ff16c79ddfc75d082938fbaa36e1cdbf4
+  checksum: e02ea908289a7ad26053308248d2b87f6aeafd73d0e2de2a3d435947bcea0422599016ffd1c3e38ff36c42f5e1c87c7417f05b0a157e48649e4a02f21727d54f
   languageName: node
   linkType: hard
 
-"@types/react@npm:17.0.53":
-  version: 17.0.53
-  resolution: "@types/react@npm:17.0.53"
+"@types/react@npm:17.0.65":
+  version: 17.0.65
+  resolution: "@types/react@npm:17.0.65"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: dacfde02c260fd98bed2eb775ed0c7ce1397be4c0844f907a50763b081a4008f81f57071889a16eb1350ddcf0927f3cf1a6541702c8ad03de3c70383ef931e3f
+  checksum: bb862f0f97a49e690cd5c62743307d17398ee62b87bbb2c85c1b01cb992244c0aef4ecdedaab0e8d33c6315d5a8f067cf90e7f1c366b8819678c59204e202932
   languageName: node
   linkType: hard
 
