@@ -102,13 +102,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-react@npm:1.5.10":
-  version: 1.5.10
-  resolution: "@azure/msal-react@npm:1.5.10"
+"@azure/msal-react@npm:1.5.11":
+  version: 1.5.11
+  resolution: "@azure/msal-react@npm:1.5.11"
   peerDependencies:
-    "@azure/msal-browser": ^2.38.1
+    "@azure/msal-browser": ^2.38.2
     react: ^16.8.0 || ^17 || ^18
-  checksum: 58ce1995bb4162bf49d90e0d46f406785c0ab93abd24cd0303c99e6395405e07c369b6b69d284bf9442f6473150ca32de8d75710d75ed94a4ebd02f1e0d973d8
+  checksum: 2eed574ad6b723c1dbe40f5c36eba264b99219c49dae7e08d090bab24773fb93c0ba93792135cae29b33d7d64b4c94f0e3672ee170ecd719a7bae40a71724fee
   languageName: node
   linkType: hard
 
@@ -2865,7 +2865,7 @@ __metadata:
   dependencies:
     "@azure/msal-browser": 2.34.0
     "@azure/msal-common": 6.4.0
-    "@azure/msal-react": 1.5.10
+    "@azure/msal-react": 1.5.11
     "@chakra-ui/react": 2.8.0
     "@chakra-ui/system": 2.6.0
     "@emotion/react": 11.11.0
