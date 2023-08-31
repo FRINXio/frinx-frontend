@@ -12,7 +12,7 @@ export type Device = {
   host: string | null;
   zone: Zone;
   serviceState: ServiceState;
-  mountParameters: string;
+  mountParameters: string | null;
   deviceSize: DeviceSize;
 };
 

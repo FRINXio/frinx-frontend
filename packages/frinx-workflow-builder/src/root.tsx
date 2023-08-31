@@ -52,6 +52,8 @@ export const WorkflowFragment = gql`
     restartable
     timeoutSeconds
     timeoutPolicy
+    ownerEmail
+    variables
   }
 `;
 
@@ -233,7 +235,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
     const file = new Blob([arrayBuffer], { type: 'application/octet-stream' });
-    saveAs(file, `${wf.name}.json`);
+    saveAs(file, `${wf.name}_v${wf.version}.json`);
   };
 
   const handleWorkflowClone = async (wf: ClientWorkflow, wfName: string) => {

@@ -1,9 +1,9 @@
 import { Button, Container, Flex, Icon, Input, InputGroup, InputLeftElement, useDisclosure } from '@chakra-ui/react';
 import { omitNullValue, usePagination, Pagination, TaskDefinition, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import { orderBy } from 'lodash';
 import { gql, useMutation, useQuery } from 'urql';
 import React, { useMemo, useState } from 'react';
+import { omitBy, isNull } from 'lodash';
 import AddTaskModal from './add-task-modal';
 import TaskConfigModal from './task-modal';
 import TaskTable from './task-table';
@@ -14,6 +14,8 @@ import {
   DeleteTaskMutationVariables,
   TaskDefinitionsQuery,
   TaskDefinitionsQueryVariables,
+  TasksOrderByInput,
+  SortTasksBy,
 } from '../../../__generated__/graphql';
 
 const taskDefinition: TaskDefinition = {
@@ -35,18 +37,37 @@ const taskDefinition: TaskDefinition = {
 };
 
 const TASK_DEFINITIONS_QUERY = gql`
-  query TaskDefinitions($filter: FilterTaskDefinitionsInput, $before: String, $last: Int, $after: String, $first: Int) {
-    taskDefinitions(filter: $filter, before: $before, last: $last, after: $after, first: $first) {
+  query TaskDefinitions(
+    $filter: FilterTaskDefinitionsInput
+    $orderBy: TasksOrderByInput
+    $before: String
+    $last: Int
+    $after: String
+    $first: Int
+  ) {
+    taskDefinitions(filter: $filter, orderBy: $orderBy, before: $before, last: $last, after: $after, first: $first) {
       edges {
         node {
           id
           name
-          timeoutPolicy
           timeoutSeconds
-          responseTimeoutSeconds
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          description
           retryCount
+          pollTimeoutSeconds
+          inputKeys
+          outputKeys
+          inputTemplate
+          timeoutPolicy
           retryLogic
           retryDelaySeconds
+          responseTimeoutSeconds
+          concurrentExecLimit
+          rateLimitFrequencyInSeconds
+          rateLimitPerFrequency
           ownerEmail
         }
       }
@@ -85,8 +106,8 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
 
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
-  const [sorted, setSorted] = useState(false);
-  const [task, setTask] = useState<TaskDefinition>();
+  const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);
+  const [task, setTask] = useState<Partial<TaskDefinition> | undefined>();
   const [keyword, setKeyword] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const { addToastNotification } = useNotifications();
@@ -101,6 +122,7 @@ const TaskList = () => {
       filter: {
         keyword,
       },
+      orderBy,
     },
   });
 
@@ -118,10 +140,14 @@ const TaskList = () => {
     CREATE_TASK_DEFINITION_MUTATION,
   );
 
-  const sortedTasks = taskDefinitions.sort((a, b) => a.name.localeCompare(b.name)) || [].filter(omitNullValue);
+  const handleSort = (value: SortTasksBy) => {
+    setOrderBy({ sortKey: value, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
+  };
 
   const handleTaskModal = (tsk: TaskDefinition) => {
-    setTask(tsk);
+    const filteredTaskData = omitBy(tsk, isNull);
+
+    setTask(filteredTaskData);
     taskConfigModal.onOpen();
   };
 
@@ -150,12 +176,6 @@ const TaskList = () => {
           content: err?.message,
         });
       });
-  };
-
-  const sortArray = (key: string) => {
-    const sortedArray = sorted ? orderBy(sortedTasks, [key], ['desc']) : orderBy(sortedTasks, [key], ['asc']);
-    setSorted(!sorted);
-    return sortedArray;
   };
 
   const addTask = (tsk: TaskDefinition) => {
@@ -214,7 +234,7 @@ const TaskList = () => {
         task={taskDefinition}
       />
       {task && <TaskConfigModal isOpen={taskConfigModal.isOpen} onClose={taskConfigModal.onClose} task={task} />}
-      <Flex marginBottom={8}>
+      <Flex justify="space-between" gap="20px" marginBottom={8}>
         <InputGroup>
           <InputLeftElement>
             <Icon size={20} as={FeatherIcon} icon="Search" color="grey" />
@@ -226,9 +246,8 @@ const TaskList = () => {
             background="white"
           />
         </InputGroup>
-        <Flex gap={2}>
+        <Flex gap={1}>
           <Button
-            marginLeft={4}
             colorScheme="blue"
             onClick={() => {
               setKeyword(searchTerm);
@@ -237,7 +256,6 @@ const TaskList = () => {
             Search
           </Button>
           <Button
-            marginLeft={4}
             colorScheme="red"
             variant="outline"
             onClick={() => {
@@ -247,17 +265,18 @@ const TaskList = () => {
           >
             Reset
           </Button>
-          <Button marginLeft={4} colorScheme="blue" variant="outline" onClick={addTaskModal.onOpen}>
+          <Button colorScheme="blue" variant="outline" onClick={addTaskModal.onOpen}>
             New
           </Button>
         </Flex>
       </Flex>
 
       <TaskTable
-        tasks={sortedTasks}
+        tasks={taskDefinitions}
         onTaskConfigClick={handleTaskModal}
         onTaskDelete={handleDeleteTask}
-        sortArray={sortArray}
+        onSort={handleSort}
+        orderBy={orderBy}
       />
       {taskData && (
         <Pagination

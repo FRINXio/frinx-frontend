@@ -5,11 +5,17 @@ import SearchByTagInput from './components/search-by-tag/search-by-tag-input';
 import ToastNotification from './components/toast-notification/toast-notification';
 import ExecuteWorkflowModal from './components/execute-workflow-modal/execute-workflow-modal';
 import unwrap from './helpers/unwrap';
+import {
+  getDynamicInputParametersFromWorkflow,
+  getInitialValuesFromParsedInputParameters,
+  parseInputParameters,
+} from './helpers/workflow.helpers';
 import type { TagsInputReturnType } from './hooks/use-tags-input';
-import ExecuteWorkflowModalFormInput from './components/execute-workflow-modal/execute-workflow-modal-form-input';
+import ExecuteWorkflowModalFormInput from './components/workflow-inputs-form/workflow-form-input';
 import Pagination from './components/pagination/pagination';
 import ConfirmDeleteModal from './components/confirm-delete-modal/confirm-delete-modal';
 import SelectItemsPerPage from './components/select-items-per-page/select-items-per-page';
+import WorkflowInputsForm from './components/workflow-inputs-form/workflow-inputs-form';
 
 export * from './helpers/workflow-api.types';
 export * from './helpers/workflow.helpers';
@@ -32,4 +38,8 @@ export {
   ExecuteWorkflowModalFormInput,
   Pagination,
   ConfirmDeleteModal,
+  WorkflowInputsForm,
+  getDynamicInputParametersFromWorkflow,
+  getInitialValuesFromParsedInputParameters as getAvailableInputParamsOfWorkflow,
+  parseInputParameters,
 };

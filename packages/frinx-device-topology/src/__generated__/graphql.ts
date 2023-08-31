@@ -616,6 +616,11 @@ export type ExecutedWorkflowTaskStatus =
   | 'SKIPPED'
   | 'TIMED_OUT';
 
+export type ExecutedWorkflowsOrderByInput = {
+  direction: SortExecutedWorkflowsDirection;
+  sortKey: SortExecutedWorkflowsBy;
+};
+
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']>;
   labels?: InputMaybe<Array<Scalars['String']>>;
@@ -625,6 +630,7 @@ export type FilterEventHandlerInput = {
   evaluatorType?: InputMaybe<Scalars['String']>;
   event?: InputMaybe<Scalars['String']>;
   isActive?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type FilterPollDataInput = {
@@ -662,6 +668,7 @@ export type GraphEdge = {
   id: Scalars['ID'];
   source: EdgeSourceTarget;
   target: EdgeSourceTarget;
+  weight: Maybe<Scalars['Int']>;
 };
 
 export type GraphEdgeStatus =
@@ -1106,10 +1113,16 @@ export type NetNode = {
   nodeId: Scalars['String'];
 };
 
-export type NetRoutingPaths = {
-  __typename?: 'NetRoutingPaths';
-  alternativePaths: Array<Array<Scalars['String']>>;
-  shortestPath: Array<Scalars['String']>;
+export type NetRoutingPathNode = {
+  __typename?: 'NetRoutingPathNode';
+  nodes: Array<NetRoutingPathNodeInfo>;
+  weight: Maybe<Scalars['Int']>;
+};
+
+export type NetRoutingPathNodeInfo = {
+  __typename?: 'NetRoutingPathNodeInfo';
+  name: Maybe<Scalars['String']>;
+  weight: Maybe<Scalars['Int']>;
 };
 
 export type NetTopology = {
@@ -1218,7 +1231,7 @@ export type Query = {
   pollData: Maybe<PollDataConnection>;
   pools: PoolConnection;
   schedules: ScheduleConnection;
-  shortestPath: Maybe<NetRoutingPaths>;
+  shortestPath: Array<NetRoutingPathNode>;
   taskDefinitions: TaskDefinitionConnection;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -1297,6 +1310,7 @@ export type QueryEventHandlersByEventArgs = {
 
 
 export type QueryExecutedWorkflowsArgs = {
+  orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
 };
@@ -1395,6 +1409,7 @@ export type QueryWorkflowsArgs = {
   filter?: InputMaybe<FilterWorkflowsInput>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
+  orderBy: WorkflowsOrderByInput;
 };
 
 
@@ -1501,6 +1516,17 @@ export type SortDirection =
   | 'ASC'
   | 'DESC';
 
+export type SortExecutedWorkflowsBy =
+  | 'endTime'
+  | 'startTime'
+  | 'status'
+  | 'workflowId'
+  | 'workflowName';
+
+export type SortExecutedWorkflowsDirection =
+  | 'asc'
+  | 'desc';
+
 export type SortPollsBy =
   | 'lastPollTime'
   | 'queueName'
@@ -1509,6 +1535,9 @@ export type SortPollsBy =
 export type SortPollsDirection =
   | 'asc'
   | 'desc';
+
+export type SortWorkflowsBy =
+  | 'name';
 
 export type StartWorkflowRequestInput = {
   workflow: ExecuteNewWorkflowInput;
@@ -1554,7 +1583,7 @@ export type Tag = {
 export type TaskDefinition = Node & {
   __typename?: 'TaskDefinition';
   concurrentExecLimit: Maybe<Scalars['Int']>;
-  createTime: Maybe<Scalars['String']>;
+  createdAt: Maybe<Scalars['String']>;
   createdBy: Maybe<Scalars['String']>;
   description: Maybe<Scalars['String']>;
   id: Scalars['ID'];
@@ -1572,7 +1601,7 @@ export type TaskDefinition = Node & {
   retryLogic: Maybe<RetryLogic>;
   timeoutPolicy: Maybe<TaskTimeoutPolicy>;
   timeoutSeconds: Scalars['Int'];
-  updateTime: Maybe<Scalars['String']>;
+  updatedAt: Maybe<Scalars['String']>;
   updatedBy: Maybe<Scalars['String']>;
 };
 
@@ -1826,6 +1855,11 @@ export type WorkflowTaskType =
   | 'USER_DEFINED'
   | 'WAIT';
 
+export type WorkflowsOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortWorkflowsBy;
+};
+
 export type Zone = Node & {
   __typename?: 'Zone';
   createdAt: Scalars['String'];
@@ -1870,7 +1904,7 @@ export type ShortestPathQueryVariables = Exact<{
 }>;
 
 
-export type ShortestPathQuery = { __typename?: 'Query', shortestPath: { __typename?: 'NetRoutingPaths', shortestPath: Array<string>, alternativePaths: Array<Array<string>> } | null };
+export type ShortestPathQuery = { __typename?: 'Query', shortestPath: Array<{ __typename?: 'NetRoutingPathNode', weight: number | null, nodes: Array<{ __typename?: 'NetRoutingPathNodeInfo', weight: number | null, name: string | null }> }> };
 
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;
@@ -1896,7 +1930,7 @@ export type TopologyQuery = { __typename?: 'Query', topology: { __typename?: 'To
 export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NetTopologyQuery = { __typename?: 'Query', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };
+export type NetTopologyQuery = { __typename?: 'Query', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null };
 
 export type TopologyVersionDataQueryVariables = Exact<{
   version: Scalars['String'];
