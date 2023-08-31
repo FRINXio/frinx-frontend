@@ -625,6 +625,7 @@ type GraphEdge {
   id: ID!
   source: EdgeSourceTarget!
   target: EdgeSourceTarget!
+  weight: Int
 }
 
 enum GraphEdgeStatus {
@@ -790,9 +791,14 @@ type NetNode {
   nodeId: String!
 }
 
-type NetRoutingPaths {
-  alternativePaths: [[String!]!]!
-  shortestPath: [String!]!
+type NetRoutingPathNode {
+  nodes: [NetRoutingPathNodeInfo!]!
+  weight: Int
+}
+
+type NetRoutingPathNodeInfo {
+  name: String
+  weight: Int
 }
 
 type NetTopology {
@@ -931,13 +937,14 @@ type Query {
     resourceTypeId: String
   ): PoolConnection!
   schedules(after: String, before: String, filter: ScheduleFilterInput, first: Int, last: Int): ScheduleConnection!
-  shortestPath(from: String!, to: String!): NetRoutingPaths
+  shortestPath(from: String!, to: String!): [NetRoutingPathNode!]!
   taskDefinitions(
     after: String
     before: String
     filter: FilterTaskDefinitionsInput
     first: Int
     last: Int
+    orderBy: TasksOrderByInput
   ): TaskDefinitionConnection!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
@@ -1054,10 +1061,8 @@ type Snapshot {
 
 enum SortDeviceBy {
   createdAt
-  isInstalled
   name
   serviceState
-  zone
 }
 
 enum SortDirection {
@@ -1094,6 +1099,15 @@ enum SortPollsBy {
 enum SortPollsDirection {
   asc
   desc
+}
+
+enum SortTasksBy {
+  name
+  responseTimeoutSeconds
+  retryCount
+  retryLogic
+  timeoutPolicy
+  timeoutSeconds
 }
 
 enum SortWorkflowsBy {
@@ -1181,6 +1195,11 @@ enum TaskTimeoutPolicy {
   ALERT_ONLY
   RETRY
   TIME_OUT_WF
+}
+
+input TasksOrderByInput {
+  direction: SortDirection!
+  sortKey: SortTasksBy!
 }
 
 input TerminateWorkflowInput {
@@ -1302,12 +1321,15 @@ type Workflow implements Node {
   inputParameters: [String!]
   name: String!
   outputParameters: [OutputParameter!]
+  ownerEmail: String
   restartable: Boolean
+  schemaVersion: Int
   tasks: String
   timeoutPolicy: TimeoutPolicy
   timeoutSeconds: Int!
   updatedAt: String
   updatedBy: String
+  variables: String
   version: Int
 }
 
