@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@chakra-ui/react": "2.8.0",
-    "@emotion/react": "11.11.0",
+    "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "workspace:^",
     "@frinx/eslint-config-typescript": "19.0.4-build.1",
