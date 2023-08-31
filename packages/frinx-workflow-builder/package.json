@@ -23,8 +23,8 @@
   "dependencies": {
     "@frinx/shared": "workspace:^",
     "@types/file-saver": "2.0.5",
-    "@types/react": "17.0.53",
-    "@types/react-dom": "18.0.11",
+    "@types/react": "17.0.65",
+    "@types/react-dom": "18.2.7",
     "@types/uuid": "9.0.2",
     "@urql/exchange-multipart-fetch": "1.0.1",
     "@urql/exchange-retry": "1.0.0",
@@ -41,7 +41,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@chakra-ui/react": "2.5.1",
+    "@chakra-ui/react": "2.8.0",
     "@emotion/react": "11.11.0",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "workspace:^",
