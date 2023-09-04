@@ -1,6 +1,6 @@
 overwrite: true
 schema:
-  - 'https://localhost:8001/graphql'
+  - 'https://127.0.0.1:8001/graphql'
 documents:
   - './src/**/*.tsx'
   - './src/**/*.ts'
