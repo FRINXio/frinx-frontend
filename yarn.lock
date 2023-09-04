@@ -5,6 +5,18 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@0no-co/graphql.web@npm:^1.0.1":
+  version: 1.0.4
+  resolution: "@0no-co/graphql.web@npm:1.0.4"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  peerDependenciesMeta:
+    graphql:
+      optional: true
+  checksum: d415fb2f063a024e2d382e8dc5e66929d0d9bf94f2c22e03cde201dc2fa03e15d21274dbe5c23a26ce016a4cac3db93ad99fb454de76fd94bc1600fd7062eebe
+  languageName: node
+  linkType: hard
+
 "@4tw/cypress-drag-drop@npm:^2.2.3":
   version: 2.2.3
   resolution: "@4tw/cypress-drag-drop@npm:2.2.3"
@@ -3298,7 +3310,7 @@ __metadata:
     "@types/xterm": ^3.0.0
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
-    "@urql/exchange-multipart-fetch": 1.0.1
+    "@urql/exchange-multipart-fetch": 1.1.0
     "@urql/exchange-retry": 1.0.0
     chakra-ui-autocomplete: ^1.4.5
     date-fns: ^2.29.3
@@ -3462,7 +3474,7 @@ __metadata:
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 5.54.1
     "@typescript-eslint/parser": 5.54.1
-    "@urql/exchange-multipart-fetch": 1.0.1
+    "@urql/exchange-multipart-fetch": 1.1.0
     "@urql/exchange-retry": 1.0.0
     dagre: 0.8.5
     eslint: 8.48.0
@@ -3516,7 +3528,7 @@ __metadata:
     "@graphql-codegen/typescript": 4.0.1
     "@graphql-codegen/typescript-operations": 4.0.1
     "@types/unescape-js": ^1.0.0
-    "@urql/exchange-multipart-fetch": 1.0.1
+    "@urql/exchange-multipart-fetch": 1.1.0
     "@urql/exchange-retry": 1.0.0
     clipboard: ^2.0.4
     dagre: 0.8.5
@@ -5283,16 +5295,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@urql/exchange-multipart-fetch@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@urql/exchange-multipart-fetch@npm:1.0.1"
+"@urql/core@npm:>=4.0.0":
+  version: 4.1.2
+  resolution: "@urql/core@npm:4.1.2"
   dependencies:
-    "@urql/core": ">=3.0.0"
+    "@0no-co/graphql.web": ^1.0.1
+    wonka: ^6.3.2
+  checksum: b446cfce8c59cccaa77cc3b5d89e788016c7af1e6870d344427915aca41462645dd0b06e6db9716e91b54a3bb419a9301399bc056d9e6a9f4cab216f495567a5
+  languageName: node
+  linkType: hard
+
+"@urql/exchange-multipart-fetch@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@urql/exchange-multipart-fetch@npm:1.1.0"
+  dependencies:
+    "@urql/core": ">=4.0.0"
     extract-files: ^11.0.0
-    wonka: ^6.0.0
-  peerDependencies:
-    graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-  checksum: 48b509304c222f72edccdde11ae898f2a3f8fbe2698a95cf8a318c5d1303345723c08e53bd011cc48f0bbfa844b6c108a96eb5c434a0cf3a7be372c45ed7afb5
+    wonka: ^6.3.0
+  checksum: ea9e0d5fbfaa34dd7d47c8d587f5c77d2443a3e5067db1bd69e2c6074ea0d0bcc9e4224648a2f3ddfec32b1b06f9313a45e1c022ff84e507b8348bbf2b2102d9
   languageName: node
   linkType: hard
 
@@ -14840,6 +14860,13 @@ __metadata:
   version: 6.1.2
   resolution: "wonka@npm:6.1.2"
   checksum: 474dcffd3861faaf5df8f4ef1ea1e614eb0cf36f54003974ebd4ab43b8fd6aad26317ef75e55488e7a61d64922531ae3ca2890dac90922d46715e0dd795682ce
+  languageName: node
+  linkType: hard
+
+"wonka@npm:^6.3.0, wonka@npm:^6.3.2":
+  version: 6.3.4
+  resolution: "wonka@npm:6.3.4"
+  checksum: 6bb57955cb2982fb469a7824484e6854b436f89a7f10b6a981348789d88fbc944665771adc4cc404f62416417eb47ab2b8657d898e5301ccd4a53eaac6a10508
   languageName: node
   linkType: hard
 
