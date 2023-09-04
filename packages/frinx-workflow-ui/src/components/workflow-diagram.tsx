@@ -23,7 +23,7 @@ const nodeTypes = {
 
 type Props = {
   result?: ControlExecutedWorkflowSubscription['controlExecutedWorkflow'] | null;
-  meta?: Workflow | null;
+  meta?: Omit<Workflow, 'schemaVersion' | 'ownerEmail' | 'variables'> | null;
 };
 
 type NodeData = {
