@@ -76,10 +76,10 @@ function getDecisionTask(tasks: ExtendedTask[], elements: { nodes: Node[]; edges
   // to upper nest level
   try {
     const nextJoinNode = findForkOrDecisionEndNode(elements, decisionEndNode, 0);
-    const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, decisionEndNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   } catch {
-    const nextTasks: Task[] = traverseElements([], elements, decisionEndNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, decisionEndNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   }
 }
@@ -104,10 +104,10 @@ function getForkTask(tasks: Task[], elements: { nodes: Node[]; edges: Edge[] }, 
   // to upper nest level
   try {
     const nextJoinNode = findForkOrDecisionEndNode(elements, joinNode, 0);
-    const nextTasks: Task[] = traverseElements([], elements, joinNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, joinNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   } catch {
-    const nextTasks: Task[] = traverseElements([], elements, joinNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, joinNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   }
 }
