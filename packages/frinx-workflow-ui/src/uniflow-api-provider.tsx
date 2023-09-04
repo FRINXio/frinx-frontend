@@ -1,9 +1,9 @@
-import React, { createContext, FC, useRef } from 'react';
-import { callbackUtils, Callbacks, CustomToastProvider } from '@frinx/shared';
-import { cacheExchange, ClientOptions, createClient, dedupExchange, subscriptionExchange, Provider } from 'urql';
-import { createClient as createWSClient } from 'graphql-ws';
-import { retryExchange } from '@urql/exchange-retry';
+import { CustomToastProvider } from '@frinx/shared';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
+import { retryExchange } from '@urql/exchange-retry';
+import { createClient as createWSClient } from 'graphql-ws';
+import React, { createContext, FC, useRef } from 'react';
+import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider, subscriptionExchange } from 'urql';
 
 export type InventoryApiClient = {
   clientOptions: ClientOptions;
@@ -23,8 +23,7 @@ const UniflowApiProvider: FC = ({ children }) => (
   </UniflowApiContext.Provider>
 );
 
-export function getUniflowApiProvider(callbacks: Callbacks): FC {
-  callbackUtils.setCallbacks(callbacks);
+export function getUniflowApiProvider(): FC {
   return UniflowApiProvider;
 }
 

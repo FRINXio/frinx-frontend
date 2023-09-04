@@ -319,17 +319,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
             workflows={clientWorkflowList}
             onSubmit={(wf) => {
               setWorkflow({
-                // ownerEmail: '',
-                // schemaVersion: 2,
                 ...wf,
                 id: '',
                 createdAt: new Date().toISOString(),
                 updatedAt: '',
                 createdBy: '',
                 updatedBy: '',
-                // updateTime: 0,
                 hasSchedule: false,
-                // correlationId: '',
               });
               setShouldCreateWorkflow(false);
             }}

@@ -1,4 +1,4 @@
-import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared';
+import { CustomToastProvider } from '@frinx/shared';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
 import { createClient as createWSClient } from 'graphql-ws';
@@ -51,7 +51,6 @@ const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
   );
 };
 
-export function getInventoryApiProvider(callbacks: Callbacks): FC<Props> {
-  callbackUtils.setCallbacks(callbacks);
+export function getInventoryApiProvider(): FC<Props> {
   return InventoryAPIProvider;
 }
