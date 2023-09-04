@@ -11,8 +11,50 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
-import { callbackUtils, jsonParse, Workflow } from '@frinx/shared';
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { jsonParse, Workflow } from '@frinx/shared';
+import React, { VoidFunctionComponent } from 'react';
+import { gql, useQuery } from 'urql';
+import { convertGraphqlToClientWorkflow } from '../../helpers/convert';
+import { ModalWorkflowsQuery } from '../../__generated__/graphql';
+
+const MODAL_WORKFLOWS_QUERY = gql`
+  query ModalWorkflows {
+    workflows {
+      edges {
+        node {
+          id
+          name
+          description
+          version
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          tasks
+          hasSchedule
+          inputParameters
+          outputParameters {
+            key
+            value
+          }
+          restartable
+          timeoutSeconds
+          timeoutPolicy
+          ownerEmail
+          schemaVersion
+          variables
+        }
+      }
+      totalCount
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
 
 type Props = {
   onClose: () => void;
@@ -20,17 +62,18 @@ type Props = {
 };
 
 const WorkflowListModal: VoidFunctionComponent<Props> = ({ onClose, onWorkflowSelect }) => {
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
+  const [{ data: workflowsData }] = useQuery<ModalWorkflowsQuery>({
+    query: MODAL_WORKFLOWS_QUERY,
+  });
 
-  useEffect(() => {
-    const callbacks = callbackUtils.getCallbacks;
-    callbacks.getWorkflows().then((wfs) => {
-      setWorkflows(wfs);
-    });
-  }, []);
+  if (!workflowsData) {
+    return null;
+  }
+
+  const workflows: Workflow[] = convertGraphqlToClientWorkflow(workflowsData);
 
   const labeledWorkflows = workflows.filter((wf) => {
-    const labels: string[] = jsonParse<{ labels: string[] }>(wf.description)?.labels ?? [];
+    const labels = jsonParse<{ labels: string[] }>(wf.description)?.labels ?? [];
     return labels.includes('INVENTORY');
   });
 
