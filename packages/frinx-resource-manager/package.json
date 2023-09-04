@@ -13,7 +13,7 @@
     "@urql/exchange-retry": "1.0.0",
     "chakra-ui-autocomplete": "^1.4.5",
     "feather-icons-react": "0.6.2",
-    "formik": "2.2.9",
+    "formik": "2.4.3",
     "graphql": "15.8.0",
     "ipaddr.js": "^2.0.1",
     "lodash": "4.17.21",
