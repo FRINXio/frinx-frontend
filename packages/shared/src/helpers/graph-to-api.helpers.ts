@@ -7,11 +7,15 @@ function convertExtendedTaskToTask(task: ExtendedTask): Task {
   return omit(task, ['id', 'label']) as Task;
 }
 
-function convertNodeToTask(node: Node<NodeData>): Task {
+function convertNodeToTask(node: Node<NodeData>): Task | null {
   const { data } = node;
   const { task: extendedTask } = data;
 
-  const task = convertExtendedTaskToTask(unwrap(extendedTask));
+  if (!extendedTask) {
+    return null;
+  }
+
+  const task = convertExtendedTaskToTask(extendedTask);
 
   return task;
 }
@@ -123,6 +127,10 @@ function traverseElements(
   const currentNode = unwrap(nodes.find((n) => n.id === id));
   const currentTask = convertNodeToTask(currentNode);
   const children = getOutgoers(currentNode, nodes, edges);
+
+  if (currentTask == null) {
+    return [];
+  }
 
   if (currentTask.type === 'DECISION') {
     return getDecisionTask([], elements, currentNode);
