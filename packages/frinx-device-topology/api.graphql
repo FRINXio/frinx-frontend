@@ -446,6 +446,11 @@ type EventHandlerEdge {
   node: EventHandler!
 }
 
+input EventHandlersOrderByInput {
+  direction: SortDirection!
+  sortKey: SortEventHandlersBy!
+}
+
 input ExecuteNewWorkflowInput {
   correlationId: String
   externalInputPayloadStoragePath: String
@@ -572,6 +577,10 @@ enum ExecutedWorkflowTaskStatus {
 input ExecutedWorkflowsOrderByInput {
   direction: SortExecutedWorkflowsDirection!
   sortKey: SortExecutedWorkflowsBy!
+}
+
+type ExternaStorage {
+  data: String!
 }
 
 input FilterDevicesInput {
@@ -896,6 +905,7 @@ type Query {
     filter: FilterEventHandlerInput
     first: Int
     last: Int
+    orderBy: EventHandlersOrderByInput
   ): EventHandlerConnection
   eventHandlersByEvent(
     activeOnly: Boolean
@@ -910,6 +920,7 @@ type Query {
     pagination: PaginationArgs
     searchQuery: ExecutedWorkflowSearchInput
   ): ExecutedWorkflowConnection
+  externalStorage(path: String!): ExternaStorage
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   netTopology: NetTopology
@@ -938,6 +949,7 @@ type Query {
     filter: FilterTaskDefinitionsInput
     first: Int
     last: Int
+    orderBy: TasksOrderByInput
   ): TaskDefinitionConnection!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
@@ -953,7 +965,7 @@ type Query {
     filter: FilterWorkflowsInput
     first: Int
     last: Int
-    orderBy: WorkflowsOrderByInput!
+    orderBy: WorkflowsOrderByInput
   ): WorkflowConnection!
   zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
 }
@@ -1053,13 +1065,21 @@ type Snapshot {
 }
 
 enum SortDeviceBy {
-  CREATED_AT
-  NAME
+  createdAt
+  name
+  serviceState
 }
 
 enum SortDirection {
   ASC
   DESC
+}
+
+enum SortEventHandlersBy {
+  evaluatorType
+  event
+  isActive
+  name
 }
 
 enum SortExecutedWorkflowsBy {
@@ -1084,6 +1104,15 @@ enum SortPollsBy {
 enum SortPollsDirection {
   asc
   desc
+}
+
+enum SortTasksBy {
+  name
+  responseTimeoutSeconds
+  retryCount
+  retryLogic
+  timeoutPolicy
+  timeoutSeconds
 }
 
 enum SortWorkflowsBy {
@@ -1171,6 +1200,11 @@ enum TaskTimeoutPolicy {
   ALERT_ONLY
   RETRY
   TIME_OUT_WF
+}
+
+input TasksOrderByInput {
+  direction: SortDirection!
+  sortKey: SortTasksBy!
 }
 
 input TerminateWorkflowInput {
@@ -1292,12 +1326,15 @@ type Workflow implements Node {
   inputParameters: [String!]
   name: String!
   outputParameters: [OutputParameter!]
+  ownerEmail: String
   restartable: Boolean
+  schemaVersion: Int
   tasks: String
   timeoutPolicy: TimeoutPolicy
   timeoutSeconds: Int!
   updatedAt: String
   updatedBy: String
+  variables: String
   version: Int
 }
 
