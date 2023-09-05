@@ -17,7 +17,7 @@ describe('omitNullValues helpers test', () => {
   });
 
   test('omitMaybeType', () => {
-    expect(UNFILTERED_VALUES_ARRAY.filter(omitNullValue)).toEqual(FILTERED_VALUES_ARRAY);
+    expect(UNFILTERED_VALUES_ARRAY.filter(omitMaybeType)).toEqual(FILTERED_VALUES_ARRAY);
   });
 
   test('omitNullProperties', () => {
