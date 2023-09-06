@@ -3073,7 +3073,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.7.1
     eslint-plugin-react: 7.33.2
     eslint-plugin-react-hooks: 4.6.0
-    fp-ts: 2.13.1
+    fp-ts: 2.16.1
     io-ts: 2.2.20
     typescript: 4.9.5
     url-join: 5.0.0
@@ -3132,7 +3132,7 @@ __metadata:
     eventemitter3: 5.0.1
     execution-time: ^1.4.1
     feather-icons-react: 0.6.2
-    fp-ts: 2.13.1
+    fp-ts: 2.16.1
     framer-motion: 6.2.8
     graphql: 15.8.0
     io-ts: 2.2.20
@@ -3271,7 +3271,7 @@ __metadata:
     eslint-plugin-import: 2.28.1
     express: 4.18.2
     helmet: 6.0.1
-    pino: 8.11.0
+    pino: 8.15.0
     pino-pretty: 9.4.1
     ts-node-dev: 1.1.8
     typescript: 4.9.5
@@ -9017,10 +9017,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:2.13.1":
-  version: 2.13.1
-  resolution: "fp-ts@npm:2.13.1"
-  checksum: 618e0028aca9ff1d52b86f438499ccab149825bdab14c678d22c3e2ccbf9d36fd1f26d463bf0ae1e63f5cd79dd54c8218af2cca0daeea68b039307b751ae9563
+"fp-ts@npm:2.16.1":
+  version: 2.16.1
+  resolution: "fp-ts@npm:2.16.1"
+  checksum: 94e8bb1d037fdc44414ac93bbabecc3f94fb798d6564e77427ae2ecfa0f77681ec35968598d7b0cbf8274566469c7b42e8727390eb889e1121c199341939c2a3
   languageName: node
   linkType: hard
 
@@ -12150,9 +12150,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:8.11.0":
-  version: 8.11.0
-  resolution: "pino@npm:8.11.0"
+"pino@npm:8.15.0":
+  version: 8.15.0
+  resolution: "pino@npm:8.15.0"
   dependencies:
     atomic-sleep: ^1.0.0
     fast-redact: ^3.1.1
@@ -12167,7 +12167,7 @@ __metadata:
     thread-stream: ^2.0.0
   bin:
     pino: bin.js
-  checksum: 1bcc2b9b448ec9ccef4ea189d5db7d1e0e085f6cd4d7395d087998d90186850ab176edf32a179562337a557aa51eb551ff6318a40af7cdb5963b168f87d35aa8
+  checksum: 9a54d0757f0256201fad01346be1c18b0a4378704fa383df867189da12151d664d2bd18b1e53df70633fbff6c90fd3175228c0c971eaaa734939709cc1a0005b
   languageName: node
   linkType: hard
 
