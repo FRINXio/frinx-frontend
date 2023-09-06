@@ -176,6 +176,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
   const parentResourceTypeName = poolsData?.find((pool) => pool?.id === parentPoolId)?.ResourceType.Name ?? null;
   const availableResourceTypes = getAvailableResourceTypes(resourceTypes, resourcePools, parentPoolId);
   const availableAllocatedResources = getAvailableAllocatedResources(resourcePools, parentPoolId);
+  console.log(resourcePools,parentPoolId);
+  console.log(availableAllocatedResources);
+  
+  
   const derivedFromAvailableResourceTypes = deriveResourceTypesFromAvailableResourceTypes(
     resourceTypes,
     availableResourceTypes,
