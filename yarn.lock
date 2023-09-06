@@ -3073,7 +3073,7 @@ __metadata:
     eslint-plugin-jsx-a11y: 6.7.1
     eslint-plugin-react: 7.33.2
     eslint-plugin-react-hooks: 4.6.0
-    fp-ts: 2.13.1
+    fp-ts: 2.16.1
     io-ts: 2.2.20
     typescript: 4.9.5
     url-join: 5.0.0
@@ -3132,7 +3132,7 @@ __metadata:
     eventemitter3: 5.0.1
     execution-time: ^1.4.1
     feather-icons-react: 0.6.2
-    fp-ts: 2.13.1
+    fp-ts: 2.16.1
     framer-motion: 6.2.8
     graphql: 15.8.0
     io-ts: 2.2.20
@@ -9035,10 +9035,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fp-ts@npm:2.13.1":
-  version: 2.13.1
-  resolution: "fp-ts@npm:2.13.1"
-  checksum: 618e0028aca9ff1d52b86f438499ccab149825bdab14c678d22c3e2ccbf9d36fd1f26d463bf0ae1e63f5cd79dd54c8218af2cca0daeea68b039307b751ae9563
+"fp-ts@npm:2.16.1":
+  version: 2.16.1
+  resolution: "fp-ts@npm:2.16.1"
+  checksum: 94e8bb1d037fdc44414ac93bbabecc3f94fb798d6564e77427ae2ecfa0f77681ec35968598d7b0cbf8274566469c7b42e8727390eb889e1121c199341939c2a3
   languageName: node
   linkType: hard
 
