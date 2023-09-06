@@ -22,7 +22,7 @@
     "@emotion/react": "11.11.0",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "workspace:^",
-    "@frinx/eslint-config-typescript": "20.0.0",
+    "@frinx/eslint-config-typescript": "20.0.1",
     "@types/react": "17.0.65",
     "@types/react-dom": "18.2.7",
     "@typescript-eslint/eslint-plugin": "5.62.0",

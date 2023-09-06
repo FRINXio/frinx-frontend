@@ -24,7 +24,7 @@
     "@emotion/react": "11.11.0",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "workspace:^",
-    "@frinx/eslint-config-typescript": "20.0.0",
+    "@frinx/eslint-config-typescript": "20.0.1",
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/introspection": "4.0.0",
     "@graphql-codegen/typescript": "4.0.1",
