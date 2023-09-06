@@ -32,7 +32,7 @@ import {
 } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { FormikErrors, useFormik } from 'formik';
-import produce from 'immer';
+import { produce } from 'immer';
 import React, { FC } from 'react';
 import { GraphExtendedTask } from '../../helpers/types';
 import { getValidationSchema, renderInputParamForm } from './input-params-forms';
