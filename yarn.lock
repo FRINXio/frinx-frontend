@@ -3315,7 +3315,7 @@ __metadata:
     framer-motion: 6.2.8
     graphql: 15.8.0
     graphql-ws: ^5.11.2
-    json-templates: 4.2.0
+    json-templates: 4.3.0
     lodash: 4.17.21
     react: 18.2.0
     react-dom: 18.2.0
@@ -10361,13 +10361,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-templates@npm:4.2.0":
-  version: 4.2.0
-  resolution: "json-templates@npm:4.2.0"
+"json-templates@npm:4.3.0":
+  version: 4.3.0
+  resolution: "json-templates@npm:4.3.0"
   dependencies:
     dedupe: ^3.0.2
     object-path: ^0.11.8
-  checksum: 1e2c040c80e76e3c68731c85c35dd4ee8db1a822ef2bbb8914b69a08402ab40a69de31a7f7508b9c24649398380f81f1d887c9f76fc08403bf240282c02a9092
+  checksum: 33edd0d7971d31448efa1c8039cf1fb98bb56fcc9a938f697dd64a56095b6648c51593e7947ca7c3df96410d44b86c1dca922659db3ef3a74083c792e161015b
   languageName: node
   linkType: hard
 
