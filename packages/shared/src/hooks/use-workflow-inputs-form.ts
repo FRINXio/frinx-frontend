@@ -9,18 +9,18 @@ import {
 
 type HookProps = {
   workflow?: ClientWorkflow | Workflow | null;
-  onSubmit: (values: Record<string, string | number | boolean>) => void;
+  onSubmit: (values: Record<string, string | number | boolean | string[]>) => void;
 };
 
 type HookReturn = {
-  values: Record<string, string | number | boolean>;
+  values: Record<string, string | number | boolean | string[]>;
   isSubmitting: boolean;
   inputParameterKeys: string[];
   parsedInputParameters?: InputParameter | null;
   handleSubmit: () => void;
   submitForm: () => void;
   setSubmitting: (isSubmitting: boolean) => void;
-  handleChange: (key: string, value: string | number | boolean) => void;
+  handleChange: (key: string, value: string | number | boolean | string[]) => void;
 };
 
 const useWorkflowInputsForm = ({ workflow, onSubmit }: HookProps): HookReturn => {
