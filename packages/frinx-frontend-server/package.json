@@ -28,7 +28,7 @@
     "pino-pretty": "9.4.1"
   },
   "devDependencies": {
-    "@frinx/eslint-config-typescript-base": "15.0.0-build.1",
+    "@frinx/eslint-config-typescript-base": "16.0.0",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
     "dotenv": "16.3.1",
