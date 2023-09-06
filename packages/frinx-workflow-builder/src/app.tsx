@@ -10,7 +10,7 @@ import {
   TaskDefinition,
   useNotifications,
 } from '@frinx/shared';
-import produce from 'immer';
+import { produce } from 'immer';
 import { zip } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
