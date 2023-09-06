@@ -1,4 +1,4 @@
-FROM node:19.7.0-alpine as build
+FROM node:19.9.0-alpine as build
 
 ARG PRIVATE_GH_TOKEN
 ARG PRIVATE_NPM_TOKEN
@@ -14,7 +14,7 @@ RUN yarn install --immutable
 ENV NODE_ENV production
 RUN yarn run build
 
-FROM node:19.7.0-alpine
+FROM node:19.9.0-alpine
 LABEL org.opencontainers.image.source="https://github.com/FRINXio/frinx-frontend"
 
 ENV NODE_ENV production
