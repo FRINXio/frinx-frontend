@@ -3,8 +3,21 @@ import { Edge, getConnectedEdges, getIncomers, getOutgoers, Node } from 'react-f
 import { ExtendedDecisionTask, ExtendedForkTask, ExtendedTask, NodeData, Task } from './workflow-api.types';
 import unwrap from './unwrap';
 
-function convertExtendedTaskToTask(task: ExtendedTask): Task {
-  return omit(task, ['id', 'label']) as Task;
+function isTask(task: unknown): task is Task {
+  if (typeof task === 'object') {
+    return true;
+  }
+  return false;
+}
+
+function convertExtendedTaskToTask(extendedTask: ExtendedTask): Task {
+  const task: unknown = omit(extendedTask, ['id', 'label']);
+
+  if (!isTask(task)) {
+    throw new Error('should never happend');
+  }
+
+  return task;
 }
 
 function convertNodeToTask(node: Node<NodeData>): Task | null {
