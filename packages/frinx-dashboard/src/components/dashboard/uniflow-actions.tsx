@@ -10,7 +10,7 @@ const UniflowActions: FC = () => {
         to="/workflow-manager/definitions"
         title="Explore workflows"
         text="Browse executed workflows."
-        buttonText="Exlore"
+        buttonText="Explore"
         // variant="blue"
       />
       <ActionItem
