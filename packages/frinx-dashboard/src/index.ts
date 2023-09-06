@@ -1,9 +1,9 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { unwrap } from '@frinx/shared';
-import { AuthContext } from './auth-helpers';
 import Root from './root';
-import { ServiceKey } from './types';
+import { GlobalConfig, ServiceKey } from './types';
+import ConfigProvider from './config.provider';
 
 if (window.IS_PRODUCTION !== 'true') {
   new EventSource('http://localhost:8000/esbuild').addEventListener('change', () => {
@@ -27,21 +27,20 @@ const serviceImportMap = new Map<ServiceKey, () => Promise<unknown>>([
 ]);
 
 class DashboardApp {
-  private enabledServices: Map<ServiceKey, boolean> = new Map(
-    ALL_SERVICES.map((service) => {
-      return [service, window.__CONFIG__[service]];
-    }),
-  );
+  private config: GlobalConfig | null = null;
 
   private isInitialized = false;
 
-  async init() {
+  async init(config: GlobalConfig) {
     if (this.isInitialized) {
       throw new Error('DashboardApp is already initialized');
     }
+
+    this.config = config;
+
     // see https://github.com/remix-run/react-router/issues/8427
-    if (!window.location.pathname.includes(window.__CONFIG__.URLBasename)) {
-      window.history.replaceState(null, '', window.__CONFIG__.URLBasename);
+    if (!window.location.pathname.includes(config.URLBasename)) {
+      window.history.replaceState(null, '', config.URLBasename);
     }
     await Promise.all(
       ALL_SERVICES.map((service) => {
@@ -55,14 +54,20 @@ class DashboardApp {
   }
 
   render() {
+    if (this.config == null) {
+      throw new Error('missing global config');
+    }
     // eslint-disable-next-line no-console
-    console.log(`Running version: ${window.__CONFIG__.commitHash}`);
+    console.log(`Running version: ${this.config.commitHash}`);
     const root = createRoot(unwrap(document.getElementById('root')));
     root.render(
-      React.createElement(Root, {
-        isAuthEnabled: AuthContext.isAuthEnabled(),
-        enabledServices: this.enabledServices,
-      }),
+      React.createElement(
+        ConfigProvider,
+        {
+          config: this.config,
+        },
+        React.createElement(Root),
+      ),
     );
   }
 }

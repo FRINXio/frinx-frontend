@@ -2,7 +2,7 @@ import { CustomToastProvider } from '@frinx/shared';
 import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
 import { createClient as createWSClient } from 'graphql-ws';
-import React, { createContext, FC, useRef } from 'react';
+import React, { FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider, subscriptionExchange } from 'urql';
 
 export type InventoryApiClient = {
@@ -14,18 +14,6 @@ export type Props = {
   client: InventoryApiClient;
   wsUrl: string;
 };
-
-export const UniflowApiContext = createContext(false);
-
-const UniflowApiProvider: FC = ({ children }) => (
-  <UniflowApiContext.Provider value>
-    <CustomToastProvider>{children}</CustomToastProvider>
-  </UniflowApiContext.Provider>
-);
-
-export function getUniflowApiProvider(): FC {
-  return UniflowApiProvider;
-}
 
 export const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
   const { current: wsClient } = useRef(
@@ -61,5 +49,9 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => 
     }),
   );
 
-  return <Provider value={urqlClient}>{children}</Provider>;
+  return (
+    <Provider value={urqlClient}>
+      <CustomToastProvider>{children}</CustomToastProvider>
+    </Provider>
+  );
 };
