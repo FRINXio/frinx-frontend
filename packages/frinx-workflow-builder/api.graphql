@@ -579,6 +579,10 @@ input ExecutedWorkflowsOrderByInput {
   sortKey: SortExecutedWorkflowsBy!
 }
 
+type ExternaStorage {
+  data: String!
+}
+
 input FilterDevicesInput {
   deviceName: String
   labels: [String!]
@@ -625,6 +629,7 @@ type GraphEdge {
   id: ID!
   source: EdgeSourceTarget!
   target: EdgeSourceTarget!
+  weight: Int
 }
 
 enum GraphEdgeStatus {
@@ -790,9 +795,14 @@ type NetNode {
   nodeId: String!
 }
 
-type NetRoutingPaths {
-  alternativePaths: [[String!]!]!
-  shortestPath: [String!]!
+type NetRoutingPathNode {
+  nodes: [NetRoutingPathNodeInfo!]!
+  weight: Int
+}
+
+type NetRoutingPathNodeInfo {
+  name: String
+  weight: Int
 }
 
 type NetTopology {
@@ -910,6 +920,7 @@ type Query {
     pagination: PaginationArgs
     searchQuery: ExecutedWorkflowSearchInput
   ): ExecutedWorkflowConnection
+  externalStorage(path: String!): ExternaStorage
   labels(after: String, before: String, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   netTopology: NetTopology
@@ -931,13 +942,14 @@ type Query {
     resourceTypeId: String
   ): PoolConnection!
   schedules(after: String, before: String, filter: ScheduleFilterInput, first: Int, last: Int): ScheduleConnection!
-  shortestPath(from: String!, to: String!): NetRoutingPaths
+  shortestPath(from: String!, to: String!): [NetRoutingPathNode!]!
   taskDefinitions(
     after: String
     before: String
     filter: FilterTaskDefinitionsInput
     first: Int
     last: Int
+    orderBy: TasksOrderByInput
   ): TaskDefinitionConnection!
   topology(filter: FilterTopologyInput): Topology
   topologyCommonNodes(nodes: [String!]!): TopologyCommonNodes
@@ -1053,8 +1065,9 @@ type Snapshot {
 }
 
 enum SortDeviceBy {
-  CREATED_AT
-  NAME
+  createdAt
+  name
+  serviceState
 }
 
 enum SortDirection {
@@ -1091,6 +1104,15 @@ enum SortPollsBy {
 enum SortPollsDirection {
   asc
   desc
+}
+
+enum SortTasksBy {
+  name
+  responseTimeoutSeconds
+  retryCount
+  retryLogic
+  timeoutPolicy
+  timeoutSeconds
 }
 
 enum SortWorkflowsBy {
@@ -1178,6 +1200,11 @@ enum TaskTimeoutPolicy {
   ALERT_ONLY
   RETRY
   TIME_OUT_WF
+}
+
+input TasksOrderByInput {
+  direction: SortDirection!
+  sortKey: SortTasksBy!
 }
 
 input TerminateWorkflowInput {
@@ -1291,24 +1318,31 @@ The `Upload` scalar type represents a file upload.
 scalar Upload
 
 type Workflow implements Node {
+  accessPolicy: Record
+  createTime: Int
   createdAt: String
   createdBy: String
   description: String
+  failureWorkflow: String
   hasSchedule: Boolean
   id: ID!
   inputParameters: [String!]
+  inputTemplate: String
   name: String!
   outputParameters: [OutputParameter!]
+  ownerApp: String
   ownerEmail: String
   restartable: Boolean
   schemaVersion: Int
   tasks: String
   timeoutPolicy: TimeoutPolicy
   timeoutSeconds: Int!
+  updateTime: Int
   updatedAt: String
   updatedBy: String
-  variables: String
+  variables: Record
   version: Int
+  workflowStatusListenerEnabled: Boolean
 }
 
 type WorkflowConnection {
@@ -1346,15 +1380,29 @@ type WorkflowEdge {
 }
 
 input WorkflowInput {
+  accessPolicy: Record
+  createTime: Int
   createdAt: String
+  createdBy: String
   description: String
+  failureWorkflow: String
+  inputParameters: [String!]
+  inputTemplate: String
   name: String!
   outputParameters: [OutputParameterInput!]
+  ownerApp: String
+  ownerEmail: String
   restartable: Boolean
+  schemaVersion: Int
   tasks: String!
+  timeoutPolicy: TimeoutPolicy
   timeoutSeconds: Int!
+  updateTime: Int
   updatedAt: String
+  updatedBy: String
+  variables: Record
   version: Int
+  workflowStatusListenerEnabled: Boolean
 }
 
 type WorkflowInstanceDetail {
