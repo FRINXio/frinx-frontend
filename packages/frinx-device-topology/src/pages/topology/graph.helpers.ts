@@ -198,13 +198,16 @@ export function getDefaultPositionsMap<
   getNodeName: (node: T) => string,
   getDeviceSize: (node: T) => DeviceSize,
 ): PositionsWithGroupsMap<S> {
-  const nodesMap = nodes.reduce((acc, curr) => {
-    const { coordinates } = curr;
-    return {
-      ...acc,
-      [getNodeName(curr)]: { x: coordinates.x * width, y: coordinates.y * height },
-    };
-  }, {} as Record<string, Position>);
+  const nodesMap = nodes.reduce(
+    (acc, curr) => {
+      const { coordinates } = curr;
+      return {
+        ...acc,
+        [getNodeName(curr)]: { x: coordinates.x * width, y: coordinates.y * height },
+      };
+    },
+    {} as Record<string, Position>,
+  );
   return {
     nodes: nodesMap,
     interfaceGroups: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }, getNodeName, getDeviceSize),

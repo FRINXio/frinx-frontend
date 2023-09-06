@@ -165,12 +165,15 @@ const ClaimResourceModal: FC<Props> = ({
 
         const { alternativeIds: formAlternativeIds, description } = formValues;
 
-        const alternativeIdObject = formAlternativeIds.reduce((prev, curr) => {
-          return {
-            ...prev,
-            [curr.key]: curr.value,
-          };
-        }, {} as Record<string, string | string[]>);
+        const alternativeIdObject = formAlternativeIds.reduce(
+          (prev, curr) => {
+            return {
+              ...prev,
+              [curr.key]: curr.value,
+            };
+          },
+          {} as Record<string, string | string[]>,
+        );
 
         onClaimWithAltId(alternativeIdObject, description, userInput);
         onClose();
