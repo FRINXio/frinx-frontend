@@ -112,13 +112,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-common@npm:6.4.0":
-  version: 6.4.0
-  resolution: "@azure/msal-common@npm:6.4.0"
-  checksum: 0d85b85162c637c1654db637b48a3318e79cb39df48474e79b08897a5f07292f38449ef9582f972ac1f021ae358a5d1adbad283f532d4e8bdab0ee9e40ef485b
-  languageName: node
-  linkType: hard
-
 "@azure/msal-react@npm:1.5.10":
   version: 1.5.10
   resolution: "@azure/msal-react@npm:1.5.10"
@@ -3097,7 +3090,7 @@ __metadata:
   resolution: "@frinx/dashboard@workspace:packages/frinx-dashboard"
   dependencies:
     "@azure/msal-browser": 3.1.0
-    "@azure/msal-common": 6.4.0
+    "@azure/msal-common": 14.0.3
     "@azure/msal-react": 1.5.10
     "@chakra-ui/react": 2.8.0
     "@chakra-ui/system": 2.6.0
