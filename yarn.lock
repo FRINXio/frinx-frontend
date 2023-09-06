@@ -3311,7 +3311,7 @@ __metadata:
     framer-motion: 6.2.8
     graphql: 15.8.0
     graphql-ws: ^5.11.2
-    json-templates: 4.3.0
+    json-templates: 5.0.0
     lodash: 4.17.21
     react: 18.2.0
     react-dom: 18.2.0
@@ -7220,13 +7220,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dedupe@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "dedupe@npm:3.0.2"
-  checksum: 6c946d9a9b233a30238d2144603c54f60a8c5ae330079d73ba3665e8630dc37ccc77e1967f1753b0f521baf93d063e9cda31930640e0a877bc104ed7db2a7c3e
-  languageName: node
-  linkType: hard
-
 "deep-diff@npm:^1.0.2":
   version: 1.0.2
   resolution: "deep-diff@npm:1.0.2"
@@ -10621,13 +10614,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-templates@npm:4.3.0":
-  version: 4.3.0
-  resolution: "json-templates@npm:4.3.0"
+"json-templates@npm:5.0.0":
+  version: 5.0.0
+  resolution: "json-templates@npm:5.0.0"
   dependencies:
-    dedupe: ^3.0.2
     object-path: ^0.11.8
-  checksum: 33edd0d7971d31448efa1c8039cf1fb98bb56fcc9a938f697dd64a56095b6648c51593e7947ca7c3df96410d44b86c1dca922659db3ef3a74083c792e161015b
+  checksum: be867b237906e4801f10db700ff9303ad0713276e7baf28390c39dafa82d291c5dad9ad2c30b072d96783201343b8944f1bf01633cf15ba62b6684a84ac613c7
   languageName: node
   linkType: hard
 
