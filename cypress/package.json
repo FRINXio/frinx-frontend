@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.2.3",
-    "@frinx/eslint-config-typescript": "19.0.4-build.1",
+    "@frinx/eslint-config-typescript": "20.0.0",
     "@testing-library/cypress": "^8.0.3",
     "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.62.0",
