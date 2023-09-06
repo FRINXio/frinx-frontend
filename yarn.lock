@@ -96,12 +96,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-browser@npm:2.34.0":
-  version: 2.34.0
-  resolution: "@azure/msal-browser@npm:2.34.0"
+"@azure/msal-browser@npm:3.1.0":
+  version: 3.1.0
+  resolution: "@azure/msal-browser@npm:3.1.0"
   dependencies:
-    "@azure/msal-common": ^11.0.0
-  checksum: 0ce02792d4488aa7440dfb1d05895192e36edc6f99364e1665327ed7724b922b3f7626d9d7abc6c269f7797c21519433a52f2eb53750c5afb95b920515af92c3
+    "@azure/msal-common": 14.0.3
+  checksum: 103e3a9ef459b83508dfcb97995fddfd86b9b95e2977f21a7e2046e7fbcef970957ef8a3ddd279a33d4017688898b2d6dea93fbe15db3e8d05d6494d69f7a210
+  languageName: node
+  linkType: hard
+
+"@azure/msal-common@npm:14.0.3":
+  version: 14.0.3
+  resolution: "@azure/msal-common@npm:14.0.3"
+  checksum: 3c2f0bb95072e809a39c886f7eccbfd7280ef48d5b4e1f421f7019774a6adac65e15b1792329cc76055f7969be09dfbb7759f6a2c6a421d52eeb05e99b79a1c5
   languageName: node
   linkType: hard
 
@@ -109,13 +116,6 @@ __metadata:
   version: 6.4.0
   resolution: "@azure/msal-common@npm:6.4.0"
   checksum: 0d85b85162c637c1654db637b48a3318e79cb39df48474e79b08897a5f07292f38449ef9582f972ac1f021ae358a5d1adbad283f532d4e8bdab0ee9e40ef485b
-  languageName: node
-  linkType: hard
-
-"@azure/msal-common@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "@azure/msal-common@npm:11.0.0"
-  checksum: 32aa79b20ead2943d6622779aee6656f1b73ce4d981437da9bcfa7541799514c688e3f3d9d68ec5cc48031745a723be1a6de984c56c031bf9364daee559f5240
   languageName: node
   linkType: hard
 
@@ -3096,7 +3096,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@frinx/dashboard@workspace:packages/frinx-dashboard"
   dependencies:
-    "@azure/msal-browser": 2.34.0
+    "@azure/msal-browser": 3.1.0
     "@azure/msal-common": 6.4.0
     "@azure/msal-react": 1.5.10
     "@chakra-ui/react": 2.8.0
