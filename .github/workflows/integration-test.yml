@@ -15,7 +15,7 @@ jobs:
       PRIVATE_NPM_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Use CI yarnrc
         run: cp .yarnrc.ci.yml .yarnrc.yml
       - name: Copy yarn.lock file

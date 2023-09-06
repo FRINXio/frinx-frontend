@@ -1,4 +1,4 @@
-import { InventoryApi, UniflowApi } from '@frinx/api';
+import { InventoryApi } from '@frinx/api';
 import { InventoryApiClient } from '@frinx/inventory-client/src';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
@@ -13,9 +13,7 @@ const InventoryApp: FC = () => {
     import('@frinx/inventory-client').then((mod) => {
       setComponents({
         InventoryApp: mod.InventoryApp,
-        InventoryAPIProvider: mod.getInventoryApiProvider(
-          UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
-        ),
+        InventoryAPIProvider: mod.getInventoryApiProvider(),
       });
     });
   }, []);
