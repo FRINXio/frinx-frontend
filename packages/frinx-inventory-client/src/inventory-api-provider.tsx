@@ -1,14 +1,13 @@
 import { CustomToastProvider } from '@frinx/shared';
-import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
 import { createClient as createWSClient } from 'graphql-ws';
 import React, { createContext, FC, useRef } from 'react';
-import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider, subscriptionExchange } from 'urql';
+import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider, subscriptionExchange } from 'urql';
 
 export const InventoryAPIContext = createContext(false);
 
 export type InventoryApiClient = {
-  clientOptions: ClientOptions;
+  clientOptions: Omit<ClientOptions, 'exchanges'>;
   onError: () => void;
 };
 
@@ -23,7 +22,6 @@ const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
     createClient({
       ...client.clientOptions,
       exchanges: [
-        dedupExchange,
         cacheExchange,
         retryExchange({
           retryIf: (err) => {
@@ -33,13 +31,16 @@ const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
             return false;
           },
         }),
-        multipartFetchExchange,
+        fetchExchange,
         subscriptionExchange({
-          forwardSubscription: (operation) => ({
-            subscribe: (sink) => ({
-              unsubscribe: wsClient.subscribe(operation, sink),
-            }),
-          }),
+          forwardSubscription: (request) => {
+            const input = { ...request, query: request.query || '' };
+            return {
+              subscribe: (sink) => ({
+                unsubscribe: wsClient.subscribe(input, sink),
+              }),
+            };
+          },
         }),
       ],
     }),

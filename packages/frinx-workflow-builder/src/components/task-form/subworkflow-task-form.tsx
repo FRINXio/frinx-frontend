@@ -21,7 +21,15 @@ const SubworkflowTaskForm: VoidFunctionComponent<Props> = ({ taskInputParameters
     dynamicWorkflowInputParams,
   );
 
-  const handleOnChange = (key: string, value: string | number | boolean) => {
+  const handleOnChange = (key: string, value: string | number | boolean | string[]) => {
+    if (typeof value === 'object' && Array.isArray(value)) {
+      onChange({
+        ...taskInputParameters,
+        [key]: JSON.stringify(value),
+      });
+      return;
+    }
+
     onChange({
       ...taskInputParameters,
       [key]: value.toString(),

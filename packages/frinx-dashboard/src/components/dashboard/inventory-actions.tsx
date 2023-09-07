@@ -10,7 +10,7 @@ const InventoryActions: FC = () => {
         to="/inventory"
         title="Explore & configure devices"
         text="Explore and configure devices."
-        buttonText="Exlore"
+        buttonText="Explore"
       />
       <ActionItem
         icon="plus-circle"

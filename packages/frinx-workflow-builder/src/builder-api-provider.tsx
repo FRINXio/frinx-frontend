@@ -1,11 +1,10 @@
 import { CustomToastProvider } from '@frinx/shared';
-import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
 import { retryExchange } from '@urql/exchange-retry';
 import React, { createContext, FC, useRef } from 'react';
-import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
+import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider } from 'urql';
 
 export type InventoryApiClient = {
-  clientOptions: ClientOptions;
+  clientOptions: Omit<ClientOptions, 'exchanges'>;
   onError: () => void;
 };
 
@@ -32,7 +31,6 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
     createClient({
       ...client.clientOptions,
       exchanges: [
-        dedupExchange,
         cacheExchange,
         retryExchange({
           retryIf: (err) => {
@@ -42,7 +40,7 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
             return false;
           },
         }),
-        multipartFetchExchange,
+        fetchExchange,
       ],
     }),
   );

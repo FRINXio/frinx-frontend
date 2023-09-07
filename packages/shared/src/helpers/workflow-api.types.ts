@@ -317,6 +317,16 @@ export type ClientWorkflow<T = Task> = {
   outputParameters: OutputParameter[] | null;
   restartable: boolean | null;
   timeoutPolicy: TimeoutPolicy | null;
+  ownerEmail?: string | null;
+  schemaVersion?: number | null;
+  variables?: Record<string, any> | null;
+  ownerApp?: string | null;
+  inputTemplate?: string | null;
+  createTime?: number | null;
+  updateTime?: number | null;
+  accessPolicy?: Record<string, string> | null;
+  failureWorkflow?: string | null;
+  workflowStatusListenerEnabled?: boolean | null;
 };
 
 export type DescriptionJSON = { labels: string[]; description: string };
@@ -629,7 +639,7 @@ export type WorkflowDefinition<T extends Task = Task> = {
   ownerEmail: string;
   timeoutPolicy: TimeoutPolicy;
   timeoutSeconds: number;
-  variables: Record<string, string>;
+  variables: Record<string, any>;
 };
 
 export type ExecutedWorkflowSortBy = 'workflowType' | 'startTime' | 'endTime' | 'status';

@@ -4,6 +4,7 @@ import React, { FC } from 'react';
 
 type Props = {
   selectedTags: string[];
+  availableItems?: string[] | null;
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: string[]) => void;
   onTagCreate?: (label: string) => void;
@@ -16,6 +17,7 @@ const SearchByTagInput: FC<Props> = ({
   isCreationDisabled = false,
   onSelectionChange,
   tagText,
+  availableItems,
 }) => {
   const selectedTagList = selectedTags.map((tag) => ({ label: tag, value: tag }));
 
@@ -39,9 +41,11 @@ const SearchByTagInput: FC<Props> = ({
         }}
         placeholder="Start typing..."
         onCreateItem={handleOnCreate}
-        items={[]}
+        items={availableItems?.map((item) => ({ label: item, value: item })) ?? []}
         selectedItems={selectedTagList}
-        onSelectedItemsChange={(changes) => handleOnChange(changes.selectedItems)}
+        onSelectedItemsChange={(changes) => {
+          handleOnChange([...new Set(changes.selectedItems)]);
+        }}
         disableCreateItem={isCreationDisabled}
         hideToggleButton
         listStyleProps={{

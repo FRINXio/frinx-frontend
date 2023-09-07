@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import {
   ClientWorkflow,
+  convertTaskToExtendedTask,
   convertToTasks,
   ExecuteWorkflowModal,
   ExtendedTask,
@@ -10,7 +11,7 @@ import {
   TaskDefinition,
   useNotifications,
 } from '@frinx/shared';
-import produce from 'immer';
+import { produce } from 'immer';
 import { zip } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
@@ -269,7 +270,7 @@ const App: VoidFunctionComponent<Props> = ({
 
       setWorkflowToExecute({
         ...editedWorkflow,
-        tasks: newTasks,
+        tasks: newTasks.map(convertTaskToExtendedTask),
       });
 
       const description = JSON.stringify({
@@ -294,6 +295,18 @@ const App: VoidFunctionComponent<Props> = ({
             restartable: editedWorkflow.restartable,
             outputParameters,
             updatedAt: new Date().toISOString(),
+            inputParameters: editedWorkflow.inputParameters,
+            inputTemplate: editedWorkflow.inputTemplate,
+            failureWorkflow: editedWorkflow.failureWorkflow,
+            schemaVersion: editedWorkflow.schemaVersion,
+            ownerEmail: editedWorkflow.ownerEmail,
+            ownerApp: editedWorkflow.ownerApp,
+            accessPolicy: editedWorkflow.accessPolicy,
+            workflowStatusListenerEnabled: editedWorkflow.workflowStatusListenerEnabled,
+            timeoutPolicy: editedWorkflow.timeoutPolicy,
+            variables: editedWorkflow.variables,
+            createdBy: editedWorkflow.createdBy,
+            updatedBy: editedWorkflow.updatedBy,
           },
         },
       });

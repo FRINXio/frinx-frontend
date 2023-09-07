@@ -27,19 +27,22 @@ export function makeObjectFromSearchParams(searchParams: URLSearchParams): Recor
 }
 
 export function flattenObject<T extends object>(obj: T, prefix = ''): Record<string, string | string[]> {
-  return Object.entries(obj).reduce((acc, [key, value]) => {
-    const fullKey = prefix.length > 0 ? `${prefix}-${key}` : key;
+  return Object.entries(obj).reduce(
+    (acc, [key, value]) => {
+      const fullKey = prefix.length > 0 ? `${prefix}-${key}` : key;
 
-    if (typeof value === 'object' && value != null) {
-      if (Array.isArray(value)) {
-        return { ...acc, [fullKey]: value.map((val) => `${val}`) };
+      if (typeof value === 'object' && value != null) {
+        if (Array.isArray(value)) {
+          return { ...acc, [fullKey]: value.map((val) => `${val}`) };
+        } else {
+          return { ...acc, ...flattenObject(value, fullKey) };
+        }
       } else {
-        return { ...acc, ...flattenObject(value, fullKey) };
+        return { ...acc, [fullKey]: `${value}` };
       }
-    } else {
-      return { ...acc, [fullKey]: `${value}` };
-    }
-  }, {} as Record<string, string | string[]>);
+    },
+    {} as Record<string, string | string[]>,
+  );
 }
 
 export function isValueOfType<T>(propertyName: string, obj?: unknown | null): obj is T {
