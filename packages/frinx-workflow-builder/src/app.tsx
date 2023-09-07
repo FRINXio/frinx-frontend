@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import {
   ClientWorkflow,
+  convertTaskToExtendedTask,
   convertToTasks,
   ExecuteWorkflowModal,
   ExtendedTask,
@@ -269,7 +270,7 @@ const App: VoidFunctionComponent<Props> = ({
 
       setWorkflowToExecute({
         ...editedWorkflow,
-        tasks: newTasks,
+        tasks: newTasks.map(convertTaskToExtendedTask),
       });
 
       const description = JSON.stringify({
