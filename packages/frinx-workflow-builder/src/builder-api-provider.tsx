@@ -1,7 +1,7 @@
 import { CustomToastProvider } from '@frinx/shared';
 import { retryExchange } from '@urql/exchange-retry';
 import React, { createContext, FC, useRef } from 'react';
-import { cacheExchange, ClientOptions, createClient, Provider } from 'urql';
+import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider } from 'urql';
 
 export type InventoryApiClient = {
   clientOptions: Omit<ClientOptions, 'exchanges'>;
@@ -40,6 +40,7 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
             return false;
           },
         }),
+        fetchExchange,
       ],
     }),
   );
