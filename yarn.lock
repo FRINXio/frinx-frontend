@@ -3093,7 +3093,7 @@ __metadata:
     "@frinx/shared": "workspace:^"
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     eslint: 8.48.0
     eslint-config-prettier: 9.0.0
     eslint-import-resolver-typescript: 3.6.0
@@ -3195,7 +3195,7 @@ __metadata:
     "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     chakra-ui-autocomplete: ^1.4.5
     date-fns: ^2.29.3
     eslint: 8.48.0
@@ -3326,8 +3326,7 @@ __metadata:
     "@types/xterm": ^3.0.0
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-multipart-fetch": 1.1.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     chakra-ui-autocomplete: ^1.4.5
     date-fns: ^2.29.3
     date-fns-tz: 2.0.0
@@ -3342,7 +3341,7 @@ __metadata:
     formik: 2.4.4
     framer-motion: 10.16.4
     graphql: 15.8.0
-    graphql-ws: ^5.11.2
+    graphql-ws: 5.14.0
     json-templates: 5.0.0
     lodash: 4.17.21
     react: 18.2.0
@@ -3383,7 +3382,7 @@ __metadata:
     "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     chakra-ui-autocomplete: ^1.4.5
     eslint: 8.48.0
     eslint-config-prettier: 9.0.0
@@ -3490,8 +3489,7 @@ __metadata:
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-multipart-fetch": 1.1.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     dagre: 0.8.5
     eslint: 8.48.0
     eslint-config-prettier: 9.0.0
@@ -3544,8 +3542,7 @@ __metadata:
     "@graphql-codegen/typescript": 4.0.1
     "@graphql-codegen/typescript-operations": 4.0.1
     "@types/unescape-js": ^1.0.0
-    "@urql/exchange-multipart-fetch": 1.1.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     clipboard: ^2.0.4
     dagre: 0.8.5
     eslint: 8.48.0
@@ -5402,18 +5399,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@urql/exchange-multipart-fetch@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@urql/exchange-multipart-fetch@npm:1.1.0"
+"@urql/exchange-retry@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@urql/exchange-retry@npm:1.2.0"
   dependencies:
     "@urql/core": ">=4.0.0"
-    extract-files: ^11.0.0
-    wonka: ^6.3.0
-  checksum: ea9e0d5fbfaa34dd7d47c8d587f5c77d2443a3e5067db1bd69e2c6074ea0d0bcc9e4224648a2f3ddfec32b1b06f9313a45e1c022ff84e507b8348bbf2b2102d9
+    wonka: ^6.3.2
+  checksum: 5bb30c1de9fc6c1cd25224da4c2445567dc3d6bacac43a15dcca07bbd87c2c30c765dc522a3150dc119dc76230b2da27328a4ccd4e9cfb02039d87a9beaf97b4
   languageName: node
   linkType: hard
 
-"@urql/exchange-retry@npm:1.0.0, @urql/exchange-retry@npm:^1.0.0":
+"@urql/exchange-retry@npm:^1.0.0":
   version: 1.0.0
   resolution: "@urql/exchange-retry@npm:1.0.0"
   dependencies:
@@ -9647,12 +9643,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^5.11.2":
-  version: 5.11.2
-  resolution: "graphql-ws@npm:5.11.2"
+"graphql-ws@npm:5.14.0, graphql-ws@npm:^5.14.0":
+  version: 5.14.0
+  resolution: "graphql-ws@npm:5.14.0"
   peerDependencies:
     graphql: ">=0.11 <=16"
-  checksum: 2c94b06c1919217dc15a0556474673de7aabcc7179a2982a87ded51856c105e4f4ee6d54a6c135a0a7f55d85a5997a6a15cff514959258885814adec6a61ff00
+  checksum: 7b622944823fa12a77ea490656121a77e1a1daf08114a6a0b027922113f4481d95f4fe380a5de369a51657ef777d35757dc31f63e41071c21f3e97ca47e4205a
   languageName: node
   linkType: hard
 
@@ -9662,15 +9658,6 @@ __metadata:
   peerDependencies:
     graphql: ">=0.11 <=16"
   checksum: 7a820c15d6d99f1b4c40b928131899a66edf2fdbca3db09a03dd7f6bde1e81f0a76ccda8e26254aabb0dc30f2a8c133cb0c5c5627c2dde8d032a8dc5a21f0ed3
-  languageName: node
-  linkType: hard
-
-"graphql-ws@npm:^5.14.0":
-  version: 5.14.0
-  resolution: "graphql-ws@npm:5.14.0"
-  peerDependencies:
-    graphql: ">=0.11 <=16"
-  checksum: 7b622944823fa12a77ea490656121a77e1a1daf08114a6a0b027922113f4481d95f4fe380a5de369a51657ef777d35757dc31f63e41071c21f3e97ca47e4205a
   languageName: node
   linkType: hard
 
@@ -15466,7 +15453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wonka@npm:^6.3.0, wonka@npm:^6.3.2":
+"wonka@npm:^6.3.2":
   version: 6.3.4
   resolution: "wonka@npm:6.3.4"
   checksum: 6bb57955cb2982fb469a7824484e6854b436f89a7f10b6a981348789d88fbc944665771adc4cc404f62416417eb47ab2b8657d898e5301ccd4a53eaac6a10508
