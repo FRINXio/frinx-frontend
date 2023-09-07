@@ -58,7 +58,7 @@
     "graphql": "15.8.0",
     "immer": "^10.0.0",
     "lodash": "4.17.21",
-    "urql": "3.0.3",
+    "urql": "3.0.4",
     "uuid": "^9.0.0"
   },
   "peerDependencies": {

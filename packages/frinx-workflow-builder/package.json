@@ -36,7 +36,7 @@
     "lodash": "4.17.21",
     "minisearch": "^6.0.0",
     "react-flow-renderer": "10.3.17",
-    "urql": "3.0.3",
+    "urql": "3.0.4",
     "uuid": "9.0.0",
     "yup": "^0.32.11"
   },

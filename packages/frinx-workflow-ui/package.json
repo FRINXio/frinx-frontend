@@ -28,7 +28,7 @@
     "react-flow-renderer": "10.3.17",
     "react-organizational-chart": "^2.0.0",
     "unescape-js": "^1.1.4",
-    "urql": "3.0.3"
+    "urql": "3.0.4"
   },
   "scripts": {
     "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
