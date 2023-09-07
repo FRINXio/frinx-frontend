@@ -5,6 +5,18 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@0no-co/graphql.web@npm:^1.0.1":
+  version: 1.0.4
+  resolution: "@0no-co/graphql.web@npm:1.0.4"
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
+  peerDependenciesMeta:
+    graphql:
+      optional: true
+  checksum: d415fb2f063a024e2d382e8dc5e66929d0d9bf94f2c22e03cde201dc2fa03e15d21274dbe5c23a26ce016a4cac3db93ad99fb454de76fd94bc1600fd7062eebe
+  languageName: node
+  linkType: hard
+
 "@4tw/cypress-drag-drop@npm:^2.2.3":
   version: 2.2.3
   resolution: "@4tw/cypress-drag-drop@npm:2.2.3"
@@ -3081,7 +3093,7 @@ __metadata:
     "@frinx/shared": "workspace:^"
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     eslint: 8.48.0
     eslint-config-prettier: 9.0.0
     eslint-import-resolver-typescript: 3.6.0
@@ -3183,7 +3195,7 @@ __metadata:
     "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     chakra-ui-autocomplete: ^1.4.5
     date-fns: ^2.29.3
     eslint: 8.48.0
@@ -3315,7 +3327,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
     "@urql/exchange-multipart-fetch": 1.0.1
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     chakra-ui-autocomplete: ^1.4.5
     date-fns: ^2.29.3
     date-fns-tz: 2.0.0
@@ -3371,7 +3383,7 @@ __metadata:
     "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     chakra-ui-autocomplete: ^1.4.5
     eslint: 8.48.0
     eslint-config-prettier: 9.0.0
@@ -3479,7 +3491,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
     "@urql/exchange-multipart-fetch": 1.0.1
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     dagre: 0.8.5
     eslint: 8.48.0
     eslint-config-prettier: 9.0.0
@@ -3533,7 +3545,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": 4.0.1
     "@types/unescape-js": ^1.0.0
     "@urql/exchange-multipart-fetch": 1.0.1
-    "@urql/exchange-retry": 1.0.0
+    "@urql/exchange-retry": 1.2.0
     clipboard: ^2.0.4
     dagre: 0.8.5
     eslint: 8.48.0
@@ -5380,6 +5392,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@urql/core@npm:>=4.0.0":
+  version: 4.1.2
+  resolution: "@urql/core@npm:4.1.2"
+  dependencies:
+    "@0no-co/graphql.web": ^1.0.1
+    wonka: ^6.3.2
+  checksum: b446cfce8c59cccaa77cc3b5d89e788016c7af1e6870d344427915aca41462645dd0b06e6db9716e91b54a3bb419a9301399bc056d9e6a9f4cab216f495567a5
+  languageName: node
+  linkType: hard
+
 "@urql/exchange-multipart-fetch@npm:1.0.1":
   version: 1.0.1
   resolution: "@urql/exchange-multipart-fetch@npm:1.0.1"
@@ -5393,7 +5415,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@urql/exchange-retry@npm:1.0.0, @urql/exchange-retry@npm:^1.0.0":
+"@urql/exchange-retry@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@urql/exchange-retry@npm:1.2.0"
+  dependencies:
+    "@urql/core": ">=4.0.0"
+    wonka: ^6.3.2
+  checksum: 5bb30c1de9fc6c1cd25224da4c2445567dc3d6bacac43a15dcca07bbd87c2c30c765dc522a3150dc119dc76230b2da27328a4ccd4e9cfb02039d87a9beaf97b4
+  languageName: node
+  linkType: hard
+
+"@urql/exchange-retry@npm:^1.0.0":
   version: 1.0.0
   resolution: "@urql/exchange-retry@npm:1.0.0"
   dependencies:
@@ -15431,6 +15463,13 @@ __metadata:
   version: 6.1.2
   resolution: "wonka@npm:6.1.2"
   checksum: 474dcffd3861faaf5df8f4ef1ea1e614eb0cf36f54003974ebd4ab43b8fd6aad26317ef75e55488e7a61d64922531ae3ca2890dac90922d46715e0dd795682ce
+  languageName: node
+  linkType: hard
+
+"wonka@npm:^6.3.2":
+  version: 6.3.4
+  resolution: "wonka@npm:6.3.4"
+  checksum: 6bb57955cb2982fb469a7824484e6854b436f89a7f10b6a981348789d88fbc944665771adc4cc404f62416417eb47ab2b8657d898e5301ccd4a53eaac6a10508
   languageName: node
   linkType: hard
 
