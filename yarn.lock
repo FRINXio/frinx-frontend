@@ -2567,9 +2567,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:11.11.0":
-  version: 11.11.0
-  resolution: "@emotion/react@npm:11.11.0"
+"@emotion/react@npm:11.11.1":
+  version: 11.11.1
+  resolution: "@emotion/react@npm:11.11.1"
   dependencies:
     "@babel/runtime": ^7.18.3
     "@emotion/babel-plugin": ^11.11.0
@@ -2584,7 +2584,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 2653e7c3de7b6fd5b0e18dea15621a9886104cc7c8cd5522ca69e52bd547ef6f13644193f8e0a906eea1e29a4f1d8167cdfa4667572fb7fafe0c62ab30fbaab6
+  checksum: aec3c36650f5f0d3d4445ff44d73dd88712b1609645b6af3e6d08049cfbc51f1785fe13dea1a1d4ab1b0800d68f2339ab11e459687180362b1ef98863155aae5
   languageName: node
   linkType: hard
 
@@ -3129,7 +3129,7 @@ __metadata:
     "@azure/msal-react": 2.0.3
     "@chakra-ui/react": 2.8.0
     "@chakra-ui/system": 2.6.0
-    "@emotion/react": 11.11.0
+    "@emotion/react": 11.11.1
     "@emotion/styled": 11.11.0
     "@fontsource/roboto": ^5.0.8
     "@formspree/react": ^2.4.0
@@ -3182,7 +3182,7 @@ __metadata:
   resolution: "@frinx/device-topology@workspace:packages/frinx-device-topology"
   dependencies:
     "@chakra-ui/react": 2.8.0
-    "@emotion/react": 11.11.0
+    "@emotion/react": 11.11.1
     "@emotion/styled": 11.11.0
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 20.0.1
@@ -3311,7 +3311,7 @@ __metadata:
   resolution: "@frinx/inventory-client@workspace:packages/frinx-inventory-client"
   dependencies:
     "@chakra-ui/react": 2.8.0
-    "@emotion/react": 11.11.0
+    "@emotion/react": 11.11.1
     "@emotion/styled": 11.11.0
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 20.0.1
@@ -3369,7 +3369,7 @@ __metadata:
   resolution: "@frinx/resource-manager@workspace:packages/frinx-resource-manager"
   dependencies:
     "@chakra-ui/react": 2.8.0
-    "@emotion/react": 11.11.0
+    "@emotion/react": 11.11.1
     "@emotion/styled": 11.11.0
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 20.0.1
@@ -3422,7 +3422,7 @@ __metadata:
   resolution: "@frinx/shared@workspace:packages/shared"
   dependencies:
     "@chakra-ui/react": 2.8.0
-    "@emotion/react": 11.11.0
+    "@emotion/react": 11.11.1
     "@emotion/styled": 11.11.0
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 20.0.1
@@ -3473,7 +3473,7 @@ __metadata:
   resolution: "@frinx/workflow-builder@workspace:packages/frinx-workflow-builder"
   dependencies:
     "@chakra-ui/react": 2.8.0
-    "@emotion/react": 11.11.0
+    "@emotion/react": 11.11.1
     "@emotion/styled": 11.11.0
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 20.0.1
@@ -3531,7 +3531,7 @@ __metadata:
   dependencies:
     "@ajna/pagination": 1.4.19
     "@chakra-ui/react": 2.8.0
-    "@emotion/react": 11.11.0
+    "@emotion/react": 11.11.1
     "@emotion/styled": 11.11.0
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 20.0.1
