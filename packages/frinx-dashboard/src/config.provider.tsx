@@ -1,5 +1,5 @@
 import { unwrap } from '@frinx/shared';
-import React, { createContext, FC, useContext, useMemo, useState } from 'react';
+import React, { createContext, FC, useContext, useRef } from 'react';
 import { GlobalConfig } from './types';
 
 export const ConfigContext = createContext<GlobalConfig | null>(null);
@@ -13,9 +13,9 @@ type Props = {
 };
 
 const ConfigProvider: FC<Props> = ({ config, children }) => {
-  const [stateConfig] = useState(config);
+  const { current } = useRef<GlobalConfig>(config);
 
-  return <ConfigContext.Provider value={useMemo(() => stateConfig, [stateConfig])}>{children}</ConfigContext.Provider>;
+  return <ConfigContext.Provider value={current}>{children}</ConfigContext.Provider>;
 };
 
 export default ConfigProvider;
