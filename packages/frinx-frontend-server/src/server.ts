@@ -19,7 +19,7 @@ export const log = getLogger('frinx-frontend-server');
 
 const app = express();
 
-app.use('/-/config.js', makeConfigJSHandler());
+app.use('/-/config.mjs', makeConfigJSHandler());
 app.use('/-*', (req, res) => {
   res.sendStatus(404);
 });

@@ -339,8 +339,6 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const { taskDefinitions } = workflowListData;
 
-  // console.log(workflow?.tasks);
-
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
       <ReactFlowProvider>
