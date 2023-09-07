@@ -1,10 +1,12 @@
 import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
+import { useConfigContext } from './config.provider';
 
-type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'>;
+type UniflowComponents = typeof import('@frinx/workflow-ui');
 
 const UniflowApp: FC = () => {
+  const { inventoryApiURL, inventoryWsURL } = useConfigContext();
   const [components, setComponents] = useState<UniflowComponents | null>(null);
 
   useEffect(() => {
@@ -26,8 +28,8 @@ const UniflowApp: FC = () => {
 
   return (
     <InventoryAPIProvider
-      client={InventoryApi.create({ authContext, url: window.__CONFIG__.inventoryApiURL }).client}
-      wsUrl={window.__CONFIG__.inventoryWsURL}
+      client={InventoryApi.create({ authContext, url: inventoryApiURL }).client}
+      wsUrl={inventoryWsURL}
     >
       <App />
     </InventoryAPIProvider>

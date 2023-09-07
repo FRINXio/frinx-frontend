@@ -6,15 +6,14 @@ import App from './app';
 import { createPublicClientApp } from './auth-helpers';
 import AuthProvider from './auth-provider';
 import theme from './theme';
-import { ServiceKey } from './types';
 import '@fontsource/roboto';
-
-function getURLBaseName(): string {
-  return window.__CONFIG__.URLBasename ?? '/';
-}
+import { useConfigContext } from './config.provider';
 
 const AuthRoot: FC = ({ children }) => {
-  const publicClientAppRef = useRef<PublicClientApplication>(createPublicClientApp());
+  const { MSALAuthority, authClientId, authRedirectURL } = useConfigContext();
+  const publicClientAppRef = useRef<PublicClientApplication>(
+    createPublicClientApp({ authority: MSALAuthority, clientId: authClientId, redirectUri: authRedirectURL }),
+  );
 
   return (
     <MsalProvider instance={publicClientAppRef.current}>
@@ -23,21 +22,18 @@ const AuthRoot: FC = ({ children }) => {
   );
 };
 
-type Props = {
-  enabledServices: Map<ServiceKey, boolean>;
-  isAuthEnabled: boolean;
-};
+const Root: VoidFunctionComponent = () => {
+  const { isAuthEnabled, URLBasename } = useConfigContext();
 
-const Root: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }) => {
   return isAuthEnabled ? (
     <ChakraProvider theme={theme}>
       <AuthRoot>
-        <App isAuthEnabled enabledServices={enabledServices} basename={getURLBaseName()} />
+        <App isAuthEnabled basename={URLBasename ?? '/'} />
       </AuthRoot>
     </ChakraProvider>
   ) : (
     <ChakraProvider theme={theme}>
-      <App isAuthEnabled={false} enabledServices={enabledServices} basename={getURLBaseName()} />
+      <App isAuthEnabled={false} basename={URLBasename ?? '/'} />
     </ChakraProvider>
   );
 };

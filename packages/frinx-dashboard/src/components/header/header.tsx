@@ -1,33 +1,31 @@
-import React, { VoidFunctionComponent } from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import FeatherIcon from 'feather-icons-react';
 import {
+  Box,
   Flex,
+  Icon,
   IconButton,
   Image,
-  MenuButton,
-  Menu,
-  MenuList,
-  MenuItem,
-  Box,
-  Icon,
-  Text,
-  Portal,
   LinkBox,
   LinkOverlay,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Portal,
+  Text,
   VisuallyHidden,
 } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
+import React, { VoidFunctionComponent } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import AppMenu from '../app-menu/app-menu';
 import UserNav from '../user-nav/user-nav';
 import logo from './logo-min.png';
-import AppMenu from '../app-menu/app-menu';
-import { ServiceKey } from '../../types';
 
 type Props = {
   isAuthEnabled: boolean;
-  enabledServices: Map<ServiceKey, boolean>;
 };
 
-const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }) => {
+const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled }) => {
   return (
     <Flex
       height={16}
@@ -55,36 +53,27 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
                 <Icon size={20} as={FeatherIcon} icon="grid" color="blue.700" marginRight={2} />
                 <Text fontWeight="bold">Dashboard</Text>
               </MenuItem>
-              {enabledServices.get('isUniflowEnabled') && (
-                <MenuItem as={Link} to="/workflow-manager">
-                  <Icon size={20} as={FeatherIcon} icon="layers" color="blue.700" marginRight={2} />
-                  <Text fontWeight="bold">Workflow manager</Text>
-                </MenuItem>
-              )}
-              {enabledServices.get('isInventoryEnabled') && (
-                <MenuItem as={Link} to="/inventory">
-                  <Icon size={20} as={FeatherIcon} icon="server" color="blue.700" marginRight={2} />
-                  <Text fontWeight="bold">Device Inventory</Text>
-                </MenuItem>
-              )}
-              {enabledServices.get('isResourceManagerEnabled') && (
-                <MenuItem as={Link} to="/resource-manager">
-                  <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
-                  <Text fontWeight="bold">Resource manager</Text>
-                </MenuItem>
-              )}
-              {enabledServices.get('isL3VPNEnabled') && (
-                <MenuItem as={Link} to="/gamma">
-                  <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
-                  <Text fontWeight="bold">L3VPN Automation</Text>
-                </MenuItem>
-              )}
-              {enabledServices.get('isDeviceTopologyEnabled') && (
-                <MenuItem as={Link} to="/device-topology">
-                  <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
-                  <Text fontWeight="bold">Device Topology</Text>
-                </MenuItem>
-              )}
+
+              <MenuItem as={Link} to="/workflow-manager">
+                <Icon size={20} as={FeatherIcon} icon="layers" color="blue.700" marginRight={2} />
+                <Text fontWeight="bold">Workflow manager</Text>
+              </MenuItem>
+              <MenuItem as={Link} to="/inventory">
+                <Icon size={20} as={FeatherIcon} icon="server" color="blue.700" marginRight={2} />
+                <Text fontWeight="bold">Device Inventory</Text>
+              </MenuItem>
+              <MenuItem as={Link} to="/resource-manager">
+                <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
+                <Text fontWeight="bold">Resource manager</Text>
+              </MenuItem>
+              <MenuItem as={Link} to="/gamma">
+                <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
+                <Text fontWeight="bold">L3VPN Automation</Text>
+              </MenuItem>
+              <MenuItem as={Link} to="/device-topology">
+                <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
+                <Text fontWeight="bold">Device Topology</Text>
+              </MenuItem>
             </MenuList>
           </Portal>
         </Menu>
@@ -96,7 +85,7 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled, enabledServices }
         </LinkOverlay>
       </LinkBox>
       <Box marginLeft={8} alignSelf="stretch">
-        <AppMenu enabledServices={enabledServices} />
+        <AppMenu />
       </Box>
       {isAuthEnabled ? <UserNav /> : null}
     </Flex>

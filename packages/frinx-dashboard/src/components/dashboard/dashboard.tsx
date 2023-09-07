@@ -1,35 +1,29 @@
 import { Box, Container, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
-import React, { FC } from 'react';
-import { ServiceKey } from '../../types';
+import React, { VoidFunctionComponent } from 'react';
+import { useConfigContext } from '../../config.provider';
 import Panel from '../panel/panel';
 import ElisaLogo from './img/elisa-logo.png';
 import InventoryActions from './inventory-actions';
 import UniflowActions from './uniflow-actions';
 
-type Props = {
-  enabledServices: Map<ServiceKey, boolean>;
-};
-
-const Dashboard: FC<Props> = ({ enabledServices }) => {
+const Dashboard: VoidFunctionComponent = () => {
+  const { uniflowApiDocsURL, inventoryApiURL, isAuthEnabled, uniconfigApiDocsURL, commitHash } = useConfigContext();
   return (
     <Flex flexDirection="column" minHeight="calc(100vh - 10px - 64px - 32px)">
       <Container maxWidth={1280} marginBottom={8}>
-        {enabledServices.get('isUniflowEnabled') && (
-          <Box marginBottom={12}>
-            <Heading as="h2" size="lg" marginBottom={6}>
-              Workflow manager
-            </Heading>
-            <UniflowActions />
-          </Box>
-        )}
-        {enabledServices.get('isInventoryEnabled') && (
-          <Box>
-            <Heading as="h2" size="lg" marginBottom={6}>
-              Device Inventory
-            </Heading>
-            <InventoryActions />
-          </Box>
-        )}
+        <Box marginBottom={12}>
+          <Heading as="h2" size="lg" marginBottom={6}>
+            Workflow manager
+          </Heading>
+          <UniflowActions />
+        </Box>
+
+        <Box>
+          <Heading as="h2" size="lg" marginBottom={6}>
+            Device Inventory
+          </Heading>
+          <InventoryActions />
+        </Box>
         <Box marginTop={20}>
           <Box as="header" marginBottom={6}>
             <Heading as="h2" size="lg">
@@ -37,30 +31,25 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             </Heading>
           </Box>
           <HStack spacing={4}>
-            {enabledServices.get('isUniflowEnabled') && (
-              <Panel
-                label="Workflow manager"
-                description="Create, organize and execute workflows."
-                icon="layers"
-                path="/workflow-manager"
-              />
-            )}
-            {enabledServices.get('isInventoryEnabled') && (
-              <Panel
-                label="Device Inventory"
-                description="Manage network device configurations."
-                icon="server"
-                path="/inventory"
-              />
-            )}
-            {enabledServices.get('isResourceManagerEnabled') && (
-              <Panel
-                label="Resource manager"
-                description="Manage logical resources."
-                icon="hard-drive"
-                path="/resource-manager"
-              />
-            )}
+            <Panel
+              label="Workflow manager"
+              description="Create, organize and execute workflows."
+              icon="layers"
+              path="/workflow-manager"
+            />
+            <Panel
+              label="Device Inventory"
+              description="Manage network device configurations."
+              icon="server"
+              path="/inventory"
+            />
+
+            <Panel
+              label="Resource manager"
+              description="Manage logical resources."
+              icon="hard-drive"
+              path="/resource-manager"
+            />
           </HStack>
         </Box>
         <Box marginTop={20}>
@@ -74,22 +63,22 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
               label="UniConfig"
               description="Learn more about UniConfig API using Swagger."
               icon="book"
-              path={window.__CONFIG__.uniconfigApiDocsURL}
+              path={uniconfigApiDocsURL}
               isLinkExternal
             />
             <Panel
               label="Workflow manager"
               description="Learn more about Workflow manager API using Swagger."
               icon="book"
-              path={window.__CONFIG__.uniflowApiDocsURL}
+              path={uniflowApiDocsURL}
               isLinkExternal
             />
-            {window.__CONFIG__.isAuthEnabled ? null : (
+            {isAuthEnabled ? null : (
               <Panel
                 label="Device Inventory"
                 description="Execute and inspect queries with GraphQL Playground."
                 icon="book"
-                path={window.__CONFIG__.inventoryApiURL}
+                path={inventoryApiURL}
                 isLinkExternal
               />
             )}
@@ -114,7 +103,7 @@ const Dashboard: FC<Props> = ({ enabledServices }) => {
             <Text>
               Version:{' '}
               <Text as="span" fontFamily="monospace">
-                {window.__CONFIG__.commitHash}
+                {commitHash}
               </Text>
             </Text>
             <Box marginLeft="auto">
