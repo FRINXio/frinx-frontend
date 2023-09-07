@@ -11,6 +11,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared';
+import { omit } from 'lodash';
 
 type Props = {
   isOpen: boolean;
@@ -21,7 +22,7 @@ type Props = {
 };
 
 const parseWorkflow = (workflow: ClientWorkflow<ExtendedTask>) => {
-  const { name, description, ...rest } = workflow;
+  const { name, description, ...rest } = omit(workflow, ['__typename']);
   return JSON.stringify(
     {
       description,
@@ -47,7 +48,6 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
   };
 
   const handleChange = (value: string | undefined) => {
-    // console.log(value);
     setEditedWorkflow(value ?? '');
     onChangeNotify();
   };

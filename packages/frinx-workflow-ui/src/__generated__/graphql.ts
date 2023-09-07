@@ -1797,14 +1797,18 @@ export type UpdateWorkflowPayload = {
 
 export type Workflow = Node & {
   __typename?: 'Workflow';
+  accessPolicy: Maybe<Scalars['Record']['output']>;
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
   description: Maybe<Scalars['String']['output']>;
+  failureWorkflow: Maybe<Scalars['String']['output']>;
   hasSchedule: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   inputParameters: Maybe<Array<Scalars['String']['output']>>;
+  inputTemplate: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   outputParameters: Maybe<Array<OutputParameter>>;
+  ownerApp: Maybe<Scalars['String']['output']>;
   ownerEmail: Maybe<Scalars['String']['output']>;
   restartable: Maybe<Scalars['Boolean']['output']>;
   schemaVersion: Maybe<Scalars['Int']['output']>;
@@ -1813,8 +1817,9 @@ export type Workflow = Node & {
   timeoutSeconds: Scalars['Int']['output'];
   updatedAt: Maybe<Scalars['String']['output']>;
   updatedBy: Maybe<Scalars['String']['output']>;
-  variables: Maybe<Scalars['String']['output']>;
+  variables: Maybe<Scalars['Record']['output']>;
   version: Maybe<Scalars['Int']['output']>;
+  workflowStatusListenerEnabled: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type WorkflowConnection = {
@@ -1854,15 +1859,25 @@ export type WorkflowEdge = {
 };
 
 export type WorkflowInput = {
-  createdAt?: InputMaybe<Scalars['String']['input']>;
+  accessPolicy?: InputMaybe<Scalars['Record']['input']>;
+  createdBy?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  failureWorkflow?: InputMaybe<Scalars['String']['input']>;
+  inputParameters?: InputMaybe<Array<Scalars['String']['input']>>;
+  inputTemplate?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   outputParameters?: InputMaybe<Array<OutputParameterInput>>;
+  ownerApp?: InputMaybe<Scalars['String']['input']>;
+  ownerEmail?: InputMaybe<Scalars['String']['input']>;
   restartable?: InputMaybe<Scalars['Boolean']['input']>;
+  schemaVersion?: InputMaybe<Scalars['Int']['input']>;
   tasks: Scalars['String']['input'];
+  timeoutPolicy?: InputMaybe<TimeoutPolicy>;
   timeoutSeconds: Scalars['Int']['input'];
-  updatedAt?: InputMaybe<Scalars['String']['input']>;
+  updatedBy?: InputMaybe<Scalars['String']['input']>;
+  variables?: InputMaybe<Scalars['Record']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
+  workflowStatusListenerEnabled?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type WorkflowInstanceDetail = {

@@ -18,6 +18,8 @@ import {
   ExecutedWorkflow,
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
+  SortExecutedWorkflowsBy,
+  SortExecutedWorkflowsDirection,
 } from '../../__generated__/graphql';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
 import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
@@ -26,11 +28,11 @@ import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from '.
 
 export type SortProperty = { key: keyof ExecutedWorkflow; value: 'ASC' | 'DESC' };
 
-export type SortKey = 'workflowId' | 'workflowName' | 'startTime' | 'endTime' | 'status';
+export type SortKey = SortExecutedWorkflowsBy;
 
 export type OrderBy = {
-  sortKey: 'workflowId' | 'workflowName' | 'startTime' | 'endTime' | 'status';
-  direction: 'asc' | 'desc';
+  sortKey: SortKey;
+  direction: SortExecutedWorkflowsDirection;
 };
 
 const EXECUTED_WORKFLOW_QUERY = gql`
@@ -118,7 +120,7 @@ const ExecutedWorkflowList = () => {
   const toast = useToast();
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
   const [isExecutingBulkOperation, setIsExecutingBulkOperation] = useState(false);
-  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'workflowName', direction: 'asc' });
+  const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'startTime', direction: 'desc' });
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [isFlat, setIsFlat] = useState(false);
 
