@@ -10,7 +10,7 @@
   ],
   "dependencies": {
     "@frinx/shared": "workspace:^",
-    "@urql/exchange-retry": "1.0.0",
+    "@urql/exchange-retry": "1.2.0",
     "chakra-ui-autocomplete": "^1.4.5",
     "feather-icons-react": "0.6.2",
     "formik": "2.4.4",
@@ -18,7 +18,7 @@
     "ipaddr.js": "^2.0.1",
     "lodash": "4.17.21",
     "match-sorter": "6.3.1",
-    "urql": "3.0.3",
+    "urql": "4.0.5",
     "uuid": "9.0.0",
     "yup": "0.32.11"
   },

@@ -7,6 +7,6 @@ export type ApiConfig = {
 };
 
 export type GraphQLApiClient = {
-  clientOptions: ClientOptions;
+  clientOptions: Omit<ClientOptions, 'exchanges'>;
   onError: () => void;
 };
