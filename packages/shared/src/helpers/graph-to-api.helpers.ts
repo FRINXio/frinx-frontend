@@ -1,12 +1,36 @@
-import { partition } from 'lodash';
+import { omit, partition } from 'lodash';
 import { Edge, getConnectedEdges, getIncomers, getOutgoers, Node } from 'react-flow-renderer';
-import { ExtendedDecisionTask, ExtendedForkTask, ExtendedTask, NodeData } from './workflow-api.types';
+import { ExtendedDecisionTask, ExtendedForkTask, ExtendedTask, NodeData, Task } from './workflow-api.types';
 import unwrap from './unwrap';
 
-function convertNodeToTask(node: Node<NodeData>): ExtendedTask {
+function isTask(task: unknown): task is Task {
+  if (typeof task === 'object') {
+    return true;
+  }
+  return false;
+}
+
+function convertExtendedTaskToTask(extendedTask: ExtendedTask): Task {
+  const task: unknown = omit(extendedTask, ['id', 'label']);
+
+  if (!isTask(task)) {
+    throw new Error('should never happend');
+  }
+
+  return task;
+}
+
+function convertNodeToTask(node: Node<NodeData>): Task | null {
   const { data } = node;
-  const { task } = data;
-  return unwrap(task);
+  const { task: extendedTask } = data;
+
+  if (!extendedTask) {
+    return null;
+  }
+
+  const task = convertExtendedTaskToTask(extendedTask);
+
+  return task;
 }
 
 function isConnectionNode(node: Node, elements: { nodes: Node[]; edges: Edge[] }): boolean {
@@ -33,18 +57,14 @@ function findForkOrDecisionEndNode(elements: { nodes: Node[]; edges: Edge[] }, n
   return endNode;
 }
 
-function getDecisionTask(
-  tasks: ExtendedTask[],
-  elements: { nodes: Node[]; edges: Edge[] },
-  currentNode: Node,
-): ExtendedTask[] {
+function getDecisionTask(tasks: ExtendedTask[], elements: { nodes: Node[]; edges: Edge[] }, currentNode: Node): Task[] {
   const { nodes, edges } = elements;
   const currentTask = convertNodeToTask(currentNode) as ExtendedDecisionTask;
   const children = getOutgoers(currentNode, nodes, edges);
   const decisionEndNode = findForkOrDecisionEndNode(elements, currentNode, 0);
 
   // get every decision branch tasks
-  const decisionTasks: [string, ExtendedTask[]][] = children.map((decision) => {
+  const decisionTasks: [string, Task[]][] = children.map((decision) => {
     const connectionEdges = getConnectedEdges([decision], edges as Edge<unknown>[]);
     const startBranchEdge = unwrap(connectionEdges.find((e) => e.source === currentTask.taskReferenceName));
     const decisionStartNode = unwrap(nodes.find((n) => n.id === startBranchEdge?.target));
@@ -55,7 +75,7 @@ function getDecisionTask(
   // we split tasks for decision cases and for `default` case
   const [decisionCases, defaultCase] = partition(decisionTasks, (d) => d[0] !== 'default');
 
-  // we convert [string, ExtendedTask[]][] -> Record<string, ExtendedTask[]>
+  // we convert [string, Task[]][] -> Record<string, Task[]>
   const newDecisionCases = decisionCases.reduce((acc, cur) => ({ ...acc, [cur[0]]: cur[1] }), {});
   const defaultCaseTasks = defaultCase[0][1];
   const editedTask = {
@@ -69,19 +89,15 @@ function getDecisionTask(
   // to upper nest level
   try {
     const nextJoinNode = findForkOrDecisionEndNode(elements, decisionEndNode, 0);
-    const nextTasks: ExtendedTask[] = traverseElements([], elements, decisionEndNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, decisionEndNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   } catch {
-    const nextTasks: ExtendedTask[] = traverseElements([], elements, decisionEndNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, decisionEndNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   }
 }
 
-function getForkTask(
-  tasks: ExtendedTask[],
-  elements: { nodes: Node[]; edges: Edge[] },
-  currentNode: Node,
-): ExtendedTask[] {
+function getForkTask(tasks: Task[], elements: { nodes: Node[]; edges: Edge[] }, currentNode: Node): Task[] {
   const { nodes, edges } = elements;
   const currentTask = convertNodeToTask(currentNode) as ExtendedForkTask;
   const children = getOutgoers(currentNode, nodes, edges);
@@ -101,20 +117,20 @@ function getForkTask(
   // to upper nest level
   try {
     const nextJoinNode = findForkOrDecisionEndNode(elements, joinNode, 0);
-    const nextTasks: ExtendedTask[] = traverseElements([], elements, joinNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, joinNode.id, nextJoinNode.id); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   } catch {
-    const nextTasks: ExtendedTask[] = traverseElements([], elements, joinNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const nextTasks = traverseElements([], elements, joinNode.id, 'end'); // eslint-disable-line @typescript-eslint/no-use-before-define
     return [...tasks, editedTask, ...nextTasks];
   }
 }
 
 function traverseElements(
-  tasks: ExtendedTask[],
+  tasks: Task[],
   elements: { nodes: Node[]; edges: Edge[] },
   id: string,
   endId = 'end',
-): ExtendedTask[] {
+): Task[] {
   if (id === endId) {
     return tasks;
   }
@@ -124,6 +140,10 @@ function traverseElements(
   const currentNode = unwrap(nodes.find((n) => n.id === id));
   const currentTask = convertNodeToTask(currentNode);
   const children = getOutgoers(currentNode, nodes, edges);
+
+  if (currentTask == null) {
+    return [];
+  }
 
   if (currentTask.type === 'DECISION') {
     return getDecisionTask([], elements, currentNode);
@@ -140,7 +160,7 @@ function traverseElements(
   return [...tasks, currentTask, ...nextTasks[0]];
 }
 
-export function convertToTasks(elements: { nodes: Node[]; edges: Edge[] }): ExtendedTask[] {
+export function convertToTasks(elements: { nodes: Node[]; edges: Edge[] }): Task[] {
   const { nodes, edges } = elements;
 
   const startNode = unwrap(nodes.find((n) => n.id === 'start'));
