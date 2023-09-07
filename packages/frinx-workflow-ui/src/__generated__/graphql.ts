@@ -1798,7 +1798,6 @@ export type UpdateWorkflowPayload = {
 export type Workflow = Node & {
   __typename?: 'Workflow';
   accessPolicy: Maybe<Scalars['Record']['output']>;
-  createTime: Maybe<Scalars['Int']['output']>;
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
   description: Maybe<Scalars['String']['output']>;
@@ -1816,7 +1815,6 @@ export type Workflow = Node & {
   tasks: Maybe<Scalars['String']['output']>;
   timeoutPolicy: Maybe<TimeoutPolicy>;
   timeoutSeconds: Scalars['Int']['output'];
-  updateTime: Maybe<Scalars['Int']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
   updatedBy: Maybe<Scalars['String']['output']>;
   variables: Maybe<Scalars['Record']['output']>;
@@ -1862,8 +1860,6 @@ export type WorkflowEdge = {
 
 export type WorkflowInput = {
   accessPolicy?: InputMaybe<Scalars['Record']['input']>;
-  createTime?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['String']['input']>;
   createdBy?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   failureWorkflow?: InputMaybe<Scalars['String']['input']>;
@@ -1878,8 +1874,6 @@ export type WorkflowInput = {
   tasks: Scalars['String']['input'];
   timeoutPolicy?: InputMaybe<TimeoutPolicy>;
   timeoutSeconds: Scalars['Int']['input'];
-  updateTime?: InputMaybe<Scalars['Int']['input']>;
-  updatedAt?: InputMaybe<Scalars['String']['input']>;
   updatedBy?: InputMaybe<Scalars['String']['input']>;
   variables?: InputMaybe<Scalars['Record']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
