@@ -58,13 +58,16 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
     }
     if (altIds.length > 0) {
       setSearchParams(
-        altIds.reduce((prev, curr) => {
-          if (Object.keys(prev).includes(curr.key)) {
-            return { ...prev, [curr.key]: [...new Set(curr.value.concat(prev[curr.key]))] };
-          }
+        altIds.reduce(
+          (prev, curr) => {
+            if (Object.keys(prev).includes(curr.key)) {
+              return { ...prev, [curr.key]: [...new Set(curr.value.concat(prev[curr.key]))] };
+            }
 
-          return { ...prev, [curr.key]: curr.value };
-        }, {} as Record<string, string | string[]>),
+            return { ...prev, [curr.key]: curr.value };
+          },
+          {} as Record<string, string | string[]>,
+        ),
       );
     }
 

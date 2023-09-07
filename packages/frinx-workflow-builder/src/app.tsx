@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import {
   ClientWorkflow,
+  convertTaskToExtendedTask,
   convertToTasks,
   ExecuteWorkflowModal,
   ExtendedTask,
@@ -10,7 +11,7 @@ import {
   TaskDefinition,
   useNotifications,
 } from '@frinx/shared';
-import produce from 'immer';
+import { produce } from 'immer';
 import { zip } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
@@ -269,7 +270,7 @@ const App: VoidFunctionComponent<Props> = ({
 
       setWorkflowToExecute({
         ...editedWorkflow,
-        tasks: newTasks,
+        tasks: newTasks.map(convertTaskToExtendedTask),
       });
 
       const description = JSON.stringify({
