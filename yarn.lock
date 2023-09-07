@@ -3327,7 +3327,7 @@ __metadata:
     eslint-plugin-react: 7.33.2
     eslint-plugin-react-hooks: 4.6.0
     feather-icons-react: 0.6.2
-    formik: 2.4.3
+    formik: 2.4.4
     framer-motion: 10.16.4
     graphql: 15.8.0
     graphql-ws: ^5.11.2
@@ -3381,7 +3381,7 @@ __metadata:
     eslint-plugin-react: 7.33.2
     eslint-plugin-react-hooks: 4.6.0
     feather-icons-react: 0.6.2
-    formik: 2.4.3
+    formik: 2.4.4
     framer-motion: 10.16.4
     graphql: 15.8.0
     graphql-tag: 2.12.6
@@ -9092,9 +9092,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"formik@npm:2.4.3":
-  version: 2.4.3
-  resolution: "formik@npm:2.4.3"
+"formik@npm:2.4.4":
+  version: 2.4.4
+  resolution: "formik@npm:2.4.4"
   dependencies:
     deepmerge: ^2.1.1
     hoist-non-react-statics: ^3.3.0
@@ -9105,7 +9105,7 @@ __metadata:
     tslib: ^2.0.0
   peerDependencies:
     react: ">=16.8.0"
-  checksum: d98dabfce97beb5cf2ff10bdaff61e0cb9e1d29090cfcad706efc793d06674cfe65299d432d32518a2756a58b6b6bfe85ceec8b47b4f5f9dcc375bcd7a37107a
+  checksum: 013214f315a942975879bb9fcd08e1a622e9418a6a30fe3cffdb369915ac695e0790af001231bf5909a2d21bf46d2f3d3b0490a403901e35f20f2a3d458a249c
   languageName: node
   linkType: hard
 
