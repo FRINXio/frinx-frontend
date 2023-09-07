@@ -2,7 +2,7 @@ import { CustomToastProvider } from '@frinx/shared';
 import { retryExchange } from '@urql/exchange-retry';
 import { createClient as createWSClient } from 'graphql-ws';
 import React, { FC, useRef } from 'react';
-import { cacheExchange, ClientOptions, createClient, Provider, subscriptionExchange } from 'urql';
+import { cacheExchange, ClientOptions, createClient, Provider, subscriptionExchange, fetchExchange } from 'urql';
 
 export type InventoryApiClient = {
   clientOptions: Omit<ClientOptions, 'exchanges'>;
@@ -35,6 +35,7 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => 
             return false;
           },
         }),
+        fetchExchange,
         subscriptionExchange({
           forwardSubscription: (request) => {
             const input = { ...request, query: request.query || '' };
