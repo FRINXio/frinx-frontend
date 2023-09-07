@@ -7,7 +7,7 @@ import { cacheExchange, ClientOptions, createClient, Provider, subscriptionExcha
 export const InventoryAPIContext = createContext(false);
 
 export type InventoryApiClient = {
-  clientOptions: ClientOptions;
+  clientOptions: Omit<ClientOptions, 'exchanges'>;
   onError: () => void;
 };
 

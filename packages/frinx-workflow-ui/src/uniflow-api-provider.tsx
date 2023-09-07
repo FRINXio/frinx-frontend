@@ -5,7 +5,7 @@ import React, { FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, Provider, subscriptionExchange } from 'urql';
 
 export type InventoryApiClient = {
-  clientOptions: ClientOptions;
+  clientOptions: Omit<ClientOptions, 'exchanges'>;
   onError: () => void;
 };
 
