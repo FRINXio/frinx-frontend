@@ -116,6 +116,9 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
     }
   };
 
+  const parsedMountParameters = jsonParse(values.mountParameters);
+  const isMountParametersValid = parsedMountParameters != null && typeof parsedMountParameters === 'string';
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl my={6} isRequired isInvalid={errors.serviceState != null}>
@@ -210,9 +213,9 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           width="100%"
           language="json"
           onChange={(value) => {
-            setFieldValue('mountParameters', JSON.stringify(value));
+            setFieldValue('mountParameters', value);
           }}
-          value={jsonParse(values.mountParameters) ?? ''}
+          value={isMountParametersValid ? parsedMountParameters : values.mountParameters ?? ''}
         />
       </FormControl>
 
