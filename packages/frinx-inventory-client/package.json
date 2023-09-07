@@ -39,7 +39,7 @@
     "uuid": "9.0.0",
     "xterm": "^5.0.0",
     "xterm-addon-fit": "^0.7.0",
-    "yup": "0.32.11"
+    "yup": "1.2.0"
   },
   "devDependencies": {
     "@chakra-ui/react": "2.8.0",
