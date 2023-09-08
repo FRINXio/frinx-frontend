@@ -23,8 +23,9 @@
     "typegen": "lerna run typegen",
     "dev:server": "cd packages/frinx-frontend-server && npm run dev",
     "dev": "run-p dev:shared dev:api dev:topology dev:inventory dev:resource dev:workflow dev:builder dev:dashboard dev:server",
-    "turbo": "lerna run typegen,type-check,lint",
-    "pr": "run-s version:check turbo",
+    "lerna:shared": "lerna run typegen,type-check,lint --scope=@frinx/shared",
+    "lerna": "lerna run typegen,type-check,lint",
+    "pr": "run-s version:check lerna:shared lerna",
     "version:check": "node ./version-check.mjs"
   },
   "devDependencies": {
