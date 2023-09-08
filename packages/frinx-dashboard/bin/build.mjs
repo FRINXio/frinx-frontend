@@ -18,7 +18,8 @@ perf.start();
 async function build() {
   await esbuild.build({
     ...makeConfig(true),
-    define: { IS_PRODUCTION: 'true' },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    define: { global: 'window', 'window.IS_PRODUCTION': 'true', 'process.env.NODE_ENV': JSON.stringify('production') },
   });
   return perf.stop();
 }

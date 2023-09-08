@@ -5,7 +5,7 @@ import Root from './root';
 import { GlobalConfig, ServiceKey } from './types';
 import ConfigProvider from './config.provider';
 
-if (window.IS_PRODUCTION !== 'true') {
+if (!window.IS_PRODUCTION) {
   new EventSource('http://localhost:8000/esbuild').addEventListener('change', () => {
     window.location.reload();
   });
