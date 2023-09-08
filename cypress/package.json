@@ -2,7 +2,7 @@
   "name": "@frinx/e2e-test",
   "author": "Frinx.io",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "lint": "eslint --ext .ts '**/*.ts' --max-warnings 0",
     "type-check": "tsc --noEmit"

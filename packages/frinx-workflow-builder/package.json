@@ -9,7 +9,7 @@
   ],
   "author": "Frinx.io",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
     "build": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",

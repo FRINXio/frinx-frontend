@@ -1,0 +1,22 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["lint", "type-check", "typegen", "codegen"]
+      }
+    }
+  },
+  "targetDefaults": {
+    "lint": {},
+    "type-check": {
+      "dependsOn": ["typegen"]
+    },
+    "typegen": {
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "codegen": {
+      "outputs": ["{projectRoot}/__generated__"]
+    }
+  }
+}
