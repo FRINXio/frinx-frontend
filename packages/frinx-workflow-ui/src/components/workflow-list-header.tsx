@@ -80,7 +80,6 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
         .map((data) => {
           const { tasks, name, description, outputParameters, restartable, timeoutSeconds, version } = data;
           return {
-            createdAt: new Date().toISOString(),
             tasks: JSON.stringify(tasks),
             name,
             description,

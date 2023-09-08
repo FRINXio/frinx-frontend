@@ -1830,8 +1830,6 @@ export type WorkflowConnection = {
 };
 
 export type WorkflowDefinitionInput = {
-  createTime?: InputMaybe<Scalars['Int']['input']>;
-  createdAt?: InputMaybe<Scalars['Int']['input']>;
   createdBy?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   inputParameters?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -1845,8 +1843,6 @@ export type WorkflowDefinitionInput = {
   tasks: Array<TaskInput>;
   timeoutPolicy?: InputMaybe<TimeoutPolicy>;
   timeoutSeconds: Scalars['Int']['input'];
-  updateTime?: InputMaybe<Scalars['Int']['input']>;
-  updatedAt?: InputMaybe<Scalars['Int']['input']>;
   updatedBy?: InputMaybe<Scalars['String']['input']>;
   variables?: InputMaybe<Scalars['String']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
