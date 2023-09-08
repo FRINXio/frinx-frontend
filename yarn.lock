@@ -3145,7 +3145,7 @@ __metadata:
     "@frinx/workflow-ui": "workspace:^"
     "@frinxio/gamma": 0.0.30
     "@types/node": 18.17.14
-    "@types/react": 17.0.65
+    "@types/react": 18.2.21
     "@types/react-dom": 18.2.7
     "@types/url-join": 4.0.1
     "@typescript-eslint/eslint-plugin": 6.6.0
@@ -3193,7 +3193,7 @@ __metadata:
     "@graphql-codegen/introspection": 4.0.0
     "@graphql-codegen/typescript": 4.0.1
     "@graphql-codegen/typescript-operations": 4.0.1
-    "@types/react": 17.0.65
+    "@types/react": 18.2.21
     "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
@@ -3323,7 +3323,7 @@ __metadata:
     "@graphql-codegen/typescript": 4.0.1
     "@graphql-codegen/typescript-operations": 4.0.1
     "@types/json-templates": 3.0.0
-    "@types/react": 17.0.65
+    "@types/react": 18.2.21
     "@types/react-dom": 18.2.7
     "@types/xterm": ^3.0.0
     "@typescript-eslint/eslint-plugin": 6.6.0
@@ -3380,7 +3380,7 @@ __metadata:
     "@graphql-codegen/introspection": 4.0.0
     "@graphql-codegen/typescript": 4.0.1
     "@graphql-codegen/typescript-operations": 4.0.1
-    "@types/react": 17.0.65
+    "@types/react": 18.2.21
     "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
@@ -3429,7 +3429,7 @@ __metadata:
     "@frinx/build-scripts": "workspace:^"
     "@frinx/eslint-config-typescript": 20.0.1
     "@monaco-editor/react": ^4.5.1
-    "@types/react": 17.0.65
+    "@types/react": 18.2.21
     "@types/react-dom": 18.2.7
     "@typescript-eslint/eslint-plugin": 6.6.0
     "@typescript-eslint/parser": 6.6.0
@@ -3486,7 +3486,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": 4.0.1
     "@types/dagre": 0.7.49
     "@types/file-saver": 2.0.5
-    "@types/react": 17.0.65
+    "@types/react": 18.2.21
     "@types/react-dom": 18.2.7
     "@types/uuid": 9.0.2
     "@typescript-eslint/eslint-plugin": 6.6.0
@@ -5122,7 +5122,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*":
+"@types/react@npm:*, @types/react@npm:18.2.21":
   version: 18.2.21
   resolution: "@types/react@npm:18.2.21"
   dependencies:
@@ -5133,7 +5133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:17.0.65, @types/react@npm:^17.0.15":
+"@types/react@npm:^17.0.15":
   version: 17.0.65
   resolution: "@types/react@npm:17.0.65"
   dependencies:
