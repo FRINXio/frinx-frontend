@@ -16,15 +16,11 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
-      - name: Use CI yarnrc
-        run: cp .yarnrc.ci.yml .yarnrc.yml
-      - name: Copy yarn.lock file
-        run: cp yarn.lock yarn.lock.orig
+      - name: Use CI npmrc
+        run: cp .npmrc.ci .npmrc
       - name: Install dependencies
-        run: yarn install --immutable
+        run: npm ci
       - name: Check code formatting
-        run: yarn run formatter:check
-      - name: Build
-        run: yarn run build
+        run: npm run formatter:check
       - name: Run PR check
-        run: yarn run pr
+        run: npm run pr

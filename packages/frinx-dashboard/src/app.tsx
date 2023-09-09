@@ -21,6 +21,7 @@ const App: FC<Props> = ({ basename, isAuthEnabled }) => {
       <Header isAuthEnabled={isAuthEnabled} />
       <Box paddingTop={10} overflow="hidden">
         <Routes>
+          aa
           <Route path="/workflow-manager/*" element={<UniflowApp />} />
           <Route path="/gamma/*" element={<GammaApp />} />
           <Route path="/inventory/*" element={<InventoryApp />} />

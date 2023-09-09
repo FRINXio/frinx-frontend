@@ -1,7 +1,7 @@
 {
   "name": "@frinx/dashboard",
   "version": "2.0.0",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@azure/msal-browser": "3.1.0",
     "@azure/msal-common": "14.0.3",
@@ -12,13 +12,13 @@
     "@emotion/styled": "11.11.0",
     "@fontsource/roboto": "^5.0.8",
     "@formspree/react": "^2.4.0",
-    "@frinx/api": "workspace:^",
-    "@frinx/device-topology": "workspace:^",
-    "@frinx/inventory-client": "workspace:^",
-    "@frinx/resource-manager": "workspace:^",
-    "@frinx/shared": "workspace:^",
-    "@frinx/workflow-builder": "workspace:^",
-    "@frinx/workflow-ui": "workspace:^",
+    "@frinx/api": "^0.0.20",
+    "@frinx/device-topology": "^2.0.0",
+    "@frinx/inventory-client": "^2.0.0",
+    "@frinx/resource-manager": "^2.0.0",
+    "@frinx/shared": "^2.0.0",
+    "@frinx/workflow-builder": "^2.0.0",
+    "@frinx/workflow-ui": "^2.0.0",
     "@frinxio/gamma": "0.0.30",
     "@types/node": "18.17.14",
     "@types/react": "17.0.65",
@@ -61,5 +61,14 @@
     "npm-run-all": "4.1.5",
     "ora": "^7.0.1",
     "typescript": "4.9.5"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/build-client"
+        ]
+      }
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@frinx/workflow-builder",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "typings": "dist/index.d.ts",
@@ -9,7 +9,7 @@
   ],
   "author": "Frinx.io",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
     "build": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",
@@ -21,7 +21,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@frinx/shared": "workspace:^",
+    "@frinx/shared": "^2.0.0",
     "@types/file-saver": "2.0.5",
     "@types/react": "17.0.65",
     "@types/react-dom": "18.2.7",
@@ -30,20 +30,20 @@
     "dagre": "0.8.5",
     "feather-icons-react": "0.6.2",
     "file-saver": "2.0.5",
-    "formik": "^2.2.9",
+    "formik": "2.4.4",
     "immer": "10.0.2",
     "lodash": "4.17.21",
     "minisearch": "^6.0.0",
     "react-flow-renderer": "10.3.17",
     "urql": "4.0.5",
     "uuid": "9.0.0",
-    "yup": "^0.32.11"
+    "yup": "0.32.11"
   },
   "devDependencies": {
     "@chakra-ui/react": "2.8.0",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
-    "@frinx/build-scripts": "workspace:^",
+    "@frinx/build-scripts": "^2.0.0",
     "@frinx/eslint-config-typescript": "20.0.1",
     "@graphql-codegen/cli": "5.0.0",
     "@graphql-codegen/introspection": "4.0.0",
@@ -74,5 +74,10 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0"
+  },
+  "nx": {
+    "implicitDependencies": [
+      "@frinx/shared"
+    ]
   }
 }
