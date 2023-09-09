@@ -9,10 +9,10 @@ RUN mkdir /build
 COPY . /build/
 
 WORKDIR /build
-RUN cp .yarnrc.ci.yml .yarnrc.yml
-RUN yarn install --immutable
+RUN cp .npmrc.ci .npmrc
+RUN npm ci
 ENV NODE_ENV production
-RUN yarn run build
+RUN npm run build
 
 FROM node:19.9.0-alpine
 LABEL org.opencontainers.image.source="https://github.com/FRINXio/frinx-frontend"
@@ -27,13 +27,13 @@ ARG COMMIT_HASH=unspecified
 LABEL git_commit=$COMMIT_HASH
 ENV COMMIT_HASH=$COMMIT_HASH
 
-COPY --from=build /build/yarn.lock /build/yarn.lock
+COPY --from=build /build/package-lock.json /build/package-lock.json
 COPY --from=build /build/packages/frinx-frontend-server/package.json /build/package.json
 
 WORKDIR /build
-RUN yarn install --prod --immutable
+RUN npm ci --prod
 
 COPY --from=build /build/build-client /build/build-client
 COPY --from=build /build/build-server /build/build-server
 
-CMD ["yarn", "start"]
+CMD ["npm", "start"]
