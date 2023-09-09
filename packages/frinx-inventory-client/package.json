@@ -41,7 +41,7 @@
     "yup": "0.32.11"
   },
   "devDependencies": {
-    "@chakra-ui/react": "2.8.0",
+    "@chakra-ui/react": "2.8.1",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "workspace:^",
