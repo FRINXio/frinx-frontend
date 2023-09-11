@@ -321,8 +321,6 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
               setWorkflow({
                 ...wf,
                 id: '',
-                createdAt: new Date().toISOString(),
-                updatedAt: '',
                 createdBy: '',
                 updatedBy: '',
                 hasSchedule: false,

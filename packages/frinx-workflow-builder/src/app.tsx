@@ -294,7 +294,6 @@ const App: VoidFunctionComponent<Props> = ({
             version: editedWorkflow.version,
             restartable: editedWorkflow.restartable,
             outputParameters,
-            updatedAt: new Date().toISOString(),
             inputParameters: editedWorkflow.inputParameters,
             inputTemplate: editedWorkflow.inputTemplate,
             failureWorkflow: editedWorkflow.failureWorkflow,
