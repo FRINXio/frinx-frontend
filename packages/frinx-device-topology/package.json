@@ -59,7 +59,7 @@
     "immer": "10.0.2",
     "lodash": "4.17.21",
     "urql": "4.0.5",
-    "uuid": "9.0.0"
+    "uuid": "9.0.1"
   },
   "peerDependencies": {
     "@chakra-ui/react": "^1.6.7 || ^2.0.0",
