@@ -52,7 +52,7 @@
     "feather-icons-react": "0.6.2",
     "lodash": "4.17.21",
     "minisearch": "^6.0.0",
-    "monaco-editor": "^0.41.0",
+    "monaco-editor": "^0.43.0",
     "uuid": "9.0.0"
   },
   "peerDependencies": {
