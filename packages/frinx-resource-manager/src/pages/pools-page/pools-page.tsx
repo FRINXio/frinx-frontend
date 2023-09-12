@@ -145,7 +145,6 @@ const PoolsPage: VoidFunctionComponent = () => {
     },
     context,
   });  
-    console.log(data);
 
   const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
     query: GET_RESOURCE_TYPES,
