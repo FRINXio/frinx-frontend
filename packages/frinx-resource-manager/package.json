@@ -11,14 +11,12 @@
   "dependencies": {
     "@frinx/shared": "^2.0.0",
     "@urql/exchange-retry": "1.2.0",
-    "chakra-ui-autocomplete": "^1.4.5",
     "feather-icons-react": "0.6.2",
     "formik": "2.4.4",
     "graphql": "15.8.0",
     "ipaddr.js": "^2.0.1",
     "lodash": "4.17.21",
     "urql": "4.0.5",
-    "uuid": "9.0.1",
     "yup": "0.32.11"
   },
   "scripts": {
@@ -41,7 +39,6 @@
     "@graphql-codegen/typescript": "4.0.1",
     "@graphql-codegen/typescript-operations": "4.0.1",
     "@types/react": "17.0.65",
-    "@types/react-dom": "18.2.7",
     "@typescript-eslint/eslint-plugin": "6.7.0",
     "@typescript-eslint/parser": "6.7.0",
     "eslint": "8.48.0",
@@ -54,7 +51,6 @@
     "framer-motion": "10.16.4",
     "graphql-tag": "2.12.6",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
     "react-router-dom": "6.15.0",
     "typescript": "4.9.5"
   },
@@ -62,9 +58,8 @@
     "@chakra-ui/react": "^1.6.7 || ^2.0.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.0.0",
-    "framer-motion": "^4.1.3 || ^6.0.0 || ^10.0.0",
+    "framer-motion": "^10.0.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0"
   },
   "nx": {
