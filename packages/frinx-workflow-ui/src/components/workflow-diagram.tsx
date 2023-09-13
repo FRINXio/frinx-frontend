@@ -51,8 +51,6 @@ const WorkflowDiagram = ({ meta, result }: Props) => {
     getElementsFromWorkflow(tasks.map(convertWorkflowTaskToExtendedTask), true),
     'TB',
   );
-  console.log(elements);
-  console.log(getElementsFromWorkflow(tasks.map(convertWorkflowTaskToExtendedTask), true));
 
   const nodesWithExecutionState = elements.nodes.map((n) => {
     const taskReferenceName = n.data?.task?.taskReferenceName || '';

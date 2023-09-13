@@ -140,9 +140,6 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
     return e?.node;
   });
 
-  console.log(values.poolType, isNested);
-  console.log(getSchemaForCreatePoolForm(values.poolType, isNested));
-
   useEffect(() => {
     setValidationSchema(getSchemaForCreatePoolForm(values.poolType, isNested));
     if (!isNested) {

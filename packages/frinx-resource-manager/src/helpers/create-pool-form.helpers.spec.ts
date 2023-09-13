@@ -1,4 +1,4 @@
-import { describe, expect, test, assert } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { readFileSync } from 'fs';
 import {
   getAvailableAllocatedResources,

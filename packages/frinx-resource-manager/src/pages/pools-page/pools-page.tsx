@@ -144,7 +144,7 @@ const PoolsPage: VoidFunctionComponent = () => {
       resourceTypeId: poolsFilter.resourceType || null,
     },
     context,
-  });  
+  });
 
   const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
     query: GET_RESOURCE_TYPES,

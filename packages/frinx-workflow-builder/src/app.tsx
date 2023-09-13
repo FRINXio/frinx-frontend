@@ -110,9 +110,6 @@ const App: VoidFunctionComponent<Props> = ({
     setElements(getLayoutedElements(getElementsFromWorkflow(workflow.tasks, false)));
   }, [workflow.tasks]);
 
-  console.log(workflow.tasks);
-  
-
   const handleConnect = (edge: Edge<unknown> | Connection) => {
     setElements((els) => ({
       ...els,
@@ -237,10 +234,7 @@ const App: VoidFunctionComponent<Props> = ({
 
   const handleWorkflowClone = (wfName: string) => {
     const newTasks = convertToTasks(elements);
-    console.log(elements);
-    console.log(newTasks);
-    
-    
+
     onWorkflowClone(
       {
         ...workflow,
