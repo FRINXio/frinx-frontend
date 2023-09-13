@@ -10,6 +10,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** Represents data-type where variable keys and values can be used */
   Map: any;
 };
 
