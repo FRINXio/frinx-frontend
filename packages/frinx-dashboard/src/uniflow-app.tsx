@@ -1,3 +1,4 @@
+import { useMsal } from '@azure/msal-react';
 import { InventoryApi, UniflowApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext, refreshToken as getRefreshToken } from './auth-helpers';
