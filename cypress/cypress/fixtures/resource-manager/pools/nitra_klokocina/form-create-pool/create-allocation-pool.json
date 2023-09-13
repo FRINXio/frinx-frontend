@@ -1,1 +1,8 @@
-{"data":{"CreateAllocatingPool":{"pool":{"id":"21474836558","__typename":"ResourcePool"},"__typename":"CreateAllocatingPoolPayload"}}}
+{
+  "data": {
+    "CreateAllocatingPool": {
+      "pool": { "id": "21474836558", "__typename": "ResourcePool" },
+      "__typename": "CreateAllocatingPoolPayload"
+    }
+  }
+}

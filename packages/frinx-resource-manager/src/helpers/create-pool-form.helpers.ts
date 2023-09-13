@@ -5,14 +5,24 @@ const IPV4_REGEX = /(^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.(?!$
 const IPV6_REGEX =
   /(^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$)/;
 
-export type AvailableAllocatedResource = { Name: string; id: string; parentId: string; hasNestedPools: boolean };
+export type AvailableAllocatedResource =
+  | {
+      Name: string | undefined;
+      id: string | undefined;
+      parentId: string | undefined;
+      hasNestedPools: boolean | undefined;
+    }
+  | undefined;
 
 export function getAvailableAllocatedResources(
-  pools: SelectPoolsQuery['QueryResourcePools'],
+  pools: SelectPoolsQuery | undefined,
   parentPoolId?: string,
-): AvailableAllocatedResource[] {
-  return pools.flatMap((resourcePool) =>
-    resourcePool.Resources.map((resource) => ({
+): AvailableAllocatedResource[] | undefined {
+  const poolsData = pools?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node;
+  });
+  return poolsData?.flatMap((resourcePool) =>
+    resourcePool?.Resources.map((resource) => ({
       Name: `${resource.Properties[Object.keys(resource.Properties)[0]]}`,
       id: resource.id,
       parentId: resource.ParentPool.id,
@@ -23,12 +33,15 @@ export function getAvailableAllocatedResources(
 
 export function getAvailableResourceTypes(
   resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
-  pools: SelectPoolsQuery['QueryResourcePools'],
+  pools: SelectPoolsQuery | undefined,
   parentPoolId?: string,
 ): SelectResourceTypesQuery['QueryResourceTypes'] {
+  const poolsData = pools?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node;
+  });
   return parentPoolId
     ? resourceTypes.filter(
-        (resourceType) => resourceType.id === pools.find((pool) => pool.id === parentPoolId)?.ResourceType.id,
+        (resourceType) => resourceType.id === poolsData?.find((pool) => pool?.id === parentPoolId)?.ResourceType.id,
       )
     : resourceTypes;
 }
@@ -93,21 +106,25 @@ export const isCustomResourceType = (resourceTypename: string) => {
 };
 
 export function getAvailablePoolProperties(
-  resourcePools: SelectPoolsQuery,
+  resourcePools: SelectPoolsQuery | undefined,
   parentPoolId?: string,
   parentResourceId?: string,
 ): Record<string, string>[] | undefined {
-  return resourcePools.QueryResourcePools.flatMap((resourcePool) => {
-    return {
-      id: resourcePool.id,
-      resources: resourcePool.Resources.map((resource) => ({
-        id: resource.id,
-        properties: resource.Properties,
-      })),
-    };
-  })
+  const poolsData = resourcePools?.QueryRootResourcePools.edges.map((e) => {
+    return e?.node;
+  });
+  return poolsData
+    ?.map((resourcePool) => {
+      return {
+        id: resourcePool?.id,
+        resources: resourcePool?.Resources.map((resource) => ({
+          id: resource.id,
+          properties: resource.Properties,
+        })),
+      };
+    })
     .filter(({ id }) => id === parentPoolId)
-    .flatMap(({ resources }) => resources.find((resource) => resource.id === parentResourceId)?.properties);
+    .flatMap(({ resources }) => resources?.find((resource) => resource.id === parentResourceId)?.properties);
 }
 
 export function formatSuggestedProperties(

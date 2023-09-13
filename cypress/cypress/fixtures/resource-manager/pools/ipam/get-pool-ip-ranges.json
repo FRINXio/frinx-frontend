@@ -1,1 +1,82 @@
-{"data":{"QueryRootResourcePools":[{"id":"21474836545","Name":"roma3","Tags":[{"id":"30064771107","Tag":"roma3","__typename":"Tag"}],"ResourceType":{"id":"25769803778","Name":"vlan_range","__typename":"ResourceType"},"PoolProperties":{"from":1,"to":4094},"Resources":[],"Capacity":{"freeCapacity":"4094","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836530","Name":"ga","Tags":[{"id":"30064771096","Tag":"ga","__typename":"Tag"}],"ResourceType":{"id":"25769803776","Name":"ipv4_prefix","__typename":"ResourceType"},"PoolProperties":{"address":"192.168.0.0","prefix":16,"subnet":false},"Resources":[{"id":"17179869273","NestedPool":{"id":"21474836532","ResourceType":{"id":"25769803777","Name":"ipv4","__typename":"ResourceType"},"__typename":"ResourcePool"},"__typename":"Resource"},{"id":"17179869274","NestedPool":{"id":"21474836533","ResourceType":{"id":"25769803776","Name":"ipv4_prefix","__typename":"ResourceType"},"__typename":"ResourcePool"},"__typename":"Resource"},{"id":"17179869275","NestedPool":null,"__typename":"Resource"}],"Capacity":{"freeCapacity":"65456","utilizedCapacity":"74","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836543","Name":"ateny3","Tags":[{"id":"30064771105","Tag":"ateny3","__typename":"Tag"}],"ResourceType":{"id":"25769803779","Name":"vlan","__typename":"ResourceType"},"PoolProperties":{"from":1,"to":4094},"Resources":[],"Capacity":{"freeCapacity":"4094","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836548","Name":"aa","Tags":[{"id":"30064771082","Tag":"aa","__typename":"Tag"}],"ResourceType":{"id":"25769803783","Name":"random_signed_int32","__typename":"ResourceType"},"PoolProperties":{"from":-2147483648,"to":2147483647},"Resources":[],"Capacity":{"freeCapacity":"4294967296","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836541","Name":"ateny2","Tags":[{"id":"30064771103","Tag":"ateny2","__typename":"Tag"}],"ResourceType":{"id":"25769803779","Name":"vlan","__typename":"ResourceType"},"PoolProperties":{"from":1,"to":4094},"Resources":[],"Capacity":{"freeCapacity":"4094","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836549","Name":"aaa","Tags":[{"id":"30064771084","Tag":"aaa","__typename":"Tag"}],"ResourceType":{"id":"25769803783","Name":"random_signed_int32","__typename":"ResourceType"},"PoolProperties":{"from":-666,"to":-444},"Resources":[{"id":"17179869297","NestedPool":null,"__typename":"Resource"},{"id":"17179869298","NestedPool":null,"__typename":"Resource"},{"id":"17179869299","NestedPool":null,"__typename":"Resource"}],"Capacity":{"freeCapacity":"220","utilizedCapacity":"3","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836531","Name":"xx","Tags":[{"id":"30064771097","Tag":"xx","__typename":"Tag"}],"ResourceType":{"id":"25769803777","Name":"ipv4","__typename":"ResourceType"},"PoolProperties":{"address":"192.168.10.20","prefix":24,"subnet":false},"Resources":[],"Capacity":{"freeCapacity":"256","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836525","Name":"tt","Tags":[{"id":"30064771091","Tag":"tt","__typename":"Tag"}],"ResourceType":{"id":"25769803776","Name":"ipv4_prefix","__typename":"ResourceType"},"PoolProperties":{"address":"192.168.10.16","prefix":29,"subnet":false},"Resources":[{"id":"17179869261","NestedPool":{"id":"21474836526","ResourceType":{"id":"25769803776","Name":"ipv4_prefix","__typename":"ResourceType"},"__typename":"ResourcePool"},"__typename":"Resource"},{"id":"17179869262","NestedPool":{"id":"21474836528","ResourceType":{"id":"25769803776","Name":"ipv4_prefix","__typename":"ResourceType"},"__typename":"ResourcePool"},"__typename":"Resource"}],"Capacity":{"freeCapacity":"0","utilizedCapacity":"4","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836544","Name":"bukurest3","Tags":[{"id":"30064771106","Tag":"bukurest3","__typename":"Tag"}],"ResourceType":{"id":"25769803780","Name":"ipv6_prefix","__typename":"ResourceType"},"PoolProperties":{"address":"2001:db8:1::","prefix":64,"subnet":false},"Resources":[],"Capacity":{"freeCapacity":"18446744073709551616","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836539","Name":"roma","Tags":[{"id":"30064771101","Tag":"roma","__typename":"Tag"}],"ResourceType":{"id":"25769803778","Name":"vlan_range","__typename":"ResourceType"},"PoolProperties":{"from":1,"to":4094},"Resources":[],"Capacity":{"freeCapacity":"4094","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836542","Name":"roma2","Tags":[{"id":"30064771104","Tag":"roma2","__typename":"Tag"}],"ResourceType":{"id":"25769803778","Name":"vlan_range","__typename":"ResourceType"},"PoolProperties":{"from":1,"to":4094},"Resources":[],"Capacity":{"freeCapacity":"4094","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836547","Name":"warsawa3","Tags":[{"id":"30064771109","Tag":"warsawa3","__typename":"Tag"}],"ResourceType":{"id":"25769803782","Name":"route_distinguisher","__typename":"ResourceType"},"PoolProperties":{"rd":""},"Resources":[],"Capacity":{"freeCapacity":"281474976710656","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836546","Name":"madrid3","Tags":[{"id":"30064771108","Tag":"madrid3","__typename":"Tag"}],"ResourceType":{"id":"25769803784","Name":"unique_id","__typename":"ResourceType"},"PoolProperties":{"from":1,"idFormat":"{counter}","to":4094},"Resources":[],"Capacity":{"freeCapacity":"4094","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836538","Name":"bukurest","Tags":[{"id":"30064771100","Tag":"bukurest","__typename":"Tag"}],"ResourceType":{"id":"25769803780","Name":"ipv6_prefix","__typename":"ResourceType"},"PoolProperties":{"address":"2001:db8:1::","prefix":64,"subnet":false},"Resources":[],"Capacity":{"freeCapacity":"18446744073709551616","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836536","Name":"ba","Tags":[{"id":"30064771090","Tag":"ba","__typename":"Tag"}],"ResourceType":{"id":"25769803777","Name":"ipv4","__typename":"ResourceType"},"PoolProperties":{"address":"192.168.10.4","prefix":30,"subnet":false},"Resources":[{"id":"17179869293","NestedPool":null,"__typename":"Resource"},{"id":"17179869294","NestedPool":null,"__typename":"Resource"},{"id":"17179869295","NestedPool":null,"__typename":"Resource"},{"id":"17179869296","NestedPool":null,"__typename":"Resource"}],"Capacity":{"freeCapacity":"0","utilizedCapacity":"4","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836481","Name":"test","Tags":[{"id":"30064771072","Tag":"test","__typename":"Tag"}],"ResourceType":{"id":"25769803777","Name":"ipv4","__typename":"ResourceType"},"PoolProperties":{"address":"192.168.10.1","prefix":24,"subnet":false},"Resources":[{"id":"17179869189","NestedPool":null,"__typename":"Resource"}],"Capacity":{"freeCapacity":"255","utilizedCapacity":"1","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836537","Name":"ateny","Tags":[{"id":"30064771099","Tag":"ateny","__typename":"Tag"}],"ResourceType":{"id":"25769803779","Name":"vlan","__typename":"ResourceType"},"PoolProperties":{"from":1,"to":4094},"Resources":[],"Capacity":{"freeCapacity":"4094","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836540","Name":"warsawa","Tags":[{"id":"30064771102","Tag":"warsawa","__typename":"Tag"}],"ResourceType":{"id":"25769803782","Name":"route_distinguisher","__typename":"ResourceType"},"PoolProperties":{"rd":""},"Resources":[],"Capacity":{"freeCapacity":"281474976710656","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836516","Name":"lv","Tags":[{"id":"30064771092","Tag":"lv","__typename":"Tag"}],"ResourceType":{"id":"25769803776","Name":"ipv4_prefix","__typename":"ResourceType"},"PoolProperties":{"address":"192.168.10.16","prefix":30,"subnet":true},"Resources":[{"id":"17179869238","NestedPool":null,"__typename":"Resource"}],"Capacity":{"freeCapacity":"-1","utilizedCapacity":"1","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"},{"id":"21474836535","Name":"nr","Tags":[{"id":"30064771086","Tag":"nr","__typename":"Tag"}],"ResourceType":{"id":"25769803777","Name":"ipv4","__typename":"ResourceType"},"PoolProperties":{"address":"192.168.10.0","prefix":30,"subnet":true},"Resources":[],"Capacity":{"freeCapacity":"2","utilizedCapacity":"0","__typename":"PoolCapacityPayload"},"__typename":"ResourcePool"}]}}
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836480",
+            "Name": "ga",
+            "Tags": [{ "id": "30064771072", "Tag": "ga", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836480",
+            "Name": "tt",
+            "Tags": [{ "id": "30064771072", "Tag": "tt", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836480",
+            "Name": "fda",
+            "Tags": [{ "id": "30064771072", "Tag": "fda", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "213656546",
+            "Name": "halabala",
+            "Tags": [{ "id": "30064771072", "Tag": "halabala", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836480",
+            "Name": "AD",
+            "Tags": [{ "id": "30064771072", "Tag": "AD", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803776", "Name": "ipv4_prefix", "__typename": "ResourceType" },
+            "PoolProperties": { "address": "10.0.0.0", "prefix": 24, "subnet": false },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "256", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAA",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 1,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}

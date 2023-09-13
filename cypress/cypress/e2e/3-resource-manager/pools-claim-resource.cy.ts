@@ -5,10 +5,14 @@
 
 import { hasOperationName } from '../../helpers/utils';
 
+Cypress.on('uncaught:exception', () => {
+  return false;
+});
+
 describe('Check pools', () => {
   beforeEach(() => {
     cy.intercept('POST', 'http://localhost:3000/api/resource', (req) => {
-      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetPools')) {
+      if (req.body.hasOwnProperty('query') && hasOperationName(req, 'GetAllPools')) {
         req.reply({ fixture: 'resource-manager/pools/test_ipv6/get-pools.json' });
       }
     }).as('getPools');

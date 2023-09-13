@@ -5,10 +5,10 @@ import { Button, Flex, Heading, Icon, Table, Tbody, Td, Th, Thead, Tr } from '@c
 import FeatherIcon from 'feather-icons-react';
 import DeleteStrategy from './delete-strategy';
 import ViewStrategyScript from './view-strategy-script';
-import { GetAllocationStrategiesQuery } from '../__generated__/graphql';
+import { AllocationStrategiesQuery } from '../__generated__/graphql';
 
 const query = gql`
-  query GetAllocationStrategies {
+  query AllocationStrategies {
     QueryAllocationStrategies {
       id
       Name
@@ -23,7 +23,7 @@ type Props = {
 };
 
 const StrategiesList: FC<Props> = ({ onAddButtonClick }) => {
-  const [result] = useQuery<GetAllocationStrategiesQuery>({
+  const [result] = useQuery<AllocationStrategiesQuery>({
     query,
   });
 

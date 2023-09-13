@@ -473,7 +473,7 @@ export function getTaskLabel(t: Task): TaskLabel {
   }
 }
 
-function createGenericInputParams(inputKeys?: string[]): Record<string, string> {
+function createGenericInputParams(inputKeys?: string[] | null): Record<string, string> {
   return (
     inputKeys?.reduce((acc, curr) => {
       return { ...acc, [curr]: `\${workflow.input.${curr}}` };

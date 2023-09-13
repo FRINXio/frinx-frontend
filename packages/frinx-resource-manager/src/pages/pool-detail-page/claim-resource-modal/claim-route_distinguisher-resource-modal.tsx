@@ -116,7 +116,7 @@ const ClaimRouteDistinguisherResourceModal: FC<Props> = ({ poolName, onClaimWith
       },
       validationSchema,
       validateOnBlur: false,
-      validateOnChange: false,
+      validateOnChange: true,
     });
 
   const handleAlternativeIdsChange = (changedAlternativeIds: AlternativeId[]) => {

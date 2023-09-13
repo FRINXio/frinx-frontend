@@ -1,0 +1,47 @@
+{
+  "data": {
+    "QueryRootResourcePools": {
+      "edges": [
+        {
+          "node": {
+            "id": "21474836548",
+            "Name": "aa",
+            "Tags": [{ "id": "30064771082", "Tag": "aa", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803783", "Name": "random_signed_int32", "__typename": "ResourceType" },
+            "Resources": [],
+            "Capacity": { "freeCapacity": "4294967296", "utilizedCapacity": "0", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": -2147483648, "to": 2147483647 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        },
+        {
+          "node": {
+            "id": "21474836549",
+            "Name": "aaa",
+            "Tags": [{ "id": "30064771084", "Tag": "aaa", "__typename": "Tag" }],
+            "ResourceType": { "id": "25769803783", "Name": "random_signed_int32", "__typename": "ResourceType" },
+            "Resources": [
+              { "id": "17179869297", "NestedPool": null, "__typename": "Resource" },
+              { "id": "17179869298", "NestedPool": null, "__typename": "Resource" },
+              { "id": "17179869299", "NestedPool": null, "__typename": "Resource" }
+            ],
+            "Capacity": { "freeCapacity": "220", "utilizedCapacity": "3", "__typename": "PoolCapacityPayload" },
+            "PoolProperties": { "from": -666, "to": -444 },
+            "__typename": "ResourcePool"
+          },
+          "__typename": "ResourcePoolEdge"
+        }
+      ],
+      "pageInfo": {
+        "endCursor": "gaFpzwAAAAUAAAAU",
+        "hasNextPage": false,
+        "hasPreviousPage": false,
+        "startCursor": "gaFpzwAAAAUAAAAA",
+        "__typename": "PageInfo"
+      },
+      "totalCount": 2,
+      "__typename": "ResourcePoolConnection"
+    }
+  }
+}

@@ -10,17 +10,17 @@ import {
   Button,
   Box,
 } from '@chakra-ui/react';
-import { Editor, ExtendedTask, Workflow } from '@frinx/shared/src';
+import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared/src';
 
 type Props = {
   isOpen: boolean;
-  workflow: Workflow<ExtendedTask>;
+  workflow: ClientWorkflow<ExtendedTask>;
   onClose: () => void;
-  onSave: (workflow: Workflow<ExtendedTask>) => void;
+  onSave: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onChangeNotify: () => void;
 };
 
-const parseWorkflow = (workflow: Workflow<ExtendedTask>) => {
+const parseWorkflow = (workflow: ClientWorkflow<ExtendedTask>) => {
   const { name, description, ...rest } = workflow;
   return JSON.stringify(
     {
@@ -38,7 +38,6 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
   const handleSave = () => {
     try {
       const parsedWorkflow = JSON.parse(editedWorkflow);
-
       onSave(parsedWorkflow);
       onClose();
     } catch {
@@ -48,19 +47,20 @@ const WorkflowEditorModal: FC<Props> = ({ isOpen, onClose, workflow, onSave, onC
   };
 
   const handleChange = (value: string | undefined) => {
+    // console.log(value);
     setEditedWorkflow(value ?? '');
     onChangeNotify();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="full" closeOnOverlayClick={false}>
       <ModalOverlay />
-      <ModalContent maxW="48rem">
+      <ModalContent maxW="75vw">
         <ModalHeader>Workflow editor</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Box height="calc(100vh - 62px - 72px - 16px)">
-            <Editor language="json" value={editedWorkflow} onChange={handleChange} />
+            <Editor language="json" value={editedWorkflow} onChange={handleChange} height="100%" />
           </Box>
         </ModalBody>
         <ModalFooter>

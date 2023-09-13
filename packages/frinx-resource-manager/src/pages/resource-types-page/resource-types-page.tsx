@@ -41,7 +41,7 @@ const DELETE_STRATEGY_MUTATION = gql`
 `;
 
 const STRATEGIES_QUERY = gql`
-  query AllocationStrategies {
+  query GetAllocationStrategies {
     QueryAllocationStrategies {
       id
       Name

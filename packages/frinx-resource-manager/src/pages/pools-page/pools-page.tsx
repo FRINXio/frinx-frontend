@@ -1,45 +1,102 @@
-import { Box, Button, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, HStack, Icon, Progress, Spacer } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import gql from 'graphql-tag';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery } from 'urql';
-import { useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
+import { omitNullValue, useMinisearch, useNotifications, useTags } from '@frinx/shared/src';
 import {
   DeletePoolMutation,
   DeletePoolMutationMutationVariables,
-  GetPoolsQuery,
-  GetPoolsQueryVariables,
+  GetAllPoolsQuery,
+  GetAllPoolsQueryVariables,
   GetResourceTypesQuery,
   GetResourceTypesQueryVariables,
+  Scalars,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
+import { usePagination } from '../../hooks/use-pagination';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
+import Pagination from '../../components/pagination';
+import SelectItemsPerPage from '../../components/select-items-per-page';
+
+type InputValues = { [key: string]: string };
+
+type PoolsFilter =
+  | {
+      resources: InputValues | null;
+      resourceType: string | null;
+    }
+  | Record<string, string>;
 
 const ALL_POOLS_QUERY = gql`
-  query GetPools($resourceTypeId: ID) {
-    QueryRootResourcePools(resourceTypeId: $resourceTypeId) {
-      id
-      Name
-      PoolType
-      Tags {
-        id
-        Tag
-      }
-      AllocationStrategy {
-        id
-        Name
-      }
-      ResourceType {
-        id
-        Name
-      }
-      Resources {
-        id
-        NestedPool {
+  query GetAllPools(
+    $first: Int
+    $last: Int
+    $before: Cursor
+    $after: Cursor
+    $resourceTypeId: ID
+    $filterByResources: Map
+    $tags: TagOr
+  ) {
+    QueryRootResourcePools(
+      first: $first
+      last: $last
+      before: $before
+      after: $after
+      resourceTypeId: $resourceTypeId
+      filterByResources: $filterByResources
+      tags: $tags
+    ) {
+      edges {
+        node {
           id
+          Name
+          PoolType
+          ParentResource {
+            id
+          }
+          allocatedResources {
+            totalCount
+          }
+          Tags {
+            id
+            Tag
+          }
+          PoolProperties
+          AllocationStrategy {
+            id
+            Name
+          }
+          ResourceType {
+            id
+            Name
+          }
+          Resources {
+            id
+            Properties
+            NestedPool {
+              id
+              Name
+            }
+          }
+          Capacity {
+            freeCapacity
+            utilizedCapacity
+          }
         }
       }
+      pageInfo {
+        endCursor {
+          ID
+        }
+        hasNextPage
+        hasPreviousPage
+        startCursor {
+          ID
+        }
+      }
+      totalCount
     }
   }
 `;
@@ -63,10 +120,24 @@ const GET_RESOURCE_TYPES = gql`
 
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
-  const [selectedResourceType, setSelectedResourceType] = useState<string>('');
+  const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
+  const [allocatedResources, setAllocatedResources] = useState<InputValues>({});
+  const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
+  const [searchName, setSearchName] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
-  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetPoolsQuery, GetPoolsQueryVariables>({
+  const [paginationArgs, { nextPage, previousPage, setItemsCount, firstPage }] = usePagination();
+
+  const [{ data, fetching: isQueryLoading, error }] = useQuery<GetAllPoolsQuery, GetAllPoolsQueryVariables>({
     query: ALL_POOLS_QUERY,
+    variables: {
+      ...(paginationArgs?.first !== null && { first: paginationArgs.first }),
+      ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
+      ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
+      ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
+      filterByResources: poolsFilter.resources ?? null,
+      tags: selectedTags.length ? { matchesAny: [{ matchesAll: selectedTags }] } : null,
+      resourceTypeId: poolsFilter.resourceType || null,
+    },
     context,
   });
   const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
@@ -76,31 +147,59 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutation,
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
-  const { addToastNotification } = useNotifications();
-  const { results, searchText, setSearchText } = useMinisearch({ items: data?.QueryRootResourcePools });
 
-  const handleDeleteBtnClick = async (id: string) => {
-    try {
-      const result = await deletePool({ input: { resourcePoolId: id } }, context);
-      if (result.error) {
-        throw Error();
-      }
-      addToastNotification({
-        type: 'success',
-        content: 'Successfully deleted resource pool',
-      });
-    } catch {
-      addToastNotification({
-        type: 'error',
-        content: 'There was a problem with deletion of the resource pool',
+  const filteredPools = (data?.QueryRootResourcePools.edges ?? [])
+    ?.map((e) => {
+      return e?.node ?? null;
+    })
+    .filter(omitNullValue);
+  const { results, setSearchText } = useMinisearch({
+    items: filteredPools,
+  });
+
+  const onSearchClick = () => {
+    if (Object.keys(allocatedResources).length) {
+      setPoolsFilter({
+        resources: allocatedResources,
+        resourceType: selectedResourceType,
       });
     }
+    if (!Object.keys(allocatedResources).length) {
+      setPoolsFilter({
+        resourceType: selectedResourceType,
+      });
+    }
+    setSearchText(searchName);
+    firstPage();
+  };
+
+  const { addToastNotification } = useNotifications();
+
+  const handleDeleteBtnClick = (id: string) => {
+    deletePool({ input: { resourcePoolId: id } }, context)
+      .then((res) => {
+        if (!res.error) {
+          addToastNotification({
+            content: 'Pool deleted successfuly',
+            title: 'Success',
+            type: 'success',
+          });
+        }
+      })
+      .catch((err) => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: err?.message,
+        });
+      });
   };
 
   const handleOnClearSearch = () => {
     setSearchText('');
     clearAllTags();
     setSelectedResourceType('');
+    setPoolsFilter({});
   };
 
   const handleOnStrategyClick = (id?: string) => {
@@ -109,33 +208,9 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
   };
 
-  if (isQueryLoading) {
-    return <Progress isIndeterminate size="sm" mt={-10} />;
-  }
-
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
-
-  const isSelectedResourceTypeEmpty = selectedResourceType == null || selectedResourceType.trim().length === 0;
-
-  const resourcePools = results.filter((pool) => {
-    if (!isSelectedResourceTypeEmpty && selectedTags.length > 0) {
-      return (
-        pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag)) && pool.ResourceType.id === selectedResourceType
-      );
-    }
-
-    if (!isSelectedResourceTypeEmpty) {
-      return pool.ResourceType.id === selectedResourceType;
-    }
-
-    if (selectedTags.length > 0) {
-      return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
-    }
-
-    return true;
-  });
 
   return (
     <>
@@ -158,8 +233,11 @@ const PoolsPage: VoidFunctionComponent = () => {
         </Box>
       </HStack>
       <SearchFilterPoolsBar
-        setSearchText={setSearchText}
-        searchText={searchText}
+        searchName={searchName}
+        setSearchName={setSearchName}
+        onSearchClick={onSearchClick}
+        allocatedResources={allocatedResources}
+        setAllocatedResources={setAllocatedResources}
         selectedTags={selectedTags}
         selectedResourceType={selectedResourceType}
         setSelectedResourceType={setSelectedResourceType}
@@ -168,6 +246,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         onClearSearch={handleOnClearSearch}
         resourceTypes={resourceTypes?.QueryResourceTypes}
         canFilterByResourceType
+        canFilterByAllocatedResources
       />
 
       <Box position="relative" marginBottom={5}>
@@ -175,13 +254,26 @@ const PoolsPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-          pools={resourcePools}
+          pools={results}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
           onTagClick={handleOnTagClick}
           onStrategyClick={handleOnStrategyClick}
         />
       </Box>
+      <Flex align="center" justify="space-between">
+        {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
+          <Box mt={4} px={4}>
+            <Pagination
+              onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
+              onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
+              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
+              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+            />
+          </Box>
+        )}
+        <SelectItemsPerPage first={paginationArgs.first} last={paginationArgs.last} setItemsCount={setItemsCount} />
+      </Flex>
     </>
   );
 };

@@ -12,6 +12,7 @@ import {
   Button,
   Link as ChakraLink,
   ButtonGroup,
+  Progress,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
@@ -32,21 +33,26 @@ type IpRange = {
 };
 
 type Props = {
+  fetching: boolean;
+
   ipRanges: IpRange[];
   onTagClick: (tagName: string) => void;
   onDeleteBtnClick?: (poolId: string) => void;
 };
 
-const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onDeleteBtnClick }) => {
+const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, fetching, onDeleteBtnClick }) => {
+  if (fetching) {
+    return <Progress isIndeterminate size="sm" />;
+  }
   return (
     <TableContainer bgColor="white">
       <Table size="sm">
         <Thead bgColor="gray.200">
           <Tr>
+            <Th>Name</Th>
             <Th>Network</Th>
             <Th>Broadcast</Th>
             <Th>Size</Th>
-            <Th>Name</Th>
             <Th>Tags</Th>
             <Th>Actions</Th>
           </Tr>
@@ -58,6 +64,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
               const totalCapacity = BigInt(Number(rest.totalCapacity));
               return (
                 <Tr key={id}>
+                  <Td>{name}</Td>
                   {nestedRanges.length > 0 ? (
                     <Td>
                       <ChakraLink as={Link} textColor="blue" to={`../ipam/ip-ranges/${id}/nested-ranges`}>
@@ -69,7 +76,6 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                   )}
                   <Td>{broadcast}</Td>
                   <Td>{new Intl.NumberFormat('fr').format(totalCapacity)}</Td>
-                  <Td>{name}</Td>
                   <Td>
                     {tags.map(({ Tag: tagName, id: tagId }) => (
                       <Tag
@@ -92,7 +98,7 @@ const IpRangesTable: VoidFunctionComponent<Props> = ({ ipRanges, onTagClick, onD
                         variant="outline"
                         icon={<Icon as={FeatherIcon} size={20} icon="settings" />}
                         as={Link}
-                        to={`../pools/${id}`}
+                        to={`${id}/nested-ranges`}
                       />
                       {onDeleteBtnClick && (
                         <IconButton
