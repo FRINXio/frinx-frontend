@@ -3140,11 +3140,11 @@ __metadata:
     lodash: 4.17.21
     match-sorter: 6.3.1
     react: 18.2.0
-    react-dom: 18.2.0
     react-router-dom: 6.9.0
     typescript: 4.9.5
     urql: 3.0.3
     uuid: 9.0.0
+    vitest: 0.34.2
     yup: 0.32.11
   peerDependencies:
     "@chakra-ui/react": ^1.6.7 || ^2.0.0
