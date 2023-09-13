@@ -41,7 +41,7 @@ const ExecuteWorkflowModalFormInput: VoidFunctionComponent<Props> = ({
       {isToggle && (
         <Switch
           name={inputParameterKey}
-          value={values[inputParameterKey]}
+          isChecked={values[inputParameterKey]}
           onChange={(e) => onChange(inputParameterKey, e.target.checked)}
         />
       )}
