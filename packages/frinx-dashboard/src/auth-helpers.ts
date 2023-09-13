@@ -12,14 +12,6 @@ export class AuthContext {
 
   private authToken: string | null = localStorage.getItem(LS_TOKEN_KEY);
 
-  static isAuthEnabled(): boolean {
-    return window.__CONFIG__.isAuthEnabled;
-  }
-
-  public isAuthorized(): boolean {
-    return AuthContext.isAuthEnabled() && this.getAuthToken() != null;
-  }
-
   public setAuthToken(authToken: string): void {
     localStorage.setItem(LS_TOKEN_KEY, authToken);
     this.authToken = authToken;
@@ -41,12 +33,18 @@ export class AuthContext {
 
 export const authContext = new AuthContext();
 
-export function createPublicClientApp(): PublicClientApplication {
+type PublicAppOptions = {
+  clientId: string;
+  redirectUri: string;
+  authority: string;
+};
+
+export function createPublicClientApp({ clientId, redirectUri, authority }: PublicAppOptions): PublicClientApplication {
   const authConfig = {
     auth: {
-      clientId: window.__CONFIG__.authClientId,
-      redirectUri: window.__CONFIG__.authRedirectURL,
-      authority: window.__CONFIG__.MSALAuthority,
+      clientId,
+      redirectUri,
+      authority,
     },
     cache: {
       cacheLocation: 'localStorage',

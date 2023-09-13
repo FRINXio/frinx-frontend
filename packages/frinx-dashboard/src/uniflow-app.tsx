@@ -1,53 +1,37 @@
-import { InventoryApi, UniflowApi } from '@frinx/api';
+import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { authContext } from './auth-helpers';
+import { useConfigContext } from './config.provider';
 
-type UniflowComponents = Omit<typeof import('@frinx/workflow-ui'), 'getUniflowApiProvider'> & {
-  UniflowApiProvider: FC;
-};
-type BuilderComponents = {
-  BuilderApiProvider: FC;
-};
+type UniflowComponents = typeof import('@frinx/workflow-ui');
 
 const UniflowApp: FC = () => {
-  const [components, setComponents] = useState<(UniflowComponents & BuilderComponents) | null>(null);
+  const { inventoryApiURL, inventoryWsURL } = useConfigContext();
+  const [components, setComponents] = useState<UniflowComponents | null>(null);
 
   useEffect(() => {
-    Promise.all([import('@frinx/workflow-ui'), import('@frinx/workflow-builder')]).then(
-      ([uniflowImport, builderImport]) => {
-        const { UniflowApp: App, getUniflowApiProvider, InventoryAPIProvider } = uniflowImport;
-        const { getBuilderApiProvider } = builderImport;
+    import('@frinx/workflow-ui').then((mod) => {
+      const { UniflowApp: App, InventoryAPIProvider } = mod;
 
-        setComponents({
-          UniflowApp: App,
-          UniflowApiProvider: getUniflowApiProvider(
-            UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
-          ),
-          BuilderApiProvider: getBuilderApiProvider(
-            UniflowApi.create({ url: window.__CONFIG__.uniflowApiURL, authContext }).client,
-          ),
-          InventoryAPIProvider,
-        });
-      },
-    );
+      setComponents({
+        UniflowApp: App,
+        InventoryAPIProvider,
+      });
+    });
   }, []);
 
   if (components == null) {
     return null;
   }
 
-  const { UniflowApiProvider, UniflowApp: App, BuilderApiProvider, InventoryAPIProvider } = components;
+  const { UniflowApp: App, InventoryAPIProvider } = components;
 
   return (
     <InventoryAPIProvider
-      client={InventoryApi.create({ authContext, url: window.__CONFIG__.inventoryApiURL }).client}
-      wsUrl={window.__CONFIG__.inventoryWsURL}
+      client={InventoryApi.create({ authContext, url: inventoryApiURL }).client}
+      wsUrl={inventoryWsURL}
     >
-      <UniflowApiProvider>
-        <BuilderApiProvider>
-          <App />
-        </BuilderApiProvider>
-      </UniflowApiProvider>
+      <App />
     </InventoryAPIProvider>
   );
 };

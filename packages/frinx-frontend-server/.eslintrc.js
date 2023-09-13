@@ -13,6 +13,7 @@ module.exports = {
     node: true,
   },
   settings: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     'import/resolver': {
       typescript: {},
     },

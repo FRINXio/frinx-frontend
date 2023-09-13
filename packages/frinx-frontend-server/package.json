@@ -1,6 +1,6 @@
 {
   "name": "@frinx/frontend-server",
-  "version": "1.0.45",
+  "version": "2.0.0",
   "main": "dist/server.js",
   "files": [
     "dist/*"
@@ -10,7 +10,7 @@
   },
   "author": "Frinx.io",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "lint": "eslint --ext .ts 'src/**/*.ts' --max-warnings 0",
     "type-check": "tsc --noEmit",
@@ -22,21 +22,30 @@
   },
   "dependencies": {
     "@types/express": "4.17.17",
+    "@types/node": "^20.6.0",
     "express": "4.18.2",
-    "helmet": "6.0.1",
-    "pino": "8.11.0",
-    "pino-pretty": "9.4.1"
+    "pino": "8.15.0",
+    "pino-pretty": "10.2.0"
   },
   "devDependencies": {
-    "@frinx/eslint-config-typescript-base": "15.0.0-build.1",
-    "@typescript-eslint/eslint-plugin": "5.54.1",
-    "@typescript-eslint/parser": "5.54.1",
-    "dotenv": "16.0.3",
-    "eslint": "8.36.0",
-    "eslint-config-prettier": "7.2.0",
-    "eslint-import-resolver-typescript": "2.7.1",
-    "eslint-plugin-import": "2.27.5",
-    "ts-node-dev": "1.1.8",
+    "@frinx/eslint-config-typescript-base": "16.0.0",
+    "@typescript-eslint/eslint-plugin": "6.7.0",
+    "@typescript-eslint/parser": "6.7.0",
+    "dotenv": "16.3.1",
+    "eslint": "8.48.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-import-resolver-typescript": "3.6.0",
+    "eslint-plugin-import": "2.28.1",
+    "ts-node-dev": "2.0.0",
     "typescript": "4.9.5"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/build-server"
+        ]
+      }
+    }
   }
 }

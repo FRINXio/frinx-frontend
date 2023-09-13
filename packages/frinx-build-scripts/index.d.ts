@@ -1,3 +1,5 @@
+import { CompilerOptions } from 'typescript';
+
 export class Builder {
   formattedPackageName: string;
   perf: { start: (label?: string) => void; stop: (label?: string) => { preciseWords: string } };
@@ -8,7 +10,7 @@ export class Builder {
 
   buildPackage: (options: { mainFileName: string; moduleFileName: string; external?: string[] }) => Promise<void>;
 
-  buildTypes: (script: string) => Promise<void>;
+  buildTypes: (inputFiles: string[], compilerOptions: CompilerOptions) => Promise<void>;
 }
 
 export async function makeContextAndWatch(options: {

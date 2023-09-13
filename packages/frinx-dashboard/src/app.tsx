@@ -2,37 +2,32 @@ import { Box } from '@chakra-ui/react';
 import React, { FC } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/dashboard/dashboard';
+import FeedbackWidget from './components/feedback-widget/feedback-widget';
 import Header from './components/header/header';
+import DeviceTopologyApp from './device-topology-app';
 import GammaApp from './gamma-app';
 import InventoryApp from './inventory-app';
-import { ServiceKey } from './types';
-import UniflowApp from './uniflow-app';
 import ResourceManagerApp from './resource-manager-app';
-import DeviceTopologyApp from './device-topology-app';
-import FeedbackWidget from './components/feedback-widget/feedback-widget';
+import UniflowApp from './uniflow-app';
 
 type Props = {
-  enabledServices: Map<ServiceKey, boolean>;
   basename: string;
   isAuthEnabled: boolean;
 };
 
-const App: FC<Props> = ({ enabledServices, basename, isAuthEnabled }) => {
+const App: FC<Props> = ({ basename, isAuthEnabled }) => {
   return (
     <BrowserRouter basename={basename}>
-      <Header isAuthEnabled={isAuthEnabled} enabledServices={enabledServices} />
+      <Header isAuthEnabled={isAuthEnabled} />
       <Box paddingTop={10} overflow="hidden">
         <Routes>
-          {enabledServices.get('isUniflowEnabled') && <Route path="/workflow-manager/*" element={<UniflowApp />} />}
-          {enabledServices.get('isL3VPNEnabled') && <Route path="/gamma/*" element={<GammaApp />} />}
-          {enabledServices.get('isInventoryEnabled') && <Route path="/inventory/*" element={<InventoryApp />} />}
-          {enabledServices.get('isResourceManagerEnabled') && (
-            <Route path="/resource-manager/*" element={<ResourceManagerApp />} />
-          )}
-          {enabledServices.get('isDeviceTopologyEnabled') && (
-            <Route path="/device-topology/*" element={<DeviceTopologyApp />} />
-          )}
-          <Route path="/" element={<Dashboard enabledServices={enabledServices} />} />
+          aa
+          <Route path="/workflow-manager/*" element={<UniflowApp />} />
+          <Route path="/gamma/*" element={<GammaApp />} />
+          <Route path="/inventory/*" element={<InventoryApp />} />
+          <Route path="/resource-manager/*" element={<ResourceManagerApp />} />
+          <Route path="/device-topology/*" element={<DeviceTopologyApp />} />
+          <Route path="/" element={<Dashboard />} />
         </Routes>
       </Box>
       <Box position="fixed" bottom={20} right={16}>

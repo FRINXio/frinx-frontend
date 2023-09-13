@@ -14,17 +14,36 @@ import {
   MenuList,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { callbackUtils, useNotifications } from '@frinx/shared';
+import { useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import { saveAs } from 'file-saver';
-import JSZip from 'jszip';
 import { compact } from 'lodash';
-import React, { useRef } from 'react';
+import React, { useRef, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
+import { gql, useMutation } from 'urql';
+import { CreateWorkflowMutation, CreateWorkflowMutationVariables } from '../__generated__/graphql';
 
 type Props = {
   onImportSuccess: () => void;
 };
+
+const CREATE_WORKFLOW_MUTATION = gql`
+  mutation CreateWorkflow($input: UpdateWorkflowInput!) {
+    updateWorkflow(id: "", input: $input) {
+      workflow {
+        createdBy
+        updatedAt
+        tasks
+        name
+        description
+        version
+        outputParameters {
+          key
+          value
+        }
+      }
+    }
+  }
+`;
 
 function readFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -45,7 +64,10 @@ function readFile(file: File): Promise<string> {
   });
 }
 
-function WorkflowListHeader({ onImportSuccess }: Props) {
+const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) => {
+  const [, createWorkflow] = useMutation<CreateWorkflowMutation, CreateWorkflowMutationVariables>(
+    CREATE_WORKFLOW_MUTATION,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const { addToastNotification } = useNotifications();
 
@@ -53,9 +75,21 @@ function WorkflowListHeader({ onImportSuccess }: Props) {
     const { files } = e.currentTarget;
     try {
       const readFiles = await Promise.all(Array.from(compact(files)).map((f) => readFile(f)));
-      const json = readFiles.map((data) => JSON.parse(data));
-      const { putWorkflow } = callbackUtils.getCallbacks;
-      await putWorkflow(json);
+      const json = readFiles
+        .map((data) => JSON.parse(data))
+        .map((data) => {
+          const { tasks, name, description, outputParameters, restartable, timeoutSeconds, version } = data;
+          return {
+            tasks: JSON.stringify(tasks),
+            name,
+            description,
+            outputParameters,
+            restartable,
+            timeoutSeconds,
+            version,
+          };
+        });
+      await Promise.all(json.map((workflow) => createWorkflow({ input: { workflow } })));
       onImportSuccess();
       addToastNotification({
         type: 'success',
@@ -78,22 +112,6 @@ function WorkflowListHeader({ onImportSuccess }: Props) {
 
   const openFileUpload = () => {
     inputRef.current?.click();
-  };
-
-  const exportFile = () => {
-    const { getWorkflows } = callbackUtils.getCallbacks;
-
-    getWorkflows().then((workflows) => {
-      const zip = new JSZip();
-
-      workflows.forEach((wf) => {
-        zip.file(`${wf.name}.json`, JSON.stringify(wf, null, 2));
-      });
-
-      zip.generateAsync({ type: 'blob' }).then((content) => {
-        saveAs(content, 'workflows.zip');
-      });
-    });
   };
 
   return (
@@ -133,19 +151,6 @@ function WorkflowListHeader({ onImportSuccess }: Props) {
                     </Box>
                     Import workflow
                   </MenuItem>
-                  <MenuItem onClick={exportFile}>
-                    <Box as="span" fontSize="sm" paddingRight={3} flexShrink={0}>
-                      <Box
-                        as={FeatherIcon}
-                        size="1em"
-                        icon="download"
-                        flexShrink={0}
-                        lineHeight={4}
-                        verticalAlign="middle"
-                      />
-                    </Box>
-                    Export workflows
-                  </MenuItem>
                 </MenuList>
               </Menu>
             </Box>
@@ -157,6 +162,6 @@ function WorkflowListHeader({ onImportSuccess }: Props) {
       </VisuallyHidden>
     </Container>
   );
-}
+};
 
 export default WorkflowListHeader;

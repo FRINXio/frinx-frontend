@@ -15,11 +15,9 @@ jobs:
       PRIVATE_NPM_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v3
-      - name: Use CI yarnrc
-        run: cp .yarnrc.ci.yml .yarnrc.yml
-      - name: Copy yarn.lock file
-        run: cp yarn.lock yarn.lock.orig
+        uses: actions/checkout@v4
+      - name: Use CI npmrc
+        run: cp .npmrc.ci .npmrc
       - name: Create directory
         run: mkdir build-client
       - name: Prepare env variable
@@ -32,7 +30,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           project: ./cypress
-          start: yarn dev
+          start: npm run dev
           wait-on: 'http://localhost:3000'
       - uses: actions/upload-artifact@v3
         if: failure()

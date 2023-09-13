@@ -1,11 +1,11 @@
-import { cacheExchange, ClientOptions, createClient, dedupExchange, fetchExchange, Provider } from 'urql';
+import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider } from 'urql';
 import { retryExchange } from '@urql/exchange-retry';
 import React, { FC, useRef } from 'react';
 import { CustomToastProvider } from '@frinx/shared';
 import PageContainer from './components/page-container';
 
 export type InventoryApiClient = {
-  clientOptions: ClientOptions;
+  clientOptions: Omit<ClientOptions, 'exchanges'>;
   onError: () => void;
 };
 export type Props = {
@@ -17,7 +17,6 @@ const ResourceManagerApiProvider: FC<Props> = ({ children, client }) => {
     createClient({
       ...client.clientOptions,
       exchanges: [
-        dedupExchange,
         cacheExchange,
         retryExchange({
           retryIf: (err) => {

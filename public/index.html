@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -10,11 +10,11 @@
   <body style="min-height: 100vh">
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script src="/-/config.js"></script>
     <script src="/static/l3vpn-options.js"></script>
     <script type="module">
+      import config from '/-/config.mjs';
       import { dashboardApp } from '/static/index.mjs';
-      dashboardApp.init().then((app) => {
+      dashboardApp.init(config).then((app) => {
         app.render();
       });
     </script>

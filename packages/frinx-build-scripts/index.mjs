@@ -3,10 +3,12 @@ import chalk from 'chalk';
 import * as esbuild from 'esbuild';
 import executionTime from 'execution-time';
 import { exec } from 'node:child_process';
-import path from 'node:path';
+import path, { resolve } from 'node:path';
 import { oraPromise } from 'ora';
 import { dtsPlugin } from 'esbuild-plugin-d.ts';
 import { clean, makeConfig } from './common.mjs';
+import ts from 'typescript';
+import { outputFile } from 'fs-extra';
 
 export class Builder {
   constructor(options) {
@@ -41,29 +43,23 @@ export class Builder {
     });
   }
 
-  buildTypes(script) {
+  buildTypes(filenames, options) {
     this.perf.start('types');
 
-    const buildTypes = async () => {
-      return new Promise((resolve, reject) => {
-        exec(
-          script,
-          {
-            cwd: path.resolve(process.cwd()),
-          },
-          (error) => {
-            if (error) {
-              return reject(error);
-            }
-            const typesResult = this.perf.stop('types');
-            return resolve(typesResult);
-          },
-        );
-      });
+    const buildTypes = async (filenames, options) => {
+      const { moduleResolution, ...rest } = options;
+      const host = ts.createCompilerHost(rest);
+      host.writeFile = async (filename, contents) => {
+        await outputFile(resolve(process.cwd(), filename), contents);
+      };
+
+      const program = ts.createProgram(filenames, rest, host);
+      program.emit();
+      return this.perf.stop('types');
     };
 
     console.log(chalk.blue('🤖 Started building', this.formattedPackageName, 'types.'));
-    return oraPromise(buildTypes, {
+    return oraPromise(buildTypes.apply(this, [filenames, options]), {
       text: chalk.yellow(`Building ${this.formattedPackageName} types.`),
       successText: (result) =>
         chalk.green(`Finished building ${this.formattedPackageName} types in ${chalk.bold(result.preciseWords)}.`),

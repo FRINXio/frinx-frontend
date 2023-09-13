@@ -15,13 +15,14 @@ import {
 import React, { VoidFunctionComponent } from 'react';
 import { InputParameter } from '../../helpers/workflow.helpers';
 import Editor from '../editor/editor';
+import SearchByTagInput from '../search-by-tag/search-by-tag-input';
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   values: Record<string, any>;
   inputParameterKey: string;
   parsedInputParameters?: InputParameter | null;
-  onChange: (key: string, value: string | boolean | number) => void;
+  onChange: (key: string, value: string | boolean | number | string[]) => void;
 };
 
 const WorkflowFormInput: VoidFunctionComponent<Props> = ({
@@ -35,8 +36,9 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
   const isSelect = parsedInputParameters?.[inputParameterKey]?.type === 'select';
   const isNumber = parsedInputParameters?.[inputParameterKey]?.type === 'int';
   const isJson = parsedInputParameters?.[inputParameterKey]?.type === 'json';
+  const isMultiSelect = parsedInputParameters?.[inputParameterKey]?.type === 'multiselect';
 
-  const isInput = !isToggle && !isTextarea && !isSelect && !isNumber && !isJson;
+  const isInput = !isToggle && !isTextarea && !isSelect && !isNumber && !isJson && !isMultiSelect;
 
   return (
     <FormControl>
@@ -90,6 +92,18 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
+      )}
+
+      {isMultiSelect && (
+        <FormControl mt={4}>
+          <SearchByTagInput
+            tagText="Select from options"
+            availableItems={parsedInputParameters?.[inputParameterKey]?.options}
+            selectedTags={values[inputParameterKey]}
+            onSelectionChange={(selectedTags) => onChange(inputParameterKey, selectedTags ?? [])}
+            isCreationDisabled
+          />
+        </FormControl>
       )}
 
       {isInput && (

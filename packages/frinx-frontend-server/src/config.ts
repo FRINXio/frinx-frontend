@@ -41,29 +41,20 @@ function buildAuthRedirectURL(schema: 'http' | 'https', base: string): string {
   }
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
 const config = {
   isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
   authClientId: envString('AUTH_CLIENT_ID'),
   authRedirectURL: stringToBoolean(envString('AUTH_ENABLED'))
     ? buildAuthRedirectURL(ensureSchema(envString('AUTH_REDIRECT_SCHEME')), envString('AUTH_REDIRECT_DOMAIN'))
     : null,
-  uniflowApiURL: envString('WORKFLOW_MANAGER_API_URL'),
-  isResourceManagerEnabled: stringToBoolean(envString('RESOURCE_MANAGER_ENABLED')),
-  isUniflowEnabled: stringToBoolean(envString('WORKFLOW_MANAGER_ENABLED')),
   URLBasename: envString('URL_BASENAME'),
   inventoryApiURL: envString('INVENTORY_API_URL'),
   inventoryWsURL: envString('INVENTORY_WS_URL'),
-  unistoreApiURL: envString('UNISTORE_API_URL'),
   uniresourceApiURL: envString('RESOURCE_MANAGER_API_URL'),
-  isInventoryEnabled: stringToBoolean(envString('INVENTORY_ENABLED')),
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
   MSALAuthority: envString('MSAL_AUTHORITY'),
-  isL3VPNEnabled: stringToBoolean(envString('L3VPN_ENABLED')),
-  isDeviceTopologyEnabled: stringToBoolean(envString('DEVICE_TOPOLOGY_ENABLED')),
   commitHash: envString('COMMIT_HASH'),
 };
-/* eslint-enable */
 
 export default config;

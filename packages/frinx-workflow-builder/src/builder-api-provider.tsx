@@ -1,11 +1,10 @@
-import React, { createContext, FC, useRef } from 'react';
-import { Callbacks, callbackUtils, CustomToastProvider } from '@frinx/shared';
-import { cacheExchange, ClientOptions, createClient, dedupExchange, Provider } from 'urql';
+import { CustomToastProvider } from '@frinx/shared';
 import { retryExchange } from '@urql/exchange-retry';
-import { multipartFetchExchange } from '@urql/exchange-multipart-fetch';
+import React, { createContext, FC, useRef } from 'react';
+import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider } from 'urql';
 
 export type InventoryApiClient = {
-  clientOptions: ClientOptions;
+  clientOptions: Omit<ClientOptions, 'exchanges'>;
   onError: () => void;
 };
 
@@ -23,8 +22,7 @@ const BuilderApiProvider: FC = ({ children }) => {
   );
 };
 
-export function getBuilderApiProvider(callbacks: Callbacks): FC {
-  callbackUtils.setCallbacks(callbacks);
+export function getBuilderApiProvider(): FC {
   return BuilderApiProvider;
 }
 
@@ -33,7 +31,6 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
     createClient({
       ...client.clientOptions,
       exchanges: [
-        dedupExchange,
         cacheExchange,
         retryExchange({
           retryIf: (err) => {
@@ -43,7 +40,7 @@ export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
             return false;
           },
         }),
-        multipartFetchExchange,
+        fetchExchange,
       ],
     }),
   );

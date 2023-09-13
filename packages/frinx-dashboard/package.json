@@ -1,40 +1,33 @@
 {
   "name": "@frinx/dashboard",
-  "version": "1.0.45",
-  "private": true,
+  "version": "2.0.0",
+  "private": false,
   "dependencies": {
-    "@azure/msal-browser": "2.34.0",
-    "@azure/msal-common": "6.4.0",
-    "@azure/msal-react": "1.5.10",
-    "@chakra-ui/react": "2.8.0",
-    "@chakra-ui/system": "2.6.0",
-    "@emotion/react": "11.11.0",
+    "@azure/msal-browser": "3.1.0",
+    "@azure/msal-common": "14.0.3",
+    "@azure/msal-react": "2.0.3",
+    "@chakra-ui/react": "2.8.1",
+    "@chakra-ui/system": "2.6.1",
+    "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@fontsource/roboto": "^5.0.8",
     "@formspree/react": "^2.4.0",
-    "@frinx/api": "workspace:^",
-    "@frinx/device-topology": "workspace:^",
-    "@frinx/inventory-client": "workspace:^",
-    "@frinx/resource-manager": "workspace:^",
-    "@frinx/shared": "workspace:^",
-    "@frinx/workflow-builder": "workspace:^",
-    "@frinx/workflow-ui": "workspace:^",
+    "@frinx/api": "^0.0.20",
+    "@frinx/device-topology": "^2.0.0",
+    "@frinx/inventory-client": "^2.0.0",
+    "@frinx/resource-manager": "^2.0.0",
+    "@frinx/shared": "^2.0.0",
+    "@frinx/workflow-builder": "^2.0.0",
+    "@frinx/workflow-ui": "^2.0.0",
     "@frinxio/gamma": "0.0.30",
-    "@types/node": "16.18.41",
     "@types/react": "17.0.65",
     "@types/react-dom": "18.2.7",
-    "@types/url-join": "4.0.1",
     "eventemitter3": "5.0.1",
     "feather-icons-react": "0.6.2",
-    "fp-ts": "2.13.1",
-    "framer-motion": "6.2.8",
-    "io-ts": "2.2.20",
+    "framer-motion": "10.16.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.9.0",
-    "sass": "^1.59.3",
-    "url-join": "5.0.0",
-    "uuid": "9.0.0",
+    "react-router-dom": "6.15.0",
     "yup": "0.32.11"
   },
   "scripts": {
@@ -44,22 +37,29 @@
     "type-check": "tsc"
   },
   "devDependencies": {
-    "@frinx/eslint-config-typescript": "19.0.4-build.1",
-    "@typescript-eslint/eslint-plugin": "5.54.1",
-    "@typescript-eslint/parser": "5.54.1",
+    "@frinx/eslint-config-typescript": "20.0.1",
+    "@typescript-eslint/eslint-plugin": "6.7.0",
+    "@typescript-eslint/parser": "6.7.0",
     "chalk": "^5.3.0",
     "esbuild": "^0.19.2",
-    "eslint": "8.36.0",
-    "eslint-config-prettier": "7.2.0",
-    "eslint-import-resolver-typescript": "2.7.1",
-    "eslint-plugin-import": "2.27.5",
+    "eslint": "8.48.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-import-resolver-typescript": "3.6.0",
+    "eslint-plugin-import": "2.28.1",
     "eslint-plugin-jsx-a11y": "6.7.1",
-    "eslint-plugin-react": "7.32.2",
+    "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "execution-time": "^1.4.1",
-    "graphql": "15.8.0",
-    "npm-run-all": "4.1.5",
     "ora": "^7.0.1",
     "typescript": "4.9.5"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/build-client"
+        ]
+      }
+    }
   }
 }

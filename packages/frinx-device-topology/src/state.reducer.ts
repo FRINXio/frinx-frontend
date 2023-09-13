@@ -1,5 +1,5 @@
 import { omitNullValue } from '@frinx/shared';
-import produce from 'immer';
+import { produce } from 'immer';
 import { getEdgesWithDiff, getNodesWithDiff, GraphEdgeWithDiff, GraphNodeWithDiff } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,

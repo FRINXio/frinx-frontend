@@ -7,7 +7,7 @@ type Props = {
   parsedInputParameters?: InputParameter | null;
   inputParameterKeys: string[];
   values: Record<string, unknown>;
-  onChange: (propertyName: string, value: string | number | boolean) => void;
+  onChange: (propertyName: string, value: string | number | boolean | string[]) => void;
 };
 
 const WorkflowInputsForm: VoidFunctionComponent<Props> = ({

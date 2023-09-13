@@ -157,6 +157,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     aria-label="config"
                     size="sm"
                     isDisabled={!isInstalled}
+                    disabled={!isInstalled}
                     icon={<Icon size={12} as={FeatherIcon} icon="settings" />}
                     as={isInstalled ? Link : 'button'}
                     {...(isInstalled ? { to: `../config/${device.id}` } : {})}
@@ -166,6 +167,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     aria-label="edit"
                     size="sm"
                     isDisabled={isInstalled}
+                    disabled={isInstalled}
                     icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                     as={Link}
                     to={`../${device.id}/edit`}
@@ -175,6 +177,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     aria-label="Delete device"
                     size="sm"
                     isDisabled={isInstalled}
+                    disabled={isInstalled}
                     colorScheme="red"
                     icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                     onClick={() => {

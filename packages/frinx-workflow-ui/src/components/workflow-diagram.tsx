@@ -21,9 +21,21 @@ const nodeTypes = {
   end: StartEndNode,
 };
 
+type UnusedWorkflowProperties =
+  | 'schemaVersion'
+  | 'ownerEmail'
+  | 'variables'
+  | 'accessPolicy'
+  | 'createTime'
+  | 'updateTime'
+  | 'failureWorkflow'
+  | 'inputTemplate'
+  | 'workflowStatusListenerEnabled'
+  | 'ownerApp';
+
 type Props = {
   result?: ControlExecutedWorkflowSubscription['controlExecutedWorkflow'] | null;
-  meta?: Workflow | null;
+  meta?: Omit<Workflow, UnusedWorkflowProperties> | null;
 };
 
 type NodeData = {
