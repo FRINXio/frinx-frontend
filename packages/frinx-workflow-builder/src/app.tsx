@@ -158,7 +158,6 @@ const App: VoidFunctionComponent<Props> = ({
   };
 
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
-
   const { name } = workflow;
 
   const handleAddButtonClick = (t: ExtendedTask) => {
