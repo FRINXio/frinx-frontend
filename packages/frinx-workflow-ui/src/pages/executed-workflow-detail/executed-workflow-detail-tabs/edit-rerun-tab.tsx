@@ -12,10 +12,6 @@ type Props = {
 };
 
 const getValue = (i: number, values: string[]) => {
-  if (values[i] != null && typeof values[i] === 'boolean') {
-    return values[i] ? 'true' : 'false';
-  }
-
   if (values[i] != null && typeof values[i] === 'number') {
     return values[i].toString();
   }
