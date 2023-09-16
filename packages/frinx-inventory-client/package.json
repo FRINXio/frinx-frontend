@@ -61,7 +61,7 @@
     "framer-motion": "10.16.4",
     "react": "18.2.0",
     "react-router-dom": "6.16.0",
-    "typescript": "4.9.5"
+    "typescript": "5.2.2"
   },
   "peerDependencies": {
     "@chakra-ui/react": "^1.6.7 || ^2.0.0",
