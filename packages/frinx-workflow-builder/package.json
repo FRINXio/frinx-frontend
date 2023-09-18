@@ -23,7 +23,7 @@
   "dependencies": {
     "@frinx/shared": "^2.0.0",
     "@types/file-saver": "2.0.5",
-    "@types/react": "17.0.65",
+    "@types/react": "18.2.21",
     "@urql/exchange-retry": "1.2.0",
     "dagre": "0.8.5",
     "feather-icons-react": "0.6.2",
