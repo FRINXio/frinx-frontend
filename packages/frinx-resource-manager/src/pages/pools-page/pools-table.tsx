@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-modal';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
 import { PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
+import { SortBy } from './pools-page';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 
@@ -46,6 +47,8 @@ type Pools = {
 };
 
 type Props = {
+  onSort: (sortKey: 'name' | 'dealocationSafetyPeriod') => void;
+  sortBy: SortBy;
   pools: Pools[];
   isLoading: boolean;
   isNestedShown?: boolean;
@@ -56,12 +59,16 @@ type Props = {
 
 const PoolsTable: VoidFunctionComponent<Props> = ({
   pools,
+  onSort,
+  sortBy,
   onDeleteBtnClick,
   onStrategyClick,
   isLoading,
   isNestedShown = true,
   onTagClick,
 }) => {
+  console.log(pools);
+
   if (isLoading) {
     return <Progress isIndeterminate size="sm" />;
   }
@@ -71,9 +78,30 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
       <Thead bgColor="gray.200">
         <Tr>
           {isNestedShown && <Th>Children</Th>}
-          <Th>Name</Th>
+          <Th
+            cursor="pointer"
+            onClick={() => {
+              onSort('name');
+            }}
+          >
+            Name
+            {sortBy?.sortKey === 'name' && (
+              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+            )}
+          </Th>
           <Th>Tags</Th>
           <Th>Pool Type</Th>
+          <Th
+            cursor="pointer"
+            onClick={() => {
+              onSort('dealocationSafetyPeriod');
+            }}
+          >
+            Dealocation Safety Period{' '}
+            {sortBy?.sortKey === 'dealocationSafetyPeriod' && (
+              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+            )}
+          </Th>
           <Th>Resource Type</Th>
           <Th>Utilized Capacity</Th>
           <Th>Actions</Th>
@@ -108,7 +136,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     </Td>
                   )}
                   <Td>
-                    <Text as="span" fontWeight={600}>
+                    <Text cursor="pointer" as="span" fontWeight={600}>
                       {pool.Name}
                     </Text>
                   </Td>
@@ -118,7 +146,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         data-cy={`pool-${pool.Name}-${t.Tag}`}
                         key={t.id}
                         marginRight={1}
-                        cursor="pointer"
                         onClick={() => {
                           if (t && onTagClick) {
                             onTagClick(t.Tag);
@@ -130,6 +157,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     ))}
                   </Td>
                   <Td>{pool.PoolType}</Td>
+                  <Td>{pool.DealocationSafetyPeriod}</Td>
                   <Td>
                     <Text
                       as="span"

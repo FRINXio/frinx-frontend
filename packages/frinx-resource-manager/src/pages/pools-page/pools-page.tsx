@@ -34,6 +34,11 @@ type PoolsFilter =
     }
   | Record<string, string>;
 
+export type SortBy = {
+  sortKey: 'name' | 'dealocationSafetyPeriod';
+  direction: 'asc' | 'desc';
+} | null;
+
 const ALL_POOLS_QUERY = gql`
   query GetAllPools(
     $first: Int
@@ -43,6 +48,7 @@ const ALL_POOLS_QUERY = gql`
     $resourceTypeId: ID
     $filterByResources: Map
     $tags: TagOr
+    $sortBy: SortResourcePoolsInput
   ) {
     QueryRootResourcePools(
       first: $first
@@ -52,11 +58,13 @@ const ALL_POOLS_QUERY = gql`
       resourceTypeId: $resourceTypeId
       filterByResources: $filterByResources
       tags: $tags
+      sortBy: $sortBy
     ) {
       edges {
         node {
           id
           Name
+          DealocationSafetyPeriod
           PoolType
           ParentResource {
             id
@@ -126,6 +134,7 @@ const GET_RESOURCE_TYPES = gql`
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
   const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
+  const [sortBy, setSortBy] = useState<SortBy>(null);
   const [allocatedResources, setAllocatedResources] = useState<InputValues>({});
   const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
   const [searchName, setSearchName] = useState<string>('');
@@ -142,6 +151,7 @@ const PoolsPage: VoidFunctionComponent = () => {
       filterByResources: poolsFilter.resources ?? null,
       tags: selectedTags.length ? { matchesAny: [{ matchesAll: selectedTags }] } : null,
       resourceTypeId: poolsFilter.resourceType || null,
+      sortBy,
     },
     context,
   });
@@ -213,6 +223,11 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
   };
 
+  const handleSort = (sortKey: 'name' | 'dealocationSafetyPeriod') => {
+    const direction = 'asc' ? 'desc' : 'asc';
+    setSortBy({ sortKey, direction });
+  };
+
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
@@ -259,6 +274,8 @@ const PoolsPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
+         onSort={handleSort}
+         sortBy={sortBy}
           pools={results}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
