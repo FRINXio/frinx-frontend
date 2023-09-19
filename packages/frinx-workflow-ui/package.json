@@ -18,7 +18,7 @@
     "dagre": "0.8.5",
     "date-fns": "^2.29.3",
     "feather-icons-react": "0.6.2",
-    "formik": "2.4.4",
+    "formik": "2.4.5",
     "graphql-ws": "5.14.0",
     "lodash": "4.17.21",
     "match-sorter": "6.3.1",
