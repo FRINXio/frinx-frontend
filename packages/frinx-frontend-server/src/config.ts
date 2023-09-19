@@ -55,6 +55,7 @@ const config = {
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
   MSALAuthority: envString('MSAL_AUTHORITY'),
   commitHash: envString('COMMIT_HASH'),
+  unistoreApiURL: envString('UNISTORE_API_URL'),
 };
 
 export default config;

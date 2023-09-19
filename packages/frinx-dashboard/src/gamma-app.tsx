@@ -24,11 +24,10 @@ const GammaApp: VoidFunctionComponent = () => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           workflowManagerClient: UniflowApi.create({ url: uniflowApiURL, authContext }).client,
-          resourceManagerClient: ResourceManagerApi.create({ url: uniresourceApiURL, authContext }),
         }),
       });
     });
-  }, [uniflowApiURL, unistoreApiURL, uniresourceApiURL]);
+  }, [uniflowApiURL, unistoreApiURL]);
 
   useEffect(() => {
     authContext.eventEmitter.once('FORBIDDEN', () => {
@@ -44,6 +43,7 @@ const GammaApp: VoidFunctionComponent = () => {
 
   return (
     <GammaAppProvider
+      resourceManagerClient={ResourceManagerApi.create({ url: uniresourceApiURL, authContext }).client}
       hasTransactionError={hasTransactionError}
       onTransactionRefresh={() => {
         setHasTransactionError(false);
