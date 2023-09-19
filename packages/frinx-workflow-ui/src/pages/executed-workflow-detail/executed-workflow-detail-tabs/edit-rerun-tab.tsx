@@ -12,6 +12,14 @@ type Props = {
 };
 
 const getValue = (i: number, values: string[]) => {
+  if (values[i] != null && typeof values[i] === 'number') {
+    return values[i].toString();
+  }
+
+  if (values[i] != null && typeof values[i] === 'object') {
+    return JSON.stringify(values[i]);
+  }
+
   if (values[i] != null && typeof values[i] === 'string') {
     return values[i];
   }
