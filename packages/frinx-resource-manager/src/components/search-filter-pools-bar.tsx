@@ -4,8 +4,6 @@ import { SearchByTag } from '@frinx/shared';
 import { Searchbar } from './searchbar';
 import SearchByAllocatedResources from './search-by-allocated-resources';
 
-type InputValues = { [key: string]: string };
-
 type Props = {
   searchName: string;
   resourceTypes?: { Name: string; id: string }[];
@@ -13,7 +11,7 @@ type Props = {
   allocatedResources?: { [key: string]: string };
   selectedTags: string[];
   canFilterByResourceType?: boolean;
-  setAllocatedResources?: React.Dispatch<React.SetStateAction<InputValues>>;
+  setAllocatedResources?: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
   setSelectedResourceType?: (value: string) => void;
   onClearSearch?: () => void;
   clearAllTags: () => void;

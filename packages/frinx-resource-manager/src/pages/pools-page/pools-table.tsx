@@ -40,6 +40,7 @@ type Pools = {
   Capacity: PoolCapacityPayload | null;
   PoolProperties: Record<string, string | number | boolean>;
   PoolType: PoolType;
+  DealocationSafetyPeriod?: number;
   ResourceType: Record<string, string>;
   Resources: Resource[];
   Tags: Omit<TagType, 'Pools'>[];
@@ -47,8 +48,8 @@ type Pools = {
 };
 
 type Props = {
-  onSort: (sortKey: 'name' | 'dealocationSafetyPeriod') => void;
-  sortBy: SortBy;
+  onSort?: (sortKey: 'name' | 'dealocationSafetyPeriod') => void;
+  sortBy?: SortBy;
   pools: Pools[];
   isLoading: boolean;
   isNestedShown?: boolean;
@@ -67,7 +68,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
   isNestedShown = true,
   onTagClick,
 }) => {
-
   if (isLoading) {
     return <Progress isIndeterminate size="sm" />;
   }
@@ -80,7 +80,9 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
           <Th
             cursor="pointer"
             onClick={() => {
-              onSort('name');
+              if (onSort) {
+                onSort('name');
+              }
             }}
           >
             Name
@@ -93,7 +95,9 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
           <Th
             cursor="pointer"
             onClick={() => {
-              onSort('dealocationSafetyPeriod');
+              if (onSort) {
+                onSort('dealocationSafetyPeriod');
+              }
             }}
           >
             Dealocation Safety Period{' '}
@@ -135,7 +139,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     </Td>
                   )}
                   <Td>
-                    <Text cursor="pointer" as="span" fontWeight={600}>
+                    <Text as="span" fontWeight={600}>
                       {pool.Name}
                     </Text>
                   </Td>

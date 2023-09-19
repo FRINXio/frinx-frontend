@@ -20,19 +20,17 @@ import {
   GetAllPoolsQueryVariables,
   GetResourceTypesQuery,
   GetResourceTypesQueryVariables,
-  Scalars,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 
-type InputValues = { [key: string]: string };
-
 type PoolsFilter =
   | {
-      resources: InputValues | null;
-      resourceType: string | null;
+      resources: { [key: string]: string | null | undefined } | null | undefined;
+      resourceType: string | undefined | null;
     }
-  | Record<string, string>;
+  | null
+  | undefined;
 
 export type SortBy = {
   sortKey: 'name' | 'dealocationSafetyPeriod';
@@ -135,8 +133,8 @@ const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
   const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
   const [sortBy, setSortBy] = useState<SortBy>(null);
-  const [allocatedResources, setAllocatedResources] = useState<InputValues>({});
-  const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
+  const [allocatedResources, setAllocatedResources] = useState<{ [key: string]: string }>({});
+  const [selectedResourceType, setSelectedResourceType] = useState<string>();
   const [searchName, setSearchName] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [paginationArgs, { nextPage, previousPage, setItemsCount, firstPage }] = usePagination();
@@ -148,9 +146,9 @@ const PoolsPage: VoidFunctionComponent = () => {
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
-      filterByResources: poolsFilter.resources ?? null,
+      filterByResources: poolsFilter?.resources ?? null,
       tags: selectedTags.length ? { matchesAny: [{ matchesAll: selectedTags }] } : null,
-      resourceTypeId: poolsFilter.resourceType || null,
+      resourceTypeId: poolsFilter?.resourceType || null,
       sortBy,
     },
     context,
@@ -181,6 +179,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
     if (!Object.keys(allocatedResources).length) {
       setPoolsFilter({
+        resources: null,
         resourceType: selectedResourceType,
       });
     }
@@ -214,7 +213,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSearchText('');
     clearAllTags();
     setSelectedResourceType('');
-    setPoolsFilter({});
+    setPoolsFilter(null);
   };
 
   const handleOnStrategyClick = (id?: string) => {
@@ -224,7 +223,7 @@ const PoolsPage: VoidFunctionComponent = () => {
   };
 
   const handleSort = (sortKey: 'name' | 'dealocationSafetyPeriod') => {
-    const direction = 'asc' ? 'desc' : 'asc';
+    const direction = sortBy?.direction === 'asc' ? 'desc' : 'asc';
     setSortBy({ sortKey, direction });
   };
 
