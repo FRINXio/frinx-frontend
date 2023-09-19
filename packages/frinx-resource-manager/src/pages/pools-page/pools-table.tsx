@@ -67,7 +67,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
   isNestedShown = true,
   onTagClick,
 }) => {
-  console.log(pools);
 
   if (isLoading) {
     return <Progress isIndeterminate size="sm" />;

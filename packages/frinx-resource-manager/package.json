@@ -24,7 +24,7 @@
     "build": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",
     "lint": "eslint --ext .ts,.tsx src",
     "type-check": "tsc",
-    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen": "NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "typegen": "tsc -p ./tsconfig.typegen.json"
   },

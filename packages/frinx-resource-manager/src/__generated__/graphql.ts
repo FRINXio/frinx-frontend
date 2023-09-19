@@ -3,25 +3,27 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  Cursor: any;
-  Map: any;
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  Cursor: { input: any; output: any; }
+  Map: { input: any; output: any; }
 };
 
 /** Represents an allocation strategy */
 export type AllocationStrategy = Node & {
   __typename?: 'AllocationStrategy';
-  Description: Maybe<Scalars['String']>;
+  Description: Maybe<Scalars['String']['output']>;
   Lang: AllocationStrategyLang;
-  Name: Scalars['String'];
-  Script: Scalars['String'];
-  id: Scalars['ID'];
+  Name: Scalars['String']['output'];
+  Script: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 /** Supported languages for allocation strategy scripts */
@@ -31,14 +33,14 @@ export type AllocationStrategyLang =
 
 /** Input parameters for creating an allocation pool */
 export type CreateAllocatingPoolInput = {
-  allocationStrategyId: Scalars['ID'];
-  description?: InputMaybe<Scalars['String']>;
-  poolDealocationSafetyPeriod: Scalars['Int'];
-  poolName: Scalars['String'];
-  poolProperties: Scalars['Map'];
-  poolPropertyTypes: Scalars['Map'];
-  resourceTypeId: Scalars['ID'];
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  allocationStrategyId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolProperties: Scalars['Map']['input'];
+  poolPropertyTypes: Scalars['Map']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Output of creating an allocating pool */
@@ -49,11 +51,11 @@ export type CreateAllocatingPoolPayload = {
 
 /** Input parameters for creating a new allocation strategy */
 export type CreateAllocationStrategyInput = {
-  description?: InputMaybe<Scalars['String']>;
-  expectedPoolPropertyTypes?: InputMaybe<Scalars['Map']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  expectedPoolPropertyTypes?: InputMaybe<Scalars['Map']['input']>;
   lang: AllocationStrategyLang;
-  name: Scalars['String'];
-  script: Scalars['String'];
+  name: Scalars['String']['input'];
+  script: Scalars['String']['input'];
 };
 
 /** Output of creating a new allocation strategy */
@@ -64,13 +66,13 @@ export type CreateAllocationStrategyPayload = {
 
 /** Input parameters for creating a nested allocation pool */
 export type CreateNestedAllocatingPoolInput = {
-  allocationStrategyId: Scalars['ID'];
-  description?: InputMaybe<Scalars['String']>;
-  parentResourceId: Scalars['ID'];
-  poolDealocationSafetyPeriod: Scalars['Int'];
-  poolName: Scalars['String'];
-  resourceTypeId: Scalars['ID'];
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  allocationStrategyId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Output of creating a nested allocating pool */
@@ -81,13 +83,13 @@ export type CreateNestedAllocatingPoolPayload = {
 
 /** Input parameters for creating a nested set pool */
 export type CreateNestedSetPoolInput = {
-  description?: InputMaybe<Scalars['String']>;
-  parentResourceId: Scalars['ID'];
-  poolDealocationSafetyPeriod: Scalars['Int'];
-  poolName: Scalars['String'];
-  poolValues: Array<InputMaybe<Scalars['Map']>>;
-  resourceTypeId: Scalars['ID'];
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<InputMaybe<Scalars['Map']['input']>>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Output of creating a nested set pool */
@@ -98,12 +100,12 @@ export type CreateNestedSetPoolPayload = {
 
 /** Input parameters for creating a nested singleton pool */
 export type CreateNestedSingletonPoolInput = {
-  description?: InputMaybe<Scalars['String']>;
-  parentResourceId: Scalars['ID'];
-  poolName: Scalars['String'];
-  poolValues: Array<InputMaybe<Scalars['Map']>>;
-  resourceTypeId: Scalars['ID'];
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<InputMaybe<Scalars['Map']['input']>>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Output of creating a nested singleton pool */
@@ -115,12 +117,12 @@ export type CreateNestedSingletonPoolPayload = {
 /** Creating a new resource-type */
 export type CreateResourceTypeInput = {
   /** name of the resource type AND property type (should they be different?) */
-  resourceName: Scalars['String'];
+  resourceName: Scalars['String']['input'];
   /**
    * resourceProperties: Map! - for key "init" the value is the initial value of the property type (like 7)
    *                          - for key "type" the value is the name of the type like "int"
    */
-  resourceProperties: Scalars['Map'];
+  resourceProperties: Scalars['Map']['input'];
 };
 
 /** Output of creating a new resource-type */
@@ -131,12 +133,12 @@ export type CreateResourceTypePayload = {
 
 /** Input parameters for creating a set pool */
 export type CreateSetPoolInput = {
-  description?: InputMaybe<Scalars['String']>;
-  poolDealocationSafetyPeriod: Scalars['Int'];
-  poolName: Scalars['String'];
-  poolValues: Array<Scalars['Map']>;
-  resourceTypeId: Scalars['ID'];
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<Scalars['Map']['input']>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Output of creating set pool */
@@ -147,11 +149,11 @@ export type CreateSetPoolPayload = {
 
 /** Input parameters for creating a singleton pool */
 export type CreateSingletonPoolInput = {
-  description?: InputMaybe<Scalars['String']>;
-  poolName: Scalars['String'];
-  poolValues: Array<Scalars['Map']>;
-  resourceTypeId: Scalars['ID'];
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolName: Scalars['String']['input'];
+  poolValues: Array<Scalars['Map']['input']>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Output of creating a singleton pool */
@@ -162,7 +164,7 @@ export type CreateSingletonPoolPayload = {
 
 /** Input parameters for creating a new tag */
 export type CreateTagInput = {
-  tagText: Scalars['String'];
+  tagText: Scalars['String']['input'];
 };
 
 /** Output of creating a tag */
@@ -173,7 +175,7 @@ export type CreateTagPayload = {
 
 /** Input parameters for deleting an existing allocation strategy */
 export type DeleteAllocationStrategyInput = {
-  allocationStrategyId: Scalars['ID'];
+  allocationStrategyId: Scalars['ID']['input'];
 };
 
 /** Output of deleting an existing allocation strategy */
@@ -184,35 +186,35 @@ export type DeleteAllocationStrategyPayload = {
 
 /** Input entity for deleting a pool */
 export type DeleteResourcePoolInput = {
-  resourcePoolId: Scalars['ID'];
+  resourcePoolId: Scalars['ID']['input'];
 };
 
 /** Output entity for deleting a pool */
 export type DeleteResourcePoolPayload = {
   __typename?: 'DeleteResourcePoolPayload';
-  resourcePoolId: Scalars['ID'];
+  resourcePoolId: Scalars['ID']['output'];
 };
 
 /** Input parameters for deleting an existing resource-type */
 export type DeleteResourceTypeInput = {
-  resourceTypeId: Scalars['ID'];
+  resourceTypeId: Scalars['ID']['input'];
 };
 
 /** Output of deleting a resource-type */
 export type DeleteResourceTypePayload = {
   __typename?: 'DeleteResourceTypePayload';
-  resourceTypeId: Scalars['ID'];
+  resourceTypeId: Scalars['ID']['output'];
 };
 
 /** Input parameters for deleting an existing tag */
 export type DeleteTagInput = {
-  tagId: Scalars['ID'];
+  tagId: Scalars['ID']['input'];
 };
 
 /** Output of deleting a tag */
 export type DeleteTagPayload = {
   __typename?: 'DeleteTagPayload';
-  tagId: Scalars['ID'];
+  tagId: Scalars['ID']['output'];
 };
 
 export type Mutation = {
@@ -232,9 +234,9 @@ export type Mutation = {
   DeleteResourcePool: DeleteResourcePoolPayload;
   DeleteResourceType: DeleteResourceTypePayload;
   DeleteTag: DeleteTagPayload;
-  FreeResource: Scalars['String'];
+  FreeResource: Scalars['String']['output'];
   TagPool: TagPoolPayload;
-  TestAllocationStrategy: Scalars['Map'];
+  TestAllocationStrategy: Scalars['Map']['output'];
   UntagPool: UntagPoolPayload;
   UpdateResourceAltId: Resource;
   UpdateResourceTypeName: UpdateResourceTypeNamePayload;
@@ -243,17 +245,17 @@ export type Mutation = {
 
 
 export type MutationClaimResourceArgs = {
-  description?: InputMaybe<Scalars['String']>;
-  poolId: Scalars['ID'];
-  userInput: Scalars['Map'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolId: Scalars['ID']['input'];
+  userInput: Scalars['Map']['input'];
 };
 
 
 export type MutationClaimResourceWithAltIdArgs = {
-  alternativeId: Scalars['Map'];
-  description?: InputMaybe<Scalars['String']>;
-  poolId: Scalars['ID'];
-  userInput: Scalars['Map'];
+  alternativeId: Scalars['Map']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolId: Scalars['ID']['input'];
+  userInput: Scalars['Map']['input'];
 };
 
 
@@ -323,8 +325,8 @@ export type MutationDeleteTagArgs = {
 
 
 export type MutationFreeResourceArgs = {
-  input: Scalars['Map'];
-  poolId: Scalars['ID'];
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
 };
 
 
@@ -334,10 +336,10 @@ export type MutationTagPoolArgs = {
 
 
 export type MutationTestAllocationStrategyArgs = {
-  allocationStrategyId: Scalars['ID'];
+  allocationStrategyId: Scalars['ID']['input'];
   currentResources: Array<ResourceInput>;
   resourcePool: ResourcePoolInput;
-  userInput: Scalars['Map'];
+  userInput: Scalars['Map']['input'];
 };
 
 
@@ -347,9 +349,9 @@ export type MutationUntagPoolArgs = {
 
 
 export type MutationUpdateResourceAltIdArgs = {
-  alternativeId: Scalars['Map'];
-  input: Scalars['Map'];
-  poolId: Scalars['ID'];
+  alternativeId: Scalars['Map']['input'];
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
 };
 
 
@@ -365,29 +367,29 @@ export type MutationUpdateTagArgs = {
 /** Interface for entities needed by the relay-framework */
 export type Node = {
   /** The ID of the entity */
-  id: Scalars['ID'];
+  id: Scalars['ID']['output'];
 };
 
 /** Holds the string value for pagination */
 export type OutputCursor = {
   __typename?: 'OutputCursor';
-  ID: Scalars['String'];
+  ID: Scalars['String']['output'];
 };
 
 /** Holds information about the requested pagination page */
 export type PageInfo = {
   __typename?: 'PageInfo';
   endCursor: Maybe<OutputCursor>;
-  hasNextPage: Scalars['Boolean'];
-  hasPreviousPage: Scalars['Boolean'];
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
   startCursor: Maybe<OutputCursor>;
 };
 
 /** Entity representing capacity of a pool */
 export type PoolCapacityPayload = {
   __typename?: 'PoolCapacityPayload';
-  freeCapacity: Scalars['String'];
-  utilizedCapacity: Scalars['String'];
+  freeCapacity: Scalars['String']['output'];
+  utilizedCapacity: Scalars['String']['output'];
 };
 
 /** Defines the type of pool */
@@ -399,13 +401,13 @@ export type PoolType =
 /** Defines the type of the property */
 export type PropertyType = Node & {
   __typename?: 'PropertyType';
-  FloatVal: Maybe<Scalars['Float']>;
-  IntVal: Maybe<Scalars['Int']>;
-  Mandatory: Maybe<Scalars['Boolean']>;
-  Name: Scalars['String'];
-  StringVal: Maybe<Scalars['String']>;
-  Type: Scalars['String'];
-  id: Scalars['ID'];
+  FloatVal: Maybe<Scalars['Float']['output']>;
+  IntVal: Maybe<Scalars['Int']['output']>;
+  Mandatory: Maybe<Scalars['Boolean']['output']>;
+  Name: Scalars['String']['output'];
+  StringVal: Maybe<Scalars['String']['output']>;
+  Type: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 export type Query = {
@@ -433,139 +435,143 @@ export type Query = {
 
 
 export type QueryQueryAllocationStrategiesArgs = {
-  byName?: InputMaybe<Scalars['String']>;
+  byName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryQueryAllocationStrategyArgs = {
-  allocationStrategyId: Scalars['ID'];
+  allocationStrategyId: Scalars['ID']['input'];
 };
 
 
 export type QueryQueryEmptyResourcePoolsArgs = {
-  after?: InputMaybe<Scalars['Cursor']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
 };
 
 
 export type QueryQueryLeafResourcePoolsArgs = {
-  after?: InputMaybe<Scalars['Cursor']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
   tags?: InputMaybe<TagOr>;
 };
 
 
 export type QueryQueryPoolCapacityArgs = {
-  poolId: Scalars['ID'];
+  poolId: Scalars['ID']['input'];
 };
 
 
 export type QueryQueryRecentlyActiveResourcesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  fromDatetime: Scalars['String'];
-  last?: InputMaybe<Scalars['Int']>;
-  toDatetime?: InputMaybe<Scalars['String']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  fromDatetime: Scalars['String']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  toDatetime?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryQueryRequiredPoolPropertiesArgs = {
-  allocationStrategyName: Scalars['String'];
+  allocationStrategyName: Scalars['String']['input'];
 };
 
 
 export type QueryQueryResourceArgs = {
-  input: Scalars['Map'];
-  poolId: Scalars['ID'];
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
 };
 
 
 export type QueryQueryResourcePoolArgs = {
-  poolId: Scalars['ID'];
+  poolId: Scalars['ID']['input'];
 };
 
 
 export type QueryQueryResourcePoolHierarchyPathArgs = {
-  poolId: Scalars['ID'];
+  poolId: Scalars['ID']['input'];
 };
 
 
 export type QueryQueryResourcePoolsArgs = {
-  after?: InputMaybe<Scalars['Cursor']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
   tags?: InputMaybe<TagOr>;
 };
 
 
 export type QueryQueryResourceTypesArgs = {
-  byName?: InputMaybe<Scalars['String']>;
+  byName?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type QueryQueryResourcesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  poolId: Scalars['ID'];
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  poolId: Scalars['ID']['input'];
 };
 
 
 export type QueryQueryResourcesByAltIdArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  input: Scalars['Map'];
-  last?: InputMaybe<Scalars['Int']>;
-  poolId?: InputMaybe<Scalars['ID']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  input: Scalars['Map']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  poolId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
 export type QueryQueryRootResourcePoolsArgs = {
-  after?: InputMaybe<Scalars['Cursor']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
   tags?: InputMaybe<TagOr>;
 };
 
 
 export type QuerySearchPoolsByTagsArgs = {
-  after?: InputMaybe<Scalars['Cursor']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   tags?: InputMaybe<TagOr>;
 };
 
 
 export type QueryNodeArgs = {
-  id: Scalars['ID'];
+  id: Scalars['ID']['input'];
 };
 
 /** Represents an allocated resource */
 export type Resource = Node & {
   __typename?: 'Resource';
-  AlternativeId: Maybe<Scalars['Map']>;
-  Description: Maybe<Scalars['String']>;
+  AlternativeId: Maybe<Scalars['Map']['output']>;
+  Description: Maybe<Scalars['String']['output']>;
   NestedPool: Maybe<ResourcePool>;
   ParentPool: ResourcePool;
-  Properties: Scalars['Map'];
-  id: Scalars['ID'];
+  Properties: Scalars['Map']['output'];
+  id: Scalars['ID']['output'];
 };
 
 /** A Relay-specific entity holding information about pagination */
@@ -573,7 +579,7 @@ export type ResourceConnection = {
   __typename?: 'ResourceConnection';
   edges: Array<Maybe<ResourceEdge>>;
   pageInfo: PageInfo;
-  totalCount: Scalars['Int'];
+  totalCount: Scalars['Int']['output'];
 };
 
 /** A Relay-specific entity that holds information about the requested pagination page */
@@ -585,9 +591,9 @@ export type ResourceEdge = {
 
 /** Alternative representation of identity of a resource (i.e. alternative to resource ID) */
 export type ResourceInput = {
-  Properties: Scalars['Map'];
-  Status: Scalars['String'];
-  UpdatedAt: Scalars['String'];
+  Properties: Scalars['Map']['input'];
+  Status: Scalars['String']['input'];
+  UpdatedAt: Scalars['String']['input'];
 };
 
 /** A pool is an entity that contains allocated and free resources */
@@ -595,31 +601,32 @@ export type ResourcePool = Node & {
   __typename?: 'ResourcePool';
   AllocationStrategy: Maybe<AllocationStrategy>;
   Capacity: Maybe<PoolCapacityPayload>;
-  Name: Scalars['String'];
+  DealocationSafetyPeriod: Scalars['Int']['output'];
+  Name: Scalars['String']['output'];
   ParentResource: Maybe<Resource>;
-  PoolProperties: Scalars['Map'];
+  PoolProperties: Scalars['Map']['output'];
   PoolType: PoolType;
   ResourceType: ResourceType;
   Resources: Array<Resource>;
   Tags: Array<Tag>;
   allocatedResources: Maybe<ResourceConnection>;
-  id: Scalars['ID'];
+  id: Scalars['ID']['output'];
 };
 
 
 /** A pool is an entity that contains allocated and free resources */
 export type ResourcePoolAllocatedResourcesArgs = {
-  after?: InputMaybe<Scalars['String']>;
-  before?: InputMaybe<Scalars['String']>;
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type ResourcePoolConnection = {
   __typename?: 'ResourcePoolConnection';
   edges: Array<Maybe<ResourcePoolEdge>>;
   pageInfo: PageInfo;
-  totalCount: Scalars['Int'];
+  totalCount: Scalars['Int']['output'];
 };
 
 export type ResourcePoolEdge = {
@@ -630,31 +637,44 @@ export type ResourcePoolEdge = {
 
 /** Convenience entity representing the identity of a pool in some calls */
 export type ResourcePoolInput = {
-  ResourcePoolID: Scalars['ID'];
-  ResourcePoolName: Scalars['String'];
-  poolProperties: Scalars['Map'];
+  ResourcePoolID: Scalars['ID']['input'];
+  ResourcePoolName: Scalars['String']['input'];
+  poolProperties: Scalars['Map']['input'];
 };
 
 /** Describes the properties of a resource */
 export type ResourceType = Node & {
   __typename?: 'ResourceType';
-  Name: Scalars['String'];
+  Name: Scalars['String']['output'];
   Pools: Array<ResourcePool>;
   PropertyTypes: Array<PropertyType>;
-  id: Scalars['ID'];
+  id: Scalars['ID']['output'];
+};
+
+export type SortDirection =
+  | 'asc'
+  | 'desc';
+
+export type SortResourcePoolsBy =
+  | 'dealocationSafetyPeriod'
+  | 'name';
+
+export type SortResourcePoolsInput = {
+  direction: SortDirection;
+  sortKey: SortResourcePoolsBy;
 };
 
 /** Pools can be tagged for easier search */
 export type Tag = Node & {
   __typename?: 'Tag';
   Pools: Maybe<Array<Maybe<ResourcePool>>>;
-  Tag: Scalars['String'];
-  id: Scalars['ID'];
+  Tag: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 /** Helper entities for tag search */
 export type TagAnd = {
-  matchesAll: Array<Scalars['String']>;
+  matchesAll: Array<Scalars['String']['input']>;
 };
 
 /** Helper entities for tag search */
@@ -664,8 +684,8 @@ export type TagOr = {
 
 /** Input parameters for a call adding a tag to pool */
 export type TagPoolInput = {
-  poolId: Scalars['ID'];
-  tagId: Scalars['ID'];
+  poolId: Scalars['ID']['input'];
+  tagId: Scalars['ID']['input'];
 };
 
 /** Output of adding a specific tag to a pool */
@@ -676,8 +696,8 @@ export type TagPoolPayload = {
 
 /** Input parameters for a call removing a tag from pool */
 export type UntagPoolInput = {
-  poolId: Scalars['ID'];
-  tagId: Scalars['ID'];
+  poolId: Scalars['ID']['input'];
+  tagId: Scalars['ID']['input'];
 };
 
 /** Output of removing a specific tag from a pool */
@@ -688,20 +708,20 @@ export type UntagPoolPayload = {
 
 /** Input parameters updating the name of a resource-type */
 export type UpdateResourceTypeNameInput = {
-  resourceName: Scalars['String'];
-  resourceTypeId: Scalars['ID'];
+  resourceName: Scalars['String']['input'];
+  resourceTypeId: Scalars['ID']['input'];
 };
 
 /** Output of updating the name of a resource-type */
 export type UpdateResourceTypeNamePayload = {
   __typename?: 'UpdateResourceTypeNamePayload';
-  resourceTypeId: Scalars['ID'];
+  resourceTypeId: Scalars['ID']['output'];
 };
 
 /** Input parameters for updating an existing tag */
 export type UpdateTagInput = {
-  tagId: Scalars['ID'];
-  tagText: Scalars['String'];
+  tagId: Scalars['ID']['input'];
+  tagText: Scalars['String']['input'];
 };
 
 /** Output of updating a tag */
@@ -711,9 +731,9 @@ export type UpdateTagPayload = {
 };
 
 export type ClaimResourceMutationMutationVariables = Exact<{
-  poolId: Scalars['ID'];
-  description?: InputMaybe<Scalars['String']>;
-  userInput: Scalars['Map'];
+  poolId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  userInput: Scalars['Map']['input'];
 }>;
 
 
@@ -748,8 +768,8 @@ export type DeleteStrategyMutationMutationVariables = Exact<{
 export type DeleteStrategyMutationMutation = { __typename?: 'Mutation', DeleteAllocationStrategy: { __typename?: 'DeleteAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string } | null } };
 
 export type FreeResourceMutationMutationVariables = Exact<{
-  poolId: Scalars['ID'];
-  input: Scalars['Map'];
+  poolId: Scalars['ID']['input'];
+  input: Scalars['Map']['input'];
 }>;
 
 
@@ -766,19 +786,19 @@ export type QueryAllocationStrategiesQueryVariables = Exact<{ [key: string]: nev
 export type QueryAllocationStrategiesQuery = { __typename?: 'Query', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string }> };
 
 export type GetPoolDetailQueryVariables = Exact<{
-  poolId: Scalars['ID'];
+  poolId: Scalars['ID']['input'];
 }>;
 
 
 export type GetPoolDetailQuery = { __typename?: 'Query', QueryResourcePool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Resources: Array<{ __typename?: 'Resource', Description: string | null, Properties: any, id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, ParentResource: { __typename?: 'Resource', ParentPool: { __typename?: 'ResourcePool', id: string, Name: string } } | null, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string, ResourceType: { __typename?: 'ResourceType', id: string, Name: string } } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } | null }>, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string } } };
 
 export type AllocatedResourcesQueryVariables = Exact<{
-  input: Scalars['Map'];
-  poolId: Scalars['ID'];
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['String']>;
-  after?: InputMaybe<Scalars['String']>;
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -790,27 +810,27 @@ export type GetResourceTypeByNameQueryVariables = Exact<{ [key: string]: never; 
 export type GetResourceTypeByNameQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', id: string, Name: string }> };
 
 export type ClaimResourceMutationVariables = Exact<{
-  poolId: Scalars['ID'];
-  description?: InputMaybe<Scalars['String']>;
-  userInput: Scalars['Map'];
+  poolId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  userInput: Scalars['Map']['input'];
 }>;
 
 
 export type ClaimResourceMutation = { __typename?: 'Mutation', ClaimResource: { __typename?: 'Resource', id: string, Properties: any } };
 
 export type ClaimResourceWithAltIdMutationVariables = Exact<{
-  poolId: Scalars['ID'];
-  description?: InputMaybe<Scalars['String']>;
-  userInput: Scalars['Map'];
-  alternativeId: Scalars['Map'];
+  poolId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  userInput: Scalars['Map']['input'];
+  alternativeId: Scalars['Map']['input'];
 }>;
 
 
 export type ClaimResourceWithAltIdMutation = { __typename?: 'Mutation', ClaimResourceWithAltId: { __typename?: 'Resource', id: string, Properties: any } };
 
 export type FreeResourceMutationVariables = Exact<{
-  poolId: Scalars['ID'];
-  input: Scalars['Map'];
+  poolId: Scalars['ID']['input'];
+  input: Scalars['Map']['input'];
 }>;
 
 
@@ -824,7 +844,7 @@ export type DeletePoolMutationVariables = Exact<{
 export type DeletePoolMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
 
 export type GetNestedPoolsDetailQueryVariables = Exact<{
-  poolId: Scalars['ID'];
+  poolId: Scalars['ID']['input'];
 }>;
 
 
@@ -878,12 +898,12 @@ export type SelectResourceTypesQueryVariables = Exact<{ [key: string]: never; }>
 export type SelectResourceTypesQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', Name: string, id: string, Pools: Array<{ __typename?: 'ResourcePool', id: string, Name: string }>, PropertyTypes: Array<{ __typename?: 'PropertyType', id: string, Name: string }> }> };
 
 export type SelectPoolsQueryVariables = Exact<{
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  after?: InputMaybe<Scalars['Cursor']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
 }>;
 
 
@@ -895,7 +915,7 @@ export type SelectAllocationStrategiesQueryVariables = Exact<{ [key: string]: ne
 export type SelectAllocationStrategiesQuery = { __typename?: 'Query', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string }> };
 
 export type RequiredPoolPropertiesQueryVariables = Exact<{
-  allocationStrategyName: Scalars['String'];
+  allocationStrategyName: Scalars['String']['input'];
 }>;
 
 
@@ -910,12 +930,12 @@ export type CreateAllocationStrategyAndResourceTypeMutationVariables = Exact<{
 export type CreateAllocationStrategyAndResourceTypeMutation = { __typename?: 'Mutation', createStrat: { __typename?: 'CreateAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string } | null }, createResourceType: { __typename?: 'CreateResourceTypePayload', resourceType: { __typename?: 'ResourceType', id: string, Name: string } } };
 
 export type GetPoolAggregatesQueryVariables = Exact<{
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  after?: InputMaybe<Scalars['Cursor']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
   tags?: InputMaybe<TagOr>;
 }>;
 
@@ -930,12 +950,12 @@ export type DeleteIpPoolMutationVariables = Exact<{
 export type DeleteIpPoolMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
 
 export type GetPoolIpRangesQueryVariables = Exact<{
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  after?: InputMaybe<Scalars['Cursor']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
 }>;
 
 
@@ -949,12 +969,12 @@ export type DeleteResourcePoolMutationVariables = Exact<{
 export type DeleteResourcePoolMutation = { __typename?: 'Mutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } };
 
 export type GetAllIpPoolsQueryVariables = Exact<{
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  after?: InputMaybe<Scalars['Cursor']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
   tags?: InputMaybe<TagOr>;
 }>;
 
@@ -967,17 +987,18 @@ export type GetResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetResourceTypesQuery = { __typename?: 'Query', QueryResourceTypes: Array<{ __typename?: 'ResourceType', id: string, Name: string }> };
 
 export type GetAllPoolsQueryVariables = Exact<{
-  first?: InputMaybe<Scalars['Int']>;
-  last?: InputMaybe<Scalars['Int']>;
-  before?: InputMaybe<Scalars['Cursor']>;
-  after?: InputMaybe<Scalars['Cursor']>;
-  resourceTypeId?: InputMaybe<Scalars['ID']>;
-  filterByResources?: InputMaybe<Scalars['Map']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
   tags?: InputMaybe<TagOr>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
 }>;
 
 
-export type GetAllPoolsQuery = { __typename?: 'Query', QueryRootResourcePools: { __typename?: 'ResourcePoolConnection', totalCount: number, edges: Array<{ __typename?: 'ResourcePoolEdge', node: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, PoolProperties: any, ParentResource: { __typename?: 'Resource', id: string } | null, allocatedResources: { __typename?: 'ResourceConnection', totalCount: number } | null, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor: { __typename?: 'OutputCursor', ID: string } | null, startCursor: { __typename?: 'OutputCursor', ID: string } | null } } };
+export type GetAllPoolsQuery = { __typename?: 'Query', QueryRootResourcePools: { __typename?: 'ResourcePoolConnection', totalCount: number, edges: Array<{ __typename?: 'ResourcePoolEdge', node: { __typename?: 'ResourcePool', id: string, Name: string, DealocationSafetyPeriod: number, PoolType: PoolType, PoolProperties: any, ParentResource: { __typename?: 'Resource', id: string } | null, allocatedResources: { __typename?: 'ResourceConnection', totalCount: number } | null, Tags: Array<{ __typename?: 'Tag', id: string, Tag: string }>, AllocationStrategy: { __typename?: 'AllocationStrategy', id: string, Name: string } | null, ResourceType: { __typename?: 'ResourceType', id: string, Name: string }, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string } | null }>, Capacity: { __typename?: 'PoolCapacityPayload', freeCapacity: string, utilizedCapacity: string } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor: { __typename?: 'OutputCursor', ID: string } | null, startCursor: { __typename?: 'OutputCursor', ID: string } | null } } };
 
 export type ResourceTypesQueryVariables = Exact<{ [key: string]: never; }>;
 

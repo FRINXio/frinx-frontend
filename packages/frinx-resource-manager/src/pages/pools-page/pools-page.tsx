@@ -274,8 +274,8 @@ const PoolsPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
-         onSort={handleSort}
-         sortBy={sortBy}
+          onSort={handleSort}
+          sortBy={sortBy}
           pools={results}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}
