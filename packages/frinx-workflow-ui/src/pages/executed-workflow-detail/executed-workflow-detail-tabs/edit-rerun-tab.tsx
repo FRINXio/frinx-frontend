@@ -1,54 +1,46 @@
-import React, { ChangeEvent, FC } from 'react';
-import { Box, Button, FormControl, FormHelperText, FormLabel, Input } from '@chakra-ui/react';
+import React, { FC } from 'react';
+import { ClientWorkflow, Task, useWorkflowInputsForm, WorkflowInputsForm } from '@frinx/shared';
+import { Button, Spacer, HStack } from '@chakra-ui/react';
 
 type Props = {
-  inputs: {
-    descriptions: string[];
-    values: string[];
-    labels: string[];
-  };
-  onInputChange: (e: ChangeEvent<HTMLInputElement>, key: string) => void;
-  onRerunClick: () => void;
+  workflowDefinition?: ClientWorkflow<Task> | null;
+  workflowInput?: Record<string, string | boolean | number | string[]> | null;
+  onRerunClick: (values: Record<string, string | number | boolean | string[]>) => void;
 };
 
-const getValue = (i: number, values: string[]) => {
-  if (values[i] != null && typeof values[i] === 'number') {
-    return values[i].toString();
-  }
-
-  if (values[i] != null && typeof values[i] === 'object') {
-    return JSON.stringify(values[i]);
-  }
-
-  if (values[i] != null && typeof values[i] === 'string') {
-    return values[i];
-  }
-
-  return '';
-};
-
-const EditRerunTab: FC<Props> = ({ onInputChange, onRerunClick, inputs }) => {
-  const { descriptions, labels, values } = inputs;
+const EditRerunTab: FC<Props> = ({ onRerunClick, workflowDefinition, workflowInput }) => {
+  const { values, inputParameterKeys, parsedInputParameters, submitForm, isSubmitting, setSubmitting, handleChange } =
+    useWorkflowInputsForm({
+      workflow: workflowDefinition,
+      onSubmit: (data) => {
+        onRerunClick(data);
+        setSubmitting(false);
+      },
+      initialValues: workflowInput,
+    });
 
   return (
     <>
-      {labels.map((label: string, i) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <Box key={`col1-${i}`}>
-          <FormControl>
-            <FormLabel>{label}</FormLabel>
-            <Input
-              onChange={(e) => onInputChange(e, label)}
-              placeholder="Enter the input"
-              value={getValue(i, values)}
-            />
-            <FormHelperText className="text-muted">{descriptions[i]}</FormHelperText>
-          </FormControl>
-        </Box>
-      ))}
-      <Button float="right" marginRight={4} marginY={10} colorScheme="blue" onClick={onRerunClick}>
-        Execute
-      </Button>
+      <WorkflowInputsForm
+        values={values}
+        inputParameterKeys={inputParameterKeys}
+        parsedInputParameters={parsedInputParameters}
+        onChange={handleChange}
+      />
+
+      <HStack mt={3}>
+        <Spacer />
+        <Button
+          isLoading={isSubmitting}
+          onClick={() => {
+            submitForm();
+            setSubmitting(true);
+          }}
+          colorScheme="blue"
+        >
+          Rerun
+        </Button>
+      </HStack>
     </>
   );
 };
