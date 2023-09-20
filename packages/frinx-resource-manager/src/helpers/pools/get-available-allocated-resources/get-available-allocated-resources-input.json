@@ -1,0 +1,88 @@
+{
+  "QueryRootResourcePools": {
+    "edges": [
+      {
+        "node": {
+          "id": "21474836507",
+          "Name": "unit_test",
+          "PoolProperties": {
+            "address": "192.168.0.2",
+            "prefix": 24,
+            "subnet": false
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803776",
+            "Name": "ipv4_prefix",
+            "Pools": [
+              {
+                "id": "21474836481",
+                "Name": "root_pool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836483",
+                "Name": "ipv4_prefix_pxool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836484",
+                "Name": "p2p_testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836485",
+                "Name": "p2p-testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901888",
+                "Name": "address",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901889",
+                "Name": "prefix",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901890",
+                "Name": "subnet",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [
+            {
+              "NestedPool": null,
+              "Description": "",
+              "Properties": {
+                "address": "192.168.0.2",
+                "prefix": 27,
+                "subnet": false
+              },
+              "id": "17179869184",
+              "ParentPool": {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              },
+              "__typename": "Resource"
+            }
+          ],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      }
+    ],
+    "__typename": "ResourcePoolConnection"
+  }
+}

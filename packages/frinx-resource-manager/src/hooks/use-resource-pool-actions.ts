@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { gql, useMutation, useQuery, UseQueryState } from 'urql';
-import { usePagination, CallbackFunctions, PaginationArgs, useNotifications, unwrap } from '@frinx/shared/src';
+import { usePagination, CallbackFunctions, PaginationArgs, useNotifications, unwrap } from '@frinx/shared';
 
 import {
   ClaimResourceMutation,

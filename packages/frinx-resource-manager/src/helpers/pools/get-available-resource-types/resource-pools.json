@@ -1,0 +1,2900 @@
+{
+  "QueryRootResourcePools": {
+    "edges": [
+      {
+        "node": {
+          "id": "21474836481",
+          "Name": "root_pool",
+          "PoolProperties": {
+            "address": "192.168.0.0",
+            "prefix": 24,
+            "subnet": false
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803776",
+            "Name": "ipv4_prefix",
+            "Pools": [
+              {
+                "id": "21474836481",
+                "Name": "root_pool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836483",
+                "Name": "ipv4_prefix_pxool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836484",
+                "Name": "p2p_testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836485",
+                "Name": "p2p-testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836508",
+                "Name": "Test",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901888",
+                "Name": "address",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901889",
+                "Name": "prefix",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901890",
+                "Name": "subnet",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836483",
+          "Name": "ipv4_prefix_pxool",
+          "PoolProperties": {
+            "address": "192.168.0.0",
+            "prefix": 24,
+            "subnet": false
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803776",
+            "Name": "ipv4_prefix",
+            "Pools": [
+              {
+                "id": "21474836481",
+                "Name": "root_pool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836483",
+                "Name": "ipv4_prefix_pxool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836484",
+                "Name": "p2p_testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836485",
+                "Name": "p2p-testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836508",
+                "Name": "Test",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901888",
+                "Name": "address",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901889",
+                "Name": "prefix",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901890",
+                "Name": "subnet",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836484",
+          "Name": "p2p_testing",
+          "PoolProperties": {
+            "address": "192.168.0.0",
+            "prefix": 24,
+            "subnet": false
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803776",
+            "Name": "ipv4_prefix",
+            "Pools": [
+              {
+                "id": "21474836481",
+                "Name": "root_pool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836483",
+                "Name": "ipv4_prefix_pxool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836484",
+                "Name": "p2p_testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836485",
+                "Name": "p2p-testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836508",
+                "Name": "Test",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901888",
+                "Name": "address",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901889",
+                "Name": "prefix",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901890",
+                "Name": "subnet",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836485",
+          "Name": "p2p-testing",
+          "PoolProperties": {
+            "address": "192.168.0.0",
+            "prefix": 24,
+            "subnet": false
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803776",
+            "Name": "ipv4_prefix",
+            "Pools": [
+              {
+                "id": "21474836481",
+                "Name": "root_pool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836483",
+                "Name": "ipv4_prefix_pxool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836484",
+                "Name": "p2p_testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836485",
+                "Name": "p2p-testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836508",
+                "Name": "Test",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901888",
+                "Name": "address",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901889",
+                "Name": "prefix",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901890",
+                "Name": "subnet",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836486",
+          "Name": "dsad",
+          "PoolProperties": {
+            "address": "2001:db8:1::",
+            "prefix": 23,
+            "subnet": false
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803780",
+            "Name": "ipv6_prefix",
+            "Pools": [
+              {
+                "id": "21474836486",
+                "Name": "dsad",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901905",
+                "Name": "address",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901906",
+                "Name": "prefix",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901907",
+                "Name": "subnet",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836487",
+          "Name": "edsad",
+          "PoolProperties": {
+            "from": -2545,
+            "to": 34432
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803783",
+            "Name": "random_signed_int32",
+            "Pools": [
+              {
+                "id": "21474836487",
+                "Name": "edsad",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901916",
+                "Name": "int",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836488",
+          "Name": "unique_id",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836489",
+          "Name": "unique_id1",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836490",
+          "Name": "unique_id11",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836491",
+          "Name": "unique_id111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836492",
+          "Name": "unique_id1111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836493",
+          "Name": "unique_id11111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836494",
+          "Name": "unique_id111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836495",
+          "Name": "unique_id1111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836496",
+          "Name": "unique_id11111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836497",
+          "Name": "unique_id111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836498",
+          "Name": "unique_id1111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836499",
+          "Name": "unique_id11111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836500",
+          "Name": "unique_id111111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836501",
+          "Name": "unique_id1111111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836502",
+          "Name": "unique_id11111111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836503",
+          "Name": "unique_id111111111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836504",
+          "Name": "unique_id1111111111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836505",
+          "Name": "unique_id11111111111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836506",
+          "Name": "unique_id111111111111111111",
+          "PoolProperties": {
+            "from": 0,
+            "idFormat": "id-{counter}",
+            "to": 1000
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803784",
+            "Name": "unique_id",
+            "Pools": [
+              {
+                "id": "21474836488",
+                "Name": "unique_id",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836489",
+                "Name": "unique_id1",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836490",
+                "Name": "unique_id11",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836491",
+                "Name": "unique_id111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836492",
+                "Name": "unique_id1111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836493",
+                "Name": "unique_id11111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836494",
+                "Name": "unique_id111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836495",
+                "Name": "unique_id1111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836496",
+                "Name": "unique_id11111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836497",
+                "Name": "unique_id111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836498",
+                "Name": "unique_id1111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836499",
+                "Name": "unique_id11111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836500",
+                "Name": "unique_id111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836501",
+                "Name": "unique_id1111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836502",
+                "Name": "unique_id11111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836503",
+                "Name": "unique_id111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836504",
+                "Name": "unique_id1111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836505",
+                "Name": "unique_id11111111111111111",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836506",
+                "Name": "unique_id111111111111111111",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901919",
+                "Name": "counter",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901920",
+                "Name": "text",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      },
+      {
+        "node": {
+          "id": "21474836507",
+          "Name": "unit_test",
+          "PoolProperties": {
+            "address": "192.168.0.2",
+            "prefix": 24,
+            "subnet": false
+          },
+          "ParentResource": null,
+          "ResourceType": {
+            "id": "25769803776",
+            "Name": "ipv4_prefix",
+            "Pools": [
+              {
+                "id": "21474836481",
+                "Name": "root_pool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836483",
+                "Name": "ipv4_prefix_pxool",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836484",
+                "Name": "p2p_testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836485",
+                "Name": "p2p-testing",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              },
+              {
+                "id": "21474836508",
+                "Name": "Test",
+                "__typename": "ResourcePool"
+              }
+            ],
+            "PropertyTypes": [
+              {
+                "id": "12884901888",
+                "Name": "address",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901889",
+                "Name": "prefix",
+                "__typename": "PropertyType"
+              },
+              {
+                "id": "12884901890",
+                "Name": "subnet",
+                "__typename": "PropertyType"
+              }
+            ],
+            "__typename": "ResourceType"
+          },
+          "Resources": [
+            {
+              "NestedPool": {
+                "id": "21474836508",
+                "__typename": "ResourcePool"
+              },
+              "Description": "",
+              "Properties": {
+                "address": "192.168.0.2",
+                "prefix": 27,
+                "subnet": false
+              },
+              "id": "17179869184",
+              "ParentPool": {
+                "id": "21474836507",
+                "Name": "unit_test",
+                "__typename": "ResourcePool"
+              },
+              "__typename": "Resource"
+            }
+          ],
+          "__typename": "ResourcePool"
+        },
+        "__typename": "ResourcePoolEdge"
+      }
+    ],
+    "__typename": "ResourcePoolConnection"
+  }
+}

@@ -1,0 +1,221 @@
+{
+  "deps": [],
+  "tests": [],
+  "transforms": [null],
+  "conditions": [],
+  "_whitelist": {
+    "list": {},
+    "refs": {}
+  },
+  "_blacklist": {
+    "list": {},
+    "refs": {}
+  },
+  "exclusiveTests": {},
+  "spec": {
+    "strip": false,
+    "strict": false,
+    "abortEarly": true,
+    "recursive": true,
+    "nullable": false,
+    "presence": "optional"
+  },
+  "fields": {
+    "name": {
+      "type": "string",
+      "_whitelist": {
+        "list": {},
+        "refs": {}
+      },
+      "_blacklist": {
+        "list": {},
+        "refs": {}
+      },
+      "exclusiveTests": {
+        "required": true
+      },
+      "deps": [],
+      "conditions": [],
+      "tests": [null],
+      "transforms": [null],
+      "spec": {
+        "strip": false,
+        "strict": false,
+        "abortEarly": true,
+        "recursive": true,
+        "nullable": false,
+        "presence": "required"
+      }
+    },
+    "description": {
+      "type": "string",
+      "_whitelist": {
+        "list": {},
+        "refs": {}
+      },
+      "_blacklist": {
+        "list": {},
+        "refs": {}
+      },
+      "exclusiveTests": {},
+      "deps": [],
+      "conditions": [],
+      "tests": [],
+      "transforms": [null],
+      "spec": {
+        "strip": false,
+        "strict": false,
+        "abortEarly": true,
+        "recursive": true,
+        "nullable": false,
+        "presence": "optional"
+      }
+    },
+    "resourceTypeId": {
+      "type": "string",
+      "_whitelist": {
+        "list": {},
+        "refs": {}
+      },
+      "_blacklist": {
+        "list": {},
+        "refs": {}
+      },
+      "exclusiveTests": {
+        "required": true
+      },
+      "deps": [],
+      "conditions": [],
+      "tests": [null],
+      "transforms": [null],
+      "spec": {
+        "strip": false,
+        "strict": false,
+        "abortEarly": true,
+        "recursive": true,
+        "nullable": false,
+        "presence": "required"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "_whitelist": {
+        "list": {},
+        "refs": {}
+      },
+      "_blacklist": {
+        "list": {},
+        "refs": {}
+      },
+      "exclusiveTests": {},
+      "deps": [],
+      "conditions": [],
+      "tests": [],
+      "transforms": [null],
+      "spec": {
+        "strip": false,
+        "strict": false,
+        "abortEarly": true,
+        "recursive": true,
+        "nullable": false,
+        "presence": "optional"
+      }
+    },
+    "dealocationSafetyPeriod": {
+      "type": "number",
+      "_whitelist": {
+        "list": {},
+        "refs": {}
+      },
+      "_blacklist": {
+        "list": {},
+        "refs": {}
+      },
+      "exclusiveTests": {
+        "min": true,
+        "required": true
+      },
+      "deps": [],
+      "conditions": [],
+      "tests": [null, null],
+      "transforms": [null],
+      "spec": {
+        "strip": false,
+        "strict": false,
+        "abortEarly": true,
+        "recursive": true,
+        "nullable": false,
+        "presence": "required"
+      }
+    },
+    "allocationStrategyId": {
+      "type": "string",
+      "_whitelist": {
+        "list": {},
+        "refs": {}
+      },
+      "_blacklist": {
+        "list": {},
+        "refs": {}
+      },
+      "exclusiveTests": {},
+      "deps": [],
+      "conditions": [],
+      "tests": [],
+      "transforms": [null],
+      "spec": {
+        "strip": false,
+        "strict": false,
+        "abortEarly": true,
+        "recursive": true,
+        "nullable": false,
+        "presence": "optional"
+      }
+    },
+    "poolProperties": {
+      "type": "lazy",
+      "__isYupSchema__": true
+    },
+    "poolPropertyTypes": {
+      "type": "object",
+      "_whitelist": {
+        "list": {},
+        "refs": {}
+      },
+      "_blacklist": {
+        "list": {},
+        "refs": {}
+      },
+      "exclusiveTests": {
+        "required": true
+      },
+      "deps": [],
+      "conditions": [],
+      "tests": [null],
+      "transforms": [null],
+      "spec": {
+        "strip": false,
+        "strict": false,
+        "abortEarly": true,
+        "recursive": true,
+        "nullable": false,
+        "presence": "required"
+      },
+      "fields": {},
+      "_nodes": [],
+      "_excludedEdges": []
+    }
+  },
+  "_nodes": [
+    "poolPropertyTypes",
+    "poolProperties",
+    "allocationStrategyId",
+    "dealocationSafetyPeriod",
+    "tags",
+    "resourceTypeId",
+    "description",
+    "name"
+  ],
+  "_excludedEdges": [],
+  "type": "object"
+}

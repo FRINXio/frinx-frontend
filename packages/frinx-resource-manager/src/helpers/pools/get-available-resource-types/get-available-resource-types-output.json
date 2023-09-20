@@ -1,0 +1,56 @@
+[
+  {
+    "Name": "ipv4_prefix",
+    "id": "25769803776",
+    "Pools": [
+      {
+        "id": "21474836481",
+        "Name": "root_pool",
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836483",
+        "Name": "ipv4_prefix_pxool",
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836484",
+        "Name": "p2p_testing",
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836485",
+        "Name": "p2p-testing",
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836507",
+        "Name": "unit_test",
+        "__typename": "ResourcePool"
+      },
+      {
+        "id": "21474836508",
+        "Name": "Test",
+        "__typename": "ResourcePool"
+      }
+    ],
+    "PropertyTypes": [
+      {
+        "id": "12884901888",
+        "Name": "address",
+        "__typename": "PropertyType"
+      },
+      {
+        "id": "12884901889",
+        "Name": "prefix",
+        "__typename": "PropertyType"
+      },
+      {
+        "id": "12884901890",
+        "Name": "subnet",
+        "__typename": "PropertyType"
+      }
+    ],
+    "__typename": "ResourceType"
+  }
+]
