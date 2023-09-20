@@ -137,6 +137,7 @@ const ExecutedWorkflowList = () => {
       },
       orderBy,
     },
+    requestPolicy: 'cache-and-network',
     context: ctx,
   });
 
