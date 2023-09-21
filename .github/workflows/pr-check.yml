@@ -7,7 +7,7 @@ on:
 jobs:
   pr-check:
     runs-on: ubuntu-latest
-    container: node:19.9.0-alpine
+    container: node:18.18.0-alpine
     env:
       PRIVATE_GH_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
       PRIVATE_NPM_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
