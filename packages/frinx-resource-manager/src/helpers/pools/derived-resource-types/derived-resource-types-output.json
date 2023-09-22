@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "ipv4",
+    "id": "25769803777",
+    "Pools": [],
+    "PropertyTypes": [
+      {
+        "id": "12884901894",
+        "Name": "address",
+        "__typename": "PropertyType"
+      }
+    ],
+    "__typename": "ResourceType"
+  }
+]

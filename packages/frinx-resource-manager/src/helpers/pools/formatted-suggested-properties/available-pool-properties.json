@@ -1,0 +1,7 @@
+[
+  {
+    "address": "192.168.0.64",
+    "prefix": 27,
+    "subnet": false
+  }
+]

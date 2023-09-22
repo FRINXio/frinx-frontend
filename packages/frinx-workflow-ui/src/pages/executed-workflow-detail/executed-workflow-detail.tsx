@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -185,52 +185,6 @@ const TERMINATE_WORKFLOW_MUTATION = gql`
   }
 `;
 
-const convertWorkflowVariablesToFormFormat = (
-  workflowDetails: string,
-  workflowInput: Record<string, string>,
-  inputParameters: string[] = [],
-) => {
-  /*
-                  search through whole executed workflow and is searching for all worklow.input
-                  variables in this object and returns array of found variables
-                */
-  const inputCaptureRegex = /workflow\.input\.([a-zA-Z0-9-_]+)\}/gim;
-  let match = inputCaptureRegex.exec(workflowDetails);
-  const labels = new Set<string>([]);
-
-  while (match != null) {
-    labels.add(match[1]);
-    match = inputCaptureRegex.exec(workflowDetails);
-  }
-
-  const values = [...labels].map((label: string) => {
-    return workflowInput[label] != null ? workflowInput[label] : '';
-  });
-
-  const matchParam = (param: string) => {
-    return param.match(/\[(.*?)]/);
-  };
-
-  const descriptions = inputParameters.map((param: string) => {
-    const matchedParam = matchParam(param);
-    if (matchedParam == null) {
-      return '';
-    }
-
-    if (matchedParam.length > 0) {
-      return matchedParam[1];
-    }
-
-    return '';
-  });
-
-  return {
-    descriptions,
-    values,
-    labels: [...labels],
-  };
-};
-
 type Props = {
   onExecutedOperation: (workflowId: string) => void;
 };
@@ -240,7 +194,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const { workflowId } = useParams<{ workflowId: string }>();
   const [openedTaskId, setOpenedTaskId] = useState<string | null>(null);
   const [isEscaped, setIsEscaped] = useState(false);
-  const [workflowVariables, setWorkflowVariables] = useState<Record<string, string> | null>(null);
   const { addToastNotification } = useNotifications();
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
@@ -316,18 +269,14 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     })),
   };
 
-  const handleOnRerunClick = () => {
-    if (workflowVariables == null) {
-      return;
-    }
-
+  const handleOnRerunClick = (inputParameters: Record<string, string | boolean | number | string[]>) => {
     executeWorkflowByName({
       input: {
         workflowName: executedWorkflow.workflowName || '',
         workflowVersion: executedWorkflow.workflowVersion,
         correlationId: executedWorkflow.correlationId,
         priority: 0,
-        inputParameters: JSON.stringify(workflowVariables),
+        inputParameters: JSON.stringify(inputParameters),
       },
     })
       .then((result) => {
@@ -351,12 +300,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           timeout: 2500,
         });
       });
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, key: string) => {
-    const workflowForm = executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {};
-    workflowForm[key] = e.target.value;
-    setWorkflowVariables((prev) => ({ ...prev, ...workflowForm }));
   };
 
   const handleCopyToClipborad = (inputText: Record<string, unknown>) => {
@@ -554,14 +497,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
               <Tab>Task Details</Tab>
               <Tab>Input/Output</Tab>
               <Tab>JSON</Tab>
-              <Tab
-                value="editRerun"
-                onClick={() =>
-                  setWorkflowVariables(executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {})
-                }
-              >
-                Edit & Rerun
-              </Tab>
+              <Tab value="editRerun">Edit & Rerun</Tab>
               <Tab>Execution Flow</Tab>
             </TabList>
             <TabPanels>
@@ -596,15 +532,18 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                 )}
               </TabPanel>
               <TabPanel>
-                <EditRerunTab
-                  onInputChange={handleInputChange}
-                  inputs={convertWorkflowVariablesToFormFormat(
-                    JSON.stringify(executedWorkflow),
-                    JSON.parse(executedWorkflow.input || '{}'),
-                    executedWorkflow.workflowDefinition?.inputParameters ?? [],
-                  )}
-                  onRerunClick={handleOnRerunClick}
-                />
+                {executedWorkflow != null && executedWorkflow.workflowDefinition != null && (
+                  <EditRerunTab
+                    onRerunClick={handleOnRerunClick}
+                    workflowDefinition={{
+                      ...executedWorkflow.workflowDefinition,
+                      labels: [],
+                      tasks: JSON.parse(executedWorkflow.workflowDefinition.tasks || '[]'),
+                      hasSchedule: executedWorkflow.workflowDefinition.hasSchedule ?? false,
+                    }}
+                    workflowInput={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
+                  />
+                )}
               </TabPanel>
               <TabPanel>
                 <WorkflowDiagram meta={executedWorkflow.workflowDefinition} result={data?.controlExecutedWorkflow} />

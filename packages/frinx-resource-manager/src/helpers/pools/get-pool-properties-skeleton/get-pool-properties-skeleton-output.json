@@ -1,0 +1,12 @@
+[
+  {
+    "address": "",
+    "prefix": "",
+    "subnet": "false"
+  },
+  {
+    "address": "string",
+    "prefix": "int",
+    "subnet": "bool"
+  }
+]
