@@ -33,8 +33,8 @@ type PoolsFilter =
   | undefined;
 
 export type SortBy = {
-  sortKey: 'name' | 'dealocationSafetyPeriod';
-  direction: 'asc' | 'desc';
+  field: 'name' | 'dealocationSafetyPeriod';
+  direction: 'ASC' | 'DESC';
 } | null;
 
 const ALL_POOLS_QUERY = gql`
@@ -222,9 +222,9 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
   };
 
-  const handleSort = (sortKey: 'name' | 'dealocationSafetyPeriod') => {
-    const direction = sortBy?.direction === 'asc' ? 'desc' : 'asc';
-    setSortBy({ sortKey, direction });
+  const handleSort = (field: 'name' | 'dealocationSafetyPeriod') => {
+    const direction = sortBy?.direction === 'ASC' ? 'DESC' : 'ASC';
+    setSortBy({ field, direction });
   };
 
   if (error != null || data == null) {

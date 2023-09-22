@@ -23,7 +23,6 @@ import {
   GetResourceTypesQuery,
   GetResourceTypesQueryVariables,
 } from '../../__generated__/graphql';
-import { SortBy } from '../pools-page/pools-page';
 import PoolsTable from '../pools-page/pools-table';
 
 type InputValues = { [key: string]: string };
@@ -124,7 +123,6 @@ const GET_RESOURCE_TYPES = gql`
 `;
 
 const IpamPoolPage: VoidFunctionComponent = () => {
-  const [sortBy, setSortBy] = useState<SortBy>(null);
   const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
   const [isIpv4, setIsIpv4] = useState<boolean>(true);
   const [selectedResourceType, setSelectedResourceType] = useState<string>('');
@@ -147,7 +145,6 @@ const IpamPoolPage: VoidFunctionComponent = () => {
       filterByResources: poolsFilter.resources ?? null,
       tags: { matchesAny: [{ matchesAll: selectedTags }] },
       resourceTypeId: isIpv4 ? ipv4PrefixId : ipv6PrefixId,
-      sortBy,
     },
     context,
   });
@@ -220,11 +217,6 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     firstPage();
   };
 
-  const handleSort = (sortKey: 'name' | 'dealocationSafetyPeriod') => {
-    const direction = sortBy?.direction === 'asc' ? 'desc' : 'asc';
-    setSortBy({ sortKey, direction });
-  };
-
   if (error != null || data == null) {
     return <div>{error?.message}</div>;
   }
@@ -273,8 +265,6 @@ const IpamPoolPage: VoidFunctionComponent = () => {
         />
         <Ipv46PrefixSwitch isIpv4={isIpv4} setIsIpv4={setIsIpv4} clearAllTags={clearAllTags} firstPage={firstPage} />
         <PoolsTable
-          onSort={handleSort}
-          sortBy={sortBy}
           pools={ipPools}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}

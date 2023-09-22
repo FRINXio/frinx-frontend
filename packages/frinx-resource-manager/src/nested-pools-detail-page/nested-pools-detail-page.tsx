@@ -146,9 +146,9 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     setSearchText(searchName);
   };
 
-  const handleSort = (sortKey: 'name' | 'dealocationSafetyPeriod') => {
-    const direction = sortBy?.direction === 'asc' ? 'desc' : 'asc';
-    setSortBy({ sortKey, direction });
+  const handleSort = (field: 'name' | 'dealocationSafetyPeriod') => {
+    const direction = sortBy?.direction === 'ASC' ? 'DESC' : 'ASC';
+    setSortBy({ field, direction });
   };
 
   const resourcePools = results.filter((pool) => {

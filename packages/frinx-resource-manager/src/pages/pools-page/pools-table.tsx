@@ -86,8 +86,8 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
             }}
           >
             Name
-            {sortBy?.sortKey === 'name' && (
-              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+            {sortBy?.field === 'name' && (
+              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
           </Th>
           <Th>Tags</Th>
@@ -101,8 +101,8 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
             }}
           >
             Dealocation Safety Period{' '}
-            {sortBy?.sortKey === 'dealocationSafetyPeriod' && (
-              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
+            {sortBy?.field === 'dealocationSafetyPeriod' && (
+              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
           </Th>
           <Th>Resource Type</Th>

@@ -370,6 +370,10 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
+export type OrderDirection =
+  | 'ASC'
+  | 'DESC';
+
 /** Holds the string value for pagination */
 export type OutputCursor = {
   __typename?: 'OutputCursor';
@@ -642,6 +646,10 @@ export type ResourcePoolInput = {
   poolProperties: Scalars['Map']['input'];
 };
 
+export type ResourcePoolOrderField =
+  | 'dealocationSafetyPeriod'
+  | 'name';
+
 /** Describes the properties of a resource */
 export type ResourceType = Node & {
   __typename?: 'ResourceType';
@@ -651,17 +659,9 @@ export type ResourceType = Node & {
   id: Scalars['ID']['output'];
 };
 
-export type SortDirection =
-  | 'asc'
-  | 'desc';
-
-export type SortResourcePoolsBy =
-  | 'dealocationSafetyPeriod'
-  | 'name';
-
 export type SortResourcePoolsInput = {
-  direction: SortDirection;
-  sortKey: SortResourcePoolsBy;
+  direction: OrderDirection;
+  field?: InputMaybe<ResourcePoolOrderField>;
 };
 
 /** Pools can be tagged for easier search */
