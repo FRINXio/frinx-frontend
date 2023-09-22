@@ -44,6 +44,7 @@ const POOLS_QUERY = gql`
     $resourceTypeId: ID
     $filterByResources: Map
     $tags: TagOr
+    $sortBy: SortResourcePoolsInput
   ) {
     QueryRootResourcePools(
       first: $first
@@ -53,6 +54,7 @@ const POOLS_QUERY = gql`
       resourceTypeId: $resourceTypeId
       filterByResources: $filterByResources
       tags: $tags
+      sortBy: $sortBy
     ) {
       edges {
         node {
@@ -145,6 +147,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
       filterByResources: poolsFilter.resources ?? null,
       tags: { matchesAny: [{ matchesAll: selectedTags }] },
       resourceTypeId: isIpv4 ? ipv4PrefixId : ipv6PrefixId,
+      sortBy,
     },
     context,
   });

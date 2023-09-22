@@ -976,6 +976,7 @@ export type GetAllIpPoolsQueryVariables = Exact<{
   resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
   filterByResources?: InputMaybe<Scalars['Map']['input']>;
   tags?: InputMaybe<TagOr>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
 }>;
 
 
