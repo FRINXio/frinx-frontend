@@ -144,10 +144,12 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       .then((res) => {
         if (!res.error) {
           addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+          return res.data?.executeWorkflowByName;
         }
         if (res.error) {
           addToastNotification({ content: res.error.message, type: 'error' });
         }
+        return null;
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });

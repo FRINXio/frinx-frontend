@@ -60,32 +60,8 @@ export function deriveResourceTypesFromAvailableResourceTypes(
   );
 }
 
-export function canSelectAllocatingStrategy(
-  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
-  resourceTypeId?: string,
-): boolean {
-  return resourceTypes.some(
-    (resourceType) =>
-      /^ipv4_prefix$|^ipv6_prefix$|^vlan_range$/.test(resourceType.Name) && resourceType.id === resourceTypeId,
-  );
-}
-
 export const isSpecificResourceTypeName = (resourceTypeName: string, selectors: string[]) => {
   return selectors.some((selector) => selector === resourceTypeName);
-};
-
-export const canSelectDefaultResourceTypes = (resourceTypeName: string) => {
-  return isSpecificResourceTypeName(resourceTypeName, [
-    'ipv4',
-    'ipv4_prefix',
-    'ipv6',
-    'ipv6_prefix',
-    'vlan_range',
-    'vlan',
-    'route_distinguisher',
-    'unique_id',
-    'random_signed_int32',
-  ]);
 };
 
 export const canSelectIpResourceTypes = (resourceTypeName: string) => {

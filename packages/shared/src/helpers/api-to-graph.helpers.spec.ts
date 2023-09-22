@@ -4,7 +4,7 @@ import { getElementsFromWorkflow } from './api-to-graph.helpers';
 import { ExtendedTask, Workflow } from './workflow-api.types';
 
 function loadWorkflow(fileName: string): Workflow<ExtendedTask> {
-  return JSON.parse(readFileSync(`./src/helpers/workflows/${fileName}`).toString());
+  return JSON.parse(readFileSync(`./packages/shared/src/helpers/workflows/${fileName}`).toString());
 }
 
 describe('data helpers', () => {

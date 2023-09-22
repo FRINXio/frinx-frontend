@@ -29,10 +29,10 @@
   },
   "devDependencies": {
     "@frinx/eslint-config-typescript-base": "16.0.0",
-    "@typescript-eslint/eslint-plugin": "6.7.0",
-    "@typescript-eslint/parser": "6.7.0",
+    "@typescript-eslint/eslint-plugin": "6.7.2",
+    "@typescript-eslint/parser": "6.7.2",
     "dotenv": "16.3.1",
-    "eslint": "8.48.0",
+    "eslint": "8.49.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-import-resolver-typescript": "3.6.0",
     "eslint-plugin-import": "2.28.1",

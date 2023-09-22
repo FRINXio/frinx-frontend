@@ -1,0 +1,222 @@
+{
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "start",
+        "isReadOnly": false
+      }
+    },
+    {
+      "id": "INVENTORY_add_cli_deviceRefName_svxR",
+      "type": "base",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "INVENTORY_add_cli_deviceRefName_svxR",
+        "task": {
+          "name": "INVENTORY_add_cli_device",
+          "taskReferenceName": "INVENTORY_add_cli_deviceRefName_svxR",
+          "inputParameters": {
+            "device_id": "${workflow.input.device_id}",
+            "type": "${workflow.input.type}",
+            "version": "${workflow.input.version}",
+            "host": "${workflow.input.host}",
+            "protocol": "${workflow.input.protocol}",
+            "port": "${workflow.input.port}",
+            "username": "${workflow.input.username}",
+            "password": "${workflow.input.password}",
+            "journal-size": "${workflow.input.journal-size}",
+            "parsing-engine": "${workflow.input.parsing-engine}",
+            "labels": "${workflow.input.labels}",
+            "uniconfig_zone": "${workflow.input.uniconfig_zone}",
+            "service_state": "${workflow.input.service_state}"
+          },
+          "type": "SIMPLE",
+          "startDelay": 0,
+          "optional": false,
+          "asyncComplete": false,
+          "id": "261fd4ea-42c1-4d99-94c1-ab5672c15df1",
+          "label": "simple"
+        },
+        "isReadOnly": false
+      }
+    },
+    {
+      "id": "INVENTORY_install_device_by_idRefName_Jx5d",
+      "type": "base",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "INVENTORY_install_device_by_idRefName_Jx5d",
+        "task": {
+          "name": "INVENTORY_install_device_by_id",
+          "taskReferenceName": "INVENTORY_install_device_by_idRefName_Jx5d",
+          "inputParameters": {
+            "device_id": "${INVENTORY_add_cli_deviceRefName_svxR.output.response_body.id}"
+          },
+          "type": "SIMPLE",
+          "startDelay": 0,
+          "optional": false,
+          "asyncComplete": false,
+          "id": "6abc8804-9990-41da-8334-dc0a321b4804",
+          "label": "simple"
+        },
+        "isReadOnly": false
+      }
+    },
+    {
+      "id": "lambda_ZMe1",
+      "type": "base",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "lambda_ZMe1",
+        "task": {
+          "name": "LAMBDA_TASK",
+          "taskReferenceName": "lambda_ZMe1",
+          "inputParameters": {
+            "lambdaValue": "${workflow.input.lambdaValue}",
+            "scriptExpression": "if ($.lambdaValue == 1) { \n  return { testvalue: true } \n} else { \n  return { testvalue: false } \n}"
+          },
+          "type": "LAMBDA",
+          "startDelay": 0,
+          "optional": false,
+          "asyncComplete": false,
+          "id": "6bb8f594-0ce4-493f-a44d-70e90aa8aae8",
+          "label": "lambda"
+        },
+        "isReadOnly": false
+      }
+    },
+    {
+      "id": "Device_identificationRef_z8vZ",
+      "type": "base",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "Device_identificationRef_z8vZ",
+        "task": {
+          "name": "Device_identification",
+          "taskReferenceName": "Device_identificationRef_z8vZ",
+          "inputParameters": {
+            "management_ip": "halabala",
+            "port": "10000",
+            "username": "frinx",
+            "password": "frinx"
+          },
+          "type": "SUB_WORKFLOW",
+          "startDelay": 0,
+          "subWorkflowParam": {
+            "name": "Device_identification",
+            "version": 1
+          },
+          "optional": false,
+          "asyncComplete": false,
+          "id": "de3a629b-698d-4c26-9d98-d588a3af5904",
+          "label": "sub workflow"
+        },
+        "isReadOnly": false
+      }
+    },
+    {
+      "id": "Install_and_check_cliRef_FuIn",
+      "type": "base",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "Install_and_check_cliRef_FuIn",
+        "task": {
+          "name": "Install_and_check_cli",
+          "taskReferenceName": "Install_and_check_cliRef_FuIn",
+          "inputParameters": {
+            "device_id": "",
+            "type": "",
+            "version": "",
+            "host": "",
+            "protocol": "ssh",
+            "port": "22",
+            "username": "",
+            "password": ""
+          },
+          "type": "SUB_WORKFLOW",
+          "startDelay": 0,
+          "subWorkflowParam": {
+            "name": "Install_and_check_cli",
+            "version": 1
+          },
+          "optional": false,
+          "asyncComplete": false,
+          "id": "c457158d-84f4-47fc-b6d1-0ee84a547b9c",
+          "label": "sub workflow"
+        },
+        "isReadOnly": false
+      }
+    },
+    {
+      "id": "end",
+      "type": "end",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "end",
+        "isReadOnly": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "estart-INVENTORY_add_cli_deviceRefName_svxR",
+      "source": "start",
+      "target": "INVENTORY_add_cli_deviceRefName_svxR",
+      "type": "buttonedge"
+    },
+    {
+      "id": "eINVENTORY_add_cli_deviceRefName_svxR-INVENTORY_install_device_by_idRefName_Jx5d",
+      "source": "INVENTORY_add_cli_deviceRefName_svxR",
+      "target": "INVENTORY_install_device_by_idRefName_Jx5d",
+      "type": "buttonedge"
+    },
+    {
+      "id": "eINVENTORY_install_device_by_idRefName_Jx5d-lambda_ZMe1",
+      "source": "INVENTORY_install_device_by_idRefName_Jx5d",
+      "target": "lambda_ZMe1",
+      "type": "buttonedge"
+    },
+    {
+      "id": "elambda_ZMe1-Device_identificationRef_z8vZ",
+      "source": "lambda_ZMe1",
+      "target": "Device_identificationRef_z8vZ",
+      "type": "buttonedge"
+    },
+    {
+      "id": "eDevice_identificationRef_z8vZ-Install_and_check_cliRef_FuIn",
+      "source": "Device_identificationRef_z8vZ",
+      "target": "Install_and_check_cliRef_FuIn",
+      "type": "buttonedge"
+    },
+    {
+      "id": "eInstall_and_check_cliRef_FuIn-end",
+      "source": "Install_and_check_cliRef_FuIn",
+      "target": "end",
+      "type": "buttonedge"
+    }
+  ]
+}

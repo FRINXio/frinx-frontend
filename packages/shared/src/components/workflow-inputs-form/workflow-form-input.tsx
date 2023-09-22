@@ -46,7 +46,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
       {isToggle && (
         <Switch
           name={inputParameterKey}
-          value={values[inputParameterKey]}
+          isChecked={values[inputParameterKey] ?? false}
           onChange={(e) => onChange(inputParameterKey, e.target.checked)}
         />
       )}
@@ -54,7 +54,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
       {isTextarea && (
         <Textarea
           name={inputParameterKey}
-          value={values[inputParameterKey]}
+          value={values[inputParameterKey] ?? ''}
           onChange={(e) => onChange(inputParameterKey, e.target.value)}
         />
       )}

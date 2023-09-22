@@ -9,6 +9,7 @@ import {
 
 type HookProps = {
   workflow?: ClientWorkflow | Workflow | null;
+  initialValues?: Record<string, string | number | boolean | string[]> | null;
   onSubmit: (values: Record<string, string | number | boolean | string[]>) => void;
 };
 
@@ -23,14 +24,24 @@ type HookReturn = {
   handleChange: (key: string, value: string | number | boolean | string[]) => void;
 };
 
-const useWorkflowInputsForm = ({ workflow, onSubmit }: HookProps): HookReturn => {
+const useWorkflowInputsForm = ({ initialValues, workflow, onSubmit }: HookProps): HookReturn => {
   const parsedInputParameters = parseInputParameters(workflow?.inputParameters || []);
   const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
+  const parsedInitialValues = getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters);
   const { values, handleSubmit, submitForm, isSubmitting, setSubmitting, setFieldValue } = useFormik<
     Record<string, string>
   >({
     enableReinitialize: true,
-    initialValues: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
+    initialValues: Object.keys(parsedInitialValues).reduce(
+      (prev, curr) => ({
+        ...prev,
+        [curr]:
+          initialValues != null && Object.keys(initialValues).includes(curr)
+            ? initialValues[curr]
+            : parsedInitialValues[curr],
+      }),
+      {},
+    ),
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit,

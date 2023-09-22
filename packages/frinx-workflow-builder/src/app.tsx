@@ -159,7 +159,6 @@ const App: VoidFunctionComponent<Props> = ({
   };
 
   const { selectedTask, selectTask } = useTaskActions(handleDeleteButtonClick);
-
   const { name } = workflow;
 
   const handleAddButtonClick = (t: ExtendedTask) => {
@@ -235,6 +234,7 @@ const App: VoidFunctionComponent<Props> = ({
 
   const handleWorkflowClone = (wfName: string) => {
     const newTasks = convertToTasks(elements);
+
     onWorkflowClone(
       {
         ...workflow,
