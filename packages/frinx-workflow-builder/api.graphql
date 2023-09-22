@@ -595,6 +595,10 @@ input FilterEventHandlerInput {
   name: String
 }
 
+input FilterLabelsInput {
+  name: String!
+}
+
 input FilterPollDataInput {
   afterDate: String
   beforeDate: String
@@ -618,6 +622,10 @@ input FilterTopologyInput {
 input FilterWorkflowsInput {
   keyword: String
   labels: [String!]
+}
+
+input FilterZonesInput {
+  name: String!
 }
 
 input FreeResourceInput {
@@ -863,6 +871,7 @@ input PollsOrderByInput {
 type Pool implements Node {
   id: ID!
   name: String!
+  poolProperties: Record!
   poolType: PoolType!
   resourceType: ResourceType!
   tags: [Tag!]!
@@ -921,7 +930,7 @@ type Query {
     searchQuery: ExecutedWorkflowSearchInput
   ): ExecutedWorkflowConnection
   externalStorage(path: String!): ExternaStorage
-  labels(after: String, before: String, first: Int, last: Int): LabelConnection!
+  labels(after: String, before: String, filter: FilterLabelsInput, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   netTopology: NetTopology
   node(id: ID!, version: Int): Node
@@ -967,7 +976,7 @@ type Query {
     last: Int
     orderBy: WorkflowsOrderByInput
   ): WorkflowConnection!
-  zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
+  zones(after: String, before: String, filter: FilterZonesInput, first: Int, last: Int): ZonesConnection!
 }
 
 """
