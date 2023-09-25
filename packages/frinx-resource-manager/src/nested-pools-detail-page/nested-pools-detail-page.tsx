@@ -10,6 +10,7 @@ import {
   DeletePoolMutationMutationVariables,
   GetNestedPoolsDetailQuery,
   GetNestedPoolsDetailQueryVariables,
+  ResourcePoolOrderField,
 } from '../__generated__/graphql';
 import SearchFilterPoolsBar from '../components/search-filter-pools-bar';
 import { SortBy } from '../pages/pools-page/pools-page';
@@ -146,7 +147,7 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     setSearchText(searchName);
   };
 
-  const handleSort = (field: 'name' | 'dealocationSafetyPeriod') => {
+  const handleSort = (field: ResourcePoolOrderField) => {
     const direction = sortBy?.direction === 'ASC' ? 'DESC' : 'ASC';
     setSortBy({ field, direction });
   };

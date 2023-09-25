@@ -20,20 +20,23 @@ import {
   GetAllPoolsQueryVariables,
   GetResourceTypesQuery,
   GetResourceTypesQueryVariables,
+  ResourcePoolOrderField,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 
+type InputValues = { [key: string]: string | null | undefined };
+
 type PoolsFilter =
   | {
-      resources: { [key: string]: string | null | undefined } | null | undefined;
+      resources: InputValues | null | undefined;
       resourceType: string | undefined | null;
     }
   | null
   | undefined;
 
 export type SortBy = {
-  field: 'name' | 'dealocationSafetyPeriod';
+  field: ResourcePoolOrderField;
   direction: 'ASC' | 'DESC';
 } | null;
 
