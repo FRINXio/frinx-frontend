@@ -139,6 +139,14 @@ type BlueprintEdge {
   node: Blueprint!
 }
 
+type BulkInstallDevicePayload {
+  installedDevices: [Device!]!
+}
+
+input BulkInstallDevicesInput {
+  devicesToInstall: [Jozko!]!
+}
+
 input BulkOperationInput {
   executedWorkflowIds: [String!]!
 }
@@ -579,6 +587,10 @@ input ExecutedWorkflowsOrderByInput {
   sortKey: SortExecutedWorkflowsBy!
 }
 
+type ExternaStorage {
+  data: String!
+}
+
 input FilterDevicesInput {
   deviceName: String
   labels: [String!]
@@ -589,6 +601,10 @@ input FilterEventHandlerInput {
   event: String
   isActive: Boolean
   name: String
+}
+
+input FilterLabelsInput {
+  name: String!
 }
 
 input FilterPollDataInput {
@@ -614,6 +630,10 @@ input FilterTopologyInput {
 input FilterWorkflowsInput {
   keyword: String
   labels: [String!]
+}
+
+input FilterZonesInput {
+  name: String!
 }
 
 input FreeResourceInput {
@@ -682,6 +702,11 @@ type IsOkResponse {
   isOk: Boolean!
 }
 
+input Jozko {
+  deviceIds: [String!]!
+  zoneId: String!
+}
+
 type Label implements Node {
   createdAt: String!
   id: ID!
@@ -726,6 +751,7 @@ type Mutation {
   addSnapshot(input: AddSnapshotInput!, transactionId: String!): AddSnapshotPayload
   addZone(input: AddZoneInput!): AddZonePayload!
   applySnapshot(input: ApplySnapshotInput!, transactionId: String!): ApplySnapshotPayload!
+  bulkInstallDevices(input: BulkInstallDevicesInput!): BulkInstallDevicePayload!
   bulkPauseWorkflow(input: BulkOperationInput!): BulkOperationResponse
   bulkRestartWorkflow(input: BulkOperationInput!): BulkOperationResponse
   bulkResumeWorkflow(input: BulkOperationInput!): BulkOperationResponse
@@ -859,6 +885,7 @@ input PollsOrderByInput {
 type Pool implements Node {
   id: ID!
   name: String!
+  poolProperties: Record!
   poolType: PoolType!
   resourceType: ResourceType!
   tags: [Tag!]!
@@ -916,7 +943,8 @@ type Query {
     pagination: PaginationArgs
     searchQuery: ExecutedWorkflowSearchInput
   ): ExecutedWorkflowConnection
-  labels(after: String, before: String, first: Int, last: Int): LabelConnection!
+  externalStorage(path: String!): ExternaStorage
+  labels(after: String, before: String, filter: FilterLabelsInput, first: Int, last: Int): LabelConnection!
   locations(after: String, before: String, first: Int, last: Int): LocationConnection!
   netTopology: NetTopology
   node(id: ID!, version: Int): Node
@@ -962,7 +990,7 @@ type Query {
     last: Int
     orderBy: WorkflowsOrderByInput
   ): WorkflowConnection!
-  zones(after: String, before: String, first: Int, last: Int): ZonesConnection!
+  zones(after: String, before: String, filter: FilterZonesInput, first: Int, last: Int): ZonesConnection!
 }
 
 """
@@ -1313,14 +1341,18 @@ The `Upload` scalar type represents a file upload.
 scalar Upload
 
 type Workflow implements Node {
+  accessPolicy: Record
   createdAt: String
   createdBy: String
   description: String
+  failureWorkflow: String
   hasSchedule: Boolean
   id: ID!
   inputParameters: [String!]
+  inputTemplate: String
   name: String!
   outputParameters: [OutputParameter!]
+  ownerApp: String
   ownerEmail: String
   restartable: Boolean
   schemaVersion: Int
@@ -1329,8 +1361,9 @@ type Workflow implements Node {
   timeoutSeconds: Int!
   updatedAt: String
   updatedBy: String
-  variables: String
+  variables: Record
   version: Int
+  workflowStatusListenerEnabled: Boolean
 }
 
 type WorkflowConnection {
@@ -1340,8 +1373,6 @@ type WorkflowConnection {
 }
 
 input WorkflowDefinitionInput {
-  createTime: Int
-  createdAt: Int
   createdBy: String
   description: String
   inputParameters: [String]
@@ -1355,8 +1386,6 @@ input WorkflowDefinitionInput {
   tasks: [TaskInput!]!
   timeoutPolicy: TimeoutPolicy
   timeoutSeconds: Int!
-  updateTime: Int
-  updatedAt: Int
   updatedBy: String
   variables: String
   version: Int
@@ -1368,15 +1397,25 @@ type WorkflowEdge {
 }
 
 input WorkflowInput {
-  createdAt: String
+  accessPolicy: Record
+  createdBy: String
   description: String
+  failureWorkflow: String
+  inputParameters: [String!]
+  inputTemplate: String
   name: String!
   outputParameters: [OutputParameterInput!]
+  ownerApp: String
+  ownerEmail: String
   restartable: Boolean
+  schemaVersion: Int
   tasks: String!
+  timeoutPolicy: TimeoutPolicy
   timeoutSeconds: Int!
-  updatedAt: String
+  updatedBy: String
+  variables: Record
   version: Int
+  workflowStatusListenerEnabled: Boolean
 }
 
 type WorkflowInstanceDetail {
