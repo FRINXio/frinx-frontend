@@ -39,13 +39,16 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
   const isJson = parsedInputParameters?.[inputParameterKey]?.type === 'json';
   const isMultiSelect = parsedInputParameters?.[inputParameterKey]?.type === 'multiselect';
 
-  const isInput = !isToggle && !isTextarea && !isSelect && !isNumber && !isJson && !isMultiSelect;
+  const isInput = !isToggle && !isTextarea && !isSelect && !isNumber && !isJson && !isMultiSelect && !isList;
 
   return (
     <FormControl>
-      <FormLabel htmlFor={inputParameterKey}>{inputParameterKey}</FormLabel>
+      <FormLabel marginBottom={0} htmlFor={inputParameterKey}>
+        {inputParameterKey}
+      </FormLabel>
       {isToggle && (
         <Switch
+          mt={4}
           name={inputParameterKey}
           isChecked={values[inputParameterKey] ?? false}
           onChange={(e) => onChange(inputParameterKey, e.target.checked)}
@@ -54,6 +57,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
 
       {isTextarea && (
         <Textarea
+          mt={4}
           name={inputParameterKey}
           value={values[inputParameterKey] ?? ''}
           onChange={(e) => onChange(inputParameterKey, e.target.value)}
@@ -62,8 +66,20 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
 
       {isJson && <Editor value={values[inputParameterKey]} onChange={(e) => onChange(inputParameterKey, e ?? '')} />}
 
+      {isList && (
+        <FormControl>
+          <SearchByTagInput
+            isList
+            tagText=''
+            selectedTags={values[inputParameterKey]}
+            onSelectionChange={(selectedTags) => onChange(inputParameterKey, selectedTags ?? [])}
+          />
+        </FormControl>
+      )}
+
       {isSelect && (
         <Select
+          mt={4}
           name={inputParameterKey}
           value={values[inputParameterKey]}
           onChange={(e) => onChange(inputParameterKey, e.target.value)}
@@ -78,6 +94,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
 
       {isNumber && (
         <NumberInput
+          mt={4}
           name={inputParameterKey}
           value={values[inputParameterKey]}
           onChange={(_, number) => {
@@ -109,6 +126,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
 
       {isInput && (
         <Input
+          mt={4}
           name={inputParameterKey}
           value={values[inputParameterKey]}
           onChange={(e) => onChange(inputParameterKey, e.target.value)}
