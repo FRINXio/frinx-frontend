@@ -70,7 +70,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
         <FormControl>
           <SearchByTagInput
             isList
-            tagText=''
+            tagText=""
             selectedTags={values[inputParameterKey]}
             onSelectionChange={(selectedTags) => onChange(inputParameterKey, selectedTags ?? [])}
           />
