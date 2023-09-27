@@ -18,7 +18,7 @@ import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-modal';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
-import { PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
+import { PoolCapacityPayload, ResourcePoolOrderField, Tag as TagType } from '../../__generated__/graphql';
 import { SortBy } from './pools-page';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
@@ -48,7 +48,7 @@ type Pools = {
 };
 
 type Props = {
-  onSort?: (sortKey: 'name' | 'dealocationSafetyPeriod') => void;
+  onSort?: (sortKey: ResourcePoolOrderField) => void;
   sortBy?: SortBy;
   pools: Pools[];
   isLoading: boolean;

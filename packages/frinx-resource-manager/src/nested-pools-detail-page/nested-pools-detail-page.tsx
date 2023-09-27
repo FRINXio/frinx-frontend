@@ -88,7 +88,7 @@ const DELETE_POOL_MUTATION = gql`
 `;
 
 const NestedPoolsDetailPage: VoidFunctionComponent = () => {
-  const [allocatedResources, setAllocatedResources] = useState<{ [key: string]: string }>({});
+  const [allocatedResources, setAllocatedResources] = useState<Record<string, string>>({});
   const [sortBy, setSortBy] = useState<SortBy>(null);
   const [searchName, setSearchName] = useState<string>('');
   const { poolId } = useParams<{ poolId: string }>();

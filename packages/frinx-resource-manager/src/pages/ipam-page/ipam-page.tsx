@@ -126,7 +126,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
   const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
   const [isIpv4, setIsIpv4] = useState<boolean>(true);
   const [selectedResourceType, setSelectedResourceType] = useState<string>('');
-  const [allocatedResources, setAllocatedResources] = useState<{ [key: string]: string }>({});
+  const [allocatedResources, setAllocatedResources] = useState<Record<string, string>>({});
   const [searchName, setSearchName] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [paginationArgs, { nextPage, previousPage, firstPage, setItemsCount }] = usePagination();

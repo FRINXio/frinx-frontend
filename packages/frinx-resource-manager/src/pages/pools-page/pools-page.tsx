@@ -25,7 +25,7 @@ import {
 import PoolsTable from './pools-table';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 
-type InputValues = { [key: string]: string | null | undefined };
+type InputValues = Record<string, string | null | undefined>;
 
 type PoolsFilter =
   | {
