@@ -1,5 +1,5 @@
 schema:
-  - api.graphql
+  - https://localhost:8001/graphql
 documents:
   - './src/**/*.tsx'
   - './src/**/*.ts'

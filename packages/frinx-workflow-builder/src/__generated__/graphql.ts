@@ -12,9 +12,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** Graphql custom scalar record type */
   Record: { input: any; output: any; }
-  /** The `Upload` scalar type represents a file upload. */
   Upload: { input: any; output: any; }
 };
 
@@ -645,6 +643,10 @@ export type FilterEventHandlerInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type FilterLabelsInput = {
+  name: Scalars['String']['input'];
+};
+
 export type FilterPollDataInput = {
   afterDate?: InputMaybe<Scalars['String']['input']>;
   beforeDate?: InputMaybe<Scalars['String']['input']>;
@@ -668,6 +670,10 @@ export type FilterTopologyInput = {
 export type FilterWorkflowsInput = {
   keyword?: InputMaybe<Scalars['String']['input']>;
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type FilterZonesInput = {
+  name: Scalars['String']['input'];
 };
 
 export type FreeResourceInput = {
@@ -1202,6 +1208,7 @@ export type Pool = Node & {
   __typename?: 'Pool';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  poolProperties: Scalars['Record']['output'];
   poolType: PoolType;
   resourceType: ResourceType;
   tags: Array<Tag>;
@@ -1338,6 +1345,7 @@ export type QueryExternalStorageArgs = {
 export type QueryLabelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterLabelsInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -1436,6 +1444,7 @@ export type QueryWorkflowsArgs = {
 export type QueryZonesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterZonesInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -1960,7 +1969,7 @@ export type WorkflowListQueryVariables = Exact<{
 }>;
 
 
-export type WorkflowListQuery = { __typename?: 'Query', workflows: { __typename?: 'WorkflowConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowEdge', cursor: string, node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, variables: any | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null } }, taskDefinitions: { __typename?: 'TaskDefinitionConnection', edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', name: string, description: string | null, createdBy: string | null, retryCount: number | null, timeoutSeconds: number, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, ownerEmail: string | null } }> } };
+export type WorkflowListQuery = { __typename?: 'Query', workflows: { __typename?: 'WorkflowConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowEdge', cursor: string, node: { __typename?: 'Workflow', id: string, name: string, description: string | null, version: number | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, tasks: string | null, hasSchedule: boolean | null, inputParameters: Array<string> | null, restartable: boolean | null, timeoutSeconds: number, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, variables: any | null, outputParameters: Array<{ __typename?: 'OutputParameter', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null } }, taskDefinitions: { __typename?: 'TaskDefinitionConnection', edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', name: string, description: string | null, createdBy: string | null, retryCount: number | null, timeoutSeconds: number, timeoutPolicy: TaskTimeoutPolicy | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, ownerEmail: string | null, inputKeys: Array<string> | null } }> } };
 
 export type UpdateWorkflowMutationVariables = Exact<{
   updateWorkflowId: Scalars['String']['input'];

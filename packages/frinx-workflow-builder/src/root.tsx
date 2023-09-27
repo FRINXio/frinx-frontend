@@ -96,6 +96,7 @@ const WORKFLOW_LIST_QUERY = gql`
           retryDelaySeconds
           responseTimeoutSeconds
           ownerEmail
+          inputKeys
         }
       }
     }
