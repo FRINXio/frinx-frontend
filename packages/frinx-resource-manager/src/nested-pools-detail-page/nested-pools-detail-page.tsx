@@ -10,14 +10,17 @@ import {
   DeletePoolMutationMutationVariables,
   GetNestedPoolsDetailQuery,
   GetNestedPoolsDetailQueryVariables,
+  ResourcePoolOrderField,
 } from '../__generated__/graphql';
 import SearchFilterPoolsBar from '../components/search-filter-pools-bar';
+import { SortBy } from '../pages/pools-page/pools-page';
 
 const POOL_DETAIL_QUERY = gql`
   query GetNestedPoolsDetail($poolId: ID!) {
     QueryResourcePool(poolId: $poolId) {
       id
       Name
+      DealocationSafetyPeriod
       PoolType
       Tags {
         id
@@ -85,7 +88,8 @@ const DELETE_POOL_MUTATION = gql`
 `;
 
 const NestedPoolsDetailPage: VoidFunctionComponent = () => {
-  const [allocatedResources, setAllocatedResources] = useState({});
+  const [allocatedResources, setAllocatedResources] = useState<Record<string, string>>({});
+  const [sortBy, setSortBy] = useState<SortBy>(null);
   const [searchName, setSearchName] = useState<string>('');
   const { poolId } = useParams<{ poolId: string }>();
   const [{ data: poolData, fetching: isLoadingPool }] = useQuery<
@@ -93,7 +97,6 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     GetNestedPoolsDetailQueryVariables
   >({
     query: POOL_DETAIL_QUERY,
-
     variables: { poolId: unwrap(poolId) },
   });
   const resources = (poolData?.QueryResourcePool.Resources || [])
@@ -144,6 +147,11 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     setSearchText(searchName);
   };
 
+  const handleSort = (field: ResourcePoolOrderField) => {
+    const direction = sortBy?.direction === 'ASC' ? 'DESC' : 'ASC';
+    setSortBy({ field, direction });
+  };
+
   const resourcePools = results.filter((pool) => {
     if (selectedTags.length > 0) {
       return pool.Tags.some((poolTag) => selectedTags.includes(poolTag.Tag));
@@ -181,6 +189,8 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
       />
       <Box my={10}>
         <PoolsTable
+          onSort={handleSort}
+          sortBy={sortBy}
           pools={[resourcePool]}
           isLoading={isLoadingPool}
           onDeleteBtnClick={handleDeleteBtnClick}
@@ -188,6 +198,8 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
         />
         <Box ml={10}>
           <PoolsTable
+            onSort={handleSort}
+            sortBy={sortBy}
             pools={resourcePools}
             onTagClick={handleOnTagClick}
             isLoading={isLoadingPool}

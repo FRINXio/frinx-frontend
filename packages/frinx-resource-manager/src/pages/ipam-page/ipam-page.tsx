@@ -43,6 +43,7 @@ const POOLS_QUERY = gql`
     $resourceTypeId: ID
     $filterByResources: Map
     $tags: TagOr
+    $sortBy: SortResourcePoolsInput
   ) {
     QueryRootResourcePools(
       first: $first
@@ -52,6 +53,7 @@ const POOLS_QUERY = gql`
       resourceTypeId: $resourceTypeId
       filterByResources: $filterByResources
       tags: $tags
+      sortBy: $sortBy
     ) {
       edges {
         node {
@@ -124,7 +126,7 @@ const IpamPoolPage: VoidFunctionComponent = () => {
   const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
   const [isIpv4, setIsIpv4] = useState<boolean>(true);
   const [selectedResourceType, setSelectedResourceType] = useState<string>('');
-  const [allocatedResources, setAllocatedResources] = useState({});
+  const [allocatedResources, setAllocatedResources] = useState<Record<string, string>>({});
   const [searchName, setSearchName] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [paginationArgs, { nextPage, previousPage, firstPage, setItemsCount }] = usePagination();
