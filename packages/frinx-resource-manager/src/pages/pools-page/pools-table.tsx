@@ -18,7 +18,8 @@ import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import DeletePoolPopover from '../../components/delete-modal';
 import { getTotalCapacity } from '../../helpers/resource-pool.helpers';
-import { PoolCapacityPayload, Tag as TagType } from '../../__generated__/graphql';
+import { PoolCapacityPayload, ResourcePoolOrderField, Tag as TagType } from '../../__generated__/graphql';
+import { SortBy } from './pools-page';
 
 type PoolType = 'set' | 'allocating' | 'singleton';
 
@@ -39,6 +40,7 @@ type Pools = {
   Capacity: PoolCapacityPayload | null;
   PoolProperties: Record<string, string | number | boolean>;
   PoolType: PoolType;
+  DealocationSafetyPeriod?: number;
   ResourceType: Record<string, string>;
   Resources: Resource[];
   Tags: Omit<TagType, 'Pools'>[];
@@ -46,6 +48,8 @@ type Pools = {
 };
 
 type Props = {
+  onSort?: (sortKey: ResourcePoolOrderField) => void;
+  sortBy?: SortBy;
   pools: Pools[];
   isLoading: boolean;
   isNestedShown?: boolean;
@@ -56,6 +60,8 @@ type Props = {
 
 const PoolsTable: VoidFunctionComponent<Props> = ({
   pools,
+  onSort,
+  sortBy,
   onDeleteBtnClick,
   onStrategyClick,
   isLoading,
@@ -71,9 +77,34 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
       <Thead bgColor="gray.200">
         <Tr>
           {isNestedShown && <Th>Children</Th>}
-          <Th>Name</Th>
+          <Th
+            cursor="pointer"
+            onClick={() => {
+              if (onSort) {
+                onSort('name');
+              }
+            }}
+          >
+            Name
+            {sortBy?.field === 'name' && (
+              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
+          </Th>
           <Th>Tags</Th>
           <Th>Pool Type</Th>
+          <Th
+            cursor="pointer"
+            onClick={() => {
+              if (onSort) {
+                onSort('dealocationSafetyPeriod');
+              }
+            }}
+          >
+            Dealocation Safety Period{' '}
+            {sortBy?.field === 'dealocationSafetyPeriod' && (
+              <Icon as={FeatherIcon} size={40} icon={sortBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+            )}
+          </Th>
           <Th>Resource Type</Th>
           <Th>Utilized Capacity</Th>
           <Th>Actions</Th>
@@ -118,7 +149,6 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         data-cy={`pool-${pool.Name}-${t.Tag}`}
                         key={t.id}
                         marginRight={1}
-                        cursor="pointer"
                         onClick={() => {
                           if (t && onTagClick) {
                             onTagClick(t.Tag);
@@ -130,6 +160,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                     ))}
                   </Td>
                   <Td>{pool.PoolType}</Td>
+                  <Td>{pool.DealocationSafetyPeriod}</Td>
                   <Td>
                     <Text
                       as="span"
