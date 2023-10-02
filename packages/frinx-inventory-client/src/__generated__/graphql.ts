@@ -185,6 +185,15 @@ export type BulkOperationResponse = {
   bulkSuccessfulResults: Maybe<Array<Scalars['String']['output']>>;
 };
 
+export type BulkUninstallDevicePayload = {
+  __typename?: 'BulkUninstallDevicePayload';
+  uninstalledDevices: Array<Device>;
+};
+
+export type BulkUninstallDevicesInput = {
+  devicesToUninstall: Array<DevicesToUninstallInput>;
+};
+
 export type CsvImport = {
   __typename?: 'CSVImport';
   isOk: Maybe<Scalars['Boolean']['output']>;
@@ -434,6 +443,11 @@ export type DeviceSource =
   | 'MANUAL';
 
 export type DevicesToInstallInput = {
+  deviceIds: Array<Scalars['String']['input']>;
+  zoneId: Scalars['String']['input'];
+};
+
+export type DevicesToUninstallInput = {
   deviceIds: Array<Scalars['String']['input']>;
   zoneId: Scalars['String']['input'];
 };
@@ -820,6 +834,7 @@ export type Mutation = {
   bulkResumeWorkflow: Maybe<BulkOperationResponse>;
   bulkRetryWorkflow: Maybe<BulkOperationResponse>;
   bulkTerminateWorkflow: Maybe<BulkOperationResponse>;
+  bulkUninstallDevices: BulkUninstallDevicePayload;
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
   createEventHandler: Maybe<EventHandler>;
@@ -920,6 +935,11 @@ export type MutationBulkRetryWorkflowArgs = {
 
 export type MutationBulkTerminateWorkflowArgs = {
   input: BulkOperationInput;
+};
+
+
+export type MutationBulkUninstallDevicesArgs = {
+  input: BulkUninstallDevicesInput;
 };
 
 
