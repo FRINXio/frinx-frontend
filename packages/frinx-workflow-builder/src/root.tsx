@@ -205,8 +205,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
     const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
 
+    const { __typename, ...wfDetail } = workflowDetail;
     setWorkflow({
-      ...workflowDetail,
+      ...wfDetail,
       description: description?.description ?? null,
       labels: description?.labels || [],
       tasks: extendedTasks,
@@ -240,13 +241,26 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   };
 
   const handleWorkflowClone = async (wf: ClientWorkflow, wfName: string) => {
-    const updatedWorkflow = { ...wf, name: wfName, tasks: JSON.stringify(wf.tasks) };
-    await updateWorkflow({
+    const { hasSchedule, id, createdAt, updatedAt, labels, ...wfData } = wf;
+    const updatedWorkflow = { ...wfData, name: wfName, tasks: JSON.stringify(wf.tasks) };
+    const result = await updateWorkflow({
       updateWorkflowId: wf.id,
       input: {
         workflow: updatedWorkflow,
       },
     });
+    if (result.data) {
+      onClose();
+      addToastNotification({
+        content: 'Workflow cloned',
+        type: 'success',
+      });
+    } else {
+      addToastNotification({
+        content: `Workflow clone failed: ${result.error}`,
+        type: 'error',
+      });
+    }
   };
 
   const handleWorkflowDelete = async () => {
