@@ -27,7 +27,6 @@ import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'reac
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
-import { makeDevicesToInstallFromIds } from '../../helpers/convert';
 import {
   BulkInstallDevicesMutation,
   BulkInstallDevicesMutationVariables,
@@ -354,10 +353,9 @@ const DeviceList: VoidFunctionComponent = () => {
         }, {}),
       };
     });
-    const devicesToInstall = makeDevicesToInstallFromIds([...selectedDevices], deviceData);
     bulkInstallation({
       input: {
-        devicesToInstall,
+        deviceIds: [...selectedDevices],
       },
     })
       .then((res) => {

@@ -172,7 +172,7 @@ export type BulkInstallDevicePayload = {
 };
 
 export type BulkInstallDevicesInput = {
-  devicesToInstall: Array<DevicesToInstallInput>;
+  deviceIds: Array<Scalars['String']['input']>;
 };
 
 export type BulkOperationInput = {
@@ -191,7 +191,7 @@ export type BulkUninstallDevicePayload = {
 };
 
 export type BulkUninstallDevicesInput = {
-  devicesToUninstall: Array<DevicesToUninstallInput>;
+  deviceIds: Array<Scalars['String']['input']>;
 };
 
 export type CsvImport = {
@@ -441,16 +441,6 @@ export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
   | 'MANUAL';
-
-export type DevicesToInstallInput = {
-  deviceIds: Array<Scalars['String']['input']>;
-  zoneId: Scalars['String']['input'];
-};
-
-export type DevicesToUninstallInput = {
-  deviceIds: Array<Scalars['String']['input']>;
-  zoneId: Scalars['String']['input'];
-};
 
 export type DiffData = {
   __typename?: 'DiffData';

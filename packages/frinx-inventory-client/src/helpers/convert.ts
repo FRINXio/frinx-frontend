@@ -1,5 +1,5 @@
 import { Workflow } from '@frinx/shared';
-import { DevicesQuery, DevicesToInstallInput, ModalWorkflowsQuery } from '../__generated__/graphql';
+import { ModalWorkflowsQuery } from '../__generated__/graphql';
 
 export function convertGraphqlToClientWorkflow(workflowsData: ModalWorkflowsQuery): Workflow[] {
   return workflowsData.workflows.edges.map((e) => {
@@ -22,42 +22,4 @@ export function convertGraphqlToClientWorkflow(workflowsData: ModalWorkflowsQuer
       tasks: [],
     };
   });
-}
-
-export function makeDevicesToInstallFromIds(deviceIds: string[], deviceData?: DevicesQuery): DevicesToInstallInput[] {
-  const initialValue: DevicesToInstallInput[] = [{ zoneId: '', deviceIds: [] }];
-  return (
-    [...deviceIds]
-      .reduce((acc, deviceId) => {
-        const device = deviceData?.devices.edges.find(({ node }) => node.id === deviceId)?.node;
-
-        if (device == null) {
-          return acc;
-        }
-
-        const isZoneIdInAcc = acc.some((zone) => zone.zoneId === device.zone.id);
-        if (isZoneIdInAcc) {
-          return acc.map((zone) => {
-            if (zone.zoneId === device.zone.id) {
-              return {
-                ...zone,
-                deviceIds: [...zone.deviceIds, device.id],
-              };
-            }
-
-            return zone;
-          });
-        }
-
-        return [
-          ...acc,
-          {
-            zoneId: device.zone.id,
-            deviceIds: [device.id],
-          },
-        ];
-      }, initialValue)
-      // to remove empty zoneId and deviceIds added to initialValue
-      .slice(1)
-  );
 }
