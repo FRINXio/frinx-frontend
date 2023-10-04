@@ -204,6 +204,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     const tasks = jsonParse<Task[]>(workflowDetail.tasks);
     const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
     const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { __typename, ...wfDetail } = workflowDetail;
     setWorkflow({
       ...wfDetail,
