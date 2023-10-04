@@ -15,7 +15,6 @@ import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'reac
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
-import { omit } from 'lodash';
 import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
@@ -205,8 +204,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     const tasks = jsonParse<Task[]>(workflowDetail.tasks);
     const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
     const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
-    const wfDetail = omit(workflowDetail, ['__typename']);
-
+    const { __typename, ...wfDetail } = workflowDetail;
     setWorkflow({
       ...wfDetail,
       description: description?.description ?? null,
