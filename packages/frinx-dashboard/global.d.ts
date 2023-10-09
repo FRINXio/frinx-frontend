@@ -1,35 +1,6 @@
-declare type DashboardApp = {
-  init: () => Promise<DashboardApp>;
-
-  render: () => void;
-};
-
-declare const COMMIT_HASH: string;
-
 /* eslint-disable */
 declare interface Window {
-  IS_PRODUCTION: 'true' | 'false';
-
-  __CONFIG__: Readonly<{
-    isAuthEnabled: boolean;
-    authClientId: string;
-    authRedirectURL: string;
-    uniflowApiURL: string;
-    uniconfigApiDocsURL: string;
-    isResourceManagerEnabled: boolean;
-    unistoreApiURL: string;
-    isUniflowEnabled: boolean;
-    isInventoryEnabled: boolean;
-    isL3VPNEnabled: boolean;
-    isDeviceTopologyEnabled: boolean;
-    URLBasename: string;
-    inventoryApiURL: string;
-    inventoryWsURL: string;
-    uniresourceApiURL: string;
-    uniflowApiDocsURL: string;
-    MSALAuthority: string;
-    commitHash: string;
-  }>;
+  IS_PRODUCTION: boolean;
 
   __GAMMA_FORM_OPTIONS__: Readonly<{
     service: {
@@ -58,7 +29,5 @@ declare interface Window {
       roles: Options;
     };
   }>;
-
-  dashboardApp: DashboardApp;
 }
 /* eslint-enable */

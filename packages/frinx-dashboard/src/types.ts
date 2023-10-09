@@ -4,12 +4,7 @@ export type GlobalConfig = Readonly<{
   authRedirectURL: string;
   uniflowApiURL: string;
   uniconfigApiDocsURL: string;
-  isResourceManagerEnabled: boolean;
   unistoreApiURL: string;
-  isUniflowEnabled: boolean;
-  isInventoryEnabled: boolean;
-  isL3VPNEnabled: boolean;
-  isDeviceTopologyEnabled: boolean;
   URLBasename: string;
   inventoryApiURL: string;
   inventoryWsURL: string;
@@ -18,8 +13,3 @@ export type GlobalConfig = Readonly<{
   MSALAuthority: string;
   commitHash: string;
 }>;
-
-export type ServiceKey = keyof Pick<
-  GlobalConfig,
-  'isUniflowEnabled' | 'isResourceManagerEnabled' | 'isInventoryEnabled' | 'isL3VPNEnabled' | 'isDeviceTopologyEnabled'
->;

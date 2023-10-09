@@ -26,7 +26,9 @@ const Editor: FC<EditorProps> = ({
     });
     // eslint-disable-next-line
     const editorEl = editor._domElement;
-    if (!editorEl) return;
+    if (editorEl == null) {
+      return;
+    }
     const { width: newWidth, height: newHeight } = editorEl.getBoundingClientRect();
     // update responsive width and height
     editor.layout({
@@ -41,7 +43,9 @@ const Editor: FC<EditorProps> = ({
     });
   }, [monaco]);
 
-  const handleEditorWillMount: BeforeMount = () => handleJsonSchemasUpdate();
+  const handleEditorWillMount: BeforeMount = () => {
+    handleJsonSchemasUpdate();
+  };
 
   const handleEditorDidMount: OnMount = (editor) => {
     editorRef.current = editor;
