@@ -28,6 +28,8 @@ import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
 import {
+  BulkInstallDevicesMutation,
+  BulkInstallDevicesMutationVariables,
   DeleteDeviceMutation,
   DeleteDeviceMutationVariables,
   DevicesQuery,
@@ -133,6 +135,16 @@ const DELETE_DEVICE_MUTATION = gql`
   }
 `;
 
+const BULK_INSTALL_DEVICES_MUTATION = gql`
+  mutation BulkInstallDevices($input: BulkInstallDevicesInput!) {
+    bulkInstallDevices(input: $input) {
+      installedDevices {
+        id
+      }
+    }
+  }
+`;
+
 const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
   mutation ExecuteModalWorkflowByName($input: ExecuteWorkflowByName!) {
     executeWorkflowByName(input: $input)
@@ -182,6 +194,9 @@ const DeviceList: VoidFunctionComponent = () => {
     ExecuteModalWorkflowByNameMutation,
     ExecuteModalWorkflowByNameMutationVariables
   >(EXECUTE_MODAL_WORKFLOW_MUTATION);
+  const [, bulkInstallation] = useMutation<BulkInstallDevicesMutation, BulkInstallDevicesMutationVariables>(
+    BULK_INSTALL_DEVICES_MUTATION,
+  );
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
 
@@ -287,66 +302,98 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
-  const installDevices = (devicesId: string[]) => {
-    Promise.allSettled(
-      devicesId.map((deviceId) => {
+  const handleOnDeviceInstall = (deviceId: string) => {
+    setInstallLoadingMap((m) => {
+      return {
+        ...m,
+        [deviceId]: true,
+      };
+    });
+    installDevice({
+      id: deviceId,
+    })
+      .then((res) => {
+        if (res.data?.installDevice.device.isInstalled === true) {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Device installed successfuly',
+          });
+        }
+        if (res.error != null) {
+          throw new Error(res.error?.message);
+        }
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Installation failed',
+        });
+      })
+      .finally(() => {
         setInstallLoadingMap((m) => {
           return {
             ...m,
-            [deviceId]: true,
+            [deviceId]: false,
           };
         });
-        return installDevice({
-          id: deviceId,
-        })
-          .then((res) => {
-            if (res.data?.installDevice.device.isInstalled) {
-              return res.data.installDevice.device.isInstalled;
-            }
-            if (res.error) {
-              throw new Error(res.error.message);
-            }
-
-            return null;
-          })
-          .finally(() => {
-            setInstallLoadingMap((m) => {
-              return {
-                ...m,
-                [deviceId]: false,
-              };
-            });
-          });
-      }),
-    )
-      .then((res) => {
-        if (res.every((item) => item.status === 'fulfilled')) {
-          return addToastNotification({
-            type: 'success',
-            title: 'Success',
-            content: res.length > 1 ? 'Devices were installed successfuly' : 'Device was installed successfully',
-          });
-        }
-
-        if (res.every((item) => item.status === 'rejected')) {
-          return addToastNotification({
-            type: 'error',
-            title: 'Error',
-            content: res.length > 1 ? 'Failed to install devices' : 'Failed to install device',
-          });
-        }
-
-        return addToastNotification({
-          type: 'warning',
-          title: 'Warning',
-          content: 'Not all selected devices were installed successfully',
-        });
-      })
-      .finally(() => setSelectedDevices(new Set()));
+      });
   };
 
   const handleInstallSelectedDevices = () => {
-    installDevices([...selectedDevices]);
+    setInstallLoadingMap((m) => {
+      return {
+        ...m,
+        ...[...selectedDevices].reduce((acc, deviceId) => {
+          return {
+            ...acc,
+            [deviceId]: true,
+          };
+        }, {}),
+      };
+    });
+    bulkInstallation({
+      input: {
+        deviceIds: [...selectedDevices],
+      },
+    })
+      .then((res) => {
+        if (res.error != null || res.data == null) {
+          throw new Error(res.error?.message ?? 'Problem with bulk installation of devices');
+        }
+
+        if (res.data?.bulkInstallDevices.installedDevices.length === 0) {
+          throw new Error('No devices were installed');
+        }
+
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Devices installed successfuly',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Bulk installation of devices has failed',
+        });
+      })
+      .finally(() => {
+        setInstallLoadingMap((m) => {
+          return {
+            ...m,
+            ...[...selectedDevices].reduce((acc, deviceId) => {
+              return {
+                ...acc,
+                [deviceId]: false,
+              };
+            }, {}),
+          };
+        });
+        setSelectedDevices(new Set());
+      });
   };
 
   const handleDeviceDelete = () => {
@@ -562,7 +609,7 @@ const DeviceList: VoidFunctionComponent = () => {
                 selectedDevices={selectedDevices}
                 orderBy={orderBy}
                 onSort={handleSort}
-                onInstallButtonClick={(deviceId) => installDevices([deviceId])}
+                onInstallButtonClick={handleOnDeviceInstall}
                 onUninstallButtonClick={handleUninstallButtonClick}
                 onDeleteBtnClick={handleDeleteBtnClick}
                 installLoadingMap={installLoadingMap}
