@@ -15,7 +15,7 @@ function getFilteredResults<T extends { Name: string }>(searchResult: SearchResu
 type UseMiniSearchProps<T extends { Name: string }> = {
   items: T[];
   searchFields?: string[];
-  extractField: (document: T, fieldName: string) => string;
+  extractField?: (document: T, fieldName: string) => string;
 };
 
 const useMinisearch = <T extends { Name: string }>({
