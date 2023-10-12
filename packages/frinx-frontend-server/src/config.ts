@@ -25,35 +25,14 @@ function stringToBoolean(value: string): boolean {
   }
 }
 
-function ensureSchema(schema: string): 'http' | 'https' {
-  if (schema !== 'http' && schema !== 'https') {
-    throw new Error(`Invalid "AUTH_REDIRECT_SCHEME" env value: ${schema}`);
-  }
-  return schema;
-}
-
-function buildAuthRedirectURL(schema: 'http' | 'https', base: string): string {
-  try {
-    const url = new URL(`${schema}://${base}`);
-    return url.href;
-  } catch (e) {
-    throw new Error(`Invalid "AUTH_REDIRECT_DOMAIN" env value: ${base}`);
-  }
-}
-
 const config = {
   isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
-  authClientId: envString('AUTH_CLIENT_ID'),
-  authRedirectURL: stringToBoolean(envString('AUTH_ENABLED'))
-    ? buildAuthRedirectURL(ensureSchema(envString('AUTH_REDIRECT_SCHEME')), envString('AUTH_REDIRECT_DOMAIN'))
-    : null,
   URLBasename: envString('URL_BASENAME'),
   inventoryApiURL: envString('INVENTORY_API_URL'),
   inventoryWsURL: envString('INVENTORY_WS_URL'),
   uniresourceApiURL: envString('RESOURCE_MANAGER_API_URL'),
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
-  MSALAuthority: envString('MSAL_AUTHORITY'),
   commitHash: envString('COMMIT_HASH'),
 };
 

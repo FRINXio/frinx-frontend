@@ -101,31 +101,10 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
 }
 
 export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
-  const { url, authContext } = config;
+  const { url } = config;
   return {
     clientOptions: {
       url,
-      fetchOptions: () => {
-        const authToken = authContext.getAuthToken();
-        const headers: Record<string, string> = {
-          'Apollo-Require-Preflight': 'true',
-        };
-
-        if (authToken != null) {
-          return {
-            headers: {
-              ...headers,
-              Authorization: `Bearer ${authToken}`,
-            },
-          };
-        }
-        return {
-          headers,
-        };
-      },
-    },
-    onError: () => {
-      authContext.emit('UNAUTHORIZED');
     },
   };
 }

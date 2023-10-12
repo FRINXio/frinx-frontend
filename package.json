@@ -35,7 +35,8 @@
     "lerna:shared": "lerna run typegen,type-check,lint --scope=@frinx/shared",
     "lerna": "lerna run typegen,type-check,lint",
     "pr": "run-s version:check dedubcheck lerna:shared lerna",
-    "version:check": "node ./version-check.mjs"
+    "version:check": "node ./version-check.mjs",
+    "test": "lerna run test"
   },
   "devDependencies": {
     "dedubcheck": "0.0.8",

@@ -10,7 +10,7 @@ export type ToastProps = {
   timeout?: number;
   content: ReactNode;
 };
-type ToastPropsId = ToastProps & { id: string };
+type ToastPropsWithId = ToastProps & { id: string };
 export type ContextProps = {
   addToastNotification: (toastProps: ToastProps) => void;
 };
@@ -18,25 +18,25 @@ export type ContextProps = {
 const NotificationContext = createContext<ContextProps | null>(null);
 
 export const CustomToastProvider: FC = ({ children }) => {
-  const [toasts, setToasts] = useState<ToastPropsId[]>([]);
+  const [toasts, setToasts] = useState<ToastPropsWithId[]>([]);
   const [visibleToasts, setVisibleToasts] = useState<Set<string>>(new Set());
 
   const handlers = useMemo(
     () => ({
-      addToastNotification: (tProps: ToastProps) => {
+      addToastNotification: (toastProps: ToastProps) => {
         const id = uuid();
-        setVisibleToasts((v) => {
-          const v2 = new Set(v);
-          v2.add(id);
-          return v2;
+        setVisibleToasts((prevSet) => {
+          const nextSet = new Set(prevSet);
+          nextSet.add(id);
+          return nextSet;
         });
-        setToasts((t) =>
+        setToasts((prevToasts) =>
           [
             {
-              ...tProps,
+              ...toastProps,
               id,
             },
-            ...t,
+            ...prevToasts,
           ].slice(0, MAX_NOTIFICATION_COUNT),
         );
       },
@@ -54,16 +54,16 @@ export const CustomToastProvider: FC = ({ children }) => {
           title={t.title}
           type={t.type}
           onClose={() => {
-            setVisibleToasts((v) => {
-              const v2 = new Set(v);
-              v2.delete(t.id);
-              return v2;
+            setVisibleToasts((prevSet) => {
+              const nextSet = new Set(prevSet);
+              nextSet.delete(t.id);
+              return nextSet;
             });
           }}
           onAnimationEnd={() => {
-            setToasts((ts) => {
-              const newToasts = ts.filter((toast) => toast.id !== t.id);
-              return newToasts;
+            setToasts((prevToasts) => {
+              const nextToasts = prevToasts.filter((toast) => toast.id !== t.id);
+              return nextToasts;
             });
           }}
         >

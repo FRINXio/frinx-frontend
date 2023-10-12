@@ -1,13 +1,13 @@
 import { Box, Container, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { useConfigContext } from '../../config.provider';
+import { useConfig } from '../../config.provider';
 import Panel from '../panel/panel';
 import ElisaLogo from './img/elisa-logo.png';
 import InventoryActions from './inventory-actions';
 import UniflowActions from './uniflow-actions';
 
 const Dashboard: VoidFunctionComponent = () => {
-  const { uniflowApiDocsURL, inventoryApiURL, isAuthEnabled, uniconfigApiDocsURL, commitHash } = useConfigContext();
+  const { uniflowApiDocsURL, inventoryApiURL, isAuthEnabled, uniconfigApiDocsURL, commitHash } = useConfig();
   return (
     <Flex flexDirection="column" minHeight="calc(100vh - 10px - 64px - 32px)">
       <Container maxWidth={1280} marginBottom={8}>

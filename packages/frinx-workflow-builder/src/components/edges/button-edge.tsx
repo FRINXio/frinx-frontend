@@ -2,7 +2,7 @@ import { Box, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { EdgeProps, getBezierPath, getEdgeCenter } from 'react-flow-renderer';
-import { useEdgeRemoveContext } from '../../edge-remove-context';
+import { useEdgeRemoveContext } from '../../edge-remove-provider';
 
 const foreignObjectSize = 40;
 

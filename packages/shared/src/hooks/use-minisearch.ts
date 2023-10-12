@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import MiniSearch, { SearchResult } from 'minisearch';
 import { compact, throttle } from 'lodash';
 
-type Item<T> = T & { Name: string };
-
 function getFilteredResults<T extends { Name: string }>(searchResult: SearchResult[], items: T[]): T[] {
   const itemsMap = new Map(items?.map((item) => [item.Name, item]));
 
@@ -14,16 +12,17 @@ function getFilteredResults<T extends { Name: string }>(searchResult: SearchResu
   );
 }
 
-const useMinisearch = <T>({
-  items,
+type UseMiniSearchProps<T extends { Name: string }> = {
+  items: T[];
+  searchFields?: string[];
+  extractField: (document: T, fieldName: string) => string;
+};
+
+const useMinisearch = <T extends { Name: string }>({
+  items = [],
   searchFields = ['Name'],
   extractField,
-}: {
-  items: Item<T>[];
-  searchFields?: string[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  extractField?: (document: any, fieldName: string) => string;
-}) => {
+}: UseMiniSearchProps<T>) => {
   const [searchText, setSearchText] = useState('');
   const { current: minisearch } = useRef(
     new MiniSearch({ fields: searchFields, idField: 'Name', ...(extractField != null && { extractField }) }),
@@ -31,7 +30,7 @@ const useMinisearch = <T>({
 
   const searchFn = () =>
     throttle(() => {
-      if (searchText != null) {
+      if (searchText) {
         return getFilteredResults(minisearch.search(searchText, { prefix: true }), items ?? []);
       }
       return [];
@@ -39,12 +38,12 @@ const useMinisearch = <T>({
 
   useEffect(() => {
     minisearch.removeAll();
-    minisearch.addAll(items || []);
-  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
+    minisearch.addAll(items);
+  }, [items, minisearch]);
 
   const results = searchText.length > 0 ? searchFn() : items;
   return {
-    results: results || [],
+    results,
     searchText,
     setSearchText,
   };

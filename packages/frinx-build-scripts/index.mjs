@@ -2,8 +2,7 @@
 import chalk from 'chalk';
 import * as esbuild from 'esbuild';
 import executionTime from 'execution-time';
-import { exec } from 'node:child_process';
-import path, { resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { oraPromise } from 'ora';
 import { dtsPlugin } from 'esbuild-plugin-d.ts';
 import { clean, makeConfig } from './common.mjs';
