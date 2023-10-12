@@ -48,7 +48,6 @@
   "dependencies": {
     "@frinx/shared": "^2.0.0",
     "@types/react": "17.0.65",
-    "@urql/exchange-retry": "1.2.0",
     "chakra-ui-autocomplete": "^1.4.5",
     "date-fns": "^2.29.3",
     "feather-icons-react": "0.6.2",

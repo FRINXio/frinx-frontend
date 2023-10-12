@@ -1,4 +1,3 @@
-import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
 import {
   Box,
   Button,

@@ -1,5 +1,3 @@
-import { URL } from 'url';
-
 function envString(key: string): string {
   const { env } = process;
   const value = env[key];

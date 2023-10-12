@@ -1,5 +1,4 @@
 import { CustomToastProvider } from '@frinx/shared';
-import { retryExchange } from '@urql/exchange-retry';
 import { createClient as createWSClient } from 'graphql-ws';
 import React, { createContext, FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider, subscriptionExchange } from 'urql';
@@ -8,7 +7,6 @@ export const InventoryAPIContext = createContext(false);
 
 export type InventoryApiClient = {
   clientOptions: Omit<ClientOptions, 'exchanges'>;
-  onError: () => void;
 };
 
 export type Props = {
@@ -23,14 +21,6 @@ const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
       ...client.clientOptions,
       exchanges: [
         cacheExchange,
-        retryExchange({
-          retryIf: (err) => {
-            if (err.networkError?.message === 'Unauthorized') {
-              client.onError();
-            }
-            return false;
-          },
-        }),
         fetchExchange,
         subscriptionExchange({
           forwardSubscription: (request) => {
