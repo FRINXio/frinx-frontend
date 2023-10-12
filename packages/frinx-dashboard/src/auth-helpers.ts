@@ -4,35 +4,54 @@ export type UserInfo = {
   user: string;
   email: string;
 };
-export async function getUserInfo(): Promise<UserInfo> {
-  const data = await fetch('/oauth2/userinfo');
-  const json = await data.json();
-
-  return json;
+export async function getUserInfo(): Promise<UserInfo | null> {
+  try {
+    const data = await fetch('/oauth2/userinfo');
+    const json = await data.json();
+    return json;
+  } catch {
+    return null;
+  }
 }
 
 export type UseUserInfoSuccess = {
   userInfo: UserInfo;
   isLoading: false;
+  hasError: false;
 };
 export type UseUserInfoLoading = {
   userInfo: null;
   isLoading: true;
+  hasError: false;
 };
-export type UseUserInfo = UseUserInfoLoading | UseUserInfoSuccess;
+export type UserInfoError = {
+  userInfo: null;
+  isLoading: false;
+  hasError: true;
+};
+export type UseUserInfo = UseUserInfoLoading | UseUserInfoSuccess | UserInfoError;
 
 export function useUserInfo(): UseUserInfo {
   const [userInfo, setUserInfo] = useState<UseUserInfo>({
     userInfo: null,
     isLoading: true,
-  } satisfies UseUserInfoLoading);
+    hasError: false,
+  });
 
   useEffect(() => {
     getUserInfo().then((data) => {
-      setUserInfo({
-        userInfo: data,
+      if (data != null) {
+        return setUserInfo({
+          userInfo: data,
+          isLoading: false,
+          hasError: false,
+        });
+      }
+      return setUserInfo({
+        userInfo: null,
         isLoading: false,
-      } satisfies UseUserInfoSuccess);
+        hasError: true,
+      });
     });
   }, []);
 

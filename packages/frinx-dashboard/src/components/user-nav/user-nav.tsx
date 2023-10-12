@@ -27,12 +27,12 @@ const UserNav: FC = () => {
           size="md"
           rightIcon={<Icon size={30} as={FeatherIcon} icon="chevron-down" />}
         >
-          {userInfo.user}
+          {userInfo?.user}
         </MenuButton>
         <MenuList>
           <Box paddingX={4} paddingY={3}>
             <Heading as="h4" fontSize="sm">
-              {userInfo.email}
+              {userInfo?.email}
             </Heading>
             <Divider marginTop={4} />
           </Box>
