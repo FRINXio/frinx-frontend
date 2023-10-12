@@ -8,8 +8,8 @@ export default class UniconfigApi {
   private static instance: UniconfigApi;
 
   private constructor(config: ApiConfig) {
-    const { authContext, url } = config;
-    const apiHelpers = createApiHelpers(url, authContext);
+    const { url } = config;
+    const apiHelpers = createApiHelpers(url);
     this.client = createUniconfigApiClient(apiHelpers);
   }
 
