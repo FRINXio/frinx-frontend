@@ -140,7 +140,7 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         return aggregateInfo.toString();
       }
 
-      return document[fieldName];
+      return document[fieldName as keyof typeof document];
     },
   });
 
@@ -184,21 +184,22 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
     return <Text>No aggregates exists</Text>;
   }
 
-  const aggregates = results.map((aggregate) => {
-    const { address, prefix } = aggregate.PoolProperties;
+  const aggregates =
+    results?.map((aggregate) => {
+      const { address, prefix } = aggregate.PoolProperties;
 
-    const aggregateInfo = isIpv4(aggregate.ResourceType.Name)
-      ? `${ipaddr.IPv4.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`
-      : `${ipaddr.IPv6.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`;
-    return {
-      id: aggregate.id,
-      aggregate: aggregateInfo,
-      prefixes: aggregate.Resources.filter((resource) => resource.NestedPool != null).length,
-      freeCapacity: aggregate.Capacity?.freeCapacity,
-      utilizedCapacity: aggregate.Capacity?.utilizedCapacity,
-      tags: aggregate.Tags.map(({ id, Tag: tagName }: { id: string; Tag: string }) => ({ tag: tagName, id })),
-    };
-  });
+      const aggregateInfo = isIpv4(aggregate.ResourceType.Name)
+        ? `${ipaddr.IPv4.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`
+        : `${ipaddr.IPv6.networkAddressFromCIDR(`${address}/${prefix}`)}/${prefix}`;
+      return {
+        id: aggregate.id,
+        aggregate: aggregateInfo,
+        prefixes: aggregate.Resources.filter((resource) => resource.NestedPool != null).length,
+        freeCapacity: aggregate.Capacity?.freeCapacity,
+        utilizedCapacity: aggregate.Capacity?.utilizedCapacity,
+        tags: aggregate.Tags.map(({ id, Tag: tagName }: { id: string; Tag: string }) => ({ tag: tagName, id })),
+      };
+    }) ?? [];
 
   return (
     <>

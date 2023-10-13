@@ -8,8 +8,8 @@ export default class UniflowApi {
   private static instance: UniflowApi;
 
   private constructor(config: ApiConfig) {
-    const { authContext, url } = config;
-    const apiHelpers = createApiHelpers(url, authContext);
+    const { url } = config;
+    const apiHelpers = createApiHelpers(url);
     this.client = createUniflowApiClient(apiHelpers);
   }
 

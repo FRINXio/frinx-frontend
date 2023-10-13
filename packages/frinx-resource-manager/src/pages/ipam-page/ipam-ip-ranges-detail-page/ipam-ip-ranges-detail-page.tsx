@@ -38,7 +38,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
         return JSON.stringify(document[fieldName]);
       }
 
-      return document[fieldName];
+      return document[fieldName as keyof typeof document];
     },
   });
 
