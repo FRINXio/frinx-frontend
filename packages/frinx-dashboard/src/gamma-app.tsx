@@ -1,4 +1,4 @@
-import { InventoryApi, UniflowApi, UnistoreApi } from '@frinx/api';
+import { InventoryApi, UnistoreApi } from '@frinx/api';
 import { GammaAppProviderProps } from '@frinxio/gamma';
 import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useConfig } from './config.provider';
@@ -20,10 +20,6 @@ const GammaApp: VoidFunctionComponent = () => {
         GammaApp: App,
         GammaAppProvider: getGammaAppProvider({
           unistoreClient: UnistoreApi.create({ url: unistoreApiURL }, '').client,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          workflowManagerClient: UniflowApi.create({ url: uniflowApiURL, authContext }).client,
-          // resourceManagerClient: ResourceManagerApi.create({ url: uniresourceApiURL }),
         }),
       });
     });
