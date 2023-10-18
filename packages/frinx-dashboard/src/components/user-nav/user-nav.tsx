@@ -36,7 +36,7 @@ const UserNav: FC = () => {
             </Heading>
             <Divider marginTop={4} />
           </Box>
-          <MenuItem as="a" href="/oauth2/logout">
+          <MenuItem as="a" href="/oauth2/sign_out">
             <Flex
               width={8}
               height={8}
