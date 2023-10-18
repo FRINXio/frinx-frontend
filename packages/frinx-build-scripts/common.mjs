@@ -1,10 +1,6 @@
 import path from 'node:path';
 import { rm } from 'node:fs/promises';
 
-function fullPath(...parts) {
-  return path.join(process.cwd(), ...parts);
-}
-
 export function makeConfig({ isProd, external }) {
   return {
     entryPoints: ['src/index.ts'],

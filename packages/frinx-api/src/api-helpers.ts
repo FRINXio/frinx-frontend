@@ -3,18 +3,6 @@ import urlJoin from 'url-join';
 import { ApiConfig } from '.';
 import { GraphQLApiClient } from './types';
 
-// directly sent Authorization should be used before we use auth
-function makeHeaders(authToken: string | null, headers?: HeadersInit): Record<string, string> {
-  if (Array.isArray(headers)) {
-    throw new Error('should never happen');
-  }
-  // TODO: fix this ugly hack
-  const objectHeaders = headers as Record<string, string> | void;
-  return {
-    ...(authToken != null ? { Authorization: `Bearer ${authToken}`, ...objectHeaders } : objectHeaders),
-  };
-}
-
 export type ApiHelpers = {
   sendGetRequest: (path: string, requestOptions?: RequestInit) => Promise<unknown>;
   sendPostRequest: (path: string, body?: unknown, options?: RequestInit) => Promise<unknown>;
@@ -23,12 +11,8 @@ export type ApiHelpers = {
 };
 
 export type ErrorType = 'UNAUTHORIZED' | 'FORBIDDEN' | 'ACCESS_REJECTED';
-export type AuthContext = {
-  getAuthToken: () => string | null;
-  emit: (errorType: ErrorType) => void;
-};
 
-export function createApiHelpers(baseURL: string, authContext: AuthContext): ApiHelpers {
+export function createApiHelpers(baseURL: string): ApiHelpers {
   async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
     const url = urlJoin(baseURL, path);
     const { headers, ...rest } = options;
@@ -36,23 +20,9 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
       ...rest,
       headers: {
         'Content-Type': 'application/json',
-        ...makeHeaders(authContext.getAuthToken(), headers),
+        ...headers,
       },
     });
-
-    if (response.status === 401) {
-      return authContext.emit('UNAUTHORIZED');
-    }
-
-    // https://frinxhelpdesk.atlassian.net/browse/FD-460
-    // error code 422 introduced to properly deal with expired/nonvalid transactions
-    if (response.status === 403 || response.status === 422) {
-      return authContext.emit('FORBIDDEN');
-    }
-
-    if (response.status === 427) {
-      return authContext.emit('ACCESS_REJECTED');
-    }
 
     if (!response.ok) {
       throw new Error(`apiFetch failed with http-code ${response.status}`);
@@ -101,31 +71,10 @@ export function createApiHelpers(baseURL: string, authContext: AuthContext): Api
 }
 
 export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
-  const { url, authContext } = config;
+  const { url } = config;
   return {
     clientOptions: {
       url,
-      fetchOptions: () => {
-        const authToken = authContext.getAuthToken();
-        const headers: Record<string, string> = {
-          'Apollo-Require-Preflight': 'true',
-        };
-
-        if (authToken != null) {
-          return {
-            headers: {
-              ...headers,
-              Authorization: `Bearer ${authToken}`,
-            },
-          };
-        }
-        return {
-          headers,
-        };
-      },
-    },
-    onError: () => {
-      authContext.emit('UNAUTHORIZED');
     },
   };
 }

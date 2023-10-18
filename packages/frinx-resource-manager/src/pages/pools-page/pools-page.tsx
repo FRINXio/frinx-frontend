@@ -20,19 +20,25 @@ import {
   GetAllPoolsQueryVariables,
   GetResourceTypesQuery,
   GetResourceTypesQueryVariables,
-  Scalars,
+  ResourcePoolOrderField,
 } from '../../__generated__/graphql';
 import PoolsTable from './pools-table';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 
-type InputValues = { [key: string]: string };
+type InputValues = Record<string, string | null | undefined>;
 
 type PoolsFilter =
   | {
-      resources: InputValues | null;
-      resourceType: string | null;
+      resources: InputValues | null | undefined;
+      resourceType: string | undefined | null;
     }
-  | Record<string, string>;
+  | null
+  | undefined;
+
+export type SortBy = {
+  field: ResourcePoolOrderField;
+  direction: 'ASC' | 'DESC';
+} | null;
 
 const ALL_POOLS_QUERY = gql`
   query GetAllPools(
@@ -43,6 +49,7 @@ const ALL_POOLS_QUERY = gql`
     $resourceTypeId: ID
     $filterByResources: Map
     $tags: TagOr
+    $sortBy: SortResourcePoolsInput
   ) {
     QueryRootResourcePools(
       first: $first
@@ -52,11 +59,13 @@ const ALL_POOLS_QUERY = gql`
       resourceTypeId: $resourceTypeId
       filterByResources: $filterByResources
       tags: $tags
+      sortBy: $sortBy
     ) {
       edges {
         node {
           id
           Name
+          DealocationSafetyPeriod
           PoolType
           ParentResource {
             id
@@ -126,8 +135,9 @@ const GET_RESOURCE_TYPES = gql`
 const PoolsPage: VoidFunctionComponent = () => {
   const [selectedTags, { handleOnTagClick, clearAllTags }] = useTags();
   const [poolsFilter, setPoolsFilter] = useState<PoolsFilter>({ resources: null, resourceType: null });
-  const [allocatedResources, setAllocatedResources] = useState<InputValues>({});
-  const [selectedResourceType, setSelectedResourceType] = useState<Scalars['Map']>();
+  const [sortBy, setSortBy] = useState<SortBy>(null);
+  const [allocatedResources, setAllocatedResources] = useState<{ [key: string]: string }>({});
+  const [selectedResourceType, setSelectedResourceType] = useState<string>();
   const [searchName, setSearchName] = useState<string>('');
   const context = useMemo(() => ({ additionalTypenames: ['ResourcePool'] }), []);
   const [paginationArgs, { nextPage, previousPage, setItemsCount, firstPage }] = usePagination();
@@ -139,9 +149,10 @@ const PoolsPage: VoidFunctionComponent = () => {
       ...(paginationArgs?.last !== null && { last: paginationArgs.last }),
       ...(paginationArgs?.after !== null && { after: paginationArgs.after }),
       ...(paginationArgs?.before !== null && { before: paginationArgs.before }),
-      filterByResources: poolsFilter.resources ?? null,
+      filterByResources: poolsFilter?.resources ?? null,
       tags: selectedTags.length ? { matchesAny: [{ matchesAll: selectedTags }] } : null,
-      resourceTypeId: poolsFilter.resourceType || null,
+      resourceTypeId: poolsFilter?.resourceType || null,
+      sortBy,
     },
     context,
   });
@@ -172,6 +183,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     }
     if (!Object.keys(allocatedResources).length) {
       setPoolsFilter({
+        resources: null,
         resourceType: selectedResourceType,
       });
     }
@@ -205,13 +217,18 @@ const PoolsPage: VoidFunctionComponent = () => {
     setSearchText('');
     clearAllTags();
     setSelectedResourceType('');
-    setPoolsFilter({});
+    setPoolsFilter(null);
   };
 
   const handleOnStrategyClick = (id?: string) => {
     if (id != null) {
       setSelectedResourceType(id);
     }
+  };
+
+  const handleSort = (field: 'name' | 'dealocationSafetyPeriod') => {
+    const direction = sortBy?.direction === 'ASC' ? 'DESC' : 'ASC';
+    setSortBy({ field, direction });
   };
 
   if (error != null || data == null) {
@@ -260,6 +277,8 @@ const PoolsPage: VoidFunctionComponent = () => {
           {data != null && (isQueryLoading || isMutationLoading) && <Progress isIndeterminate size="xs" />}
         </Box>
         <PoolsTable
+          onSort={handleSort}
+          sortBy={sortBy}
           pools={results}
           isLoading={isQueryLoading || isMutationLoading}
           onDeleteBtnClick={handleDeleteBtnClick}

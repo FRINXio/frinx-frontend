@@ -1,12 +1,10 @@
 import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider } from 'urql';
-import { retryExchange } from '@urql/exchange-retry';
 import React, { FC, useRef } from 'react';
 import { CustomToastProvider } from '@frinx/shared';
 import PageContainer from './components/page-container';
 
 export type InventoryApiClient = {
   clientOptions: Omit<ClientOptions, 'exchanges'>;
-  onError: () => void;
 };
 export type Props = {
   client: InventoryApiClient;
@@ -16,18 +14,7 @@ const ResourceManagerApiProvider: FC<Props> = ({ children, client }) => {
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
-      exchanges: [
-        cacheExchange,
-        retryExchange({
-          retryIf: (err) => {
-            if (err.networkError?.message === 'Unauthorized') {
-              client.onError();
-            }
-            return false;
-          },
-        }),
-        fetchExchange,
-      ],
+      exchanges: [cacheExchange, fetchExchange],
     }),
   );
 

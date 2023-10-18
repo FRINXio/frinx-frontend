@@ -3,6 +3,7 @@ import { CUIAutoComplete, Item } from 'chakra-ui-autocomplete';
 import React, { FC } from 'react';
 
 type Props = {
+  isList?: boolean;
   selectedTags: string[];
   availableItems?: string[] | null;
   isCreationDisabled?: boolean;
@@ -11,10 +12,17 @@ type Props = {
   tagText: string;
 };
 
+const splitAndTrimString = (inputString: string) => {
+  const stringParts = inputString.split(',');
+  const trimmedParts = stringParts.map((part: string) => part.trim());
+  return trimmedParts;
+};
+
 const SearchByTagInput: FC<Props> = ({
   selectedTags,
   onTagCreate,
   isCreationDisabled = false,
+  isList = false,
   onSelectionChange,
   tagText,
   availableItems,
@@ -25,21 +33,29 @@ const SearchByTagInput: FC<Props> = ({
     if (onTagCreate) {
       onTagCreate(label.value);
     }
+    if (isList) {
+      onSelectionChange([...selectedTags, ...splitAndTrimString(label.value)]);
+    }
   };
 
   const handleOnChange = (labels?: Item[]) => {
     onSelectionChange(labels?.map((label) => label.value));
   };
 
+  const placeholderText = isList ? 'Separate entries with comma' : 'Start typing...';
+
   return (
     // autocomplete lib has some weird styling at the bottom
-    <Box position="relative" paddingBottom={0}>
+    <Box position="relative" p={0}>
       <CUIAutoComplete
         label={tagText}
         labelStyleProps={{
           marginBottom: 0,
         }}
-        placeholder="Start typing..."
+        inputStyleProps={{
+          marginTop: 0,
+        }}
+        placeholder={placeholderText}
         onCreateItem={handleOnCreate}
         items={availableItems?.map((item) => ({ label: item, value: item })) ?? []}
         selectedItems={selectedTagList}

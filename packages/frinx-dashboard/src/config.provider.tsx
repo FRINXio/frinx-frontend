@@ -4,7 +4,7 @@ import { GlobalConfig } from './types';
 
 export const ConfigContext = createContext<GlobalConfig | null>(null);
 
-export function useConfigContext(): GlobalConfig {
+export function useConfig(): GlobalConfig {
   return unwrap(useContext(ConfigContext));
 }
 
