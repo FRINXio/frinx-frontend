@@ -1,4 +1,4 @@
-import { ResourceManagerApi, UniflowApi, UnistoreApi } from '@frinx/api';
+import { InventoryApi, UnistoreApi } from '@frinx/api';
 import { GammaAppProviderProps } from '@frinxio/gamma';
 import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useConfig } from './config.provider';
@@ -8,7 +8,7 @@ type GammaComponents = Omit<typeof import('@frinxio/gamma'), 'getGammaAppProvide
 };
 
 const GammaApp: VoidFunctionComponent = () => {
-  const { unistoreApiURL, uniflowApiURL, uniresourceApiURL } = useConfig();
+  const { unistoreApiURL, uniflowApiURL, inventoryApiURL, inventoryWsURL } = useConfig();
   const [components, setComponents] = useState<GammaComponents | null>(null);
   const [hasTransactionError, setHasTransactionError] = useState(false);
 
@@ -20,14 +20,10 @@ const GammaApp: VoidFunctionComponent = () => {
         GammaApp: App,
         GammaAppProvider: getGammaAppProvider({
           unistoreClient: UnistoreApi.create({ url: unistoreApiURL }, '').client,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          workflowManagerClient: UniflowApi.create({ url: uniflowApiURL, authContext }).client,
-          resourceManagerClient: ResourceManagerApi.create({ url: uniresourceApiURL }),
         }),
       });
     });
-  }, [uniflowApiURL, unistoreApiURL, uniresourceApiURL]);
+  }, [uniflowApiURL, unistoreApiURL]);
 
   if (components == null) {
     return null;
@@ -41,6 +37,8 @@ const GammaApp: VoidFunctionComponent = () => {
       onTransactionRefresh={() => {
         setHasTransactionError(false);
       }}
+      deviceInventoryClient={InventoryApi.create({ url: inventoryApiURL }).client}
+      wsUrl={inventoryWsURL}
     >
       <App />
     </GammaAppProvider>

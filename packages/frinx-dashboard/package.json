@@ -16,7 +16,7 @@
     "@frinx/shared": "^2.0.0",
     "@frinx/workflow-builder": "^2.0.0",
     "@frinx/workflow-ui": "^2.0.0",
-    "@frinxio/gamma": "0.0.30",
+    "@frinxio/gamma": "2.0.1",
     "@types/react": "17.0.65",
     "@types/react-dom": "18.2.7",
     "eventemitter3": "5.0.1",
