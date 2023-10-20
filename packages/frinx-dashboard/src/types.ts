@@ -1,5 +1,7 @@
 export type GlobalConfig = Readonly<{
   isAuthEnabled: boolean;
+  authClientId: string;
+  authRedirectURL: string;
   uniflowApiURL: string;
   uniconfigApiDocsURL: string;
   unistoreApiURL: string;
@@ -8,5 +10,6 @@ export type GlobalConfig = Readonly<{
   inventoryWsURL: string;
   uniresourceApiURL: string;
   uniflowApiDocsURL: string;
+  MSALAuthority: string;
   commitHash: string;
 }>;

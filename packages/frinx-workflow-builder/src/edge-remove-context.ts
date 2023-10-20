@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useMemo } from 'react';
+import { createContext, useContext } from 'react';
 import { unwrap } from '@frinx/shared';
 
 type EdgeRemoveContextProps = {
@@ -12,11 +12,3 @@ export function useEdgeRemoveContext(): EdgeRemoveContextProps {
 
   return props;
 }
-
-export const EdgeRemoveProvider: FC<EdgeRemoveContextProps> = ({ children, removeEdge }) => {
-  return (
-    <EdgeRemoveContext.Provider value={useMemo(() => ({ removeEdge }), [removeEdge])}>
-      {children}
-    </EdgeRemoveContext.Provider>
-  );
-};

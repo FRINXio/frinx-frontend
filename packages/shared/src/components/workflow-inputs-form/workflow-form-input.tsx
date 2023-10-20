@@ -38,6 +38,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
   const isNumber = parsedInputParameters?.[inputParameterKey]?.type === 'int';
   const isJson = parsedInputParameters?.[inputParameterKey]?.type === 'json';
   const isMultiSelect = parsedInputParameters?.[inputParameterKey]?.type === 'multiselect';
+
   const isInput = !isToggle && !isTextarea && !isSelect && !isNumber && !isJson && !isMultiSelect && !isList;
 
   return (

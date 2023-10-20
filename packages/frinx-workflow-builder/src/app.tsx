@@ -13,7 +13,7 @@ import {
 } from '@frinx/shared';
 import { produce } from 'immer';
 import { zip } from 'lodash';
-import React, { useCallback, useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import ReactFlow, {
   addEdge,
   applyEdgeChanges,
@@ -41,7 +41,7 @@ import WorkflowForm from './components/workflow-form/workflow-form';
 import BaseNode from './components/workflow-nodes/base-node';
 import DecisionNode from './components/workflow-nodes/decision-node';
 import StartEndNode from './components/workflow-nodes/start-end-node';
-import { EdgeRemoveProvider } from './edge-remove-provider';
+import { EdgeRemoveContext } from './edge-remove-context';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
 import {
@@ -244,14 +244,19 @@ const App: VoidFunctionComponent<Props> = ({
     );
   };
 
-  const handleRemoveEdge = (id: string) => {
-    setElements((els) => {
-      return {
-        ...els,
-        edges: applyEdgeChanges([{ id, type: 'remove' }], els.edges),
-      };
-    });
-  };
+  const removeEdgeContextValue = useMemo(
+    () => ({
+      removeEdge: (id: string) => {
+        setElements((els) => {
+          return {
+            ...els,
+            edges: applyEdgeChanges([{ id, type: 'remove' }], els.edges),
+          };
+        });
+      },
+    }),
+    [],
+  );
 
   const handleOnWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>, isWorkflowChanged: boolean) => {
     onWorkflowChange(editedWorkflow);
@@ -434,7 +439,7 @@ const App: VoidFunctionComponent<Props> = ({
           />
         </Box>
         <Box minHeight="60vh" maxHeight="100vh" position="relative">
-          <EdgeRemoveProvider removeEdge={handleRemoveEdge}>
+          <EdgeRemoveContext.Provider value={removeEdgeContextValue}>
             <ReactFlow
               nodes={elements.nodes}
               edges={elements.edges}
@@ -451,7 +456,7 @@ const App: VoidFunctionComponent<Props> = ({
               <MiniMap />
               <Controls />
             </ReactFlow>
-          </EdgeRemoveProvider>
+          </EdgeRemoveContext.Provider>
           {selectedTask?.task && selectedTask?.actionType === 'edit' && (
             <RightDrawer>
               <Box px={6} py={10}>

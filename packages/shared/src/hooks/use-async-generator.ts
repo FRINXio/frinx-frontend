@@ -44,7 +44,7 @@ export default function useAsyncGenerator<T>({
   useEffect(() => {
     const controller = new AbortController();
     (async () => {
-      const loadDataFn = fn(controller);
+      const loadDataFn = await fn(controller);
       // we have to use async iterator here, so we turn off this rule
       // eslint-disable-next-line no-restricted-syntax
       for await (const data of asyncGenerator<T>({

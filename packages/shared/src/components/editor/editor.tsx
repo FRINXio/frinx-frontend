@@ -53,7 +53,9 @@ const Editor: FC<EditorProps> = ({
     editor.getModel()?.updateOptions({ tabSize: 2, insertSpaces: false });
     updateEditorLayout();
 
-    window.addEventListener('resize', updateEditorLayout);
+    window.addEventListener('resize', () => {
+      updateEditorLayout();
+    });
   };
 
   return (
