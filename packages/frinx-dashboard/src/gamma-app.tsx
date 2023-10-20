@@ -21,9 +21,6 @@ const GammaApp: VoidFunctionComponent = () => {
         GammaApp: App,
         GammaAppProvider: getGammaAppProvider({
           unistoreClient: UnistoreApi.create({ url: unistoreApiURL, authContext }, '').client,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          workflowManagerClient: UniflowApi.create({ url: uniflowApiURL, authContext }).client,
         }),
       });
     });
