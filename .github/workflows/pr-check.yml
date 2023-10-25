@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - story-new-graphql-proxy
 jobs:
   pr-check:
     runs-on: ubuntu-latest
