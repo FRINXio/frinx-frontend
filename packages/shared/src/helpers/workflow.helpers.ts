@@ -129,12 +129,10 @@ export function createEmptyWorkflow(): Pick<
   | 'tasks'
   | 'inputParameters'
   | 'labels'
-  // | 'ownerEmail'
   | 'restartable'
   | 'timeoutPolicy'
   | 'timeoutSeconds'
   | 'outputParameters'
-// | 'variables'
 > {
   return {
     id: '',
