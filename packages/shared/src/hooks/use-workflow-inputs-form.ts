@@ -9,24 +9,24 @@ import {
 
 type HookProps = {
   workflow?:
-  | {
-    correlationId: string;
-    description: string | undefined;
-    name: string;
-    version: number;
-    inputParameters: (string | null)[];
-    outputParameters: unknown;
-    restartable: boolean;
-    ownerEmail: string;
-    schemaVersion: number;
-    timeoutPolicy: string;
-    timeoutSeconds: unknown;
-    variables: unknown;
-    tasks: never[];
-  }
-  | ClientWorkflow
-  | Workflow
-  | null;
+    | {
+        correlationId: string;
+        description: string | undefined;
+        name: string;
+        version: number;
+        inputParameters: (string | null)[];
+        outputParameters: unknown;
+        restartable: boolean;
+        ownerEmail: string;
+        schemaVersion: number;
+        timeoutPolicy: string;
+        timeoutSeconds: unknown;
+        variables: unknown;
+        tasks: never[];
+      }
+    | ClientWorkflow
+    | Workflow
+    | null;
   initialValues?: Record<string, string | number | boolean | string[]> | null;
   onSubmit: (values: Record<string, string | number | boolean | string[]>) => void;
 };

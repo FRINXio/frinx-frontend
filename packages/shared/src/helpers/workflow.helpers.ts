@@ -12,20 +12,20 @@ export type InputParameter = Record<
 export const getDynamicInputParametersFromWorkflow = (
   workflow?:
     | {
-      correlationId: string;
-      description: string | undefined;
-      name: string;
-      version: number;
-      inputParameters: (string | null)[];
-      outputParameters: unknown;
-      restartable: boolean;
-      ownerEmail: string;
-      schemaVersion: number;
-      timeoutPolicy: string;
-      timeoutSeconds: unknown;
-      variables: unknown;
-      tasks: never[];
-    }
+        correlationId: string;
+        description: string | undefined;
+        name: string;
+        version: number;
+        inputParameters: (string | null)[];
+        outputParameters: unknown;
+        restartable: boolean;
+        ownerEmail: string;
+        schemaVersion: number;
+        timeoutPolicy: string;
+        timeoutSeconds: unknown;
+        variables: unknown;
+        tasks: never[];
+      }
     | Workflow
     | ClientWorkflow
     | null,
@@ -136,7 +136,7 @@ export function createEmptyWorkflow(): Pick<
   | 'timeoutPolicy'
   | 'timeoutSeconds'
   | 'outputParameters'
-// | 'variables'
+  // | 'variables'
 > {
   return {
     id: '',
