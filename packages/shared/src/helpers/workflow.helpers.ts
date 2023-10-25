@@ -9,26 +9,24 @@ export type InputParameter = Record<
   { value: string; description: string; type: string; options?: string[] | null }
 >;
 
+type ModalWorkflow = {
+  correlationId: string;
+  description: string | undefined;
+  name: string;
+  version: number;
+  inputParameters: (string | null)[];
+  outputParameters: unknown;
+  restartable: boolean;
+  ownerEmail: string;
+  schemaVersion: number;
+  timeoutPolicy: string;
+  timeoutSeconds: unknown;
+  variables: unknown;
+  tasks: never[];
+};
+
 export const getDynamicInputParametersFromWorkflow = (
-  workflow?:
-    | {
-        correlationId: string;
-        description: string | undefined;
-        name: string;
-        version: number;
-        inputParameters: (string | null)[];
-        outputParameters: unknown;
-        restartable: boolean;
-        ownerEmail: string;
-        schemaVersion: number;
-        timeoutPolicy: string;
-        timeoutSeconds: unknown;
-        variables: unknown;
-        tasks: never[];
-      }
-    | Workflow
-    | ClientWorkflow
-    | null,
+  workflow?: ModalWorkflow | Workflow | ClientWorkflow | null,
 ): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});
@@ -136,7 +134,7 @@ export function createEmptyWorkflow(): Pick<
   | 'timeoutPolicy'
   | 'timeoutSeconds'
   | 'outputParameters'
-  // | 'variables'
+// | 'variables'
 > {
   return {
     id: '',
