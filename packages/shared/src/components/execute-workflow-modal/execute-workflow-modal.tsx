@@ -20,7 +20,24 @@ import { useWorkflowInputsForm } from '../../hooks';
 import WorkflowInputsForm from '../workflow-inputs-form/workflow-inputs-form';
 
 type Props = {
-  workflow: Workflow | ClientWorkflow;
+  workflow:
+  | Workflow
+  | ClientWorkflow
+  | {
+    correlationId: string;
+    description: string | undefined;
+    name: string;
+    version: number;
+    inputParameters: (string | null)[];
+    outputParameters: unknown;
+    restartable: boolean;
+    ownerEmail: string;
+    schemaVersion: number;
+    timeoutPolicy: string;
+    timeoutSeconds: unknown;
+    variables: unknown;
+    tasks: never[];
+  };
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (inputParameters: Record<string, unknown>) => Promise<string | void | null> | null;

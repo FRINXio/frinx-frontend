@@ -8,7 +8,25 @@ import {
 } from '../helpers/workflow.helpers';
 
 type HookProps = {
-  workflow?: ClientWorkflow | Workflow | null;
+  workflow?:
+  | {
+    correlationId: string;
+    description: string | undefined;
+    name: string;
+    version: number;
+    inputParameters: (string | null)[];
+    outputParameters: unknown;
+    restartable: boolean;
+    ownerEmail: string;
+    schemaVersion: number;
+    timeoutPolicy: string;
+    timeoutSeconds: unknown;
+    variables: unknown;
+    tasks: never[];
+  }
+  | ClientWorkflow
+  | Workflow
+  | null;
   initialValues?: Record<string, string | number | boolean | string[]> | null;
   onSubmit: (values: Record<string, string | number | boolean | string[]>) => void;
 };
@@ -25,7 +43,7 @@ type HookReturn = {
 };
 
 const useWorkflowInputsForm = ({ initialValues, workflow, onSubmit }: HookProps): HookReturn => {
-  const parsedInputParameters = parseInputParameters(workflow?.inputParameters || []);
+  const parsedInputParameters = parseInputParameters(workflow?.inputParameters ?? []);
   const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
   const parsedInitialValues = getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters);
   const { values, handleSubmit, submitForm, isSubmitting, setSubmitting, setFieldValue } = useFormik<

@@ -32,12 +32,14 @@ import {
 
 const BLUEPRINTS_QUERY = gql`
   query Blueprints {
-    blueprints {
-      edges {
-        node {
-          id
-          createdAt
-          name
+    deviceInventory {
+      blueprints {
+        edges {
+          node {
+            id
+            createdAt
+            name
+          }
         }
       }
     }
@@ -45,9 +47,11 @@ const BLUEPRINTS_QUERY = gql`
 `;
 const DELETE_BLUEPRINT_MUTATION = gql`
   mutation deleteBlueprint($id: String!) {
-    deleteBlueprint(id: $id) {
-      blueprint {
-        id
+    deviceInventory {
+      deleteBlueprint(id: $id) {
+        blueprint {
+          id
+        }
       }
     }
   }
@@ -69,7 +73,7 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
   if (error) {
     return <div>{error.message}</div>;
   }
-  const { blueprints } = data;
+  const { blueprints } = data.deviceInventory;
 
   const handleDeleteBtnClick = (id: string) => {
     deleteBlueprint({
@@ -126,7 +130,6 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
                       data-cy={`device-blueprint-edit-${blueprint.name}`}
                       aria-label="edit"
                       size="sm"
-                      variant="unstyled"
                       icon={<Icon size={30} as={FeatherIcon} icon="edit" />}
                       as={Link}
                       to={`${blueprint.id}/edit`}

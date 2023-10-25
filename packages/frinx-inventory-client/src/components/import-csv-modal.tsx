@@ -29,18 +29,22 @@ import {
 
 const UPLOAD_FILE_MUTATION = gql`
   mutation UploadFile($input: CSVImportInput!) {
-    importCSV(input: $input) {
-      isOk
+    deviceInventory {
+      importCSV(input: $input) {
+        isOk
+      }
     }
   }
 `;
 const ZONES_QUERY = gql`
   query ZonesImport {
-    zones {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      zones {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -113,7 +117,7 @@ const ImportCSVModal: VoidFunctionComponent<Props> = ({ onClose }) => {
     return null;
   }
 
-  const zones = data.zones.edges.map((e) => e.node);
+  const zones = data.deviceInventory.zones.edges.map((e) => e.node);
 
   return (
     <Modal isOpen onClose={onClose} size="5xl" closeOnOverlayClick={false}>

@@ -11,46 +11,29 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
-import { jsonParse, Workflow } from '@frinx/shared';
+import { jsonParse } from '@frinx/shared';
 import React, { VoidFunctionComponent } from 'react';
 import { gql, useQuery } from 'urql';
-import { convertGraphqlToClientWorkflow } from '../../helpers/convert';
+import { convertGraphqlToClientWorkflow, ModalWorkflow } from '../../helpers/convert';
 import { ModalWorkflowsQuery } from '../../__generated__/graphql';
 
 const MODAL_WORKFLOWS_QUERY = gql`
   query ModalWorkflows {
-    workflows {
-      edges {
-        node {
-          id
-          name
-          description
-          version
-          createdAt
-          updatedAt
-          createdBy
-          updatedBy
-          tasks
-          hasSchedule
-          inputParameters
-          outputParameters {
-            key
-            value
-          }
-          restartable
-          timeoutSeconds
-          timeoutPolicy
-          ownerEmail
-          schemaVersion
-          variables
-        }
-      }
-      totalCount
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
+    conductor {
+      getAll {
+        name
+        description
+        version
+        createdBy
+        updatedBy
+        inputParameters
+        outputParameters
+        restartable
+        timeoutSeconds
+        timeoutPolicy
+        ownerEmail
+        schemaVersion
+        variables
       }
     }
   }
@@ -58,7 +41,7 @@ const MODAL_WORKFLOWS_QUERY = gql`
 
 type Props = {
   onClose: () => void;
-  onWorkflowSelect: (workflow: Workflow) => void;
+  onWorkflowSelect: (workflow: ModalWorkflow) => void;
 };
 
 const WorkflowListModal: VoidFunctionComponent<Props> = ({ onClose, onWorkflowSelect }) => {
@@ -70,7 +53,7 @@ const WorkflowListModal: VoidFunctionComponent<Props> = ({ onClose, onWorkflowSe
     return null;
   }
 
-  const workflows: Workflow[] = convertGraphqlToClientWorkflow(workflowsData);
+  const workflows = convertGraphqlToClientWorkflow(workflowsData);
 
   const labeledWorkflows = workflows.filter((wf) => {
     const labels = jsonParse<{ labels: string[] }>(wf.description)?.labels ?? [];

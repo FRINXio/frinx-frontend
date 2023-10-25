@@ -9,7 +9,27 @@ export type InputParameter = Record<
   { value: string; description: string; type: string; options?: string[] | null }
 >;
 
-export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | ClientWorkflow | null): string[] => {
+export const getDynamicInputParametersFromWorkflow = (
+  workflow?:
+    | {
+      correlationId: string;
+      description: string | undefined;
+      name: string;
+      version: number;
+      inputParameters: (string | null)[];
+      outputParameters: unknown;
+      restartable: boolean;
+      ownerEmail: string;
+      schemaVersion: number;
+      timeoutPolicy: string;
+      timeoutSeconds: unknown;
+      variables: unknown;
+      tasks: never[];
+    }
+    | Workflow
+    | ClientWorkflow
+    | null,
+): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});
   const match = stringifiedWorkflow.match(REGEX)?.map((path) => path.replace('workflow.input.', ''));
@@ -30,12 +50,13 @@ export const jsonParse = <T = { description: string }>(json?: string | null): T 
   }
 };
 
-export function parseInputParameters(inputParameters?: string[] | null): InputParameter | null {
+export function parseInputParameters(inputParameters?: (string | null)[] | null): InputParameter | null {
   if (inputParameters == null || inputParameters.length === 0) {
     return null;
   }
 
   const parsedInputParameters: InputParameter[] = inputParameters
+    .filter(omitNullValue)
     .map((v) => jsonParse<InputParameter>(v))
     .filter(omitNullValue);
 
@@ -115,7 +136,7 @@ export function createEmptyWorkflow(): Pick<
   | 'timeoutPolicy'
   | 'timeoutSeconds'
   | 'outputParameters'
-  // | 'variables'
+// | 'variables'
 > {
   return {
     id: '',

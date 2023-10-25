@@ -10,15 +10,19 @@ import {
 
 const CREATE_TRANSACTION_MUTATION = gql`
   mutation createTransaction($deviceId: String!) {
-    createTransaction(deviceId: $deviceId) {
-      transactionId
+    deviceInventory {
+      createTransaction(deviceId: $deviceId) {
+        transactionId
+      }
     }
   }
 `;
 const CLOSE_TRANSACTION_MUTATION = gql`
   mutation closeTransaction($deviceId: String!, $transactionId: String!) {
-    closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
-      isOk
+    deviceInventory {
+      closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
+        isOk
+      }
     }
   }
 `;
@@ -97,9 +101,9 @@ export const useTransactionId = (deviceId: string): UseTransactionId => {
           throw new Error(error.toString());
         }
 
-        if (data?.createTransaction.transactionId != null) {
-          setTransactionIdData({ deviceId, transactionId: data.createTransaction.transactionId });
-          setTranscationData(deviceId, data.createTransaction.transactionId);
+        if (data?.deviceInventory.createTransaction.transactionId != null) {
+          setTransactionIdData({ deviceId, transactionId: data.deviceInventory.createTransaction.transactionId });
+          setTranscationData(deviceId, data.deviceInventory.createTransaction.transactionId);
         }
       });
     }
