@@ -21,14 +21,16 @@ import CreateDeviceForm from './create-device-form';
 
 const ADD_DEVICE_MUTATION = gql`
   mutation AddDevice($input: AddDeviceInput!) {
-    addDevice(input: $input) {
-      device {
-        id
-        name
-        isInstalled
-        zone {
+    deviceInventory {
+      addDevice(input: $input) {
+        device {
           id
           name
+          isInstalled
+          zone {
+            id
+            name
+          }
         }
       }
     }
@@ -36,11 +38,13 @@ const ADD_DEVICE_MUTATION = gql`
 `;
 const ZONES_QUERY = gql`
   query Zones {
-    zones {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      zones {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -48,12 +52,14 @@ const ZONES_QUERY = gql`
 `;
 const BLUEPRINTS_QUERY = gql`
   query DeviceBlueprints {
-    blueprints {
-      edges {
-        node {
-          id
-          name
-          template
+    deviceInventory {
+      blueprints {
+        edges {
+          node {
+            id
+            name
+            template
+          }
         }
       }
     }
@@ -62,12 +68,14 @@ const BLUEPRINTS_QUERY = gql`
 
 const CREATE_LABEL = gql`
   mutation CreateLabel($input: CreateLabelInput!) {
-    newLabel: createLabel(input: $input) {
-      label {
-        id
-        name
-        createdAt
-        updatedAt
+    deviceInventory {
+      newLabel: createLabel(input: $input) {
+        label {
+          id
+          name
+          createdAt
+          updatedAt
+        }
       }
     }
   }
@@ -75,11 +83,13 @@ const CREATE_LABEL = gql`
 
 const LABELS_QUERY = gql`
   query Labels {
-    labels {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -129,7 +139,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
 
   const handleOnCreateLabel = async (labelName: string): Promise<Label | null> => {
     const result = await createLabel({ input: { name: labelName } });
-    return result.data?.newLabel.label ?? null;
+    return result.data?.deviceInventory.newLabel.label ?? null;
   };
 
   const handleSubmit = (values: FormValues) => {
@@ -145,7 +155,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
           error?.message ===
           '[GraphQL] There is a unique constraint violation, a new device cannot be added with this name.'
         ) {
-          setDeviceNameError('Device with this name alredy exists. Please select different name.');
+          setDeviceNameError('Device with this name alredy exists. Please enter a different name.');
         }
         if (error != null) {
           throw new Error('Problem with device addition');
@@ -164,10 +174,10 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  const labels = labelsData?.labels.edges ?? [];
+  const labels = labelsData?.deviceInventory.labels.edges ?? [];
 
-  const zones = zonesData?.zones.edges ?? [];
-  const blueprints = blueprintsData?.blueprints.edges ?? [];
+  const zones = zonesData?.deviceInventory.zones.edges ?? [];
+  const blueprints = blueprintsData?.deviceInventory.blueprints.edges ?? [];
 
   if (isFetchingZones && isFetchingBlueprints) {
     return null;

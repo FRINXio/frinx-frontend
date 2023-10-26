@@ -31,9 +31,9 @@ import { ServiceState, serviceStateOptions, DeviceSizeEnum, deviceSizeOptions } 
 
 type Props = {
   isSubmitting: boolean;
-  zones: ZonesQuery['zones']['edges'];
-  labels: LabelsQuery['labels']['edges'];
-  blueprints: DeviceBlueprintsQuery['blueprints']['edges'];
+  zones: ZonesQuery['deviceInventory']['zones']['edges'];
+  labels: LabelsQuery['deviceInventory']['labels']['edges'];
+  blueprints: DeviceBlueprintsQuery['deviceInventory']['blueprints']['edges'];
   onFormSubmit: (device: FormValues) => void;
   onLabelCreate: (labelName: string) => Promise<Label | null>;
   deviceNameError: string | null;
@@ -221,7 +221,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           />
         </FormControl>
 
-        <FormControl id="deviceSize" my={6} isInvalid={errors.deviceSize !== undefined}>
+        <FormControl id="deviceSize" isInvalid={errors.deviceSize !== undefined}>
           <FormLabel>Device size</FormLabel>
           <Select
             data-cy="add-device-size"

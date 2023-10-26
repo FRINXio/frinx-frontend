@@ -4,7 +4,7 @@ import React, { FC } from 'react';
 import { LabelsQuery } from '../__generated__/graphql';
 
 type Props = {
-  items: LabelsQuery['labels']['edges'];
+  items: LabelsQuery['deviceInventory']['labels']['edges'];
   selectedLabels: Item[];
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: Item[]) => void;

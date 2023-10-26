@@ -23,25 +23,27 @@ import EditDeviceForm from './edit-device-form';
 
 const DEVICE_QUERY = gql`
   query Device($id: ID!) {
-    device: node(id: $id) {
-      id
-      ... on Device {
-        name
-        serviceState
-        model
-        vendor
-        address
-        deviceSize
-        mountParameters
-        zone {
-          id
+    deviceInventory {
+      device: node(id: $id) {
+        id
+        ... on Device {
           name
-        }
-        labels {
-          edges {
-            node {
-              id
-              name
+          serviceState
+          model
+          vendor
+          address
+          deviceSize
+          mountParameters
+          zone {
+            id
+            name
+          }
+          labels {
+            edges {
+              node {
+                id
+                name
+              }
             }
           }
         }
@@ -52,17 +54,19 @@ const DEVICE_QUERY = gql`
 
 const UPDATE_DEVICE_MUTATION = gql`
   mutation UpdateDevice($id: String!, $input: UpdateDeviceInput!) {
-    updateDevice(id: $id, input: $input) {
-      device {
-        id
-        name
-        model
-        vendor
-        address
-        isInstalled
-        zone {
+    deviceInventory {
+      updateDevice(id: $id, input: $input) {
+        device {
           id
           name
+          model
+          vendor
+          address
+          isInstalled
+          zone {
+            id
+            name
+          }
         }
       }
     }
@@ -71,11 +75,13 @@ const UPDATE_DEVICE_MUTATION = gql`
 
 const ZONES_QUERY = gql`
   query Zones {
-    zones {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      zones {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -84,12 +90,14 @@ const ZONES_QUERY = gql`
 
 const CREATE_LABEL = gql`
   mutation CreateLabel($input: CreateLabelInput!) {
-    newLabel: createLabel(input: $input) {
-      label {
-        id
-        name
-        createdAt
-        updatedAt
+    deviceInventory {
+      newLabel: createLabel(input: $input) {
+        label {
+          id
+          name
+          createdAt
+          updatedAt
+        }
       }
     }
   }
@@ -97,11 +105,13 @@ const CREATE_LABEL = gql`
 
 const LABELS_QUERY = gql`
   query Labels {
-    labels {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -145,7 +155,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
       },
     });
 
-    return result.data?.newLabel?.label ?? null;
+    return result.data?.deviceInventory.newLabel?.label ?? null;
   };
 
   const handleOnUpdateDevice = (values: FormValues) => {
@@ -184,11 +194,11 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  if (deviceData == null || deviceData?.device == null) {
+  if (deviceData == null || deviceData?.deviceInventory.device == null) {
     return null;
   }
 
-  const { device } = deviceData;
+  const { device } = deviceData.deviceInventory;
 
   if (device.__typename !== 'Device') {
     return null;
@@ -215,8 +225,8 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
     deviceSize: device.deviceSize,
   };
 
-  const mappedLabels = labels?.labels.edges ?? [];
-  const mappedZones = zones?.zones.edges ?? [];
+  const mappedLabels = labels?.deviceInventory.labels.edges ?? [];
+  const mappedZones = zones?.deviceInventory.zones.edges ?? [];
 
   return (
     <Container maxWidth={1280}>

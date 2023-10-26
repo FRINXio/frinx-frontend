@@ -31,7 +31,7 @@ type OrderBy = {
 
 type Props = {
   orderBy: OrderBy;
-  devices: DevicesQuery['devices']['edges'];
+  devices: DevicesQuery['deviceInventory']['devices']['edges'];
   selectedDevices: Set<string>;
   areSelectedAll: boolean;
   installLoadingMap: Record<string, boolean>;

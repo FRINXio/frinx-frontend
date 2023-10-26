@@ -11,12 +11,16 @@ import {
 
 const TERMINAL_SUBSCRIPTION = gql`
   subscription Terminal($sessionId: String!, $command: String, $trigger: Int) {
-    uniconfigShell(sessionId: $sessionId, input: $command, trigger: $trigger)
+    deviceInventory {
+      uniconfigShell(sessionId: $sessionId, input: $command, trigger: $trigger)
+    }
   }
 `;
 const TERMINAL_SESSION_ID_QUERY = gql`
   query SessionId {
-    uniconfigShellSession
+    deviceInventory {
+      uniconfigShellSession
+    }
   }
 `;
 
@@ -29,9 +33,9 @@ const UniconfigShell: VoidFunctionComponent = () => {
   });
   const [{ data: terminalData }] = useSubscription<TerminalSubscriptionVariables, TerminalSubscription>({
     query: TERMINAL_SUBSCRIPTION,
-    pause: sessionIdData?.uniconfigShellSession == null,
+    pause: sessionIdData?.deviceInventory.uniconfigShellSession == null,
     variables: {
-      sessionId: sessionIdData?.uniconfigShellSession,
+      sessionId: sessionIdData?.deviceInventory.uniconfigShellSession,
       command,
       trigger,
     },
@@ -40,8 +44,8 @@ const UniconfigShell: VoidFunctionComponent = () => {
   // a little hack to force re-render when we get the same character in sequence
   // React wouldn't re-render, because a === a, that's why we wrap it in object and send useless `trigger` (see `setCommand` callback fn)
   const commandObject = useMemo(
-    () => ({ command: terminalData?.uniconfigShell ?? '', trigger }),
-    [terminalData?.uniconfigShell, trigger],
+    () => ({ command: terminalData?.deviceInventory.uniconfigShell ?? '', trigger }),
+    [terminalData?.deviceInventory.uniconfigShell, trigger],
   );
 
   useTerm({

@@ -1,7 +1,6 @@
 import { useFormik } from 'formik';
 import React, { FC, useMemo } from 'react';
 import * as yup from 'yup';
-
 import { Item } from 'chakra-ui-autocomplete';
 import {
   Button,
@@ -36,8 +35,8 @@ type FormLabel = { id: string; name: string };
 export type FormDevice = Device & { labels: FormLabel[] };
 
 type Props = {
-  labels: LabelsQuery['labels']['edges'];
-  zones: ZonesQuery['zones']['edges']; // eslint-disable-line react/no-unused-prop-types
+  labels: LabelsQuery['deviceInventory']['labels']['edges'];
+  zones: ZonesQuery['deviceInventory']['zones']['edges']; // eslint-disable-line react/no-unused-prop-types
   device: FormDevice;
   onUpdate: (values: FormValues) => void;
   onLabelCreate: (label: string) => Promise<Label | null>;

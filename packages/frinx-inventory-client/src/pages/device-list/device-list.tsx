@@ -17,7 +17,6 @@ import {
   ExecuteWorkflowModal,
   unwrap,
   useNotifications,
-  Workflow,
   usePagination,
   Pagination,
   ConfirmDeleteModal,
@@ -27,6 +26,7 @@ import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'reac
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
+import { ModalWorkflow } from '../../helpers/convert';
 import {
   BulkInstallDevicesMutation,
   BulkInstallDevicesMutationVariables,
@@ -59,67 +59,75 @@ const DEVICES_QUERY = gql`
     $last: Int
     $before: String
   ) {
-    devices(
-      filter: { labels: $labels, deviceName: $deviceName }
-      orderBy: $orderBy
-      first: $first
-      after: $after
-      last: $last
-      before: $before
-    ) {
-      edges {
-        node {
-          id
-          name
-          createdAt
-          isInstalled
-          serviceState
-          zone {
+    deviceInventory {
+      devices(
+        filter: { labels: $labels, deviceName: $deviceName }
+        orderBy: $orderBy
+        first: $first
+        after: $after
+        last: $last
+        before: $before
+      ) {
+        edges {
+          node {
             id
             name
+            createdAt
+            isInstalled
+            serviceState
+            zone {
+              id
+              name
+            }
           }
         }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
       }
     }
   }
 `;
 const INSTALL_DEVICE_MUTATION = gql`
   mutation InstallDevice($id: String!) {
-    installDevice(id: $id) {
-      device {
-        id
-        createdAt
-        isInstalled
-        serviceState
+    deviceInventory {
+      installDevice(id: $id) {
+        device {
+          id
+          createdAt
+          isInstalled
+          serviceState
+        }
       }
     }
   }
 `;
 const UNINSTALL_DEVICE_MUTATION = gql`
   mutation UninstallDevice($id: String!) {
-    uninstallDevice(id: $id) {
-      device {
-        id
-        createdAt
-        isInstalled
-        serviceState
+    deviceInventory {
+      uninstallDevice(id: $id) {
+        device {
+          id
+          createdAt
+          isInstalled
+          serviceState
+        }
       }
     }
   }
 `;
 const LABELS_QUERY = gql`
   query FilterLabels {
-    labels {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -127,9 +135,11 @@ const LABELS_QUERY = gql`
 `;
 const DELETE_DEVICE_MUTATION = gql`
   mutation DeleteDevice($deviceId: String!) {
-    deleteDevice(id: $deviceId) {
-      device {
-        id
+    deviceInventory {
+      deleteDevice(id: $deviceId) {
+        device {
+          id
+        }
       }
     }
   }
@@ -137,17 +147,21 @@ const DELETE_DEVICE_MUTATION = gql`
 
 const BULK_INSTALL_DEVICES_MUTATION = gql`
   mutation BulkInstallDevices($input: BulkInstallDevicesInput!) {
-    bulkInstallDevices(input: $input) {
-      installedDevices {
-        id
+    deviceInventory {
+      bulkInstallDevices(input: $input) {
+        installedDevices {
+          id
+        }
       }
     }
   }
 `;
 
 const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
-  mutation ExecuteModalWorkflowByName($input: ExecuteWorkflowByName!) {
-    executeWorkflowByName(input: $input)
+  mutation ExecuteModalWorkflowByName($input: StartWorkflowRequest_Input) {
+    conductor {
+      startWorkflow(input: $input)
+    }
   }
 `;
 
@@ -198,7 +212,7 @@ const DeviceList: VoidFunctionComponent = () => {
     BULK_INSTALL_DEVICES_MUTATION,
   );
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
@@ -231,7 +245,7 @@ const DeviceList: VoidFunctionComponent = () => {
       id: deviceId,
     })
       .then((res) => {
-        if (res.data?.uninstallDevice.device.isInstalled === false) {
+        if (res.data?.deviceInventory.uninstallDevice.device.isInstalled === false) {
           addToastNotification({
             type: 'success',
             title: 'Success',
@@ -258,19 +272,17 @@ const DeviceList: VoidFunctionComponent = () => {
 
   const deleteDevices = (devicesId: string[]) => {
     return Promise.allSettled(
-      [...devicesId].map((deviceId: string) => {
-        return deleteDevice({
+      [...devicesId].map(async (deviceId: string) => {
+        const res = await deleteDevice({
           deviceId,
-        }).then((res) => {
-          if (res.data?.deleteDevice) {
-            return res.data.deleteDevice.device?.id;
-          }
-          if (res.error) {
-            throw new Error(res.error?.message);
-          }
-
-          return null;
         });
+        if (res.data?.deviceInventory.deleteDevice) {
+          return res.data.deviceInventory.deleteDevice.device?.id;
+        }
+        if (res.error) {
+          throw new Error(res.error?.message);
+        }
+        return null;
       }),
     )
       .then((res) => {
@@ -313,7 +325,7 @@ const DeviceList: VoidFunctionComponent = () => {
       id: deviceId,
     })
       .then((res) => {
-        if (res.data?.installDevice.device.isInstalled === true) {
+        if (res.data?.deviceInventory.installDevice.device.isInstalled === true) {
           addToastNotification({
             type: 'success',
             title: 'Success',
@@ -363,7 +375,7 @@ const DeviceList: VoidFunctionComponent = () => {
           throw new Error(res.error?.message ?? 'Problem with bulk installation of devices');
         }
 
-        if (res.data?.bulkInstallDevices.installedDevices.length === 0) {
+        if (res.data?.deviceInventory.bulkInstallDevices.installedDevices.length === 0) {
           throw new Error('No devices were installed');
         }
 
@@ -434,7 +446,9 @@ const DeviceList: VoidFunctionComponent = () => {
   const handleSelectionOfAllDevices = (checked: boolean) => {
     if (checked) {
       if (deviceData != null) {
-        const devicesId = deviceData.devices.edges.filter(({ node }) => !node.isInstalled).map(({ node }) => node.id);
+        const devicesId = deviceData.deviceInventory.devices.edges
+          .filter(({ node }) => !node.isInstalled)
+          .map(({ node }) => node.id);
         setSelectedDevices(new Set(devicesId));
       }
     } else {
@@ -448,7 +462,7 @@ const DeviceList: VoidFunctionComponent = () => {
     setDeviceNameFilter(searchText);
   };
 
-  const handleWorkflowSelect = (wf: Workflow) => {
+  const handleWorkflowSelect = (wf: ModalWorkflow) => {
     setIsSendingToWorkflows(false);
     setSelectedWorkflow(wf);
   };
@@ -465,14 +479,14 @@ const DeviceList: VoidFunctionComponent = () => {
 
     return executeWorkflow({
       input: {
-        workflowName: selectedWorkflow.name,
-        workflowVersion: selectedWorkflow.version,
-        inputParameters: JSON.stringify(values),
+        name: selectedWorkflow.name,
+        version: selectedWorkflow.version,
+        input: values,
       },
     })
       .then((res) => {
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.data?.executeWorkflowByName;
+        return res.data?.conductor.startWorkflow;
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
@@ -480,9 +494,9 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
-  const labels = labelsData?.labels?.edges ?? [];
+  const labels = labelsData?.deviceInventory.labels?.edges ?? [];
   const areSelectedAll =
-    deviceData?.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
+    deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
 
   return (
     <>
@@ -603,7 +617,7 @@ const DeviceList: VoidFunctionComponent = () => {
               </Box>
               <DeviceTable
                 data-cy="device-table"
-                devices={deviceData?.devices.edges}
+                devices={deviceData?.deviceInventory.devices.edges}
                 areSelectedAll={areSelectedAll}
                 onSelectAll={handleSelectionOfAllDevices}
                 selectedDevices={selectedDevices}
@@ -616,10 +630,10 @@ const DeviceList: VoidFunctionComponent = () => {
                 onDeviceSelection={handleDeviceSelection}
               />
               <Pagination
-                onPrevious={previousPage(deviceData.devices.pageInfo.startCursor)}
-                onNext={nextPage(deviceData.devices.pageInfo.endCursor)}
-                hasNextPage={deviceData.devices.pageInfo.hasNextPage}
-                hasPreviousPage={deviceData.devices.pageInfo.hasPreviousPage}
+                onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}
+                onNext={nextPage(deviceData.deviceInventory.devices.pageInfo.endCursor)}
+                hasNextPage={deviceData.deviceInventory.devices.pageInfo.hasNextPage}
+                hasPreviousPage={deviceData.deviceInventory.devices.pageInfo.hasPreviousPage}
               />
             </>
           )}

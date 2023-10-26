@@ -6,11 +6,13 @@ import CreateBlueprintForm from './create-blueprint-form';
 
 const ADD_BLUEPRINT_MUTATION = gql`
   mutation AddBlueprint($input: AddBlueprintInput!) {
-    addBlueprint(input: $input) {
-      blueprint {
-        id
-        createdAt
-        name
+    deviceInventory {
+      addBlueprint(input: $input) {
+        blueprint {
+          id
+          createdAt
+          name
+        }
       }
     }
   }
