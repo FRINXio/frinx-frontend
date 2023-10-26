@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Container,
   Flex,
@@ -7,7 +6,6 @@ import {
   HStack,
   Icon,
   IconButton,
-  Progress,
   Table,
   Tbody,
   Td,
@@ -59,7 +57,7 @@ const DELETE_BLUEPRINT_MUTATION = gql`
 
 const DeviceBlueprints: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Blueprint'] }), []);
-  const [{ data, fetching, error }] = useQuery<BlueprintsQuery, BlueprintsQueryVariables>({
+  const [{ data, error }] = useQuery<BlueprintsQuery, BlueprintsQueryVariables>({
     query: BLUEPRINTS_QUERY,
     context,
   });
@@ -67,7 +65,7 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
     DELETE_BLUEPRINT_MUTATION,
   );
 
-  if (fetching || data == null) {
+  if (data == null) {
     return null;
   }
   if (error) {
@@ -85,19 +83,12 @@ const DeviceBlueprints: VoidFunctionComponent = () => {
     <Container maxWidth={1280}>
       <Flex justify="space-between" align="center" marginBottom={6}>
         <Heading as="h1" size="xl">
-          Device blueprints
+          Blueprints
         </Heading>
         <Button data-cy="device-blueprint-add" colorScheme="blue" as={Link} to="new">
-          Add blueprint
+          Create blueprint
         </Button>
       </Flex>
-      <Box position="relative">
-        {fetching && data != null && (
-          <Box position="absolute" top={0} right={0} left={0}>
-            <Progress size="xs" isIndeterminate />
-          </Box>
-        )}
-      </Box>
       <Table background="white" size="lg">
         <Thead>
           <Tr>

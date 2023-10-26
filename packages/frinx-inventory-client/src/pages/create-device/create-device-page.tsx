@@ -1,4 +1,4 @@
-import { Box, Container, Heading, Progress } from '@chakra-ui/react';
+import { Box, Container, Heading } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared';
 import React, { FC, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -124,13 +124,11 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   const { addToastNotification } = useNotifications();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
-  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<LabelsQuery, LabelsQueryVariables>({
+  const [{ data: labelsData }] = useQuery<LabelsQuery, LabelsQueryVariables>({
     query: LABELS_QUERY,
   });
-  const [{ data: zonesData, fetching: isFetchingZones, error: zonesError }] = useQuery<ZonesQuery, ZonesQueryVariables>(
-    { query: ZONES_QUERY },
-  );
-  const [{ data: blueprintsData, fetching: isFetchingBlueprints, error: blueprintsError }] = useQuery<
+  const [{ data: zonesData, error: zonesError }] = useQuery<ZonesQuery, ZonesQueryVariables>({ query: ZONES_QUERY });
+  const [{ data: blueprintsData, error: blueprintsError }] = useQuery<
     DeviceBlueprintsQuery,
     DeviceBlueprintsQueryVariables
   >({
@@ -170,25 +168,17 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
       .finally(() => setIsSubmitting(false));
   };
 
-  if (isFetchingZones || isFetchingLabels) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
-  }
-
   const labels = labelsData?.deviceInventory.labels.edges ?? [];
 
   const zones = zonesData?.deviceInventory.zones.edges ?? [];
   const blueprints = blueprintsData?.deviceInventory.blueprints.edges ?? [];
-
-  if (isFetchingZones && isFetchingBlueprints) {
-    return null;
-  }
 
   if (zonesError != null || blueprintsError != null) {
     return null;
   }
 
   return (
-    <Container maxWidth={1280}>
+    <Container maxWidth="container.xl">
       <Heading as="h1" size="xl" marginBottom={6}>
         Add device
       </Heading>

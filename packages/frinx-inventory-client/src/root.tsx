@@ -1,5 +1,7 @@
-import React, { VoidFunctionComponent } from 'react';
+import React, { Suspense, VoidFunctionComponent } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary'
+import SkeletonScreen from './components/skeleton-screen';
 import CreateBlueprintPage from './pages/create-blueprint/create-blueprint-page';
 import CreateDevicePage from './pages/create-device/create-device-page';
 import DeviceBlueprints from './pages/device-blueprints/device-blueprints';
@@ -19,26 +21,31 @@ const Root: VoidFunctionComponent = () => {
   const handleBlueprintListRedirect = () => {
     navigate('blueprints');
   };
-
   return (
-    <Routes>
-      <Route index element={<Navigate replace to="devices" />} />
-      <Route path="devices" element={<DeviceList />} />
-      <Route path="new" element={<CreateDevicePage onAddDeviceSuccess={handleDeviceListRedirect} />} />
-      <Route
-        path=":deviceId/edit"
-        element={<EditDevicePage onSuccess={handleDeviceListRedirect} onCancelButtonClick={handleDeviceListRedirect} />}
-      />
-      <Route path="config/:deviceId" element={<DeviceConfigPage />} />
-      <Route path="blueprints" element={<DeviceBlueprints />} />
-      <Route path="blueprints/new" element={<CreateBlueprintPage onCreateSuccess={handleBlueprintListRedirect} />} />
-      <Route
-        path="blueprints/:blueprintId/edit"
-        element={<EditBlueprintPage onSuccess={handleBlueprintListRedirect} onCancel={handleBlueprintListRedirect} />}
-      />
-      <Route path="/transactions" element={<TransactionList />} />
-      <Route path="/shell" element={<UniconfigShellPage />} />
-    </Routes>
+    <ErrorBoundary fallback={<div>oops...</div>}>
+      <Suspense fallback={<SkeletonScreen />}>
+        <Routes>
+          <Route index element={<Navigate replace to="devices" />} />
+          <Route path="devices" element={<DeviceList />} />
+          <Route path="new" element={<CreateDevicePage onAddDeviceSuccess={handleDeviceListRedirect} />} />
+          <Route
+            path=":deviceId/edit"
+            element={
+              <EditDevicePage onSuccess={handleDeviceListRedirect} onCancelButtonClick={handleDeviceListRedirect} />
+            }
+          />
+          <Route path="config/:deviceId" element={<DeviceConfigPage />} />
+          <Route path="blueprints" element={<DeviceBlueprints />} />
+          <Route path="blueprints/new" element={<CreateBlueprintPage onCreateSuccess={handleBlueprintListRedirect} />} />
+          <Route
+            path="blueprints/:blueprintId/edit"
+            element={<EditBlueprintPage onSuccess={handleBlueprintListRedirect} onCancel={handleBlueprintListRedirect} />}
+          />
+          <Route path="transactions" element={<TransactionList />} />
+          <Route path="shell" element={<UniconfigShellPage />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

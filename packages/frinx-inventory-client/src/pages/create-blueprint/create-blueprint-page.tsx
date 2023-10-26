@@ -41,11 +41,11 @@ const CreateBlueprintPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) 
   };
 
   return (
-    <Container maxWidth={1280}>
-      <Heading size="3xl" as="h2" mb={2}>
-        Add blueprint
+    <Container maxWidth="container.xl">
+      <Heading size="xl" as="h1" marginBottom={6}>
+        Create blueprint
       </Heading>
-      <Box background="white" boxShadow="base" px={4} py={2}>
+      <Box boxShadow="base" background="white" px={4} py={2}>
         <CreateBlueprintForm onFormSubmit={handleFormSubmit} />
       </Box>
     </Container>
