@@ -80,6 +80,7 @@ const TransactionList: VoidFunctionComponent = () => {
   >(null);
   const [{ data: transactionQData, error }] = useQuery<TransactionsQuery, TransactionsQueryVariables>({
     query: TRANSACTIONS_QUERY,
+    requestPolicy: 'network-only',
   });
   const [{ fetching: isMutationFetching }, revertChanges] = useMutation<
     RevertChangesMutation,
@@ -92,8 +93,6 @@ const TransactionList: VoidFunctionComponent = () => {
   if (transactionQData == null || error != null) {
     return null;
   }
-  const { transactions } = transactionQData.deviceInventory;
-
   const { transactions } = transactionQData.deviceInventory;
 
   const handleRevertBtnClick = (transactionId: string) => {
@@ -160,7 +159,7 @@ const TransactionList: VoidFunctionComponent = () => {
                 return (
                   <Tr key={transaction.transactionId}>
                     <Td>
-                      <Code>{transaction.transactionId}</Code>
+                      <Code paddingX={2}>{transaction.transactionId}</Code>
                     </Td>
                     <Td>
                       {format(

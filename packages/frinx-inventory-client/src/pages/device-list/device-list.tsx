@@ -562,71 +562,65 @@ const DeviceList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
-        <Box position="relative">
-          <>
-            <Box>
-              <Flex justify="space-between">
-                <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
-                  <Box flex={1}>
-                    <DeviceFilter
-                      labels={labels}
-                      selectedLabels={selectedLabels}
-                      onSelectionChange={handleOnSelectionChange}
-                      isCreationDisabled
-                    />
-                  </Box>
-                  <Box flex={1} marginLeft="2">
-                    <DeviceSearch text={searchText || ''} onChange={setSearchText} />
-                  </Box>
-                  <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
-                    Search
-                  </Button>
-                  <Button
-                    mb={6}
-                    data-cy="clear-button"
-                    onClick={clearFilter}
-                    colorScheme="red"
-                    variant="outline"
-                    marginLeft="2"
-                    mt={10}
-                  >
-                    Clear
-                  </Button>
-                </Form>
-                <Flex width="50%" justify="flex-end">
-                  <BulkActions
-                    onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
-                    onInstallButtonClick={handleInstallSelectedDevices}
-                    areButtonsDisabled={selectedDevices.size === 0}
-                    onWorkflowButtonClick={() => {
-                      setIsSendingToWorkflows(true);
-                    }}
-                  />
-                </Flex>
-              </Box>
-              <DeviceTable
-                data-cy="device-table"
-                devices={deviceData?.deviceInventory.devices.edges}
-                areSelectedAll={areSelectedAll}
-                onSelectAll={handleSelectionOfAllDevices}
-                selectedDevices={selectedDevices}
-                orderBy={orderBy}
-                onSort={handleSort}
-                onInstallButtonClick={handleOnDeviceInstall}
-                onUninstallButtonClick={handleUninstallButtonClick}
-                onDeleteBtnClick={handleDeleteBtnClick}
-                installLoadingMap={installLoadingMap}
-                onDeviceSelection={handleDeviceSelection}
+        <Flex justify="space-between">
+          <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
+            <Box flex={1}>
+              <DeviceFilter
+                labels={labels}
+                selectedLabels={selectedLabels}
+                onSelectionChange={handleOnSelectionChange}
+                isCreationDisabled
               />
-              <Pagination
-                onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}
-                onNext={nextPage(deviceData.deviceInventory.devices.pageInfo.endCursor)}
-                hasNextPage={deviceData.deviceInventory.devices.pageInfo.hasNextPage}
-                hasPreviousPage={deviceData.deviceInventory.devices.pageInfo.hasPreviousPage}
-              />
-            </>
-          )}
-        </Box>
+            </Box>
+            <Box flex={1} marginLeft="2">
+              <DeviceSearch text={searchText || ''} onChange={setSearchText} />
+            </Box>
+            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+              Search
+            </Button>
+            <Button
+              mb={6}
+              data-cy="clear-button"
+              onClick={clearFilter}
+              colorScheme="red"
+              variant="outline"
+              marginLeft="2"
+              mt={10}
+            >
+              Clear
+            </Button>
+          </Form>
+          <Flex width="50%" justify="flex-end">
+            <BulkActions
+              onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
+              onInstallButtonClick={handleInstallSelectedDevices}
+              areButtonsDisabled={selectedDevices.size === 0}
+              onWorkflowButtonClick={() => {
+                setIsSendingToWorkflows(true);
+              }}
+            />
+          </Flex>
+        </Flex>
+        <DeviceTable
+          data-cy="device-table"
+          devices={deviceData?.deviceInventory.devices.edges}
+          areSelectedAll={areSelectedAll}
+          onSelectAll={handleSelectionOfAllDevices}
+          selectedDevices={selectedDevices}
+          orderBy={orderBy}
+          onSort={handleSort}
+          onInstallButtonClick={handleOnDeviceInstall}
+          onUninstallButtonClick={handleUninstallButtonClick}
+          onDeleteBtnClick={handleDeleteBtnClick}
+          installLoadingMap={installLoadingMap}
+          onDeviceSelection={handleDeviceSelection}
+        />
+        <Pagination
+          onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}
+          onNext={nextPage(deviceData.deviceInventory.devices.pageInfo.endCursor)}
+          hasNextPage={deviceData.deviceInventory.devices.pageInfo.hasNextPage}
+          hasPreviousPage={deviceData.deviceInventory.devices.pageInfo.hasPreviousPage}
+        />
       </Container>
     </>
   );
