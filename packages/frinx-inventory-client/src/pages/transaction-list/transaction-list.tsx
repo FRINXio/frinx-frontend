@@ -92,6 +92,7 @@ const TransactionList: VoidFunctionComponent = () => {
   if (transactionQData == null || error != null) {
     return null;
   }
+  const { transactions } = transactionQData.deviceInventory;
 
   const { transactions } = transactionQData.deviceInventory;
 

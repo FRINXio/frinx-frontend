@@ -603,29 +603,29 @@ const DeviceList: VoidFunctionComponent = () => {
                     }}
                   />
                 </Flex>
-              </Flex>
-            </Box>
-            <DeviceTable
-              data-cy="device-table"
-              devices={deviceData?.deviceInventory.devices.edges}
-              areSelectedAll={areSelectedAll}
-              onSelectAll={handleSelectionOfAllDevices}
-              selectedDevices={selectedDevices}
-              orderBy={orderBy}
-              onSort={handleSort}
-              onInstallButtonClick={handleOnDeviceInstall}
-              onUninstallButtonClick={handleUninstallButtonClick}
-              onDeleteBtnClick={handleDeleteBtnClick}
-              installLoadingMap={installLoadingMap}
-              onDeviceSelection={handleDeviceSelection}
-            />
-            <Pagination
-              onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}
-              onNext={nextPage(deviceData.deviceInventory.devices.pageInfo.endCursor)}
-              hasNextPage={deviceData.deviceInventory.devices.pageInfo.hasNextPage}
-              hasPreviousPage={deviceData.deviceInventory.devices.pageInfo.hasPreviousPage}
-            />
-          </>
+              </Box>
+              <DeviceTable
+                data-cy="device-table"
+                devices={deviceData?.deviceInventory.devices.edges}
+                areSelectedAll={areSelectedAll}
+                onSelectAll={handleSelectionOfAllDevices}
+                selectedDevices={selectedDevices}
+                orderBy={orderBy}
+                onSort={handleSort}
+                onInstallButtonClick={handleOnDeviceInstall}
+                onUninstallButtonClick={handleUninstallButtonClick}
+                onDeleteBtnClick={handleDeleteBtnClick}
+                installLoadingMap={installLoadingMap}
+                onDeviceSelection={handleDeviceSelection}
+              />
+              <Pagination
+                onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}
+                onNext={nextPage(deviceData.deviceInventory.devices.pageInfo.endCursor)}
+                hasNextPage={deviceData.deviceInventory.devices.pageInfo.hasNextPage}
+                hasPreviousPage={deviceData.deviceInventory.devices.pageInfo.hasPreviousPage}
+              />
+            </>
+          )}
         </Box>
       </Container>
     </>
