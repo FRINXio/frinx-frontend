@@ -7,7 +7,6 @@ import {
   Heading,
   Icon,
   IconButton,
-  Progress,
   Table,
   Tbody,
   Td,
@@ -79,11 +78,9 @@ const TransactionList: VoidFunctionComponent = () => {
   const [selectedTransaction, setSelectedTransaction] = useState<
     TransactionsQuery['deviceInventory']['transactions'][0] | null
   >(null);
-  const [{ data: transactionQData, fetching: isFetchingTransactions, error }] = useQuery<
-    TransactionsQuery,
-    TransactionsQueryVariables
-  >({
+  const [{ data: transactionQData, error }] = useQuery<TransactionsQuery, TransactionsQueryVariables>({
     query: TRANSACTIONS_QUERY,
+    requestPolicy: 'network-only',
   });
   const [{ fetching: isMutationFetching }, revertChanges] = useMutation<
     RevertChangesMutation,
@@ -92,16 +89,6 @@ const TransactionList: VoidFunctionComponent = () => {
   const [, closeTransaction] = useMutation<CloseTransactionMutation, CloseTransactionMutationVariables>(
     CLOSE_TRANSACTION_MUTATION,
   );
-
-  if (isFetchingTransactions && transactionQData == null) {
-    return (
-      <Box position="relative">
-        <Box position="absolute" top={0} right={0} left={0}>
-          <Progress size="xs" isIndeterminate />
-        </Box>
-      </Box>
-    );
-  }
 
   if (transactionQData == null || error != null) {
     return null;
@@ -172,7 +159,7 @@ const TransactionList: VoidFunctionComponent = () => {
                 return (
                   <Tr key={transaction.transactionId}>
                     <Td>
-                      <Code>{transaction.transactionId}</Code>
+                      <Code paddingX={2}>{transaction.transactionId}</Code>
                     </Td>
                     <Td>
                       {format(

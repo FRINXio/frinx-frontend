@@ -49,7 +49,7 @@ const WorkflowListModal: VoidFunctionComponent<Props> = ({ onClose, onWorkflowSe
     query: MODAL_WORKFLOWS_QUERY,
   });
 
-  if (!workflowsData) {
+  if (workflowsData == null) {
     return null;
   }
 

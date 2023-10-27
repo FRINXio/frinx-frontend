@@ -79,7 +79,7 @@ type Props = {
 };
 
 const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, transactionId }) => {
-  const [{ data, fetching, error }] = useQuery<CalculatedDiffQuery, CalculatedDiffQueryVariables>({
+  const [{ data, error }] = useQuery<CalculatedDiffQuery, CalculatedDiffQueryVariables>({
     query: CALCULATED_DIFF_QUERY,
     variables: {
       deviceId,
@@ -88,7 +88,7 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
     requestPolicy: 'network-only',
   });
 
-  if (fetching || error != null) {
+  if (error != null) {
     return null;
   }
 

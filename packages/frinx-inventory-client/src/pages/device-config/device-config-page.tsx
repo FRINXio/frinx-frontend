@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import { useNotifications, unwrap } from '@frinx/shared';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
@@ -147,10 +147,7 @@ const DELETE_SNAPSHOT_MUTATION = gql`
 const DeviceConfig: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Transaction'] }), []);
   const { deviceId } = useParams<{ deviceId: string }>();
-  const [{ data: deviceData, fetching: isFetchingDevice, error: deviceError }] = useQuery<
-    DeviceNameQuery,
-    DeviceNameQueryVariables
-  >({
+  const [{ data: deviceData, error: deviceError }] = useQuery<DeviceNameQuery, DeviceNameQueryVariables>({
     query: DEVICE_NAME_QUERY,
     variables: { deviceId: unwrap(deviceId) },
   });
@@ -404,16 +401,6 @@ const DeviceConfig: VoidFunctionComponent = () => {
       });
     }
   };
-
-  const isInitialLoading = fetching && data == null;
-
-  if (isInitialLoading) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
-  }
-
-  if (isFetchingDevice) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
-  }
 
   if (deviceData == null || deviceError) {
     return null;
