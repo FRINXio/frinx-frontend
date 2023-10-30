@@ -14,7 +14,7 @@
     "build": "NODE_ENV=production node --no-warnings=ExperimentalWarning ./bin/build.mjs",
     "lint": "eslint --ext .ts,.tsx 'src/**/*.ts' 'src/**/*.tsx' --max-warnings 0",
     "type-check": "tsc",
-    "codegen": "cp ../../../frinx-inventory-server/src/schema/api.graphql ./ && graphql-codegen --config codegen.yml",
+    "codegen": "NODE_TLS_REJECT_UNAUTHORIZED=0 graphql-codegen --config codegen.yml",
     "codegen:clean": "rm -r src/__generated__",
     "test": "vitest",
     "typegen": "tsc -p ./tsconfig.typegen.json"

@@ -8,11 +8,13 @@ import SelectedLabels from './selected-labels';
 
 const DEVICE_LABELS_QUERY = gql`
   query DeviceLabels {
-    labels {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -20,39 +22,39 @@ const DEVICE_LABELS_QUERY = gql`
 `;
 
 const LabelsFilter: VoidFunctionComponent = () => {
-  const { state, dispatch } = useStateContext();
-  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<DeviceLabelsQuery, DeviceLabelsQueryVariables>({
-    query: DEVICE_LABELS_QUERY,
-  });
-  const { selectedLabels, selectedVersion } = state;
+	const { state, dispatch } = useStateContext();
+	const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<DeviceLabelsQuery, DeviceLabelsQueryVariables>({
+		query: DEVICE_LABELS_QUERY,
+	});
+	const { selectedLabels, selectedVersion } = state;
 
-  const handleSelectedLabelsChange = (selectedItems: LabelItem[]) => {
-    if (selectedItems) {
-      dispatch(setSelectedLabels([...new Set(selectedItems)]));
-    }
-  };
+	const handleSelectedLabelsChange = (selectedItems: LabelItem[]) => {
+		if (selectedItems) {
+			dispatch(setSelectedLabels([...new Set(selectedItems)]));
+		}
+	};
 
-  if (isFetchingLabels) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
-  }
+	if (isFetchingLabels) {
+		return <Progress size="xs" isIndeterminate mt={-10} />;
+	}
 
-  const labels = (labelsData?.labels.edges ?? []).map((e) => ({
-    label: e.node.name,
-    value: e.node.id,
-  }));
+	const labels = (labelsData?.labels.edges ?? []).map((e) => ({
+		label: e.node.name,
+		value: e.node.id,
+	}));
 
-  if (selectedVersion) {
-    return null;
-  }
+	if (selectedVersion) {
+		return null;
+	}
 
-  return (
-    <SelectedLabels
-      items={labels}
-      selectedLabels={selectedLabels}
-      labelText="Filter by labels:"
-      onSelectionChange={handleSelectedLabelsChange}
-    />
-  );
+	return (
+		<SelectedLabels
+			items={labels}
+			selectedLabels={selectedLabels}
+			labelText="Filter by labels:"
+			onSelectionChange={handleSelectedLabelsChange}
+		/>
+	);
 };
 
 export default LabelsFilter;

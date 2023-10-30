@@ -126,35 +126,37 @@ export type ThunkAction<A extends Record<string, unknown>, S> = (
 
 const TOPOLOGY_QUERY = gql`
   query Topology($labels: [String!]) {
-    topology(filter: { labels: $labels }) {
-      nodes {
-        id
-        device {
+    deviceInventory {
+      topology(filter: { labels: $labels }) {
+        nodes {
           id
-          name
-          deviceSize
+          device {
+            id
+            name
+            deviceSize
+          }
+          deviceType
+          softwareVersion
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
         }
-        deviceType
-        softwareVersion
-        interfaces {
+        edges {
           id
-          status
-          name
-        }
-        coordinates {
-          x
-          y
-        }
-      }
-      edges {
-        id
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
       }
     }
@@ -162,38 +164,40 @@ const TOPOLOGY_QUERY = gql`
 `;
 const NET_TOPOLOGY_QUERY = gql`
   query NetTopology {
-    netTopology {
-      nodes {
-        id
-        nodeId
-        name
-        interfaces {
+    deviceInventory {
+      netTopology {
+        nodes {
           id
+          nodeId
           name
-        }
-        networks {
-          id
-          subnet
+          interfaces {
+            id
+            name
+          }
+          networks {
+            id
+            subnet
+            coordinates {
+              x
+              y
+            }
+          }
           coordinates {
             x
             y
           }
         }
-        coordinates {
-          x
-          y
-        }
-      }
-      edges {
-        id
-        weight
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
+        edges {
+          id
+          weight
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
       }
     }
@@ -202,29 +206,31 @@ const NET_TOPOLOGY_QUERY = gql`
 
 const TOPOLOGY_VERSION_DATA_QUERY = gql`
   query TopologyVersionData($version: String!) {
-    topologyVersionData(version: $version) {
-      edges {
-        id
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
-        }
-      }
-      nodes {
-        id
-        name
-        interfaces {
+    deviceInventory {
+      topologyVersionData(version: $version) {
+        edges {
           id
-          status
-          name
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
-        coordinates {
-          x
-          y
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
         }
       }
     }
