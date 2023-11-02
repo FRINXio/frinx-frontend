@@ -13,8 +13,10 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
+  Cursor: { input: any; output: any; }
   File: { input: any; output: any; }
   JSON: { input: any; output: any; }
+  Map: { input: any; output: any; }
   ObjMap: { input: any; output: any; }
   Upload: { input: any; output: any; }
   Void: { input: any; output: any; }
@@ -98,6 +100,21 @@ export type AddZonePayload = {
   __typename?: 'AddZonePayload';
   zone: Zone;
 };
+
+/** Represents an allocation strategy */
+export type AllocationStrategy = Node & {
+  __typename?: 'AllocationStrategy';
+  Description: Maybe<Scalars['String']['output']>;
+  Lang: AllocationStrategyLang;
+  Name: Scalars['String']['output'];
+  Script: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+};
+
+/** Supported languages for allocation strategy scripts */
+export type AllocationStrategyLang =
+  | 'js'
+  | 'py';
 
 export type ApplySnapshotInput = {
   deviceId: Scalars['String']['input'];
@@ -215,11 +232,6 @@ export type CommitConfigPayload = {
   output: CommitConfigOutput;
 };
 
-export type CommonNodesResponse = {
-  __typename?: 'CommonNodesResponse';
-  common_nodes: Array<Scalars['String']['output']>;
-};
-
 export type ConductorSubscription = {
   __typename?: 'ConductorSubscription';
   controlExecutedWorkflow: Workflow;
@@ -228,29 +240,6 @@ export type ConductorSubscription = {
 
 export type ConductorSubscriptionControlExecutedWorkflowArgs = {
   workflowId: Scalars['String']['input'];
-};
-
-export type Coordinates = {
-  __typename?: 'Coordinates';
-  x: Scalars['Float']['output'];
-  y: Scalars['Float']['output'];
-};
-
-export type CoordinatesInput = {
-  node_name: Scalars['String']['input'];
-  node_type: CoordinatesNodeType;
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
-export type CoordinatesNodeType =
-  | 'device'
-  | 'network';
-
-export type CoordinatesResponse = {
-  __typename?: 'CoordinatesResponse';
-  not_updated: Array<Scalars['String']['output']>;
-  updated: Array<Scalars['String']['output']>;
 };
 
 export type Country = Node & {
@@ -273,9 +262,37 @@ export type CountryEdge = {
   node: Country;
 };
 
-export type CreateBackupResponse = {
-  __typename?: 'CreateBackupResponse';
-  db_name: Scalars['String']['output'];
+/** Input parameters for creating an allocation pool */
+export type CreateAllocatingPoolInput = {
+  allocationStrategyId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolProperties: Scalars['Map']['input'];
+  poolPropertyTypes: Scalars['Map']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating an allocating pool */
+export type CreateAllocatingPoolPayload = {
+  __typename?: 'CreateAllocatingPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a new allocation strategy */
+export type CreateAllocationStrategyInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  expectedPoolPropertyTypes?: InputMaybe<Scalars['Map']['input']>;
+  lang: AllocationStrategyLang;
+  name: Scalars['String']['input'];
+  script: Scalars['String']['input'];
+};
+
+/** Output of creating a new allocation strategy */
+export type CreateAllocationStrategyPayload = {
+  __typename?: 'CreateAllocationStrategyPayload';
+  strategy: Maybe<AllocationStrategy>;
 };
 
 export type CreateLabelInput = {
@@ -285,6 +302,115 @@ export type CreateLabelInput = {
 export type CreateLabelPayload = {
   __typename?: 'CreateLabelPayload';
   label: Maybe<Label>;
+};
+
+/** Input parameters for creating a nested allocation pool */
+export type CreateNestedAllocatingPoolInput = {
+  allocationStrategyId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a nested allocating pool */
+export type CreateNestedAllocatingPoolPayload = {
+  __typename?: 'CreateNestedAllocatingPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a nested set pool */
+export type CreateNestedSetPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<InputMaybe<Scalars['Map']['input']>>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a nested set pool */
+export type CreateNestedSetPoolPayload = {
+  __typename?: 'CreateNestedSetPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a nested singleton pool */
+export type CreateNestedSingletonPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<InputMaybe<Scalars['Map']['input']>>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a nested singleton pool */
+export type CreateNestedSingletonPoolPayload = {
+  __typename?: 'CreateNestedSingletonPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Creating a new resource-type */
+export type CreateResourceTypeInput = {
+  /** name of the resource type AND property type (should they be different?) */
+  resourceName: Scalars['String']['input'];
+  /**
+   * resourceProperties: Map! - for key "init" the value is the initial value of the property type (like 7)
+   *                          - for key "type" the value is the name of the type like "int"
+   */
+  resourceProperties: Scalars['Map']['input'];
+};
+
+/** Output of creating a new resource-type */
+export type CreateResourceTypePayload = {
+  __typename?: 'CreateResourceTypePayload';
+  resourceType: ResourceType;
+};
+
+/** Input parameters for creating a set pool */
+export type CreateSetPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<Scalars['Map']['input']>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating set pool */
+export type CreateSetPoolPayload = {
+  __typename?: 'CreateSetPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a singleton pool */
+export type CreateSingletonPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolName: Scalars['String']['input'];
+  poolValues: Array<Scalars['Map']['input']>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a singleton pool */
+export type CreateSingletonPoolPayload = {
+  __typename?: 'CreateSingletonPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a new tag */
+export type CreateTagInput = {
+  tagText: Scalars['String']['input'];
+};
+
+/** Output of creating a tag */
+export type CreateTagPayload = {
+  __typename?: 'CreateTagPayload';
+  tag: Maybe<Tag>;
 };
 
 export type CreateTransactionPayload = {
@@ -299,9 +425,15 @@ export type DataStore = {
   snapshots: Array<Snapshot>;
 };
 
-export type DeleteBackupsResponse = {
-  __typename?: 'DeleteBackupsResponse';
-  deleted_backups: Array<Scalars['String']['output']>;
+/** Input parameters for deleting an existing allocation strategy */
+export type DeleteAllocationStrategyInput = {
+  allocationStrategyId: Scalars['ID']['input'];
+};
+
+/** Output of deleting an existing allocation strategy */
+export type DeleteAllocationStrategyPayload = {
+  __typename?: 'DeleteAllocationStrategyPayload';
+  strategy: Maybe<AllocationStrategy>;
 };
 
 export type DeleteBlueprintPayload = {
@@ -319,6 +451,28 @@ export type DeleteLabelPayload = {
   label: Maybe<Label>;
 };
 
+/** Input entity for deleting a pool */
+export type DeleteResourcePoolInput = {
+  resourcePoolId: Scalars['ID']['input'];
+};
+
+/** Output entity for deleting a pool */
+export type DeleteResourcePoolPayload = {
+  __typename?: 'DeleteResourcePoolPayload';
+  resourcePoolId: Scalars['ID']['output'];
+};
+
+/** Input parameters for deleting an existing resource-type */
+export type DeleteResourceTypeInput = {
+  resourceTypeId: Scalars['ID']['input'];
+};
+
+/** Output of deleting a resource-type */
+export type DeleteResourceTypePayload = {
+  __typename?: 'DeleteResourceTypePayload';
+  resourceTypeId: Scalars['ID']['output'];
+};
+
 export type DeleteSnapshotInput = {
   deviceId: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -328,6 +482,17 @@ export type DeleteSnapshotInput = {
 export type DeleteSnapshotPayload = {
   __typename?: 'DeleteSnapshotPayload';
   snapshot: Maybe<Snapshot>;
+};
+
+/** Input parameters for deleting an existing tag */
+export type DeleteTagInput = {
+  tagId: Scalars['ID']['input'];
+};
+
+/** Output of deleting a tag */
+export type DeleteTagPayload = {
+  __typename?: 'DeleteTagPayload';
+  tagId: Scalars['ID']['output'];
 };
 
 export type Device = Node & {
@@ -586,99 +751,20 @@ export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
   deviceInventory: DeviceInventoryMutation;
-  deviceTopology: DeviceTopologyMutation;
+  resourceManager: ResourceManagerMutation;
 };
 
-export type NetDevice = Node & {
-  __typename?: 'NetDevice';
-  id: Scalars['ID']['output'];
-  netInterfaces: NetInterfaceConnection;
-  netNetworks: NetNetworkConnection;
-  ospfAreaId: Scalars['String']['output'];
-  phyDevice: Maybe<PhyDevice>;
-  routerId: Scalars['String']['output'];
-};
-
-
-export type NetDeviceNetInterfacesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<NetInterfaceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type NetDeviceNetNetworksArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<NetNetworkFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type NetDeviceConnection = {
-  __typename?: 'NetDeviceConnection';
-  edges: Maybe<Array<Maybe<NetDeviceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type NetDeviceEdge = {
-  __typename?: 'NetDeviceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<NetDevice>;
-};
-
-export type NetDeviceFilter = {
-  ospfAreaId?: InputMaybe<Scalars['String']['input']>;
-  routerId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type NetInterface = Node & {
+export type NetInterface = {
   __typename?: 'NetInterface';
-  id: Scalars['ID']['output'];
-  igp_metric: Maybe<Scalars['Int']['output']>;
-  ipAddress: Scalars['String']['output'];
+  id: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  netDevice: Maybe<NetDevice>;
-  netLink: Maybe<NetInterface>;
 };
 
-export type NetInterfaceConnection = {
-  __typename?: 'NetInterfaceConnection';
-  edges: Maybe<Array<Maybe<NetInterfaceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type NetInterfaceEdge = {
-  __typename?: 'NetInterfaceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<NetInterface>;
-};
-
-export type NetInterfaceFilter = {
-  ipAddress?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type NetNetwork = Node & {
+export type NetNetwork = {
   __typename?: 'NetNetwork';
-  coordinates: Coordinates;
-  id: Scalars['ID']['output'];
-  ospfRouteType: Scalars['Int']['output'];
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['String']['output'];
   subnet: Scalars['String']['output'];
-};
-
-export type NetNetworkConnection = {
-  __typename?: 'NetNetworkConnection';
-  edges: Maybe<Array<Maybe<NetNetworkEdge>>>;
-  pageInfo: Maybe<PageInfo>;
-};
-
-export type NetNetworkEdge = {
-  __typename?: 'NetNetworkEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<NetNetwork>;
-};
-
-export type NetNetworkFilter = {
-  ospfRouteType?: InputMaybe<Scalars['Int']['input']>;
-  subnet?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type NetNode = {
@@ -689,11 +775,6 @@ export type NetNode = {
   name: Scalars['String']['output'];
   networks: Array<NetNetwork>;
   nodeId: Scalars['String']['output'];
-};
-
-export type NetRoutingPathConnection = {
-  __typename?: 'NetRoutingPathConnection';
-  edges: Maybe<Array<RoutingPath>>;
 };
 
 export type NetRoutingPathNode = {
@@ -708,10 +789,6 @@ export type NetRoutingPathNodeInfo = {
   weight: Maybe<Scalars['Int']['output']>;
 };
 
-export type NetRoutingPathOutputCollections =
-  | 'NetDevice'
-  | 'NetInterface';
-
 export type NetTopology = {
   __typename?: 'NetTopology';
   edges: Array<GraphEdge>;
@@ -722,102 +799,29 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
-export type NodeInfo = {
-  __typename?: 'NodeInfo';
-  node: Scalars['ID']['output'];
-  weight: Maybe<Scalars['Int']['output']>;
+export type OrderDirection =
+  | 'ASC'
+  | 'DESC';
+
+/** Holds the string value for pagination */
+export type OutputCursor = {
+  __typename?: 'OutputCursor';
+  ID: Scalars['String']['output'];
 };
 
-export type NodeStatus =
-  | 'ok'
-  | 'unknown';
+export type OutputParameters = {
+  __typename?: 'OutputParameters';
+  key: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
 
+/** Holds information about the requested pagination page */
 export type PageInfo = {
   __typename?: 'PageInfo';
-  endCursor: Maybe<Scalars['String']['output']>;
+  endCursor: Maybe<OutputCursor>;
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor: Maybe<Scalars['String']['output']>;
-};
-
-export type PhyDevice = Node & {
-  __typename?: 'PhyDevice';
-  coordinates: Coordinates;
-  details: PhyDeviceDetails;
-  id: Scalars['ID']['output'];
-  labels: Maybe<Array<Scalars['String']['output']>>;
-  name: Scalars['String']['output'];
-  netDevice: Maybe<NetDevice>;
-  phyInterfaces: PhyInterfaceConnection;
-  routerId: Maybe<Scalars['String']['output']>;
-  status: NodeStatus;
-};
-
-
-export type PhyDevicePhyInterfacesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<PhyInterfaceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type PhyDeviceConnection = {
-  __typename?: 'PhyDeviceConnection';
-  edges: Maybe<Array<Maybe<PhyDeviceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type PhyDeviceDetails = {
-  __typename?: 'PhyDeviceDetails';
-  device_type: Scalars['String']['output'];
-  sw_version: Scalars['String']['output'];
-};
-
-export type PhyDeviceEdge = {
-  __typename?: 'PhyDeviceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<PhyDevice>;
-};
-
-export type PhyDeviceFilter = {
-  label?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type PhyHasAndInterfacesResponse = {
-  __typename?: 'PhyHasAndInterfacesResponse';
-  phy_has_and_interfaces_data: Scalars['JSON']['output'];
-};
-
-export type PhyInterface = Node & {
-  __typename?: 'PhyInterface';
-  id: Scalars['ID']['output'];
-  idLink: Maybe<Scalars['ID']['output']>;
-  name: Scalars['String']['output'];
-  phyDevice: Maybe<PhyDevice>;
-  phyLink: Maybe<PhyInterface>;
-  status: Scalars['String']['output'];
-};
-
-export type PhyInterfaceConnection = {
-  __typename?: 'PhyInterfaceConnection';
-  edges: Maybe<Array<Maybe<PhyInterfaceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type PhyInterfaceEdge = {
-  __typename?: 'PhyInterfaceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<PhyInterface>;
-};
-
-export type PhyInterfaceFilter = {
-  name?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type PhyLinksAndDevicesResponse = {
-  __typename?: 'PhyLinksAndDevicesResponse';
-  phy_links_and_devices_data: Scalars['JSON']['output'];
+  startCursor: Maybe<OutputCursor>;
 };
 
 export type PollData = {
@@ -828,16 +832,36 @@ export type PollData = {
   workerId: Maybe<Scalars['String']['output']>;
 };
 
-export type ProviderResponse = {
-  __typename?: 'ProviderResponse';
-  supported_devices: Array<Scalars['String']['output']>;
+/** Entity representing capacity of a pool */
+export type PoolCapacityPayload = {
+  __typename?: 'PoolCapacityPayload';
+  freeCapacity: Scalars['String']['output'];
+  utilizedCapacity: Scalars['String']['output'];
+};
+
+/** Defines the type of pool */
+export type PoolType =
+  | 'allocating'
+  | 'set'
+  | 'singleton';
+
+/** Defines the type of the property */
+export type PropertyType = Node & {
+  __typename?: 'PropertyType';
+  FloatVal: Maybe<Scalars['Float']['output']>;
+  IntVal: Maybe<Scalars['Int']['output']>;
+  Mandatory: Maybe<Scalars['Boolean']['output']>;
+  Name: Scalars['String']['output'];
+  StringVal: Maybe<Scalars['String']['output']>;
+  Type: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 export type Query = {
   __typename?: 'Query';
   conductor: ConductorQuery;
   deviceInventory: DeviceInventoryQuery;
-  deviceTopology: DeviceTopologyQuery;
+  resourceManager: ResourceManagerQuery;
 };
 
 export type RerunWorkflowRequest_Input = {
@@ -853,15 +877,101 @@ export type ResetConfigPayload = {
   dataStore: DataStore;
 };
 
+/** Represents an allocated resource */
+export type Resource = Node & {
+  __typename?: 'Resource';
+  AlternativeId: Maybe<Scalars['Map']['output']>;
+  Description: Maybe<Scalars['String']['output']>;
+  NestedPool: Maybe<ResourcePool>;
+  ParentPool: ResourcePool;
+  Properties: Scalars['Map']['output'];
+  id: Scalars['ID']['output'];
+};
+
+/** A Relay-specific entity holding information about pagination */
+export type ResourceConnection = {
+  __typename?: 'ResourceConnection';
+  edges: Array<Maybe<ResourceEdge>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A Relay-specific entity that holds information about the requested pagination page */
+export type ResourceEdge = {
+  __typename?: 'ResourceEdge';
+  cursor: OutputCursor;
+  node: Resource;
+};
+
+/** Alternative representation of identity of a resource (i.e. alternative to resource ID) */
+export type ResourceInput = {
+  Properties: Scalars['Map']['input'];
+  Status: Scalars['String']['input'];
+  UpdatedAt: Scalars['String']['input'];
+};
+
+/** A pool is an entity that contains allocated and free resources */
+export type ResourcePool = Node & {
+  __typename?: 'ResourcePool';
+  AllocationStrategy: Maybe<AllocationStrategy>;
+  Capacity: Maybe<PoolCapacityPayload>;
+  DealocationSafetyPeriod: Scalars['Int']['output'];
+  Name: Scalars['String']['output'];
+  ParentResource: Maybe<Resource>;
+  PoolProperties: Scalars['Map']['output'];
+  PoolType: PoolType;
+  ResourceType: ResourceType;
+  Resources: Array<Resource>;
+  Tags: Array<Tag>;
+  allocatedResources: Maybe<ResourceConnection>;
+  id: Scalars['ID']['output'];
+};
+
+
+/** A pool is an entity that contains allocated and free resources */
+export type ResourcePoolAllocatedResourcesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ResourcePoolConnection = {
+  __typename?: 'ResourcePoolConnection';
+  edges: Array<Maybe<ResourcePoolEdge>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ResourcePoolEdge = {
+  __typename?: 'ResourcePoolEdge';
+  cursor: OutputCursor;
+  node: ResourcePool;
+};
+
+/** Convenience entity representing the identity of a pool in some calls */
+export type ResourcePoolInput = {
+  ResourcePoolID: Scalars['ID']['input'];
+  ResourcePoolName: Scalars['String']['input'];
+  poolProperties: Scalars['Map']['input'];
+};
+
+export type ResourcePoolOrderField =
+  | 'dealocationSafetyPeriod'
+  | 'name';
+
+/** Describes the properties of a resource */
+export type ResourceType = Node & {
+  __typename?: 'ResourceType';
+  Name: Scalars['String']['output'];
+  Pools: Array<ResourcePool>;
+  PropertyTypes: Array<PropertyType>;
+  id: Scalars['ID']['output'];
+};
+
 export type RevertChangesPayload = {
   __typename?: 'RevertChangesPayload';
   isOk: Scalars['Boolean']['output'];
-};
-
-export type RoutingPath = {
-  __typename?: 'RoutingPath';
-  nodes: Array<NodeInfo>;
-  weight: Scalars['Int']['output'];
 };
 
 export type SearchResultTask = {
@@ -907,6 +1017,14 @@ export type SortDeviceBy =
 export type SortDirection =
   | 'ASC'
   | 'DESC';
+
+export type SortResourcePoolsInput = {
+  direction: OrderDirection;
+  field?: InputMaybe<ResourcePoolOrderField>;
+};
+
+export type SortWorkflowsBy =
+  | 'name';
 
 export type StartWorkflow = {
   __typename?: 'StartWorkflow';
@@ -962,10 +1080,34 @@ export type SyncFromNetworkPayload = {
   dataStore: Maybe<DataStore>;
 };
 
-export type SyncResponse = {
-  __typename?: 'SyncResponse';
-  labels: Array<Scalars['String']['output']>;
-  loaded_devices: Scalars['JSON']['output'];
+/** Pools can be tagged for easier search */
+export type Tag = Node & {
+  __typename?: 'Tag';
+  Pools: Maybe<Array<Maybe<ResourcePool>>>;
+  Tag: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+};
+
+/** Helper entities for tag search */
+export type TagAnd = {
+  matchesAll: Array<Scalars['String']['input']>;
+};
+
+/** Helper entities for tag search */
+export type TagOr = {
+  matchesAny: Array<TagAnd>;
+};
+
+/** Input parameters for a call adding a tag to pool */
+export type TagPoolInput = {
+  poolId: Scalars['ID']['input'];
+  tagId: Scalars['ID']['input'];
+};
+
+/** Output of adding a specific tag to a pool */
+export type TagPoolPayload = {
+  __typename?: 'TagPoolPayload';
+  tag: Maybe<Tag>;
 };
 
 export type Task = {
@@ -1147,15 +1289,6 @@ export type TopologyCommonNodes = {
   commonNodes: Array<Scalars['String']['output']>;
 };
 
-export type TopologyDiffCollectionTypes =
-  | 'net'
-  | 'phy';
-
-export type TopologyResponse = {
-  __typename?: 'TopologyResponse';
-  diff_data: Maybe<Scalars['JSON']['output']>;
-};
-
 export type TopologyVersionData = {
   __typename?: 'TopologyVersionData';
   edges: Array<GraphVersionEdge>;
@@ -1185,6 +1318,18 @@ export type TransactionDiff = {
 export type UninstallDevicePayload = {
   __typename?: 'UninstallDevicePayload';
   device: Device;
+};
+
+/** Input parameters for a call removing a tag from pool */
+export type UntagPoolInput = {
+  poolId: Scalars['ID']['input'];
+  tagId: Scalars['ID']['input'];
+};
+
+/** Output of removing a specific tag from a pool */
+export type UntagPoolPayload = {
+  __typename?: 'UntagPoolPayload';
+  tag: Maybe<Tag>;
 };
 
 export type UpdateBlueprintInput = {
@@ -1236,6 +1381,30 @@ export type UpdateDevicePayload = {
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']['output']>;
+};
+
+/** Input parameters updating the name of a resource-type */
+export type UpdateResourceTypeNameInput = {
+  resourceName: Scalars['String']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+};
+
+/** Output of updating the name of a resource-type */
+export type UpdateResourceTypeNamePayload = {
+  __typename?: 'UpdateResourceTypeNamePayload';
+  resourceTypeId: Scalars['ID']['output'];
+};
+
+/** Input parameters for updating an existing tag */
+export type UpdateTagInput = {
+  tagId: Scalars['ID']['input'];
+  tagText: Scalars['String']['input'];
+};
+
+/** Output of updating a tag */
+export type UpdateTagPayload = {
+  __typename?: 'UpdateTagPayload';
+  tag: Maybe<Tag>;
 };
 
 export type Workflow = {
@@ -1318,6 +1487,36 @@ export type WorkflowDef_Input = {
   variables?: InputMaybe<Scalars['JSON']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
   workflowStatusListenerEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type WorkflowDefinition = Node & {
+  __typename?: 'WorkflowDefinition';
+  createdAt: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  inputParameters: Maybe<Array<Scalars['String']['output']>>;
+  name: Scalars['String']['output'];
+  outputParameters: Maybe<Array<OutputParameters>>;
+  tasks: Array<WorkflowDefinitionTask>;
+  updatedAt: Maybe<Scalars['String']['output']>;
+  version: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkflowDefinitionConnection = {
+  __typename?: 'WorkflowDefinitionConnection';
+  edges: Array<WorkflowDefinitionEdge>;
+};
+
+export type WorkflowDefinitionEdge = {
+  __typename?: 'WorkflowDefinitionEdge';
+  node: WorkflowDefinition;
+};
+
+export type WorkflowDefinitionTask = {
+  __typename?: 'WorkflowDefinitionTask';
+  description: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  taskReferenceName: Scalars['String']['output'];
 };
 
 export type WorkflowSummary = {
@@ -1413,6 +1612,16 @@ export type WorkflowTask_Input = {
   taskReferenceName: Scalars['String']['input'];
   type?: InputMaybe<Scalars['String']['input']>;
   workflowTaskType?: InputMaybe<Mutation_GetWorkflows_AdditionalProperties_Items_Tasks_Items_WorkflowTask_WorkflowTaskType>;
+};
+
+export type WorkflowsFilterInput = {
+  keyword?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type WorkflowsOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortWorkflowsBy;
 };
 
 export type Zone = Node & {
@@ -1787,6 +1996,8 @@ export type ConductorQuery = {
   taskDepth: Maybe<Scalars['Int']['output']>;
   /** Get the list of pending tasks for a given task type */
   view: Maybe<Array<Maybe<Task>>>;
+  workflowDefinitions: WorkflowDefinitionConnection;
+  workflowLabels: Array<Scalars['String']['output']>;
 };
 
 
@@ -1966,6 +2177,12 @@ export type ConductorQueryViewArgs = {
   count?: InputMaybe<Scalars['Int']['input']>;
   start?: InputMaybe<Scalars['Int']['input']>;
   tasktype: Scalars['String']['input'];
+};
+
+
+export type ConductorQueryWorkflowDefinitionsArgs = {
+  filter?: InputMaybe<WorkflowsFilterInput>;
+  orderBy?: InputMaybe<WorkflowsOrderByInput>;
 };
 
 export type DeviceInventoryMutation = {
@@ -2262,98 +2479,6 @@ export type DeviceInventorySubscriptionUniconfigShellArgs = {
   trigger?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type DeviceTopologyMutation = {
-  __typename?: 'deviceTopologyMutation';
-  createBackup: CreateBackupResponse;
-  deleteBackups: DeleteBackupsResponse;
-  sync: SyncResponse;
-  updateCoordinates: CoordinatesResponse;
-  updateNodeStatus: Scalars['JSON']['output'];
-};
-
-
-export type DeviceTopologyMutationDeleteBackupsArgs = {
-  delete_age?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type DeviceTopologyMutationSyncArgs = {
-  devices?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  labels?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  provider_name: Scalars['String']['input'];
-};
-
-
-export type DeviceTopologyMutationUpdateCoordinatesArgs = {
-  coordinates_list: Array<CoordinatesInput>;
-};
-
-
-export type DeviceTopologyMutationUpdateNodeStatusArgs = {
-  device_name: Scalars['String']['input'];
-  interface_name?: InputMaybe<Scalars['String']['input']>;
-  status: Scalars['String']['input'];
-};
-
-export type DeviceTopologyQuery = {
-  __typename?: 'deviceTopologyQuery';
-  backups: Array<Scalars['String']['output']>;
-  commonNodes: CommonNodesResponse;
-  netDevices: NetDeviceConnection;
-  netRoutingPaths: Maybe<NetRoutingPathConnection>;
-  node: Maybe<Node>;
-  phyDevices: PhyDeviceConnection;
-  phyHasAndInterfaces: PhyHasAndInterfacesResponse;
-  phyLinksAndDevices: PhyLinksAndDevicesResponse;
-  provider: ProviderResponse;
-  providers: Array<Scalars['String']['output']>;
-  topologyDiff: TopologyResponse;
-};
-
-
-export type DeviceTopologyQueryCommonNodesArgs = {
-  db_name?: InputMaybe<Scalars['String']['input']>;
-  selected_nodes: Array<Scalars['String']['input']>;
-};
-
-
-export type DeviceTopologyQueryNetDevicesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<NetDeviceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type DeviceTopologyQueryNetRoutingPathsArgs = {
-  deviceFrom: Scalars['ID']['input'];
-  deviceTo: Scalars['ID']['input'];
-  outputCollection?: InputMaybe<NetRoutingPathOutputCollections>;
-};
-
-
-export type DeviceTopologyQueryNodeArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type DeviceTopologyQueryPhyDevicesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<PhyDeviceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type DeviceTopologyQueryProviderArgs = {
-  name: Scalars['String']['input'];
-};
-
-
-export type DeviceTopologyQueryTopologyDiffArgs = {
-  collection_type: TopologyDiffCollectionTypes;
-  new_db?: InputMaybe<Scalars['String']['input']>;
-  old_db?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type MutationInput_UpdateByTaskId_Status =
   | 'CANCELED'
   | 'COMPLETED'
@@ -2463,12 +2588,312 @@ export type Query_Search_Results_Items_Status =
   | 'TERMINATED'
   | 'TIMED_OUT';
 
+export type ResourceManagerMutation = {
+  __typename?: 'resourceManagerMutation';
+  ClaimResource: Resource;
+  ClaimResourceWithAltId: Resource;
+  CreateAllocatingPool: CreateAllocatingPoolPayload;
+  CreateAllocationStrategy: CreateAllocationStrategyPayload;
+  CreateNestedAllocatingPool: CreateNestedAllocatingPoolPayload;
+  CreateNestedSetPool: CreateNestedSetPoolPayload;
+  CreateNestedSingletonPool: CreateNestedSingletonPoolPayload;
+  CreateResourceType: CreateResourceTypePayload;
+  CreateSetPool: CreateSetPoolPayload;
+  CreateSingletonPool: CreateSingletonPoolPayload;
+  CreateTag: CreateTagPayload;
+  DeleteAllocationStrategy: DeleteAllocationStrategyPayload;
+  DeleteResourcePool: DeleteResourcePoolPayload;
+  DeleteResourceType: DeleteResourceTypePayload;
+  DeleteTag: DeleteTagPayload;
+  FreeResource: Scalars['String']['output'];
+  TagPool: TagPoolPayload;
+  TestAllocationStrategy: Scalars['Map']['output'];
+  UntagPool: UntagPoolPayload;
+  UpdateResourceAltId: Resource;
+  UpdateResourceTypeName: UpdateResourceTypeNamePayload;
+  UpdateTag: UpdateTagPayload;
+};
+
+
+export type ResourceManagerMutationClaimResourceArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolId: Scalars['ID']['input'];
+  userInput: Scalars['Map']['input'];
+};
+
+
+export type ResourceManagerMutationClaimResourceWithAltIdArgs = {
+  alternativeId: Scalars['Map']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolId: Scalars['ID']['input'];
+  userInput: Scalars['Map']['input'];
+};
+
+
+export type ResourceManagerMutationCreateAllocatingPoolArgs = {
+  input?: InputMaybe<CreateAllocatingPoolInput>;
+};
+
+
+export type ResourceManagerMutationCreateAllocationStrategyArgs = {
+  input?: InputMaybe<CreateAllocationStrategyInput>;
+};
+
+
+export type ResourceManagerMutationCreateNestedAllocatingPoolArgs = {
+  input: CreateNestedAllocatingPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateNestedSetPoolArgs = {
+  input: CreateNestedSetPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateNestedSingletonPoolArgs = {
+  input: CreateNestedSingletonPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateResourceTypeArgs = {
+  input: CreateResourceTypeInput;
+};
+
+
+export type ResourceManagerMutationCreateSetPoolArgs = {
+  input: CreateSetPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateSingletonPoolArgs = {
+  input?: InputMaybe<CreateSingletonPoolInput>;
+};
+
+
+export type ResourceManagerMutationCreateTagArgs = {
+  input: CreateTagInput;
+};
+
+
+export type ResourceManagerMutationDeleteAllocationStrategyArgs = {
+  input?: InputMaybe<DeleteAllocationStrategyInput>;
+};
+
+
+export type ResourceManagerMutationDeleteResourcePoolArgs = {
+  input: DeleteResourcePoolInput;
+};
+
+
+export type ResourceManagerMutationDeleteResourceTypeArgs = {
+  input: DeleteResourceTypeInput;
+};
+
+
+export type ResourceManagerMutationDeleteTagArgs = {
+  input: DeleteTagInput;
+};
+
+
+export type ResourceManagerMutationFreeResourceArgs = {
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerMutationTagPoolArgs = {
+  input: TagPoolInput;
+};
+
+
+export type ResourceManagerMutationTestAllocationStrategyArgs = {
+  allocationStrategyId: Scalars['ID']['input'];
+  currentResources: Array<ResourceInput>;
+  resourcePool: ResourcePoolInput;
+  userInput: Scalars['Map']['input'];
+};
+
+
+export type ResourceManagerMutationUntagPoolArgs = {
+  input: UntagPoolInput;
+};
+
+
+export type ResourceManagerMutationUpdateResourceAltIdArgs = {
+  alternativeId: Scalars['Map']['input'];
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerMutationUpdateResourceTypeNameArgs = {
+  input: UpdateResourceTypeNameInput;
+};
+
+
+export type ResourceManagerMutationUpdateTagArgs = {
+  input: UpdateTagInput;
+};
+
+export type ResourceManagerQuery = {
+  __typename?: 'resourceManagerQuery';
+  QueryAllocationStrategies: Array<AllocationStrategy>;
+  QueryAllocationStrategy: AllocationStrategy;
+  QueryEmptyResourcePools: ResourcePoolConnection;
+  QueryLeafResourcePools: ResourcePoolConnection;
+  QueryPoolCapacity: PoolCapacityPayload;
+  QueryPoolTypes: Array<PoolType>;
+  QueryRecentlyActiveResources: ResourceConnection;
+  QueryRequiredPoolProperties: Array<PropertyType>;
+  QueryResource: Resource;
+  QueryResourcePool: ResourcePool;
+  QueryResourcePoolHierarchyPath: Array<ResourcePool>;
+  QueryResourcePools: ResourcePoolConnection;
+  QueryResourceTypes: Array<ResourceType>;
+  QueryResources: ResourceConnection;
+  QueryResourcesByAltId: ResourceConnection;
+  QueryRootResourcePools: ResourcePoolConnection;
+  QueryTags: Array<Tag>;
+  SearchPoolsByTags: ResourcePoolConnection;
+  node: Maybe<Node>;
+};
+
+
+export type ResourceManagerQueryQueryAllocationStrategiesArgs = {
+  byName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryAllocationStrategyArgs = {
+  allocationStrategyId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryEmptyResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+};
+
+
+export type ResourceManagerQueryQueryLeafResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQueryQueryPoolCapacityArgs = {
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryRecentlyActiveResourcesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  fromDatetime: Scalars['String']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  toDatetime?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryRequiredPoolPropertiesArgs = {
+  allocationStrategyName: Scalars['String']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourceArgs = {
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcePoolArgs = {
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcePoolHierarchyPathArgs = {
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQueryQueryResourceTypesArgs = {
+  byName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryResourcesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcesByAltIdArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  input: Scalars['Map']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  poolId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryRootResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQuerySearchPoolsByTagsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
 export type DeviceQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'NetDevice' } | { __typename?: 'NetInterface' } | { __typename?: 'NetNetwork' } | { __typename?: 'PhyDevice' } | { __typename?: 'PhyInterface' } | { __typename?: 'Zone' } | null } };
+export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'Zone' } | null } };
 
 export type DeviceLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2512,7 +2937,7 @@ export type TopologyQuery = { __typename?: 'Query', deviceInventory: { __typenam
 export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'Coordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type TopologyVersionDataQueryVariables = Exact<{
   version: Scalars['String']['input'];

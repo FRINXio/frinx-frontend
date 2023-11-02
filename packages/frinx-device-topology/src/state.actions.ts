@@ -258,7 +258,7 @@ export function getNodesAndEdges(client: Client, labels: LabelItem[]): ReturnTyp
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.topology ?? { nodes: [], edges: [] };
         // we need to supply edges with null weight
         const edgesWithWeight = edges.map((e) => ({
           ...e,
@@ -288,7 +288,7 @@ export function getNetNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.netTopology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.netTopology ?? { nodes: [], edges: [] };
         dispatch(setNetNodesAndEdges({ nodes, edges }));
       });
   };
@@ -353,9 +353,9 @@ export function getBackupNodesAndEdges(client: Client, version: string): ReturnT
       .then((data) => {
         dispatch(
           setBackupNodesAndEdges({
-            nodes: data.data?.topologyVersionData.nodes ?? [],
+            nodes: data.data?.deviceInventory.topologyVersionData.nodes ?? [],
             edges:
-              data.data?.topologyVersionData.edges.map((e) => ({
+              data.data?.deviceInventory.topologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],

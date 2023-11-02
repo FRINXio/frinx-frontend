@@ -16,38 +16,38 @@ const VERSIONS_QUERY = gql`
 `;
 
 const VersionSelect: VoidFunctionComponent = () => {
-	const { state, dispatch } = useStateContext();
-	const { selectedVersion } = state;
+  const { state, dispatch } = useStateContext();
+  const { selectedVersion } = state;
 
-	const [{ data: versionsData, fetching: isFetchingVersions }] = useQuery<
-		VersionsQueryQuery,
-		VersionsQueryQueryVariables
-	>({ query: VERSIONS_QUERY });
+  const [{ data: versionsData, fetching: isFetchingVersions }] = useQuery<
+    VersionsQueryQuery,
+    VersionsQueryQueryVariables
+  >({ query: VERSIONS_QUERY });
 
-	const handleSelectVersionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-		const { value } = event.currentTarget;
-		dispatch(setSelectedVersion(value === 'none' ? null : value));
-	};
+  const handleSelectVersionChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.currentTarget;
+    dispatch(setSelectedVersion(value === 'none' ? null : value));
+  };
 
-	if (isFetchingVersions) {
-		return <Progress size="xs" isIndeterminate mt={-10} />;
-	}
+  if (isFetchingVersions) {
+    return <Progress size="xs" isIndeterminate mt={-10} />;
+  }
 
-	const versions = versionsData?.topologyVersions ?? [];
+  const versions = versionsData?.deviceInventory.topologyVersions ?? [];
 
-	return (
-		<>
-			<FormLabel marginBottom={4}>Compare current topology with:</FormLabel>
-			<Select value={selectedVersion || undefined} onChange={handleSelectVersionChange} background="white">
-				<option value="none">None</option>
-				{versions.map((v) => (
-					<option key={`version-${v}`} value={v}>
-						{format(getLocalDateFromUTC(v), 'dd/MM/yyyy, k:mm')}
-					</option>
-				))}
-			</Select>
-		</>
-	);
+  return (
+    <>
+      <FormLabel marginBottom={4}>Compare current topology with:</FormLabel>
+      <Select value={selectedVersion || undefined} onChange={handleSelectVersionChange} background="white">
+        <option value="none">None</option>
+        {versions.map((v) => (
+          <option key={`version-${v}`} value={v}>
+            {format(getLocalDateFromUTC(v), 'dd/MM/yyyy, k:mm')}
+          </option>
+        ))}
+      </Select>
+    </>
+  );
 };
 
 export default VersionSelect;
