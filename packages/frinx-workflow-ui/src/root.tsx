@@ -8,7 +8,6 @@ import ExecutedWorkflowList from './pages/executed-workflow-list/executed-workfl
 import PollData from './pages/poll-data/poll-data';
 import ScheduledWorkflowList from './pages/scheduled-workflow/scheduled-workflow-list';
 import TaskList from './pages/workflow-list/tasks/task-list';
-import WorkflowListHeader from './components/workflow-list-header';
 import WorkflowDefinitions from './pages/workflow-definitions/workflow-definitions';
 import EventHandlersListPage from './pages/event-handlers-list/event-handlers-list-page';
 import EventHandlersDetailPage from './pages/event-handlers-detail/event-handlers-detail-page';
@@ -37,14 +36,12 @@ const Root: VoidFunctionComponent = () => {
       <Route
         path="definitions"
         element={
-          <>
-            <WorkflowListHeader
-              onImportSuccess={() => {
-                setKey(uuid());
-              }}
-            />
-            <WorkflowDefinitions key={key} />
-          </>
+          <WorkflowDefinitions
+            key={key}
+            onImportSuccess={() => {
+              setKey(uuid());
+            }}
+          />
         }
       />
       <Route path="executed" element={<ExecutedWorkflowList key={key} />} />

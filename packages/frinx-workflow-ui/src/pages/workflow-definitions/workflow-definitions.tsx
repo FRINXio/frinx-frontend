@@ -1,8 +1,9 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
 import { jsonParse, ClientWorkflow } from '@frinx/shared';
 import { debounce } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import WorkflowListHeader from '../../components/workflow-list-header';
 import { DeleteWorkflowMutation, DeleteWorkflowMutationVariables, WorkflowsQuery } from '../../__generated__/graphql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
@@ -12,7 +13,6 @@ type OrderBy = {
   sortKey: 'name';
   direction: 'ASC' | 'DESC';
 };
-
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
   keyword: string[] | null;
@@ -20,9 +20,9 @@ type WorkflowFilter = {
 };
 
 const WORKFLOWS_QUERY = gql`
-  query Workflows($filter: FilterWorkflowsInput, $orderBy: WorkflowsOrderByInput) {
+  query Workflows($filter: WorkflowsFilterInput, $orderBy: WorkflowsOrderByInput) {
     conductor {
-      workflowDefitions(filter: $filter, orderBy: $orderBy) {
+      workflowDefinitions(filter: $filter, orderBy: $orderBy) {
         edges {
           node {
             id
@@ -39,6 +39,7 @@ const WORKFLOWS_QUERY = gql`
               key
               value
             }
+            timeoutSeconds
           }
         }
       }
@@ -62,7 +63,11 @@ const WORKFLOW_DELETE_MUTATION = gql`
   }
 `;
 
-const WorkflowDefinitions = () => {
+type Props = {
+  onImportSuccess: () => void;
+};
+
+const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
   // TODO: FD-493 this is redundant because we can use the labels from filter state
@@ -93,7 +98,6 @@ const WorkflowDefinitions = () => {
   const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
     WORKFLOW_DELETE_MUTATION,
   );
-
   const debouncedKeywordFilter = useMemo(
     () =>
       debounce((value) => {
@@ -116,9 +120,10 @@ const WorkflowDefinitions = () => {
   };
 
   const handleSort = () => {
-    return orderBy.direction === 'DESC'
-      ? setOrderBy({ ...orderBy, direction: 'ASC' })
-      : setOrderBy({ ...orderBy, direction: 'DESC' });
+    setOrderBy((prev) => ({
+      ...prev,
+      direction: prev.direction === 'DESC' ? 'ASC' : 'DESC',
+    }));
   };
 
   if (isLoadingWorkflowDefinitions) {
@@ -134,18 +139,18 @@ const WorkflowDefinitions = () => {
   }
 
   const workflows: ClientWorkflow[] =
-    workflowsData?.conductor.workflowDefitions.edges.map(({ node: w }) => {
+    workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
       return {
         ...w,
         labels: parsedLabels,
         tasks: w.tasks,
-        hasSchedule: false,
       };
     }) ?? [];
 
   return (
     <Container maxWidth="container.xl" mx="auto">
+      <WorkflowListHeader onImportSuccess={onImportSuccess} />
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}
@@ -194,7 +199,6 @@ const WorkflowDefinitions = () => {
         onLabelClick={(label) => {
           setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}
-        allLabels={labelsData?.workflowLabels ?? []}
       />
     </Container>
   );
