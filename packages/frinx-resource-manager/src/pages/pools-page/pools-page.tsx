@@ -51,83 +51,85 @@ const ALL_POOLS_QUERY = gql`
     $tags: TagOr
     $sortBy: SortResourcePoolsInput
   ) {
-    QueryRootResourcePools(
-      first: $first
-      last: $last
-      before: $before
-      after: $after
-      resourceTypeId: $resourceTypeId
-      filterByResources: $filterByResources
-      tags: $tags
-      sortBy: $sortBy
-    ) {
-      edges {
-        node {
-          id
-          Name
-          DealocationSafetyPeriod
-          PoolType
-          ParentResource {
-            id
-          }
-          allocatedResources {
-            totalCount
-          }
-          Tags {
-            id
-            Tag
-          }
-          PoolProperties
-          AllocationStrategy {
+    resourceManager {
+      QueryRootResourcePools(
+        first: $first
+        last: $last
+        before: $before
+        after: $after
+        resourceTypeId: $resourceTypeId
+        filterByResources: $filterByResources
+        tags: $tags
+        sortBy: $sortBy
+      ) {
+        edges {
+          node {
             id
             Name
-          }
-          ResourceType {
-            id
-            Name
-          }
-          Resources {
-            id
-            Properties
-            NestedPool {
+            DealocationSafetyPeriod
+            PoolType
+            ParentResource {
+              id
+            }
+            allocatedResources {
+              totalCount
+            }
+            Tags {
+              id
+              Tag
+            }
+            PoolProperties
+            AllocationStrategy {
               id
               Name
             }
+            ResourceType {
+              id
+              Name
+            }
+            Resources {
+              id
+              Properties
+              NestedPool {
+                id
+                Name
+              }
+            }
+            Capacity {
+              freeCapacity
+              utilizedCapacity
+            }
           }
-          Capacity {
-            freeCapacity
-            utilizedCapacity
-          }
         }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
       }
-      pageInfo {
-        endCursor {
-          ID
-        }
-        hasNextPage
-        hasPreviousPage
-        startCursor {
-          ID
-        }
-      }
-      totalCount
     }
   }
 `;
 
 const DELETE_POOL_MUTATION = gql`
   mutation DeletePool($input: DeleteResourcePoolInput!) {
-    DeleteResourcePool(input: $input) {
-      resourcePoolId
+    resourceManager {
+      DeleteResourcePool(input: $input) {
+        resourcePoolId
+      }
     }
   }
 `;
 
 const GET_RESOURCE_TYPES = gql`
   query GetResourceTypes {
-    QueryResourceTypes {
-      id
-      Name
+    resourceManager {
+      QueryResourceTypes {
+        id
+        Name
+      }
     }
   }
 `;
@@ -165,7 +167,7 @@ const PoolsPage: VoidFunctionComponent = () => {
     DeletePoolMutationMutationVariables
   >(DELETE_POOL_MUTATION);
 
-  const filteredPools = (data?.QueryRootResourcePools.edges ?? [])
+  const filteredPools = (data?.resourceManager.QueryRootResourcePools.edges ?? [])
     ?.map((e) => {
       return e?.node ?? null;
     })
@@ -267,7 +269,7 @@ const PoolsPage: VoidFunctionComponent = () => {
         clearAllTags={clearAllTags}
         onTagClick={handleOnTagClick}
         onClearSearch={handleOnClearSearch}
-        resourceTypes={resourceTypes?.QueryResourceTypes}
+        resourceTypes={resourceTypes?.resourceManager.QueryResourceTypes}
         canFilterByResourceType
         canFilterByAllocatedResources
       />
@@ -287,16 +289,18 @@ const PoolsPage: VoidFunctionComponent = () => {
         />
       </Box>
       <Flex align="center" justify="space-between">
-        {data && data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.endCursor && (
-          <Box mt={4} px={4}>
-            <Pagination
-              onPrevious={previousPage(data.QueryRootResourcePools.pageInfo.startCursor.toString())}
-              onNext={nextPage(data.QueryRootResourcePools.pageInfo.endCursor.toString())}
-              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
-              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
-            />
-          </Box>
-        )}
+        {data &&
+          data.resourceManager.QueryRootResourcePools.pageInfo.startCursor &&
+          data.resourceManager.QueryRootResourcePools.pageInfo.endCursor && (
+            <Box mt={4} px={4}>
+              <Pagination
+                onPrevious={previousPage(data.resourceManager.QueryRootResourcePools.pageInfo.startCursor)}
+                onNext={nextPage(data.resourceManager.QueryRootResourcePools.pageInfo.endCursor)}
+                hasNextPage={data.resourceManager.QueryRootResourcePools.pageInfo.hasNextPage}
+                hasPreviousPage={data.resourceManager.QueryRootResourcePools.pageInfo.hasPreviousPage}
+              />
+            </Box>
+          )}
         <SelectItemsPerPage
           first={paginationArgs.first}
           onItemsPerPageChange={firstPage}

@@ -4,19 +4,21 @@ import { Box, Button, Container, FormControl, FormLabel, Heading, Input, Select 
 import gql from 'graphql-tag';
 import { Editor } from '@frinx/shared';
 import {
+  AddStrategyMutationMutation,
+  AddStrategyMutationMutationVariables,
   AllocationStrategyLang,
-  CreateAllocationStrategyPayload,
-  MutationCreateAllocationStrategyArgs,
 } from '../__generated__/graphql';
 
 const query = gql`
   mutation AddStrategyMutation($input: CreateAllocationStrategyInput!) {
-    CreateAllocationStrategy(input: $input) {
-      strategy {
-        id
-        Name
-        Lang
-        Script
+    resourceManager {
+      CreateAllocationStrategy(input: $input) {
+        strategy {
+          id
+          Name
+          Lang
+          Script
+        }
       }
     }
   }
@@ -27,9 +29,7 @@ type Props = {
 };
 
 const CreateNewStrategy: FC<Props> = ({ onSaveButtonClick }) => {
-  const [{ data }, addStrategy] = useMutation<CreateAllocationStrategyPayload, MutationCreateAllocationStrategyArgs>(
-    query,
-  );
+  const [{ data }, addStrategy] = useMutation<AddStrategyMutationMutation, AddStrategyMutationMutationVariables>(query);
   const [name, setName] = useState('');
   const [lang, setLang] = useState<AllocationStrategyLang>('js');
 

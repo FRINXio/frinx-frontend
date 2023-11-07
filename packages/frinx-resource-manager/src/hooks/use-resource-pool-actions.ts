@@ -64,66 +64,114 @@ export type ResourcePoolActionHandlers = {
 
 const POOL_DETAIL_QUERY = gql`
   query GetPoolDetail($poolId: ID!) {
-    QueryResourcePool(poolId: $poolId) {
-      id
-      Name
-      PoolType
-      PoolProperties
-      Resources {
-        Description
-        Properties
+    resourceManager {
+      QueryResourcePool(poolId: $poolId) {
         id
-        NestedPool {
+        Name
+        PoolType
+        PoolProperties
+        Resources {
+          Description
+          Properties
           id
-          Name
-          PoolType
-          Tags {
+          NestedPool {
             id
-            Tag
-          }
-          PoolProperties
-          ParentResource {
-            ParentPool {
+            Name
+            PoolType
+            Tags {
               id
-              Name
+              Tag
             }
-          }
-          AllocationStrategy {
-            id
-            Name
-            Lang
-            Script
-          }
-          ResourceType {
-            id
-            Name
-          }
-          Resources {
-            id
-            NestedPool {
-              id
-              Name
-              ResourceType {
+            PoolProperties
+            ParentResource {
+              ParentPool {
                 id
                 Name
               }
             }
-          }
-          Capacity {
-            freeCapacity
-            utilizedCapacity
+            AllocationStrategy {
+              id
+              Name
+              Lang
+              Script
+            }
+            ResourceType {
+              id
+              Name
+            }
+            Resources {
+              id
+              NestedPool {
+                id
+                Name
+                ResourceType {
+                  id
+                  Name
+                }
+              }
+            }
+            Capacity {
+              freeCapacity
+              utilizedCapacity
+            }
           }
         }
+        Tags {
+          id
+          Tag
+        }
+        Capacity {
+          freeCapacity
+          utilizedCapacity
+        }
+        ResourceType {
+          id
+          Name
+        }
       }
-      Tags {
-        id
-        Tag
+    }
+  }
+`;
+
+const POOL_RESOURCES_QUERY = gql`
+  query AllocatedResources($input: Map!, $poolId: ID!, $first: Int, $last: Int, $before: Cursor, $after: Cursor) {
+    resourceManager {
+      QueryResourcesByAltId(
+        input: $input
+        poolId: $poolId
+        first: $first
+        last: $last
+        before: $before
+        after: $after
+      ) {
+        edges {
+          node {
+            id
+            Properties
+            Description
+            NestedPool {
+              id
+              Name
+            }
+            AlternativeId
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        totalCount
       }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
-      }
-      ResourceType {
+    }
+  }
+`;
+
+const GET_RESOURCE_TYPE_BYNAME_QUERY = gql`
+  query GetResourceTypeByName {
+    resourceManager {
+      QueryResourceTypes {
         id
         Name
       }
@@ -131,78 +179,47 @@ const POOL_DETAIL_QUERY = gql`
   }
 `;
 
-const POOL_RESOURCES_QUERY = gql`
-  query AllocatedResources($input: Map!, $poolId: ID!, $first: Int, $last: Int, $before: String, $after: String) {
-    QueryResourcesByAltId(input: $input, poolId: $poolId, first: $first, last: $last, before: $before, after: $after) {
-      edges {
-        node {
-          id
-          Properties
-          Description
-          NestedPool {
-            id
-            Name
-          }
-          AlternativeId
-        }
-      }
-      pageInfo {
-        startCursor {
-          ID
-        }
-        endCursor {
-          ID
-        }
-        hasNextPage
-        hasPreviousPage
-      }
-      totalCount
-    }
-  }
-`;
-
-const GET_RESOURCE_TYPE_BYNAME_QUERY = gql`
-  query GetResourceTypeByName {
-    QueryResourceTypes {
-      id
-      Name
-    }
-  }
-`;
-
 const CLAIM_RESOURCES_MUTATION = gql`
   mutation ClaimResource($poolId: ID!, $description: String, $userInput: Map!) {
-    ClaimResource(poolId: $poolId, description: $description, userInput: $userInput) {
-      id
-      Properties
+    resourceManager {
+      ClaimResource(poolId: $poolId, description: $description, userInput: $userInput) {
+        id
+        Properties
+      }
     }
   }
 `;
 
 const CLAIM_RESOURCES_WITH_ALT_ID_MUTATION = gql`
   mutation ClaimResourceWithAltId($poolId: ID!, $description: String, $userInput: Map!, $alternativeId: Map!) {
-    ClaimResourceWithAltId(
-      poolId: $poolId
-      description: $description
-      userInput: $userInput
-      alternativeId: $alternativeId
-    ) {
-      id
-      Properties
+    resourceManager {
+      ClaimResourceWithAltId(
+        poolId: $poolId
+        description: $description
+        userInput: $userInput
+        alternativeId: $alternativeId
+      ) {
+        id
+        Properties
+      }
     }
   }
 `;
 
 const FREE_RESOURCES_MUTATION = gql`
   mutation FreeResource($poolId: ID!, $input: Map!) {
-    FreeResource(input: $input, poolId: $poolId)
+    resourceManager {
+      FreeResource(input: $input, poolId: $poolId)
+    }
   }
 `;
 
 const DELETE_POOL_MUTATION = gql`
   mutation DeletePool($input: DeleteResourcePoolInput!) {
-    DeleteResourcePool(input: $input) {
-      resourcePoolId
+    resourceManager {
+      DeleteResourcePool(input: $input) {
+        resourcePoolId
+      }
     }
   }
 `;

@@ -2,16 +2,18 @@ import React, { FC } from 'react';
 import { useMutation } from 'urql';
 import { Button } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import { MutationFreeResourceArgs } from '../__generated__/graphql';
+import { FreeResourceMutationMutationVariables } from '../__generated__/graphql';
 
 const query = gql`
   mutation FreeResourceMutation($poolId: ID!, $input: Map!) {
-    FreeResource(poolId: $poolId, input: $input)
+    resourceManager {
+      FreeResource(poolId: $poolId, input: $input)
+    }
   }
 `;
 
 const FreeResource: FC = () => {
-  const [, addStrategy] = useMutation<string, MutationFreeResourceArgs>(query);
+  const [, addStrategy] = useMutation<string, FreeResourceMutationMutationVariables>(query);
 
   const sendMutation = () => {
     const variables = {

@@ -17,72 +17,76 @@ import { SortBy } from '../pages/pools-page/pools-page';
 
 const POOL_DETAIL_QUERY = gql`
   query GetNestedPoolsDetail($poolId: ID!) {
-    QueryResourcePool(poolId: $poolId) {
-      id
-      Name
-      DealocationSafetyPeriod
-      PoolType
-      Tags {
-        id
-        Tag
-      }
-      PoolProperties
-      AllocationStrategy {
+    resourceManager {
+      QueryResourcePool(poolId: $poolId) {
         id
         Name
-        Lang
-        Script
-      }
-      ResourceType {
-        id
-        Name
-      }
-      Resources {
-        id
-        NestedPool {
+        DealocationSafetyPeriod
+        PoolType
+        Tags {
+          id
+          Tag
+        }
+        PoolProperties
+        AllocationStrategy {
           id
           Name
-          PoolType
-          Tags {
-            id
-            Tag
-          }
-          PoolProperties
-          AllocationStrategy {
-            id
-            Name
-            Lang
-            Script
-          }
-          ResourceType {
+          Lang
+          Script
+        }
+        ResourceType {
+          id
+          Name
+        }
+        Resources {
+          id
+          NestedPool {
             id
             Name
-          }
-          Resources {
-            id
-            NestedPool {
+            PoolType
+            Tags {
+              id
+              Tag
+            }
+            PoolProperties
+            AllocationStrategy {
+              id
+              Name
+              Lang
+              Script
+            }
+            ResourceType {
               id
               Name
             }
-          }
-          Capacity {
-            freeCapacity
-            utilizedCapacity
+            Resources {
+              id
+              NestedPool {
+                id
+                Name
+              }
+            }
+            Capacity {
+              freeCapacity
+              utilizedCapacity
+            }
           }
         }
-      }
-      Capacity {
-        freeCapacity
-        utilizedCapacity
+        Capacity {
+          freeCapacity
+          utilizedCapacity
+        }
       }
     }
   }
 `;
 
 const DELETE_POOL_MUTATION = gql`
-  mutation DeletePool($input: DeleteResourcePoolInput!) {
-    DeleteResourcePool(input: $input) {
-      resourcePoolId
+  mutation DeleteResourcePool($input: DeleteResourcePoolInput!) {
+    resourceManager {
+      DeleteResourcePool(input: $input) {
+        resourcePoolId
+      }
     }
   }
 `;
@@ -99,7 +103,7 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     query: POOL_DETAIL_QUERY,
     variables: { poolId: unwrap(poolId) },
   });
-  const resources = (poolData?.QueryResourcePool.Resources || [])
+  const resources = (poolData?.resourceManager.QueryResourcePool.Resources || [])
     .map(({ NestedPool }) => {
       return NestedPool ?? null;
     })
@@ -164,11 +168,13 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
-  if (poolData == null || poolData.QueryResourcePool == null) {
+  if (poolData == null || poolData.resourceManager.QueryResourcePool == null) {
     return <Box textAlign="center">Resource pool does not exists</Box>;
   }
 
-  const { QueryResourcePool: resourcePool } = poolData;
+  const {
+    resourceManager: { QueryResourcePool: resourcePool },
+  } = poolData;
 
   return (
     <PageContainer>

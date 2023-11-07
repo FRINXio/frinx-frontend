@@ -4,7 +4,7 @@ import React, { FC, useState } from 'react';
 import AlternativeIdModal from '../../components/alternative-id-modal/alternative-id-modal';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
 
-type AllocatedResources = AllocatedResourcesQuery['QueryResourcesByAltId'];
+type AllocatedResources = AllocatedResourcesQuery['resourceManager']['QueryResourcesByAltId'];
 type AllocatedResource = NonNullable<AllocatedResources['edges'][0]>['node'];
 
 type Props = {

@@ -14,12 +14,14 @@ import {
 } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import FeatherIcon from 'feather-icons-react';
-import { DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs } from '../__generated__/graphql';
+import { DeletePoolMutationMutation, DeletePoolMutationMutationVariables } from '../__generated__/graphql';
 
 const query = gql`
   mutation DeletePoolMutation($input: DeleteResourcePoolInput!) {
-    DeleteResourcePool(input: $input) {
-      resourcePoolId
+    resourceManager {
+      DeleteResourcePool(input: $input) {
+        resourcePoolId
+      }
     }
   }
 `;
@@ -29,7 +31,7 @@ type DeletePoolProps = {
 };
 
 const DeletePool: FC<DeletePoolProps> = ({ poolId }) => {
-  const [res, addStrategy] = useMutation<DeleteResourcePoolPayload, MutationDeleteResourcePoolArgs>(query);
+  const [res, deletePool] = useMutation<DeletePoolMutationMutation, DeletePoolMutationMutationVariables>(query);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const toast = useToast();
   const cancelRef = useRef<HTMLDivElement>();
@@ -42,7 +44,7 @@ const DeletePool: FC<DeletePoolProps> = ({ poolId }) => {
         resourcePoolId: poolId,
       },
     };
-    await addStrategy(variables);
+    await deletePool(variables);
     setIsAlertOpen(false);
     toast({
       title: `test`,

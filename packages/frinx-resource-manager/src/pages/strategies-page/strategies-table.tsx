@@ -5,7 +5,7 @@ import { QueryAllocationStrategiesQuery } from '../../__generated__/graphql';
 import DeleteModal from '../../components/delete-modal';
 
 type Props = {
-  strategies: QueryAllocationStrategiesQuery['QueryAllocationStrategies'];
+  strategies: QueryAllocationStrategiesQuery['resourceManager']['QueryAllocationStrategies'];
   onScriptBtnClick: (lang: string, script: string, name: string) => void;
   onDeleteBtnClick: (id: string) => void;
 };

@@ -13,13 +13,15 @@ import {
 } from '@chakra-ui/react';
 import gql from 'graphql-tag';
 import FeatherIcon from 'feather-icons-react';
-import { DeleteAllocationStrategyPayload, MutationDeleteAllocationStrategyArgs } from '../__generated__/graphql';
+import { DeleteStrategyMutationMutation, DeleteStrategyMutationMutationVariables } from '../__generated__/graphql';
 
 const query = gql`
   mutation DeleteStrategyMutation($input: DeleteAllocationStrategyInput!) {
-    DeleteAllocationStrategy(input: $input) {
-      strategy {
-        id
+    resourceManager {
+      DeleteAllocationStrategy(input: $input) {
+        strategy {
+          id
+        }
       }
     }
   }
@@ -30,7 +32,9 @@ type DeleteStrategyProps = {
 };
 
 const DeleteStrategy: FC<DeleteStrategyProps> = ({ allocationStrategyId }) => {
-  const [res, addStrategy] = useMutation<DeleteAllocationStrategyPayload, MutationDeleteAllocationStrategyArgs>(query);
+  const [res, addStrategy] = useMutation<DeleteStrategyMutationMutation, DeleteStrategyMutationMutationVariables>(
+    query,
+  );
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const { fetching } = res;
 

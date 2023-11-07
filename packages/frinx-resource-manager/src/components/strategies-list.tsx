@@ -8,12 +8,14 @@ import { QueryAllocationStrategiesQuery } from '../__generated__/graphql';
 import ViewStrategyScript from './view-strategy-script';
 
 const query = gql`
-  query QueryAllocationStrategies {
-    QueryAllocationStrategies {
-      id
-      Name
-      Lang
-      Script
+  query QueryAllocationStrategiesList {
+    resourceManager {
+      QueryAllocationStrategies {
+        id
+        Name
+        Lang
+        Script
+      }
     }
   }
 `;
@@ -53,7 +55,7 @@ const StrategiesList: FC<Props> = ({ onAddButtonClick }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {data?.QueryAllocationStrategies?.map((strategy) => (
+            {data?.resourceManager.QueryAllocationStrategies?.map((strategy) => (
               <Tr key={strategy.id}>
                 <Td>{strategy.Name}</Td>
                 <Td>{strategy.Lang}</Td>

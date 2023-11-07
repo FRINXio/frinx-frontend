@@ -2,20 +2,24 @@ import React, { FC } from 'react';
 import { useMutation } from 'urql';
 import { Button } from '@chakra-ui/react';
 import gql from 'graphql-tag';
-import { CreateNestedSetPoolPayload, MutationCreateNestedSetPoolArgs } from '../__generated__/graphql';
+import { CreateNestedPoolMutationMutation, CreateNestedPoolMutationMutationVariables } from '../__generated__/graphql';
 
 const query = gql`
   mutation CreateNestedPoolMutation($input: CreateNestedSetPoolInput!) {
-    CreateNestedSetPool(input: $input) {
-      pool {
-        id
+    resourceManager {
+      CreateNestedSetPool(input: $input) {
+        pool {
+          id
+        }
       }
     }
   }
 `;
 
 const CreateNestedPool: FC = () => {
-  const [, addStrategy] = useMutation<CreateNestedSetPoolPayload, MutationCreateNestedSetPoolArgs>(query);
+  const [, addStrategy] = useMutation<CreateNestedPoolMutationMutation, CreateNestedPoolMutationMutationVariables>(
+    query,
+  );
 
   const sendMutation = () => {
     const variables = {
