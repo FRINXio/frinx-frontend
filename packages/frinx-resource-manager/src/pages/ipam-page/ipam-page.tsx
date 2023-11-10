@@ -16,7 +16,8 @@ import { useMutation, useQuery } from 'urql';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import {
-  DeleteIpamPoolMutation, DeleteIpamPoolMutationVariables,
+  DeleteIpamPoolMutation,
+  DeleteIpamPoolMutationVariables,
   GetAllIpPoolsQuery,
   GetAllIpPoolsQueryVariables,
   GetResourceTypesQuery,

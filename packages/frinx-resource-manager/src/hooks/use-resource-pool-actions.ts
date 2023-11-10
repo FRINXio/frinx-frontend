@@ -265,9 +265,7 @@ const useResourcePoolActions = ({
   const [, claimResource] = useMutation<ClaimResourceMutation, ClaimResourceMutationVariables>(
     CLAIM_RESOURCES_MUTATION,
   );
-  const [, freeResource] = useMutation<FreeResourceMutation, FreeResourceMutationVariables>(
-    FREE_RESOURCES_MUTATION,
-  );
+  const [, freeResource] = useMutation<FreeResourceMutation, FreeResourceMutationVariables>(FREE_RESOURCES_MUTATION);
   const [, claimResourceWithAltId] = useMutation<
     ClaimResourceWithAltIdMutation,
     ClaimResourceWithAltIdMutationVariables

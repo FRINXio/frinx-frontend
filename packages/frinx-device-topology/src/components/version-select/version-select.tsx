@@ -17,10 +17,9 @@ const VersionSelect: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
   const { selectedVersion } = state;
 
-  const [{ data: versionsData, fetching: isFetchingVersions }] = useQuery<
-    VersionsQuery,
-    VersionsQueryVariables
-  >({ query: VERSIONS_QUERY });
+  const [{ data: versionsData, fetching: isFetchingVersions }] = useQuery<VersionsQuery, VersionsQueryVariables>({
+    query: VERSIONS_QUERY,
+  });
 
   const handleSelectVersionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.currentTarget;

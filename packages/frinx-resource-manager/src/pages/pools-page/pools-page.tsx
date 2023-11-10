@@ -14,7 +14,8 @@ import {
   Pagination,
 } from '@frinx/shared';
 import {
-  DeletePoolMutation, DeletePoolMutationVariables,
+  DeletePoolMutation,
+  DeletePoolMutationVariables,
   GetAllPoolsQuery,
   GetAllPoolsQueryVariables,
   GetResourceTypesQuery,
@@ -161,10 +162,9 @@ const PoolsPage: VoidFunctionComponent = () => {
   const [{ data: resourceTypes }] = useQuery<GetResourceTypesQuery, GetResourceTypesQueryVariables>({
     query: GET_RESOURCE_TYPES,
   });
-  const [{ fetching: isMutationLoading }, deletePool] = useMutation<
-    DeletePoolMutation,
-    DeletePoolMutationVariables
-  >(DELETE_POOL_MUTATION);
+  const [{ fetching: isMutationLoading }, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationVariables>(
+    DELETE_POOL_MUTATION,
+  );
 
   const filteredPools = (data?.resourceManager.QueryRootResourcePools.edges ?? [])
     ?.map((e) => {
