@@ -5,10 +5,10 @@ import { gql, useQuery } from 'urql';
 import { getLocalDateFromUTC } from '@frinx/shared';
 import { setSelectedVersion } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
-import { VersionsQueryQuery, VersionsQueryQueryVariables } from '../../__generated__/graphql';
+import { VersionsQuery, VersionsQueryVariables } from '../../__generated__/graphql';
 
 const VERSIONS_QUERY = gql`
-  query VersionsQuery {
+  query Versions {
     topologyVersions
   }
 `;
@@ -18,8 +18,8 @@ const VersionSelect: VoidFunctionComponent = () => {
   const { selectedVersion } = state;
 
   const [{ data: versionsData, fetching: isFetchingVersions }] = useQuery<
-    VersionsQueryQuery,
-    VersionsQueryQueryVariables
+    VersionsQuery,
+    VersionsQueryVariables
   >({ query: VERSIONS_QUERY });
 
   const handleSelectVersionChange = (event: ChangeEvent<HTMLSelectElement>) => {

@@ -6,8 +6,7 @@ import { unwrap, useNotifications, useMinisearch, useTags, omitNullValue } from 
 import PageContainer from '../components/page-container';
 import PoolsTable from '../pages/pools-page/pools-table';
 import {
-  DeletePoolMutation,
-  DeletePoolMutationMutationVariables,
+  DeleteResourcePoolMutation, DeleteResourcePoolMutationVariables,
   GetNestedPoolsDetailQuery,
   GetNestedPoolsDetailQueryVariables,
   ResourcePoolOrderField,
@@ -115,7 +114,7 @@ const NestedPoolsDetailPage: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Resource'] }), []);
   const { addToastNotification } = useNotifications();
 
-  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
+  const [, deletePool] = useMutation<DeleteResourcePoolMutation, DeleteResourcePoolMutationVariables>(DELETE_POOL_MUTATION);
 
   if (poolId == null) {
     return null;

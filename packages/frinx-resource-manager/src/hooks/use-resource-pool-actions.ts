@@ -6,10 +6,7 @@ import { usePagination, CallbackFunctions, PaginationArgs, useNotifications, unw
 import {
   ClaimResourceMutation,
   ClaimResourceMutationVariables,
-  FreeResourceMutationMutation,
-  FreeResourceMutationMutationVariables,
   DeletePoolMutation,
-  DeletePoolMutationMutationVariables,
   GetResourceTypeByNameQuery,
   AllocatedResourcesQuery,
   AllocatedResourcesQueryVariables,
@@ -20,6 +17,9 @@ import {
   InputMaybe,
   ClaimResourceWithAltIdMutation,
   ClaimResourceWithAltIdMutationVariables,
+  FreeResourceMutation,
+  FreeResourceMutationVariables,
+  DeletePoolMutationVariables,
 } from '../__generated__/graphql';
 
 export type AlternativeIdValue = string | number | (string | number)[];
@@ -265,14 +265,14 @@ const useResourcePoolActions = ({
   const [, claimResource] = useMutation<ClaimResourceMutation, ClaimResourceMutationVariables>(
     CLAIM_RESOURCES_MUTATION,
   );
-  const [, freeResource] = useMutation<FreeResourceMutationMutation, FreeResourceMutationMutationVariables>(
+  const [, freeResource] = useMutation<FreeResourceMutation, FreeResourceMutationVariables>(
     FREE_RESOURCES_MUTATION,
   );
   const [, claimResourceWithAltId] = useMutation<
     ClaimResourceWithAltIdMutation,
     ClaimResourceWithAltIdMutationVariables
   >(CLAIM_RESOURCES_WITH_ALT_ID_MUTATION);
-  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationMutationVariables>(DELETE_POOL_MUTATION);
+  const [, deletePool] = useMutation<DeletePoolMutation, DeletePoolMutationVariables>(DELETE_POOL_MUTATION);
 
   const handlers = useMemo(
     () => ({

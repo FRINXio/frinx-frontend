@@ -3015,60 +3015,10 @@ export type SchedulerQuerySchedulesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type ClaimResourceMutationMutationVariables = Exact<{
-  poolId: Scalars['ID']['input'];
-  description?: InputMaybe<Scalars['String']['input']>;
-  userInput: Scalars['Map']['input'];
-}>;
-
-
-export type ClaimResourceMutationMutation = { __typename?: 'Mutation', resourceManager: { __typename?: 'resourceManagerMutation', ClaimResource: { __typename?: 'Resource', id: string } } };
-
-export type CreateNestedPoolMutationMutationVariables = Exact<{
-  input: CreateNestedSetPoolInput;
-}>;
-
-
-export type CreateNestedPoolMutationMutation = { __typename?: 'Mutation', resourceManager: { __typename?: 'resourceManagerMutation', CreateNestedSetPool: { __typename?: 'CreateNestedSetPoolPayload', pool: { __typename?: 'ResourcePool', id: string } | null } } };
-
-export type AddStrategyMutationMutationVariables = Exact<{
-  input: CreateAllocationStrategyInput;
-}>;
-
-
-export type AddStrategyMutationMutation = { __typename?: 'Mutation', resourceManager: { __typename?: 'resourceManagerMutation', CreateAllocationStrategy: { __typename?: 'CreateAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string } | null } } };
-
-export type DeletePoolMutationMutationVariables = Exact<{
-  input: DeleteResourcePoolInput;
-}>;
-
-
-export type DeletePoolMutationMutation = { __typename?: 'Mutation', resourceManager: { __typename?: 'resourceManagerMutation', DeleteResourcePool: { __typename?: 'DeleteResourcePoolPayload', resourcePoolId: string } } };
-
-export type DeleteStrategyMutationMutationVariables = Exact<{
-  input: DeleteAllocationStrategyInput;
-}>;
-
-
-export type DeleteStrategyMutationMutation = { __typename?: 'Mutation', resourceManager: { __typename?: 'resourceManagerMutation', DeleteAllocationStrategy: { __typename?: 'DeleteAllocationStrategyPayload', strategy: { __typename?: 'AllocationStrategy', id: string } | null } } };
-
-export type FreeResourceMutationMutationVariables = Exact<{
-  poolId: Scalars['ID']['input'];
-  input: Scalars['Map']['input'];
-}>;
-
-
-export type FreeResourceMutationMutation = { __typename?: 'Mutation', resourceManager: { __typename?: 'resourceManagerMutation', FreeResource: string } };
-
 export type AllPoolsNestedQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type AllPoolsNestedQuery = { __typename?: 'Query', resourceManager: { __typename?: 'resourceManagerQuery', QueryRootResourcePools: { __typename?: 'ResourcePoolConnection', edges: Array<{ __typename?: 'ResourcePoolEdge', node: { __typename?: 'ResourcePool', id: string, Name: string, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any, NestedPool: { __typename?: 'ResourcePool', id: string, Name: string, PoolType: PoolType, Resources: Array<{ __typename?: 'Resource', id: string, Properties: any }> } | null }> } } | null> } } };
-
-export type QueryAllocationStrategiesListQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type QueryAllocationStrategiesListQuery = { __typename?: 'Query', resourceManager: { __typename?: 'resourceManagerQuery', QueryAllocationStrategies: Array<{ __typename?: 'AllocationStrategy', id: string, Name: string, Lang: AllocationStrategyLang, Script: string }> } };
 
 export type GetPoolDetailQueryVariables = Exact<{
   poolId: Scalars['ID']['input'];

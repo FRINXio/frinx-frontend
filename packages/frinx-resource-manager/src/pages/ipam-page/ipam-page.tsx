@@ -16,8 +16,7 @@ import { useMutation, useQuery } from 'urql';
 import Ipv46PrefixSwitch from '../../components/ipv46-prefix-switch';
 import SearchFilterPoolsBar from '../../components/search-filter-pools-bar';
 import {
-  DeletePoolMutation,
-  DeletePoolMutationMutationVariables,
+  DeleteIpamPoolMutation, DeleteIpamPoolMutationVariables,
   GetAllIpPoolsQuery,
   GetAllIpPoolsQueryVariables,
   GetResourceTypesQuery,
@@ -155,8 +154,8 @@ const IpamPoolPage: VoidFunctionComponent = () => {
     query: GET_RESOURCE_TYPES,
   });
   const [{ fetching: isMutationLoading }, deletePool] = useMutation<
-    DeletePoolMutation,
-    DeletePoolMutationMutationVariables
+    DeleteIpamPoolMutation,
+    DeleteIpamPoolMutationVariables
   >(DELETE_POOL_MUTATION);
 
   const allResourcePools = (data?.resourceManager.QueryRootResourcePools.edges ?? [])
