@@ -21,12 +21,6 @@ const ExecutedWorkflowTableHead: FC<Props> = ({
       <Th>
         <Checkbox onChange={onSelectAllWorkflows} isChecked={areAllWorkflowsSelected} />
       </Th>
-      <Th onClick={() => handleOnSort('workflowId')} cursor="pointer">
-        Workflow ID
-        {sort.sortKey === 'workflowId' ? (
-          <Icon as={FeatherIcon} size={40} icon={sort.direction === 'asc' ? 'chevron-down' : 'chevron-up'} />
-        ) : null}
-      </Th>
       <Th onClick={() => handleOnSort('workflowName')} cursor="pointer">
         Workflow name
         {sort.sortKey === 'workflowName' ? (

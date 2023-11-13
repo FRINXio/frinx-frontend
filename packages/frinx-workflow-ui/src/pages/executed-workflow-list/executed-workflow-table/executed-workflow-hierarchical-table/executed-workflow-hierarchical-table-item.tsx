@@ -1,12 +1,12 @@
 import moment from 'moment';
 import React, { FC, Fragment, useMemo, useState } from 'react';
-import { Tr, Td, Checkbox, Icon } from '@chakra-ui/react';
+import { Tr, Td, Checkbox, Icon, Link as ChakraLink, Button } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
 import ExecutedWorkflowStatusLabels from '../executed-workflow-status-labels';
 import {
-  ExecutedWorkflowStatus,
+  WorkflowStatus,
   ExecutedWorkflowsQuery,
   WorkflowInstanceDetailQuery,
   WorkflowInstanceDetailQueryVariables,
@@ -33,10 +33,10 @@ const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
 `;
 
 type Props = {
-  workflows: NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>;
+  workflows: NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>;
   selectedWorkflows: string[];
   onWorkflowSelect: (workflowId: string) => void;
-  onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
+  onWorkflowStatusClick?: (status: WorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
@@ -77,29 +77,32 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
         <Fragment key={item.id}>
           <Tr>
             <Td>
-              <Checkbox isChecked={selectedWorkflows.includes(item.id)} onChange={() => onWorkflowSelect(item.id)} />
+              <Checkbox
+                isChecked={selectedWorkflows.includes(item.id)}
+                onChange={() => {
+                  onWorkflowSelect(item.id);
+                }}
+              />
             </Td>
-            <Td
-              style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-              title={item.workflowId ?? 'Unknown workflow'}
-              textColor="blue.500"
-              cursor="pointer"
-              onClick={() => handleOnShowSubWorkflows(item.id)}
-            >
-              {item.id === workflowInstanceDetailId ? (
-                <Icon as={FeatherIcon} icon="chevron-up" size={20} w="6" h="6" paddingRight={2} />
-              ) : (
-                <Icon as={FeatherIcon} icon="chevron-down" size={20} w="6" h="6" paddingRight={2} />
-              )}
-              <Link to={`../executed/${item.id}`}>{item.workflowId ?? '-'}</Link>
+            <Td display="flex" alignItems="center">
+              <Button
+                size="xs"
+                colorScheme="blackAlpha"
+                variant="ghost"
+                onClick={() => {
+                  handleOnShowSubWorkflows(item.id);
+                }}
+              >
+                {item.id === workflowInstanceDetailId ? (
+                  <Icon as={FeatherIcon} icon="chevron-up" size={20} w="6" h="6" />
+                ) : (
+                  <Icon as={FeatherIcon} icon="chevron-down" size={20} w="6" h="6" />
+                )}
+              </Button>
+              <ChakraLink as={Link} to={item.id} color="blue.500">
+                {item.workflowDefinition?.name}
+              </ChakraLink>
             </Td>
-
-            <Td>{item.workflowName}</Td>
-
             <Td>{moment(item.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
             <Td>{item.endTime ? moment(item.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
             <Td>
@@ -107,9 +110,11 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
             </Td>
           </Tr>
 
-          {hasProblemToLoadSubworkflows && (
+          {hasProblemToLoadSubworkflows && item.id === workflowInstanceDetailId && (
             <Tr backgroundColor="gray.50">
-              <Td>We had a problem to load subworkflows of selected workflow</Td>
+              <Td colSpan={5} textAlign="center">
+                We had a problem to load subworkflows of selected workflow
+              </Td>
             </Tr>
           )}
 

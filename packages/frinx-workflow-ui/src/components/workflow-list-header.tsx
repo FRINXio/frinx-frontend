@@ -25,24 +25,24 @@ type Props = {
   onImportSuccess: () => void;
 };
 
-const CREATE_WORKFLOW_MUTATION = gql`
-  mutation CreateWorkflow($input: UpdateWorkflowInput!) {
-    updateWorkflow(id: "", input: $input) {
-      workflow {
-        createdBy
-        updatedAt
-        tasks
-        name
-        description
-        version
-        outputParameters {
-          key
-          value
-        }
-      }
-    }
-  }
-`;
+// const CREATE_WORKFLOW_MUTATION = gql`
+//   mutation CreateWorkflow($input: UpdateWorkflowInput!) {
+//     updateWorkflow(id: "", input: $input) {
+//       workflow {
+//         createdBy
+//         updatedAt
+//         tasks
+//         name
+//         description
+//         version
+//         outputParameters {
+//           key
+//           value
+//         }
+//       }
+//     }
+//   }
+// `;
 
 function readFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

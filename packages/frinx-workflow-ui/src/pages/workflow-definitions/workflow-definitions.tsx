@@ -1,5 +1,5 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow } from '@frinx/shared';
+import { jsonParse, ClientWorkflowWithoutTasks } from '@frinx/shared';
 import { debounce } from 'lodash';
 import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -31,15 +31,13 @@ const WORKFLOWS_QUERY = gql`
             version
             createdAt
             updatedAt
-            tasks {
-              name
-            }
             inputParameters
             outputParameters {
               key
               value
             }
             timeoutSeconds
+            hasSchedule
           }
         }
       }
@@ -76,7 +74,7 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     labels: [],
   });
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'ASC' });
-  const [activeWf, setActiveWf] = useState<ClientWorkflow>();
+  const [activeWf, setActiveWf] = useState<ClientWorkflowWithoutTasks>();
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
   const dependencyModal = useDisclosure();
@@ -106,7 +104,7 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     [],
   );
 
-  const handleDeleteWorkflow = async (workflow: ClientWorkflow) => {
+  const handleDeleteWorkflow = async (workflow: ClientWorkflowWithoutTasks) => {
     const { name, version } = workflow;
     await deleteWorkflow(
       {
@@ -138,13 +136,12 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     return <Text>We are sorry, but something went wrong when we were loading workflow definitions.</Text>;
   }
 
-  const workflows: ClientWorkflow[] =
+  const workflows: ClientWorkflowWithoutTasks[] =
     workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
       return {
         ...w,
         labels: parsedLabels,
-        tasks: w.tasks,
       };
     }) ?? [];
 

@@ -28,35 +28,36 @@ const ExecutedWorkflowFlatTableItem: FC<Props> = ({
 
   return (
     <>
-      {workflows.executedWorkflows.edges.map(({ node }) => (
-        <Tr key={node.id}>
-          <Td>
-            <Checkbox
-              isChecked={selectedWorkflows.includes(node.id)}
-              onChange={() => {
-                onWorkflowSelect(node.id);
-              }}
-            />
-          </Td>
-          <Td
-            style={{
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-            title={node.workflowId ?? 'UNKNOWN workflow'}
-            textColor="blue.500"
-          >
-            <Link to={`../executed/${node.id}`}>{node.workflowId}</Link>
-          </Td>
-          <Td>{node.workflowName}</Td>
-          <Td>{moment(node.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
-          <Td>{node.endTime ? moment(node.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
-          <Td>
-            <ExecutedWorkflowStatusLabels status={node.status ?? 'UNKNOWN'} onClick={onWorkflowStatusClick} />
-          </Td>
-        </Tr>
-      ))}
+      {workflows.executedWorkflows.edges.map(({ node }) => {
+        console.log(node);
+        return (
+          <Tr key={node.id}>
+            <Td>
+              <Checkbox
+                isChecked={selectedWorkflows.includes(node.id)}
+                onChange={() => {
+                  onWorkflowSelect(node.id);
+                }}
+              />
+            </Td>
+            <Td
+              whiteSpace="nowrap"
+              textOverflow="ellipsis"
+              overflow="hidden"
+              title={node.workflowId ?? 'UNKNOWN workflow'}
+              textColor="blue.500"
+            >
+              <Link to={`../executed/${node.id}`}>{node.id}</Link>
+            </Td>
+            <Td>{node.workflowDefinition.name}</Td>
+            <Td>{moment(node.startTime).format('MM/DD/YYYY, HH:mm:ss:SSS')}</Td>
+            <Td>{node.endTime ? moment(node.endTime).format('MM/DD/YYYY, HH:mm:ss:SSS') : '-'}</Td>
+            <Td>
+              <ExecutedWorkflowStatusLabels status={node.status ?? 'UNKNOWN'} onClick={onWorkflowStatusClick} />
+            </Td>
+          </Tr>
+        );
+      })}
     </>
   );
 };

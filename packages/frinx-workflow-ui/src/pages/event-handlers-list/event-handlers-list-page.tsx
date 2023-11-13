@@ -40,57 +40,57 @@ type Props = {
   onEventHandlerEditClick: (event: string, name: string) => void;
 };
 
-const EVENT_HANDLERS_QUERY = gql`
-  query GetEventHandlers(
-    $filter: FilterEventHandlerInput
-    $first: Int
-    $after: String
-    $last: Int
-    $before: String
-    $orderBy: EventHandlersOrderByInput
-  ) {
-    eventHandlers(filter: $filter, first: $first, after: $after, last: $last, before: $before, orderBy: $orderBy) {
-      edges {
-        node {
-          id
-          isActive
-          name
-          evaluatorType
-          event
-          actions {
-            action
-          }
-        }
-        cursor
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`;
-
-const DELETE_EVENT_HANDLER_MUTATION = gql`
-  mutation DeleteEventHandler($deleteEventHandlerId: String!) {
-    deleteEventHandler(id: $deleteEventHandlerId) {
-      isOk
-    }
-  }
-`;
-
-const UPDATE_EVENT_HANDLER_MUTATION = gql`
-  mutation UpdateEventHandler($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
-    updateEventHandler(input: $input, name: $name, event: $event) {
-      id
-      name
-      event
-    }
-  }
-`;
-
+// const EVENT_HANDLERS_QUERY = gql`
+//   query GetEventHandlers(
+//     $filter: FilterEventHandlerInput
+//     $first: Int
+//     $after: String
+//     $last: Int
+//     $before: String
+//     $orderBy: EventHandlersOrderByInput
+//   ) {
+//     eventHandlers(filter: $filter, first: $first, after: $after, last: $last, before: $before, orderBy: $orderBy) {
+//       edges {
+//         node {
+//           id
+//           isActive
+//           name
+//           evaluatorType
+//           event
+//           actions {
+//             action
+//           }
+//         }
+//         cursor
+//       }
+//       pageInfo {
+//         startCursor
+//         endCursor
+//         hasNextPage
+//         hasPreviousPage
+//       }
+//     }
+//   }
+// `;
+//
+// const DELETE_EVENT_HANDLER_MUTATION = gql`
+//   mutation DeleteEventHandler($deleteEventHandlerId: String!) {
+//     deleteEventHandler(id: $deleteEventHandlerId) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const UPDATE_EVENT_HANDLER_MUTATION = gql`
+//   mutation UpdateEventHandler($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
+//     updateEventHandler(input: $input, name: $name, event: $event) {
+//       id
+//       name
+//       event
+//     }
+//   }
+// `;
+//
 const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   onEventHandlerDetailClick,
   onEventHandlerEditClick,

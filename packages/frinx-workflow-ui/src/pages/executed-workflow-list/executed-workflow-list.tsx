@@ -41,25 +41,29 @@ const EXECUTED_WORKFLOW_QUERY = gql`
     $searchQuery: ExecutedWorkflowSearchInput
     $pagination: PaginationArgs
   ) {
-    executedWorkflows(orderBy: $orderBy, searchQuery: $searchQuery, pagination: $pagination) {
-      edges {
-        cursor
-        node {
-          endTime
-          id
-          input
-          output
-          startTime
-          status
-          variables
-          workflowId
-          workflowName
-          workflowVersion
+    conductor {
+      executedWorkflows(orderBy: $orderBy, searchQuery: $searchQuery, pagination: $pagination) {
+        edges {
+          cursor
+          node {
+            endTime
+            id
+            input
+            output
+            startTime
+            status
+            variables
+            originalId
+            workflowDefinition {
+              name
+              version
+            }
+          }
         }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+        }
       }
     }
   }
@@ -168,9 +172,9 @@ const ExecutedWorkflowList = () => {
   };
 
   const handleOnAllWorkflowsSelect = () => {
-    const areAllWorkflowsSelected = data?.executedWorkflows?.edges.length === selectedWorkflows.length;
+    const areAllWorkflowsSelected = data?.conductor.executedWorkflows?.edges.length === selectedWorkflows.length;
 
-    if (data?.executedWorkflows == null || data?.executedWorkflows?.edges.length === 0) {
+    if (data?.conductor.executedWorkflows == null || data?.conductor.executedWorkflows?.edges.length === 0) {
       setSelectedWorkflows([]);
 
       return;
@@ -179,7 +183,7 @@ const ExecutedWorkflowList = () => {
     if (areAllWorkflowsSelected) {
       setSelectedWorkflows([]);
     } else {
-      setSelectedWorkflows(data.executedWorkflows.edges.map(({ node }) => node.id));
+      setSelectedWorkflows(data.conductor.executedWorkflows.edges.map(({ node }) => node.id));
     }
   };
 
@@ -272,10 +276,9 @@ const ExecutedWorkflowList = () => {
           isFlat={isFlat}
           initialSearchValues={makeFilterFromSearchParams(searchParams)}
         />
-
         <ExecutedWorkflowBulkOperationsBlock
           isExecutingBulkOperation={isExecutingBulkOperation}
-          amountOfVisibleWorkflows={data?.executedWorkflows?.edges.length ?? 0}
+          amountOfVisibleWorkflows={data?.conductor.executedWorkflows?.edges.length ?? 0}
           amountOfSelectedWorkflows={selectedWorkflows.length}
           onPause={() => handleOnBulkOperation('pause')}
           onRetry={() => handleOnBulkOperation('retry')}
@@ -288,7 +291,7 @@ const ExecutedWorkflowList = () => {
 
         {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
 
-        {data != null && data.executedWorkflows != null && !isLoadingWorkflows && (
+        {data != null && data.conductor.executedWorkflows != null && !isLoadingWorkflows && (
           <ExecutedWorkflowsTable
             onSelectAllWorkflows={handleOnAllWorkflowsSelect}
             handleOnSort={handleOnSort}
@@ -318,8 +321,8 @@ const ExecutedWorkflowList = () => {
         )}
       </VStack>
       <Pagination
-        hasNextPage={data?.executedWorkflows?.pageInfo.hasNextPage ?? false}
-        hasPreviousPage={data?.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
+        hasNextPage={data?.conductor.executedWorkflows?.pageInfo.hasNextPage ?? false}
+        hasPreviousPage={data?.conductor.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
         onNext={handleOnNext}
         onPrevious={handleOnPrevious}
       />

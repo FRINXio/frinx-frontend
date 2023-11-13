@@ -1,5 +1,11 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications, ExecuteWorkflowModal, ClientWorkflow, unwrap, CreateScheduledWorkflow } from '@frinx/shared';
+import {
+  useNotifications,
+  ExecuteWorkflowModal,
+  unwrap,
+  CreateScheduledWorkflow,
+  ClientWorkflowWithoutTasks,
+} from '@frinx/shared';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
 import {
@@ -17,37 +23,37 @@ import {
 } from '../../__generated__/graphql';
 
 type Props = {
-  workflows: ClientWorkflow[];
-  activeWorkflow?: ClientWorkflow;
+  workflows: ClientWorkflowWithoutTasks[];
+  activeWorkflow?: ClientWorkflowWithoutTasks;
   definitionModal: UseDisclosureReturn;
   diagramModal: UseDisclosureReturn;
   dependencyModal: UseDisclosureReturn;
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
+  onDeleteWorkflow: (workflow: ClientWorkflowWithoutTasks) => Promise<void>;
 };
 
-const CREATE_SCHEDULE_MUTATION = gql`
-  mutation ScheduleWorkflow($input: CreateScheduleInput!) {
-    scheduleWorkflow(input: $input) {
-      name
-      isEnabled
-      workflowName
-      workflowVersion
-      cronString
-      workflowContext
-      performFromDate
-      performTillDate
-    }
-  }
-`;
-
-const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
-    executeWorkflowByName(input: $input)
-  }
-`;
+// const CREATE_SCHEDULE_MUTATION = gql`
+//   mutation ScheduleWorkflow($input: CreateScheduleInput!) {
+//     scheduleWorkflow(input: $input) {
+//       name
+//       isEnabled
+//       workflowName
+//       workflowVersion
+//       cronString
+//       workflowContext
+//       performFromDate
+//       performTillDate
+//     }
+//   }
+// `;
+//
+// const EXECUTE_WORKFLOW_MUTATION = gql`
+//   mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
+//     executeWorkflowByName(input: $input)
+//   }
+// `;
 
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,

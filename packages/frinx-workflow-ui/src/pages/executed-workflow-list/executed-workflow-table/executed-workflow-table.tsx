@@ -3,7 +3,7 @@ import { Table, Tbody, Box, Text } from '@chakra-ui/react';
 import ExecutedWorkflowFlatTableItem from './executed-workflow-flat-table/executed-workflow-flat-table-item';
 import ExecutedWorkflowTableHead from './executed-workflow-table-head';
 import ExecutedWorkflowHierarchicalTableItem from './executed-workflow-hierarchical-table/executed-workflow-hierarchical-table-item';
-import { ExecutedWorkflowStatus, ExecutedWorkflowsQuery } from '../../../__generated__/graphql';
+import { WorkflowStatus, ExecutedWorkflowsQuery } from '../../../__generated__/graphql';
 import { SortKey, OrderBy } from '../executed-workflow-list';
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
   handleOnSort: (value: SortKey) => void;
   onSelectAllWorkflows: () => void;
   onWorkflowSelect: (workflowId: string) => void;
-  onWorkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
+  onWorkflowStatusClick?: (status: WorkflowStatus | 'UNKNOWN') => void;
 };
 
 const ExecutedWorkflowTable: FC<Props> = ({
@@ -27,9 +27,9 @@ const ExecutedWorkflowTable: FC<Props> = ({
   handleOnSort,
   sort,
 }) => {
-  const areAllWorkflowsSelected = workflows.executedWorkflows?.edges.length === selectedWorkflows.length;
+  const areAllWorkflowsSelected = workflows.conductor.executedWorkflows?.edges.length === selectedWorkflows.length;
   const areThereAnyExecutedWorkflows =
-    workflows.executedWorkflows != null && workflows.executedWorkflows.edges.length > 0;
+    workflows.conductor.executedWorkflows != null && workflows.conductor.executedWorkflows.edges.length > 0;
 
   return (
     <Box marginBottom={10}>
@@ -41,8 +41,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
           handleOnSort={handleOnSort}
         />
         {!areThereAnyExecutedWorkflows && <Text>There no executed workflows</Text>}
-
-        {workflows.executedWorkflows != null && (
+        {workflows.conductor.executedWorkflows != null && (
           <Tbody fontSize={13} textAlign="left">
             {isFlat ? (
               <ExecutedWorkflowFlatTableItem
@@ -55,7 +54,7 @@ const ExecutedWorkflowTable: FC<Props> = ({
               <ExecutedWorkflowHierarchicalTableItem
                 onWorkflowSelect={onWorkflowSelect}
                 selectedWorkflows={selectedWorkflows}
-                workflows={workflows.executedWorkflows}
+                workflows={workflows.conductor.executedWorkflows}
                 onWorkflowStatusClick={onWorkflowStatusClick}
               />
             )}

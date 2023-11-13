@@ -47,74 +47,58 @@ import ExecutedWorkflowDetailTaskDetail from './executed-workflow-detail-task-de
 
 const EXECUTED_WORKFLOW_QUERY = gql`
   query ExecutedWorkflowDetail($nodeId: ID!) {
-    node(id: $nodeId) {
-      ... on ExecutedWorkflow {
-        id
-        createdBy
-        updatedBy
-        createdAt
-        updatedAt
-        status
-        parentWorkflowId
-        ownerApp
-        input
-        output
-        reasonForIncompletion
-        failedReferenceTaskNames
-        workflowDefinition {
+    conductor {
+      node(id: $nodeId) {
+        ... on Workflow {
           id
-          version
-          timeoutSeconds
-          name
-          description
           createdBy
           updatedBy
           createdAt
           updatedAt
-          tasks
-          inputParameters
-          outputParameters {
-            key
-            value
-          }
-          hasSchedule
-          restartable
-          timeoutPolicy
-        }
-        variables
-        lastRetriedTime
-        startTime
-        endTime
-        workflowVersion
-        workflowName
-        workflowId
-        tasks {
-          id
-          taskType
-          referenceTaskName
           status
-          retryCount
+          parentId
+          ownerApp
+          input
+          output
+          reasonForIncompletion
+          failedReferenceTaskNames
+          workflowDefinition {
+            id
+            version
+            name
+          }
+          variables
+          lastRetriedTime
           startTime
           endTime
-          updateTime
-          scheduledTime
-          taskDefName
-          workflowType
-          retried
-          executed
-          taskId
-          reasonForIncompletion
-          taskDefinition
-          subWorkflowId
-          inputData
-          outputData
-          externalOutputPayloadStoragePath
-          externalInputPayloadStoragePath
-          callbackAfterSeconds
-          seq
-          pollCount
+          tasks {
+            id
+            taskType
+            referenceTaskName
+            status
+            retryCount
+            startTime
+            endTime
+            updatedAt
+            scheduledTime
+            taskDefName
+            workflowType
+            retried
+            executed
+            taskId
+            reasonForIncompletion
+            taskDefinition
+            subWorkflowId
+            inputData
+            outputData
+            externalOutputPayloadStoragePath
+            externalInputPayloadStoragePath
+            callbackAfterSeconds
+            seq
+            pollCount
+          }
+          correlationId
         }
-        correlationId
       }
     }
   }
@@ -122,26 +106,30 @@ const EXECUTED_WORKFLOW_QUERY = gql`
 
 const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
   subscription ControlExecutedWorkflow($controlExecutedWorkflowId: String!) {
-    controlExecutedWorkflow(id: $controlExecutedWorkflowId) {
-      endTime
-      startTime
-      status
-      tasks {
-        id
+    conductor {
+      controlExecutedWorkflow(workflowId: $controlExecutedWorkflowId) {
         endTime
         startTime
-        updateTime
         status
-        taskType
-        subWorkflowId
+        tasks {
+          id
+          endTime
+          startTime
+          updatedAt
+          status
+          taskType
+          subWorkflowId
+        }
       }
     }
   }
 `;
 
 const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByItsName($input: ExecuteWorkflowByName!) {
-    executeWorkflowByName(input: $input)
+  mutation ExecuteWorkflowByItsName($input: StartWorkflowRequest_Input!) {
+    conductor {
+      startWorkflow(input: $input)
+    }
   }
 `;
 
@@ -231,10 +219,10 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   >(EXECUTE_WORKFLOW_MUTATION);
 
   useEffect(() => {
-    if (data?.controlExecutedWorkflow?.status !== 'RUNNING') {
+    if (data?.conductor.controlExecutedWorkflow?.status !== 'RUNNING') {
       reexecuteQuery();
     }
-  }, [data?.controlExecutedWorkflow?.status, reexecuteQuery]);
+  }, [data?.conductor.controlExecutedWorkflow?.status, reexecuteQuery]);
 
   if (workflowId == null) {
     return <Text>Workflow id is not defined</Text>;
@@ -254,29 +242,29 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
 
   if (
     executedWorkflowDetail == null ||
-    executedWorkflowDetail.node == null ||
-    executedWorkflowDetail.node.__typename !== 'ExecutedWorkflow'
+    executedWorkflowDetail.conductor.node == null ||
+    executedWorkflowDetail.conductor.node.__typename !== 'Workflow'
   ) {
     return <Text>Workflow not found</Text>;
   }
 
   const executedWorkflow = {
-    ...executedWorkflowDetail.node,
-    ...data?.controlExecutedWorkflow,
-    tasks: executedWorkflowDetail.node.tasks?.map((task) => ({
+    ...executedWorkflowDetail.conductor.node,
+    ...data?.conductor.controlExecutedWorkflow,
+    tasks: executedWorkflowDetail.conductor.node.tasks?.map((task) => ({
       ...task,
-      ...data?.controlExecutedWorkflow?.tasks?.find((t) => t.id === task.id),
+      ...data?.conductor.controlExecutedWorkflow?.tasks?.find((t) => t.id === task.id),
     })),
   };
 
   const handleOnRerunClick = (inputParameters: Record<string, string | boolean | number | string[]>) => {
     executeWorkflowByName({
       input: {
-        workflowName: executedWorkflow.workflowName || '',
-        workflowVersion: executedWorkflow.workflowVersion,
+        name: executedWorkflow.workflowDefinition?.name || '',
+        version: executedWorkflow.workflowDefinition?.version,
         correlationId: executedWorkflow.correlationId,
         priority: 0,
-        inputParameters: JSON.stringify(inputParameters),
+        input: JSON.stringify(inputParameters),
       },
     })
       .then((result) => {
@@ -284,13 +272,13 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           throw new Error(result.error?.message);
         }
 
-        if (result.data?.executeWorkflowByName == null) {
+        if (result.data?.conductor.startWorkflow == null) {
           throw new Error('Something went wrong');
         }
 
         // when specific task detail is opened we need to close it after rerun so that we can see new tasks that have different ids
         setOpenedTaskId(null);
-        onExecutedOperation(result.data?.executeWorkflowByName || '');
+        onExecutedOperation(result.data?.conductor.startWorkflow || '');
       })
       .catch((err) => {
         addToastNotification({
@@ -359,7 +347,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
 
         addToastNotification({
           title: 'Workflow terminated',
-          content: `Workflow ${executedWorkflow.workflowName} terminated`,
+          content: `Workflow ${executedWorkflow.workflowDefinition?.name} terminated`,
           type: 'success',
           timeout: 2500,
         });
@@ -388,7 +376,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
 
         addToastNotification({
           title: 'Workflow retried',
-          content: `Workflow ${executedWorkflow.workflowName} retried`,
+          content: `Workflow ${executedWorkflow.workflowDefinition?.name} retried`,
           type: 'success',
           timeout: 2500,
         });
@@ -417,7 +405,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
 
         addToastNotification({
           title: 'Workflow paused',
-          content: `Workflow ${executedWorkflow.workflowName} paused`,
+          content: `Workflow ${executedWorkflow.workflowDefinition?.name} paused`,
           type: 'success',
           timeout: 2500,
         });
@@ -446,7 +434,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
 
         addToastNotification({
           title: 'Workflow resumed',
-          content: `Workflow ${executedWorkflow.workflowName} resumed`,
+          content: `Workflow ${executedWorkflow.workflowDefinition?.name} resumed`,
           type: 'success',
           timeout: 2500,
         });
@@ -464,11 +452,11 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   return (
     <Container maxWidth={1280}>
       <Heading size="xl" marginBottom={10}>
-        Details of {executedWorkflow.workflowName} / {executedWorkflow.workflowVersion}
+        Details of {executedWorkflow.workflowDefinition?.name} / {executedWorkflow.workflowDefinition?.version}
       </Heading>
       <Box>
-        {executedWorkflow.parentWorkflowId && (
-          <Button display="inline" margin={2} as={Link} to={`../executed/${executedWorkflow.parentWorkflowId}`}>
+        {executedWorkflow.parentId && (
+          <Button display="inline" margin={2} as={Link} to={`../executed/${executedWorkflow.parentId}`}>
             Parent
           </Button>
         )}
@@ -488,7 +476,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         {executedWorkflow.status === 'RUNNING' ? (
           <VStack>
             <Progress isIndeterminate />
-
             <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />
           </VStack>
         ) : (
@@ -503,10 +490,9 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
             <TabPanels>
               <TabPanel>
                 {openedTaskId == null && <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />}
-
                 {openedTaskId != null && executedWorkflow.tasks != null && (
                   <ExecutedWorkflowDetailTaskDetail
-                    executedWorkflow={executedWorkflowDetail.node}
+                    executedWorkflow={executedWorkflowDetail.conductor.node}
                     taskId={openedTaskId}
                     onClose={() => setOpenedTaskId(null)}
                   />
@@ -526,7 +512,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   <WorkflowJsonTab
                     copyToClipBoard={handleCopyToClipborad}
                     isEscaped={isEscaped}
-                    result={executedWorkflowDetail.node}
+                    result={executedWorkflowDetail.conductor.node}
                     onEscapeChange={() => setIsEscaped(!isEscaped)}
                   />
                 )}

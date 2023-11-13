@@ -46,81 +46,81 @@ import {
 } from '../../__generated__/graphql';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
-const WORKFLOWS_QUERY = gql`
-  query WorkflowList {
-    workflows {
-      edges {
-        node {
-          id
-          name
-          description
-          version
-          createdAt
-          updatedAt
-          createdBy
-          updatedBy
-          tasks
-          hasSchedule
-          inputParameters
-        }
-      }
-    }
-  }
-`;
-
-const SCHEDULED_WORKFLOWS_QUERY = gql`
-  query Schedules {
-    schedules {
-      edges {
-        node {
-          id
-          name
-          workflowName
-          workflowVersion
-          cronString
-          workflowContext
-          isEnabled
-          performFromDate
-          performTillDate
-          parallelRuns
-          status
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
-      }
-      totalCount
-    }
-  }
-`;
-
-const DELETE_SCHEDULE_MUTATION = gql`
-  mutation DeleteSchedule($deleteScheduleId: String!) {
-    deleteSchedule(id: $deleteScheduleId) {
-      isOk
-    }
-  }
-`;
-
-const UPDATE_SCHEDULE_MUTATION = gql`
-  mutation EditWorkflowSchedule($input: EditWorkflowScheduleInput!, $editWorkflowScheduleId: String!) {
-    editWorkflowSchedule(input: $input, id: $editWorkflowScheduleId) {
-      name
-      workflowName
-      workflowVersion
-      cronString
-      workflowContext
-      isEnabled
-      performFromDate
-      performTillDate
-      parallelRuns
-    }
-  }
-`;
-
+// const WORKFLOWS_QUERY = gql`
+//   query WorkflowList {
+//     workflows {
+//       edges {
+//         node {
+//           id
+//           name
+//           description
+//           version
+//           createdAt
+//           updatedAt
+//           createdBy
+//           updatedBy
+//           tasks
+//           hasSchedule
+//           inputParameters
+//         }
+//       }
+//     }
+//   }
+// `;
+//
+// const SCHEDULED_WORKFLOWS_QUERY = gql`
+//   query Schedules {
+//     schedules {
+//       edges {
+//         node {
+//           id
+//           name
+//           workflowName
+//           workflowVersion
+//           cronString
+//           workflowContext
+//           isEnabled
+//           performFromDate
+//           performTillDate
+//           parallelRuns
+//           status
+//         }
+//       }
+//       pageInfo {
+//         startCursor
+//         endCursor
+//         hasNextPage
+//         hasPreviousPage
+//       }
+//       totalCount
+//     }
+//   }
+// `;
+//
+// const DELETE_SCHEDULE_MUTATION = gql`
+//   mutation DeleteSchedule($deleteScheduleId: String!) {
+//     deleteSchedule(id: $deleteScheduleId) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const UPDATE_SCHEDULE_MUTATION = gql`
+//   mutation EditWorkflowSchedule($input: EditWorkflowScheduleInput!, $editWorkflowScheduleId: String!) {
+//     editWorkflowSchedule(input: $input, id: $editWorkflowScheduleId) {
+//       name
+//       workflowName
+//       workflowVersion
+//       cronString
+//       workflowContext
+//       isEnabled
+//       performFromDate
+//       performTillDate
+//       parallelRuns
+//     }
+//   }
+// `;
+//
 function ScheduledWorkflowList() {
   const context = useMemo(() => ({ additionalTypenames: ['Schedule'] }), []);
   const [selectedWorkflow, setSelectedWorkflow] = useState<EditScheduledWorkflow | null>();

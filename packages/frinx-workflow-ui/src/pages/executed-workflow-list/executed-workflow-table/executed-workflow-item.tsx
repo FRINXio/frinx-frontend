@@ -2,12 +2,12 @@ import React from 'react';
 import moment from 'moment';
 import { Text, Tr, Td } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../__generated__/graphql';
+import { WorkflowStatus, WorkflowInstanceDetailQuery } from '../../../__generated__/graphql';
 import ExecutedWorkflowStatusLabels from './executed-workflow-status-labels';
 
 type Props = {
   subworkflow: NonNullable<NonNullable<WorkflowInstanceDetailQuery['workflowInstanceDetail']>['subworkflows']>[0];
-  onSubworkflowStatusClick?: (status: ExecutedWorkflowStatus | 'UNKNOWN') => void;
+  onSubworkflowStatusClick?: (status: WorkflowStatus | 'UNKNOWN') => void;
 };
 
 export function ExecutedWorkflowItem({ subworkflow, onSubworkflowStatusClick }: Props) {

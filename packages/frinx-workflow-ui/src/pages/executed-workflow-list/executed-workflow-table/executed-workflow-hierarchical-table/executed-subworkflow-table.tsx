@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner, Td, Tr, Text } from '@chakra-ui/react';
+import { Td, Tr, Text, Progress } from '@chakra-ui/react';
 import { ExecutedWorkflowStatus, WorkflowInstanceDetailQuery } from '../../../../__generated__/graphql';
 import { ExecutedWorkflowItem } from '../executed-workflow-item';
 
@@ -15,8 +15,8 @@ function ExecutedSubWorkflowTable({ workflowInstanceDetail, isLoadingSubWorkflow
   if (isLoadingSubWorkflows) {
     return (
       <Tr>
-        <Td>
-          <Spinner />
+        <Td colSpan={5}>
+          <Progress isIndeterminate />
         </Td>
       </Tr>
     );
@@ -25,7 +25,9 @@ function ExecutedSubWorkflowTable({ workflowInstanceDetail, isLoadingSubWorkflow
   if (subworkflows == null) {
     return (
       <Tr>
-        <Td>No subworkflows found for this workflow</Td>
+        <Td colSpan={5} textAlign="center">
+          No subworkflows found for this workflow
+        </Td>
       </Tr>
     );
   }
@@ -33,8 +35,7 @@ function ExecutedSubWorkflowTable({ workflowInstanceDetail, isLoadingSubWorkflow
   if (subworkflows.length === 0) {
     return (
       <Tr>
-        <Td />
-        <Td colSpan={4}>
+        <Td colSpan={5}>
           <Text paddingLeft={8} textStyle="italic" color="gray.400">
             This executed workflow has no subworkflows
           </Text>

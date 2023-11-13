@@ -40,18 +40,18 @@ import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
 import { SchedulesQuery, SchedulesQueryVariables } from '../../__generated__/graphql';
 
-const SCHEDULED_WORKFLOWS_QUERY = gql`
-  query GetSchedules {
-    schedules {
-      edges {
-        node {
-          name
-        }
-      }
-    }
-  }
-`;
-
+// const SCHEDULED_WORKFLOWS_QUERY = gql`
+//   query GetSchedules {
+//     schedules {
+//       edges {
+//         node {
+//           name
+//         }
+//       }
+//     }
+//   }
+// `;
+//
 const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
 
