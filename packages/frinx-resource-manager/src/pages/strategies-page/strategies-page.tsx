@@ -18,19 +18,23 @@ import StrategyScriptModal from './strategy-script-modal';
 
 const STRATEGIES_QUERY = gql`
   query QueryAllocationStrategies {
-    QueryAllocationStrategies {
-      id
-      Name
-      Lang
-      Script
+    resourceManager {
+      QueryAllocationStrategies {
+        id
+        Name
+        Lang
+        Script
+      }
     }
   }
 `;
 const DELETE_STRATEGY_MUTATION = gql`
   mutation DeleteStrategy($input: DeleteAllocationStrategyInput!) {
-    DeleteAllocationStrategy(input: $input) {
-      strategy {
-        id
+    resourceManager {
+      DeleteAllocationStrategy(input: $input) {
+        strategy {
+          id
+        }
       }
     }
   }
@@ -38,17 +42,21 @@ const DELETE_STRATEGY_MUTATION = gql`
 
 const DELETE_RESOURCE_TYPE_MUTATION = gql`
   mutation DeleteResourceType($input: DeleteResourceTypeInput!) {
-    DeleteResourceType(input: $input) {
-      resourceTypeId
+    resourceManager {
+      DeleteResourceType(input: $input) {
+        resourceTypeId
+      }
     }
   }
 `;
 
 const RESOURCE_TYPES_QUERY = gql`
   query ResourceTypes {
-    QueryResourceTypes {
-      id
-      Name
+    resourceManager {
+      QueryResourceTypes {
+        id
+        Name
+      }
     }
   }
 `;
@@ -83,11 +91,11 @@ const StrategiesPage: VoidFunctionComponent = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const findResourceTypeId = useCallback(
     (id: string) => {
-      const StrategyById = data?.QueryAllocationStrategies.find((type) => type.id === id)?.Name;
-      const typeName = resourceType?.QueryResourceTypes.find((type) => type.Name === StrategyById);
+      const StrategyById = data?.resourceManager.QueryAllocationStrategies.find((type) => type.id === id)?.Name;
+      const typeName = resourceType?.resourceManager.QueryResourceTypes.find((type) => type.Name === StrategyById);
       return typeName?.id;
     },
-    [data?.QueryAllocationStrategies, resourceType?.QueryResourceTypes],
+    [data?.resourceManager.QueryAllocationStrategies, resourceType?.resourceManager.QueryResourceTypes],
   );
 
   const handleDeleteBtnClick = useCallback(
@@ -170,7 +178,7 @@ const StrategiesPage: VoidFunctionComponent = () => {
         </Button>
       </Flex>
       <StrategiesTable
-        strategies={data.QueryAllocationStrategies}
+        strategies={data.resourceManager.QueryAllocationStrategies}
         onDeleteBtnClick={handleDeleteBtnClick}
         onScriptBtnClick={handleScriptBtnClick}
       />
