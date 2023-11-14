@@ -22,7 +22,7 @@ const CreatePoolFormNestedPart: VoidFunctionComponent<Props> = ({
   availableAllocatedResources,
   parentResourceId,
 }) => {
-  const poolsData = pools?.QueryRootResourcePools.edges.map((e) => {
+  const poolsData = pools?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
   return (

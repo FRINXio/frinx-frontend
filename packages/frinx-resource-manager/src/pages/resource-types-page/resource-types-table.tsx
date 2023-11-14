@@ -5,7 +5,7 @@ import { ResourceTypesQuery } from '../../__generated__/graphql';
 import DeleteModal from '../../components/delete-modal';
 
 type Props = {
-  resourceTypes: ResourceTypesQuery['QueryResourceTypes'];
+  resourceTypes: ResourceTypesQuery['resourceManager']['QueryResourceTypes'];
   onDelete: (id: string) => void;
 };
 

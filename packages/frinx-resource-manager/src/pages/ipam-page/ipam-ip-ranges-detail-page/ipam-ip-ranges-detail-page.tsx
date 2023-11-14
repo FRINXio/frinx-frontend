@@ -28,7 +28,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
 
   const { results, setSearchText } = useMinisearch({
     items: compact(
-      poolDetail.data?.QueryResourcePool.Resources.map((resource) => resource.NestedPool).filter(
+      poolDetail.data?.resourceManager.QueryResourcePool.Resources.map((resource) => resource.NestedPool).filter(
         (resource) => resource?.ResourceType.Name === 'ipv4_prefix' || resource?.ResourceType.Name === 'ipv6_prefix',
       ),
     ),
@@ -51,7 +51,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate size="sm" mt={-10} />;
   }
 
-  if (poolDetail.error != null || poolDetail.data?.QueryResourcePool == null) {
+  if (poolDetail.error != null || poolDetail.data?.resourceManager.QueryResourcePool == null) {
     return <Heading>There was problem to load nested ip ranges</Heading>;
   }
 
@@ -92,7 +92,7 @@ const IpamNestedIpRangesDetailPage: VoidFunctionComponent = () => {
   return (
     <>
       <Heading as="h1" size="lg" mb={5}>
-        IP Ranges of {poolDetail.data?.QueryResourcePool.Name}
+        IP Ranges of {poolDetail.data?.resourceManager.QueryResourcePool.Name}
       </Heading>
       <SearchFilterPoolsBar
         searchName={searchName}

@@ -15,7 +15,7 @@ type Pagination = {
 
 type Props = {
   isLoadingResources: boolean;
-  resourcePool: GetPoolDetailQuery['QueryResourcePool'];
+  resourcePool: GetPoolDetailQuery['resourceManager']['QueryResourcePool'];
   allocatedResources?: AllocatedResourcesQuery;
   pagination: Pagination;
   handleAlternativeIdsChange: (altIdsObject: Record<string, string | string[]>) => void;
@@ -105,7 +105,7 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
             <Progress isIndeterminate size="sm" />
           ) : (
             <PoolDetailAllocatingTable
-              allocatedResources={allocatedResources?.QueryResourcesByAltId}
+              allocatedResources={allocatedResources?.resourceManager.QueryResourcesByAltId}
               onFreeResource={freePoolResource}
               onNext={pagination.nextPage}
               onPrevious={pagination.previousPage}
@@ -116,7 +116,7 @@ const PoolDetailAllocatedResourceBox: VoidFunctionComponent<Props> = ({
       {(resourcePool.PoolType === 'set' || resourcePool.PoolType === 'singleton') && (
         <PoolDetailSetSingletonTable
           resources={resourcePool.Resources}
-          allocatedResources={allocatedResources?.QueryResourcesByAltId}
+          allocatedResources={allocatedResources?.resourceManager.QueryResourcesByAltId}
           onFreeResource={freePoolResource}
           onClaimResource={claimPoolResource}
           onNext={pagination.nextPage}

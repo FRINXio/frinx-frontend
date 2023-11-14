@@ -32,62 +32,62 @@ const GET_POOLS_QUERY = gql`
     $resourceTypeId: ID
     $filterByResources: Map
   ) {
-    QueryRootResourcePools(
-      first: $first
-      last: $last
-      before: $before
-      after: $after
-      resourceTypeId: $resourceTypeId
-      filterByResources: $filterByResources
-    ) {
-      edges {
-        node {
-          id
-          Name
-          Tags {
-            id
-            Tag
-          }
-          ResourceType {
+    resourceManager {
+      QueryRootResourcePools(
+        first: $first
+        last: $last
+        before: $before
+        after: $after
+        resourceTypeId: $resourceTypeId
+        filterByResources: $filterByResources
+      ) {
+        edges {
+          node {
             id
             Name
-          }
-          PoolProperties
-          Resources {
-            id
-            NestedPool {
+            Tags {
               id
-              ResourceType {
+              Tag
+            }
+            ResourceType {
+              id
+              Name
+            }
+            PoolProperties
+            Resources {
+              id
+              NestedPool {
                 id
-                Name
+                ResourceType {
+                  id
+                  Name
+                }
               }
             }
+            Capacity {
+              freeCapacity
+              utilizedCapacity
+            }
           }
-          Capacity {
-            freeCapacity
-            utilizedCapacity
-          }
         }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
       }
-      pageInfo {
-        endCursor {
-          ID
-        }
-        hasNextPage
-        hasPreviousPage
-        startCursor {
-          ID
-        }
-      }
-      totalCount
     }
   }
 `;
 
 const DELETE_POOL_MUTATION = gql`
-  mutation DeleteResourcePool($input: DeleteResourcePoolInput!) {
-    DeleteResourcePool(input: $input) {
-      resourcePoolId
+  mutation DeleteIpRangesPool($input: DeleteResourcePoolInput!) {
+    resourceManager {
+      DeleteResourcePool(input: $input) {
+        resourcePoolId
+      }
     }
   }
 `;
@@ -128,7 +128,7 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
     DELETE_POOL_MUTATION,
   );
 
-  const allIpamIpRanges = (data?.QueryRootResourcePools.edges || [])
+  const allIpamIpRanges = (data?.resourceManager.QueryRootResourcePools.edges || [])
     ?.map((e) => {
       return e?.node ?? null;
     })
@@ -258,14 +258,10 @@ const IpamIpRangesPage: VoidFunctionComponent = () => {
         {data && (
           <Box marginTop={4} paddingX={4}>
             <Pagination
-              onPrevious={previousPage(
-                data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
-              )}
-              onNext={nextPage(
-                data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
-              )}
-              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
-              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+              onPrevious={previousPage(data.resourceManager.QueryRootResourcePools.pageInfo.startCursor)}
+              onNext={nextPage(data.resourceManager.QueryRootResourcePools.pageInfo.endCursor)}
+              hasNextPage={data.resourceManager.QueryRootResourcePools.pageInfo.hasNextPage}
+              hasPreviousPage={data.resourceManager.QueryRootResourcePools.pageInfo.hasPreviousPage}
             />
           </Box>
         )}

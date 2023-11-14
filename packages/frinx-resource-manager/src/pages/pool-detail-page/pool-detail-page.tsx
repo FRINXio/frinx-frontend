@@ -67,14 +67,14 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
-  if (poolData == null || poolData.QueryResourcePool == null) {
+  if (poolData == null || poolData.resourceManager.QueryResourcePool == null) {
     return <Box textAlign="center">Resource pool does not exists</Box>;
   }
 
   const handleOnOpenClaimResourceModal = () => {
-    if (isCustomResourceType(poolData.QueryResourcePool.ResourceType.Name)) {
+    if (isCustomResourceType(poolData.resourceManager.QueryResourcePool.ResourceType.Name)) {
       claimCustomResourceModal.onOpen();
-    } else if (poolData.QueryResourcePool.ResourceType.Name === 'route_distinguisher') {
+    } else if (poolData.resourceManager.QueryResourcePool.ResourceType.Name === 'route_distinguisher') {
       claimRouteDistinguisherResourceModal.onOpen();
     } else {
       claimResourceModal.onOpen();
@@ -93,7 +93,9 @@ const PoolDetailPage: VoidFunctionComponent = () => {
     }
   };
 
-  const { QueryResourcePool: resourcePool } = poolData;
+  const {
+    resourceManager: { QueryResourcePool: resourcePool },
+  } = poolData;
   const totalCapacity = getTotalCapacity(resourcePool.Capacity);
   const freeCapacity = BigInt(Number(resourcePool.Capacity?.freeCapacity));
   const canClaimResources =

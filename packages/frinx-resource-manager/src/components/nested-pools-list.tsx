@@ -7,21 +7,23 @@ import NestedPool from './nested-pool';
 
 const query = gql`
   query AllPoolsNested {
-    QueryRootResourcePools {
-      edges {
-        node {
-          id
-          Name
-          Resources {
+    resourceManager {
+      QueryRootResourcePools {
+        edges {
+          node {
             id
-            Properties
-            NestedPool {
+            Name
+            Resources {
               id
-              Name
-              PoolType
-              Resources {
+              Properties
+              NestedPool {
                 id
-                Properties
+                Name
+                PoolType
+                Resources {
+                  id
+                  Properties
+                }
               }
             }
           }
@@ -36,7 +38,7 @@ const NestedPoolsList: FC = () => {
     query,
   });
 
-  const pools = nestedPools?.QueryRootResourcePools.edges.map((e) => {
+  const pools = nestedPools?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
 
