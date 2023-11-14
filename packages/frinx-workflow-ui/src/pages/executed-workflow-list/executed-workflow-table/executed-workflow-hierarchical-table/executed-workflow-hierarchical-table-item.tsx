@@ -35,7 +35,7 @@ const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
 type Props = {
   workflows: NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>;
   selectedWorkflows: string[];
-  onWorkflowSelect: (workflowId: string) => void;
+  onWorkflowSelect: (workflowId: string | null) => void;
   onWorkflowStatusClick?: (status: WorkflowStatus | 'UNKNOWN') => void;
 };
 
@@ -78,9 +78,9 @@ const ExecutedWorkflowHierarchicalTableItem: FC<Props> = ({
           <Tr>
             <Td>
               <Checkbox
-                isChecked={selectedWorkflows.includes(item.id)}
+                isChecked={selectedWorkflows.includes(item.originalId)}
                 onChange={() => {
-                  onWorkflowSelect(item.id);
+                  onWorkflowSelect(item.originalId);
                 }}
               />
             </Td>

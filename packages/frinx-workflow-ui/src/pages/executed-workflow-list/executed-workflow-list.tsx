@@ -1,27 +1,16 @@
-import { Container, Flex, Heading, Progress, Text, useToast, VStack } from '@chakra-ui/react';
-import { useNotifications, Pagination } from '@frinx/shared';
+import { Box, Container, Flex, Heading, Progress, Text, useToast } from '@chakra-ui/react';
+import { useNotifications, Pagination, omitNullValue } from '@frinx/shared';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { gql, useMutation, useQuery } from 'urql';
+import { gql, useQuery } from 'urql';
 import { makeURLSearchParamsFromObject } from '../../helpers/utils.helpers';
 import {
-  BulkPauseWorkflowMutation,
-  BulkPauseWorkflowMutationVariables,
-  BulkRestartWorkflowMutation,
-  BulkRestartWorkflowMutationVariables,
-  BulkResumeWorkflowMutation,
-  BulkResumeWorkflowMutationVariables,
-  BulkRetryWorkflowMutation,
-  BulkRetryWorkflowMutationVariables,
-  BulkTerminateWorkflowMutation,
-  BulkTerminateWorkflowMutationVariables,
-  ExecutedWorkflow,
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
   SortExecutedWorkflowsBy,
   SortExecutedWorkflowsDirection,
 } from '../../__generated__/graphql';
-import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
+import BulkActionsMenu from './bulk-actions-menu';
 import ExecutedWorkflowFilters from './executed-workflow-filters';
 import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';
 import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from './executed-workflow.helpers';
@@ -69,51 +58,6 @@ const EXECUTED_WORKFLOW_QUERY = gql`
   }
 `;
 
-const BULK_PAUSE_MUTATION = gql`
-  mutation BulkPauseWorkflow($input: BulkOperationInput!) {
-    bulkPauseWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_RESUME_MUTATION = gql`
-  mutation BulkResumeWorkflow($input: BulkOperationInput!) {
-    bulkResumeWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_RETRY_MUTATION = gql`
-  mutation BulkRetryWorkflow($input: BulkOperationInput!) {
-    bulkRetryWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_TERMINATE_MUTATION = gql`
-  mutation BulkTerminateWorkflow($input: BulkOperationInput!) {
-    bulkTerminateWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_RESTART_MUTATION = gql`
-  mutation BulkRestartWorkflow($input: BulkOperationInput!) {
-    bulkRestartWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
 const ExecutedWorkflowList = () => {
   const ctx = useMemo(
     () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
@@ -123,7 +67,6 @@ const ExecutedWorkflowList = () => {
   const { addToastNotification } = useNotifications();
   const toast = useToast();
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
-  const [isExecutingBulkOperation, setIsExecutingBulkOperation] = useState(false);
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'startTime', direction: 'desc' });
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [isFlat, setIsFlat] = useState(false);
@@ -145,27 +88,14 @@ const ExecutedWorkflowList = () => {
     context: ctx,
   });
 
-  const [, onBulkPause] = useMutation<BulkPauseWorkflowMutation, BulkPauseWorkflowMutationVariables>(
-    BULK_PAUSE_MUTATION,
-  );
-  const [, onBulkRetry] = useMutation<BulkRetryWorkflowMutation, BulkRetryWorkflowMutationVariables>(
-    BULK_RETRY_MUTATION,
-  );
-  const [, onBulkResume] = useMutation<BulkResumeWorkflowMutation, BulkResumeWorkflowMutationVariables>(
-    BULK_RESUME_MUTATION,
-  );
-  const [, onBulkRestart] = useMutation<BulkRestartWorkflowMutation, BulkRestartWorkflowMutationVariables>(
-    BULK_RESTART_MUTATION,
-  );
-  const [, onBulkTerminate] = useMutation<BulkTerminateWorkflowMutation, BulkTerminateWorkflowMutationVariables>(
-    BULK_TERMINATE_MUTATION,
-  );
-
-  const handleOnWorkflowSelect = (workflowId: string) => {
+  const handleOnWorkflowSelect = (workflowId: string | null) => {
+    if (workflowId == null) {
+      return;
+    }
     const isAlreadySelected = selectedWorkflows.includes(workflowId);
 
     if (isAlreadySelected) {
-      setSelectedWorkflows(selectedWorkflows.filter((selectedWorkflowId) => selectedWorkflowId !== workflowId));
+      setSelectedWorkflows(selectedWorkflows.filter((selectedWorkflowName) => selectedWorkflowName !== workflowId));
     } else {
       setSelectedWorkflows([...selectedWorkflows, workflowId]);
     }
@@ -183,68 +113,9 @@ const ExecutedWorkflowList = () => {
     if (areAllWorkflowsSelected) {
       setSelectedWorkflows([]);
     } else {
-      setSelectedWorkflows(data.conductor.executedWorkflows.edges.map(({ node }) => node.id));
-    }
-  };
-
-  const handleOnBulkOperation = async (action: 'pause' | 'resume' | 'retry' | 'terminate' | 'restart') => {
-    let wasSuccessfull = false;
-
-    if (selectedWorkflows == null || selectedWorkflows.length === 0) {
-      addToastNotification({
-        content: 'You need to selected atleast one workflow',
-        type: 'error',
-      });
-
-      return;
-    }
-
-    setIsExecutingBulkOperation(true);
-
-    switch (action) {
-      case 'pause':
-        wasSuccessfull = await onBulkPause({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
-          (res) => res.error == null,
-        );
-        break;
-      case 'restart':
-        wasSuccessfull = await onBulkRestart({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
-          (res) => res.error == null,
-        );
-        break;
-      case 'resume':
-        wasSuccessfull = await onBulkResume({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
-          (res) => res.error == null,
-        );
-        break;
-      case 'retry':
-        wasSuccessfull = await onBulkRetry({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
-          (res) => res.error == null,
-        );
-        break;
-      case 'terminate':
-        wasSuccessfull = await onBulkTerminate({ input: { executedWorkflowIds: selectedWorkflows } }, ctx).then(
-          (res) => res.error == null,
-        );
-        break;
-      default:
-        break;
-    }
-
-    setIsExecutingBulkOperation(false);
-
-    if (wasSuccessfull) {
-      addToastNotification({
-        content: 'Bulk operation executed successfully',
-        type: 'success',
-      });
-
-      setSelectedWorkflows([]);
-    } else {
-      addToastNotification({
-        content: 'We had a problem to execute the bulk operation. Try again please.',
-        type: 'error',
-      });
+      setSelectedWorkflows(
+        data.conductor.executedWorkflows.edges.map(({ node }) => node.originalId).filter(omitNullValue),
+      );
     }
   };
 
@@ -265,6 +136,20 @@ const ExecutedWorkflowList = () => {
     }));
   };
 
+  const handleOnBulkSuccess = (message = 'Bulk operation executed successfully') => {
+    addToastNotification({
+      content: message,
+      type: 'success',
+    });
+  };
+
+  const handleOnBulkError = (message = 'Bulk operation was unsuccessful') => {
+    addToastNotification({
+      content: message,
+      type: 'error',
+    });
+  };
+
   return (
     <Container maxWidth={1200} mx="auto">
       <Flex justify="space-between" align="center" marginBottom={6}>
@@ -272,56 +157,51 @@ const ExecutedWorkflowList = () => {
           Executed workflows
         </Heading>
       </Flex>
-      <VStack spacing={10} alignItems="stretch">
-        <ExecutedWorkflowFilters
-          onSearchBoxSubmit={(searchInput) => {
-            setCurrentStartOfPage(0);
-            setSearchParams(makeURLSearchParamsFromObject(searchInput));
-          }}
-          onTableTypeChange={() => setIsFlat((prev) => !prev)}
+      <ExecutedWorkflowFilters
+        onSearchBoxSubmit={(searchInput) => {
+          setCurrentStartOfPage(0);
+          setSearchParams(makeURLSearchParamsFromObject(searchInput));
+        }}
+        onTableTypeChange={() => setIsFlat((prev) => !prev)}
+        isFlat={isFlat}
+        initialSearchValues={makeFilterFromSearchParams(searchParams)}
+      />
+      <Box marginBottom={6}>
+        <BulkActionsMenu
+          selectedWorkflowNames={selectedWorkflows}
+          onBulkActionError={handleOnBulkError}
+          onBulkActionSuccess={handleOnBulkSuccess}
+        />
+      </Box>
+      {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
+      {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
+      {data != null && data.conductor.executedWorkflows != null && !isLoadingWorkflows && (
+        <ExecutedWorkflowsTable
+          onSelectAllWorkflows={handleOnAllWorkflowsSelect}
+          handleOnSort={handleOnSort}
+          workflows={data}
+          sort={orderBy}
+          onWorkflowSelect={handleOnWorkflowSelect}
+          selectedWorkflows={selectedWorkflows}
           isFlat={isFlat}
-          initialSearchValues={makeFilterFromSearchParams(searchParams)}
+          onWorkflowStatusClick={(status) => {
+            if (status === 'UNKNOWN') {
+              return toast({
+                description: 'UNKNOWN status is not supported for filtering of executed workflows.',
+                status: 'warning',
+                duration: 4000,
+                isClosable: true,
+              });
+            }
+            return setSearchParams(
+              makeURLSearchParamsFromObject({
+                ...makeFilterFromSearchParams(searchParams),
+                status: [...makeFilterFromSearchParams(searchParams).status, status],
+              }),
+            );
+          }}
         />
-        <ExecutedWorkflowBulkOperationsBlock
-          isExecutingBulkOperation={isExecutingBulkOperation}
-          amountOfVisibleWorkflows={data?.conductor.executedWorkflows?.edges.length ?? 0}
-          amountOfSelectedWorkflows={selectedWorkflows.length}
-          onPause={() => handleOnBulkOperation('pause')}
-          onRetry={() => handleOnBulkOperation('retry')}
-          onRestart={() => handleOnBulkOperation('restart')}
-          onTerminate={() => handleOnBulkOperation('terminate')}
-          onResume={() => handleOnBulkOperation('resume')}
-        />
-        {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
-        {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
-        {data != null && data.conductor.executedWorkflows != null && !isLoadingWorkflows && (
-          <ExecutedWorkflowsTable
-            onSelectAllWorkflows={handleOnAllWorkflowsSelect}
-            handleOnSort={handleOnSort}
-            workflows={data}
-            sort={orderBy}
-            onWorkflowSelect={handleOnWorkflowSelect}
-            selectedWorkflows={selectedWorkflows}
-            isFlat={isFlat}
-            onWorkflowStatusClick={(status) => {
-              if (status === 'UNKNOWN') {
-                return toast({
-                  description: 'UNKNOWN status is not supported for filtering of executed workflows.',
-                  status: 'warning',
-                  duration: 4000,
-                  isClosable: true,
-                });
-              }
-              return setSearchParams(
-                makeURLSearchParamsFromObject({
-                  ...makeFilterFromSearchParams(searchParams),
-                  status: [...makeFilterFromSearchParams(searchParams).status, status],
-                }),
-              );
-            }}
-          />
-        )}
-      </VStack>
+      )}
       <Pagination
         hasNextPage={data?.conductor.executedWorkflows?.pageInfo.hasNextPage ?? false}
         hasPreviousPage={data?.conductor.executedWorkflows?.pageInfo.hasPreviousPage ?? false}

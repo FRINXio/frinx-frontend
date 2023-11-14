@@ -13,7 +13,7 @@ type Props = {
   selectedWorkflows: string[];
   handleOnSort: (value: SortKey) => void;
   onSelectAllWorkflows: () => void;
-  onWorkflowSelect: (workflowId: string) => void;
+  onWorkflowSelect: (workflowId: string | null) => void;
   onWorkflowStatusClick?: (status: WorkflowStatus | 'UNKNOWN') => void;
 };
 

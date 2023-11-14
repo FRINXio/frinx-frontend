@@ -3257,6 +3257,41 @@ export type ExecuteWorkflowByItsNameMutationVariables = Exact<{
 
 export type ExecuteWorkflowByItsNameMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', startWorkflow: string | null } };
 
+export type BulkPauseWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkPauseWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', pauseWorkflow_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkRetryWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkRetryWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', retry_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkResumeWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkResumeWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', resumeWorkflow_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkTerminateWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkTerminateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', terminate: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkRestartWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkRestartWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', restart_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
 export type ExecutedWorkflowsQueryVariables = Exact<{
   orderBy: ExecutedWorkflowsOrderByInput;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;

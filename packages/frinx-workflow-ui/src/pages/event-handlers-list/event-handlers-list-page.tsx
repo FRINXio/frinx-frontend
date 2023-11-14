@@ -75,15 +75,15 @@ const DELETE_EVENT_HANDLER_MUTATION = gql`
   }
 `;
 
-const UPDATE_EVENT_HANDLER_MUTATION = gql`
-  mutation UpdateEventHandler($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
-    updateEventHandler(input: $input, name: $name, event: $event) {
-      id
-      name
-      event
-    }
-  }
-`;
+// const UPDATE_EVENT_HANDLER_MUTATION = gql`
+//   mutation UpdateEventHandler($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
+//     updateEventHandler(input: $input, name: $name, event: $event) {
+//       id
+//       name
+//       event
+//     }
+//   }
+// `;
 
 const EventHandlersListPage: FC = () => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
