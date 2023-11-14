@@ -123,8 +123,8 @@ type TaskValues = {
 type BaseTask<T = undefined> = T extends undefined
   ? TaskValues
   : TaskValues & {
-      inputParameters: T;
-    };
+    inputParameters: T;
+  };
 
 export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
@@ -417,42 +417,30 @@ export type ScheduleWorkflowInput = {
 };
 
 export type ScheduledWorkflow = {
-  id: string;
-  correlationId?: string;
   cronString: string;
-  lastUpdate?: string;
-  performFromDate?: string;
-  performTillDate?: string;
+  fromDate?: string;
+  toDate?: string;
   name: string;
   parallelRuns?: boolean | undefined;
-  taskToDomain?: string;
   workflowName: string;
   workflowVersion: string;
   workflowContext: string;
-  isEnabled: boolean;
+  enabled: boolean;
   status?: StatusType;
 };
 
 export type CreateScheduledWorkflow = {
-  correlationId?: string;
   cronString: string | undefined;
-  lastUpdate?: string;
-  performFromDate?: string | undefined;
-  performTillDate?: string;
+  fromDate?: string | undefined;
+  toDate?: string;
   name: string;
   parallelRuns?: boolean | undefined;
-  taskToDomain?: string;
   workflowName: string;
   workflowVersion: string;
   workflowContext: Record<string, string>;
-  isEnabled: boolean;
+  enabled: boolean;
   status?: StatusType;
 };
-
-export type EditScheduledWorkflow = CreateScheduledWorkflow & {
-  id: string;
-};
-
 export type ExecutedWorkflow = {
   correlationId: string;
   endTime: string;

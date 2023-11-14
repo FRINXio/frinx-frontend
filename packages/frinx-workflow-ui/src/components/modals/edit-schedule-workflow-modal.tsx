@@ -43,7 +43,7 @@ const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|
 
 type Props = {
   scheduledWorkflow: EditScheduledWorkflow;
-  workflow: ClientWorkflow;
+  workflow: Omit<ClientWorkflow, 'outputParameters'>;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: EditScheduledWorkflow) => void;
