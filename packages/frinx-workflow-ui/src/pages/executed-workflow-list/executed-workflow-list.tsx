@@ -1,4 +1,4 @@
-import { Container, Progress, Text, useToast, VStack } from '@chakra-ui/react';
+import { Container, Flex, Heading, Progress, Text, useToast, VStack } from '@chakra-ui/react';
 import { useNotifications, Pagination } from '@frinx/shared';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -22,7 +22,7 @@ import {
   SortExecutedWorkflowsDirection,
 } from '../../__generated__/graphql';
 import ExecutedWorkflowBulkOperationsBlock from './executed-workflow-bulk-operations-block/executed-workflow-bulk-operations';
-import ExecutedWorkflowSearchBox from './executed-workflow-searchbox/executed-workflow-searchbox';
+import ExecutedWorkflowFilters from './executed-workflow-filters';
 import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';
 import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from './executed-workflow.helpers';
 
@@ -69,51 +69,51 @@ const EXECUTED_WORKFLOW_QUERY = gql`
   }
 `;
 
-// const BULK_PAUSE_MUTATION = gql`
-//   mutation BulkPauseWorkflow($input: BulkOperationInput!) {
-//     bulkPauseWorkflow(input: $input) {
-//       bulkErrorResults
-//       bulkSuccessfulResults
-//     }
-//   }
-// `;
-//
-// const BULK_RESUME_MUTATION = gql`
-//   mutation BulkResumeWorkflow($input: BulkOperationInput!) {
-//     bulkResumeWorkflow(input: $input) {
-//       bulkErrorResults
-//       bulkSuccessfulResults
-//     }
-//   }
-// `;
-//
-// const BULK_RETRY_MUTATION = gql`
-//   mutation BulkRetryWorkflow($input: BulkOperationInput!) {
-//     bulkRetryWorkflow(input: $input) {
-//       bulkErrorResults
-//       bulkSuccessfulResults
-//     }
-//   }
-// `;
-//
-// const BULK_TERMINATE_MUTATION = gql`
-//   mutation BulkTerminateWorkflow($input: BulkOperationInput!) {
-//     bulkTerminateWorkflow(input: $input) {
-//       bulkErrorResults
-//       bulkSuccessfulResults
-//     }
-//   }
-// `;
-//
-// const BULK_RESTART_MUTATION = gql`
-//   mutation BulkRestartWorkflow($input: BulkOperationInput!) {
-//     bulkRestartWorkflow(input: $input) {
-//       bulkErrorResults
-//       bulkSuccessfulResults
-//     }
-//   }
-// `;
-//
+const BULK_PAUSE_MUTATION = gql`
+  mutation BulkPauseWorkflow($input: BulkOperationInput!) {
+    bulkPauseWorkflow(input: $input) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
+
+const BULK_RESUME_MUTATION = gql`
+  mutation BulkResumeWorkflow($input: BulkOperationInput!) {
+    bulkResumeWorkflow(input: $input) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
+
+const BULK_RETRY_MUTATION = gql`
+  mutation BulkRetryWorkflow($input: BulkOperationInput!) {
+    bulkRetryWorkflow(input: $input) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
+
+const BULK_TERMINATE_MUTATION = gql`
+  mutation BulkTerminateWorkflow($input: BulkOperationInput!) {
+    bulkTerminateWorkflow(input: $input) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
+
+const BULK_RESTART_MUTATION = gql`
+  mutation BulkRestartWorkflow($input: BulkOperationInput!) {
+    bulkRestartWorkflow(input: $input) {
+      bulkErrorResults
+      bulkSuccessfulResults
+    }
+  }
+`;
+
 const ExecutedWorkflowList = () => {
   const ctx = useMemo(
     () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
@@ -259,15 +259,21 @@ const ExecutedWorkflowList = () => {
   };
 
   const handleOnSort = (sortKey: SortKey) => {
-    return orderBy.direction === 'desc'
-      ? setOrderBy({ sortKey, direction: 'asc' })
-      : setOrderBy({ sortKey, direction: 'desc' });
+    setOrderBy((prev) => ({
+      sortKey,
+      direction: prev.direction === 'desc' ? 'asc' : 'desc',
+    }));
   };
 
   return (
     <Container maxWidth={1200} mx="auto">
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h1" size="xl">
+          Executed workflows
+        </Heading>
+      </Flex>
       <VStack spacing={10} alignItems="stretch">
-        <ExecutedWorkflowSearchBox
+        <ExecutedWorkflowFilters
           onSearchBoxSubmit={(searchInput) => {
             setCurrentStartOfPage(0);
             setSearchParams(makeURLSearchParamsFromObject(searchInput));
@@ -299,20 +305,19 @@ const ExecutedWorkflowList = () => {
             isFlat={isFlat}
             onWorkflowStatusClick={(status) => {
               if (status === 'UNKNOWN') {
-                toast({
+                return toast({
                   description: 'UNKNOWN status is not supported for filtering of executed workflows.',
                   status: 'warning',
                   duration: 4000,
                   isClosable: true,
                 });
-              } else {
-                setSearchParams(
-                  makeURLSearchParamsFromObject({
-                    ...makeFilterFromSearchParams(searchParams),
-                    status: [...makeFilterFromSearchParams(searchParams).status, status],
-                  }),
-                );
               }
+              return setSearchParams(
+                makeURLSearchParamsFromObject({
+                  ...makeFilterFromSearchParams(searchParams),
+                  status: [...makeFilterFromSearchParams(searchParams).status, status],
+                }),
+              );
             }}
           />
         )}

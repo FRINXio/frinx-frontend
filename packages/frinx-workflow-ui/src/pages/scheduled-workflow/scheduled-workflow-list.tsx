@@ -18,6 +18,8 @@ import {
   useDisclosure,
   Progress,
   Container,
+  Flex,
+  IconButton,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import {
@@ -34,6 +36,7 @@ import {
 } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
+import { Link } from 'react-router-dom';
 import {
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
@@ -276,7 +279,12 @@ function ScheduledWorkflowList() {
   const selectedClientWorkflow = clientWorkflows.find((wf) => wf.name === selectedWorkflow?.workflowName);
 
   return (
-    <Container maxWidth={1200} mx="auto">
+    <Container maxWidth="container.xl" mx="auto">
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h1" size="xl">
+          Scheduled workflows
+        </Heading>
+      </Flex>
       {selectedWorkflow != null && selectedClientWorkflow != null && (
         <EditScheduleWorkflowModal
           workflow={selectedClientWorkflow}
@@ -293,7 +301,7 @@ function ScheduledWorkflowList() {
         <Thead>
           <Tr>
             <Th>Active</Th>
-            <Th>Name/Version</Th>
+            <Th>Name</Th>
             <Th>Last Status</Th>
             <Th>Cron expression</Th>
             <Th>Actions</Th>
@@ -330,40 +338,24 @@ function ScheduledWorkflowList() {
                   <Code>{item.cronString}</Code>
                 </Td>
                 <Td>
-                  <Stack direction="row" spacing={4}>
-                    <ButtonGroup>
-                      <Button
-                        colorScheme="red"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          handleDeleteBtnClick(item);
-                        }}
-                      >
-                        <Box as="span" flexShrink={0} alignSelf="center">
-                          <Box
-                            as={FeatherIcon}
-                            size="1em"
-                            icon="trash-2"
-                            flexShrink={0}
-                            lineHeight={4}
-                            verticalAlign="middle"
-                          />
-                        </Box>
-                      </Button>
-                      <Button colorScheme="black" size="sm" variant="outline" onClick={() => handleOnEditClick(item)}>
-                        <Box as="span" flexShrink={0} alignSelf="center">
-                          <Box
-                            as={FeatherIcon}
-                            size="1em"
-                            icon="edit"
-                            flexShrink={0}
-                            lineHeight={4}
-                            verticalAlign="middle"
-                          />
-                        </Box>
-                      </Button>
-                    </ButtonGroup>
+                  <Stack direction="row" spacing={2}>
+                    <IconButton
+                      aria-label="edit scheduled workflow"
+                      size="sm"
+                      onClick={() => {
+                        handleOnEditClick(item);
+                      }}
+                      icon={<FeatherIcon size={12} icon="edit" />}
+                    />
+                    <IconButton
+                      aria-label="remove scheduled workflow"
+                      icon={<FeatherIcon size={12} icon="trash-2" />}
+                      colorScheme="red"
+                      size="sm"
+                      onClick={() => {
+                        handleDeleteBtnClick(item);
+                      }}
+                    />
                   </Stack>
                 </Td>
               </Tr>

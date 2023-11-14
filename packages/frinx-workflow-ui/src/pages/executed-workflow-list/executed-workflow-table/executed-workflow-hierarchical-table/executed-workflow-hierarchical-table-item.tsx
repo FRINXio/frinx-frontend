@@ -13,25 +13,25 @@ import {
 } from '../../../../__generated__/graphql';
 import ExecutedSubWorkflowTable from './executed-subworkflow-table';
 
-// const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
-//   query WorkflowInstanceDetail($workflowId: String!) {
-//     workflowInstanceDetail(workflowId: $workflowId) {
-//       subworkflows {
-//         executedWorkflowDetail {
-//           id
-//           endTime
-//           startTime
-//           reasonForIncompletion
-//           status
-//           workflowId
-//           workflowName
-//           workflowVersion
-//         }
-//       }
-//     }
-//   }
-// `;
-//
+const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
+  query WorkflowInstanceDetail($workflowId: String!) {
+    workflowInstanceDetail(workflowId: $workflowId) {
+      subworkflows {
+        executedWorkflowDetail {
+          id
+          endTime
+          startTime
+          reasonForIncompletion
+          status
+          workflowId
+          workflowName
+          workflowVersion
+        }
+      }
+    }
+  }
+`;
+
 type Props = {
   workflows: NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>;
   selectedWorkflows: string[];

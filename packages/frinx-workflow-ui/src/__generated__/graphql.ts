@@ -117,6 +117,16 @@ export type AllocationStrategyLang =
   | 'js'
   | 'py';
 
+export type ApiEventHandler = {
+  __typename?: 'ApiEventHandler';
+  actions: Array<Maybe<Action>>;
+  active: Maybe<Scalars['Boolean']['output']>;
+  condition: Maybe<Scalars['String']['output']>;
+  evaluatorType: Maybe<Scalars['String']['output']>;
+  event: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type ApiWorkflow = {
   __typename?: 'ApiWorkflow';
   completedWithErrors: Maybe<Scalars['Boolean']['output']>;
@@ -659,14 +669,27 @@ export type EdgeSourceTarget = {
   nodeId: Scalars['String']['output'];
 };
 
-export type EventHandler = {
+export type EventHandler = Node & {
   __typename?: 'EventHandler';
   actions: Array<Maybe<Action>>;
-  active: Maybe<Scalars['Boolean']['output']>;
   condition: Maybe<Scalars['String']['output']>;
   evaluatorType: Maybe<Scalars['String']['output']>;
   event: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  isActive: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
+};
+
+export type EventHandlerConnection = {
+  __typename?: 'EventHandlerConnection';
+  edges: Array<EventHandlerEdge>;
+  pageInfo: PageInfo;
+};
+
+export type EventHandlerEdge = {
+  __typename?: 'EventHandlerEdge';
+  cursor: Scalars['String']['output'];
+  node: EventHandler;
 };
 
 export type EventHandler_Input = {
@@ -676,6 +699,11 @@ export type EventHandler_Input = {
   evaluatorType?: InputMaybe<Scalars['String']['input']>;
   event: Scalars['String']['input'];
   name: Scalars['String']['input'];
+};
+
+export type EventHandlersOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortEventHandlersBy;
 };
 
 export type ExecutedWorkflowConnection = {
@@ -722,6 +750,13 @@ export type ExternalStorageLocation = {
 export type FilterDevicesInput = {
   deviceName?: InputMaybe<Scalars['String']['input']>;
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type FilterEventHandlerInput = {
+  evaluatorType?: InputMaybe<Scalars['String']['input']>;
+  event?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type FilterLabelsInput = {
@@ -1175,6 +1210,12 @@ export type SortDeviceBy =
 export type SortDirection =
   | 'ASC'
   | 'DESC';
+
+export type SortEventHandlersBy =
+  | 'evaluatorType'
+  | 'event'
+  | 'isActive'
+  | 'name';
 
 export type SortExecutedWorkflowsBy =
   | 'endTime'
@@ -1691,6 +1732,7 @@ export type WorkflowDefinitionConnection = {
 
 export type WorkflowDefinitionEdge = {
   __typename?: 'WorkflowDefinitionEdge';
+  cursor: Scalars['String']['output'];
   node: WorkflowDefinition;
 };
 
@@ -2140,7 +2182,8 @@ export type ConductorQuery = {
   /** Batch poll for a task of a certain type */
   batchPoll: Maybe<Array<Maybe<Task>>>;
   doCheck: Maybe<HealthCheckStatus>;
-  executedWorkflows: Maybe<ExecutedWorkflowConnection>;
+  eventHandlers: EventHandlerConnection;
+  executedWorkflows: ExecutedWorkflowConnection;
   /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
   /** Retrieves all workflow definition along with blueprint */
@@ -2152,9 +2195,9 @@ export type ConductorQuery = {
   /** Returns only the latest version of all workflow definitions */
   getAllWorkflowsWithLatestVersions: Maybe<Array<Maybe<WorkflowDef>>>;
   /** Get all the event handlers */
-  getEventHandlers: Maybe<Array<Maybe<EventHandler>>>;
+  getEventHandlers: Maybe<Array<Maybe<ApiEventHandler>>>;
   /** Get event handlers for a given event */
-  getEventHandlersForEvent: Maybe<Array<Maybe<EventHandler>>>;
+  getEventHandlersForEvent: Maybe<Array<Maybe<ApiEventHandler>>>;
   /** Get registered queues */
   getEventQueues: Maybe<Scalars['JSON']['output']>;
   /** Gets the workflow by workflow id */
@@ -2224,6 +2267,16 @@ export type ConductorQueryBatchPollArgs = {
   tasktype: Scalars['String']['input'];
   timeout?: InputMaybe<Scalars['Int']['input']>;
   workerid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ConductorQueryEventHandlersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterEventHandlerInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<EventHandlersOrderByInput>;
 };
 
 
@@ -3164,12 +3217,31 @@ export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetSchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } | null } };
 
+export type GetEventHandlersQueryVariables = Exact<{
+  filter?: InputMaybe<FilterEventHandlerInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<EventHandlersOrderByInput>;
+}>;
+
+
+export type GetEventHandlersQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', cursor: string, node: { __typename?: 'EventHandler', id: string, isActive: boolean | null, name: string, evaluatorType: string | null, event: string, actions: Array<{ __typename?: 'Action', action: MutationInput_UpdateEventHandler_Input_Actions_Items_Action | null } | null> } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+
+export type DeleteEventHandlerMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+}>;
+
+
+export type DeleteEventHandlerMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', removeEventHandlerStatus: any | null } };
+
 export type ExecutedWorkflowDetailQueryVariables = Exact<{
   nodeId: Scalars['ID']['input'];
 }>;
 
 
-export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
+export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
 
 export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
   controlExecutedWorkflowId: Scalars['String']['input'];
@@ -3192,7 +3264,7 @@ export type ExecutedWorkflowsQueryVariables = Exact<{
 }>;
 
 
-export type ExecutedWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'Workflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: WorkflowStatus | null, variables: string | null, originalId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', name: string, version: number } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
+export type ExecutedWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'Workflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: WorkflowStatus | null, variables: string | null, originalId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', name: string, version: number } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
 
