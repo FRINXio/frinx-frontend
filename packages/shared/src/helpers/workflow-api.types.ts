@@ -300,33 +300,22 @@ type OutputParameter = {
   value: string;
 };
 
-export type ClientWorkflow<T = Task> = {
+export type ClientWorkflow = {
   id: string;
   name: string;
   description: string | null;
   timeoutSeconds: number;
-  version: number | null;
+  version: number;
   createdAt: string | null;
   updatedAt: string | null;
-  createdBy: string | null;
-  updatedBy: string | null;
-  tasks: T[];
   hasSchedule: boolean;
   labels: string[];
   inputParameters: string[] | null;
   outputParameters: OutputParameter[] | null;
-  restartable: boolean | null;
-  timeoutPolicy: TimeoutPolicy | null;
-  ownerEmail?: string | null;
-  schemaVersion?: number | null;
-  variables?: Record<string, any> | null;
-  ownerApp?: string | null;
-  inputTemplate?: string | null;
-  createTime?: number | null;
-  updateTime?: number | null;
-  accessPolicy?: Record<string, string> | null;
-  failureWorkflow?: string | null;
-  workflowStatusListenerEnabled?: boolean | null;
+};
+
+export type ClientWorkflowWithTasks<T = Task> = ClientWorkflow & {
+  tasks: T[];
 };
 
 export type DescriptionJSON = { labels: string[]; description: string };

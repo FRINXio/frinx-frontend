@@ -69,51 +69,51 @@ const EXECUTED_WORKFLOW_QUERY = gql`
   }
 `;
 
-const BULK_PAUSE_MUTATION = gql`
-  mutation BulkPauseWorkflow($input: BulkOperationInput!) {
-    bulkPauseWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_RESUME_MUTATION = gql`
-  mutation BulkResumeWorkflow($input: BulkOperationInput!) {
-    bulkResumeWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_RETRY_MUTATION = gql`
-  mutation BulkRetryWorkflow($input: BulkOperationInput!) {
-    bulkRetryWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_TERMINATE_MUTATION = gql`
-  mutation BulkTerminateWorkflow($input: BulkOperationInput!) {
-    bulkTerminateWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
-const BULK_RESTART_MUTATION = gql`
-  mutation BulkRestartWorkflow($input: BulkOperationInput!) {
-    bulkRestartWorkflow(input: $input) {
-      bulkErrorResults
-      bulkSuccessfulResults
-    }
-  }
-`;
-
+// const BULK_PAUSE_MUTATION = gql`
+//   mutation BulkPauseWorkflow($input: BulkOperationInput!) {
+//     bulkPauseWorkflow(input: $input) {
+//       bulkErrorResults
+//       bulkSuccessfulResults
+//     }
+//   }
+// `;
+//
+// const BULK_RESUME_MUTATION = gql`
+//   mutation BulkResumeWorkflow($input: BulkOperationInput!) {
+//     bulkResumeWorkflow(input: $input) {
+//       bulkErrorResults
+//       bulkSuccessfulResults
+//     }
+//   }
+// `;
+//
+// const BULK_RETRY_MUTATION = gql`
+//   mutation BulkRetryWorkflow($input: BulkOperationInput!) {
+//     bulkRetryWorkflow(input: $input) {
+//       bulkErrorResults
+//       bulkSuccessfulResults
+//     }
+//   }
+// `;
+//
+// const BULK_TERMINATE_MUTATION = gql`
+//   mutation BulkTerminateWorkflow($input: BulkOperationInput!) {
+//     bulkTerminateWorkflow(input: $input) {
+//       bulkErrorResults
+//       bulkSuccessfulResults
+//     }
+//   }
+// `;
+//
+// const BULK_RESTART_MUTATION = gql`
+//   mutation BulkRestartWorkflow($input: BulkOperationInput!) {
+//     bulkRestartWorkflow(input: $input) {
+//       bulkErrorResults
+//       bulkSuccessfulResults
+//     }
+//   }
+// `;
+//
 const ExecutedWorkflowList = () => {
   const ctx = useMemo(
     () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
@@ -286,11 +286,8 @@ const ExecutedWorkflowList = () => {
           onTerminate={() => handleOnBulkOperation('terminate')}
           onResume={() => handleOnBulkOperation('resume')}
         />
-
         {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
-
         {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
-
         {data != null && data.conductor.executedWorkflows != null && !isLoadingWorkflows && (
           <ExecutedWorkflowsTable
             onSelectAllWorkflows={handleOnAllWorkflowsSelect}

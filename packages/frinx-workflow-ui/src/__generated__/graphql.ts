@@ -3159,6 +3159,11 @@ export type SchedulerQuerySchedulesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } | null } };
+
 export type ExecutedWorkflowDetailQueryVariables = Exact<{
   nodeId: Scalars['ID']['input'];
 }>;
@@ -3188,6 +3193,23 @@ export type ExecutedWorkflowsQueryVariables = Exact<{
 
 
 export type ExecutedWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'Workflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: WorkflowStatus | null, variables: string | null, originalId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', name: string, version: number } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
+
+export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WorkflowListQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, hasSchedule: boolean, inputParameters: Array<string> | null } }> } } };
+
+export type SchedulesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', totalCount: number, edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, enabled: boolean, fromDate: any, toDate: any, parallelRuns: boolean, status: Status } } | null>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
+
+export type CreateScheduleMutationVariables = Exact<{
+  input: CreateScheduleInput;
+}>;
+
+
+export type CreateScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', createSchedule: { __typename?: 'Schedule', name: string, enabled: boolean, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, fromDate: any, toDate: any } } };
 
 export type WorkflowsQueryVariables = Exact<{
   filter?: InputMaybe<WorkflowsFilterInput>;

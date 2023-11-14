@@ -46,57 +46,57 @@ import {
 } from '../../__generated__/graphql';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
-// const WORKFLOWS_QUERY = gql`
-//   query WorkflowList {
-//     workflows {
-//       edges {
-//         node {
-//           id
-//           name
-//           description
-//           version
-//           createdAt
-//           updatedAt
-//           createdBy
-//           updatedBy
-//           tasks
-//           hasSchedule
-//           inputParameters
-//         }
-//       }
-//     }
-//   }
-// `;
-//
-// const SCHEDULED_WORKFLOWS_QUERY = gql`
-//   query Schedules {
-//     schedules {
-//       edges {
-//         node {
-//           id
-//           name
-//           workflowName
-//           workflowVersion
-//           cronString
-//           workflowContext
-//           isEnabled
-//           performFromDate
-//           performTillDate
-//           parallelRuns
-//           status
-//         }
-//       }
-//       pageInfo {
-//         startCursor
-//         endCursor
-//         hasNextPage
-//         hasPreviousPage
-//       }
-//       totalCount
-//     }
-//   }
-// `;
-//
+const WORKFLOWS_QUERY = gql`
+  query WorkflowList {
+    conductor {
+      workflowDefinitions {
+        edges {
+          node {
+            id
+            name
+            description
+            version
+            createdAt
+            updatedAt
+            hasSchedule
+            inputParameters
+          }
+        }
+      }
+    }
+  }
+`;
+
+const SCHEDULED_WORKFLOWS_QUERY = gql`
+  query Schedules {
+    scheduler {
+      schedules {
+        edges {
+          node {
+            name
+            workflowName
+            workflowVersion
+            cronString
+            workflowContext
+            enabled
+            fromDate
+            toDate
+            parallelRuns
+            status
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        totalCount
+      }
+    }
+  }
+`;
+
 // const DELETE_SCHEDULE_MUTATION = gql`
 //   mutation DeleteSchedule($deleteScheduleId: String!) {
 //     deleteSchedule(id: $deleteScheduleId) {
@@ -120,7 +120,19 @@ import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-wor
 //     }
 //   }
 // `;
-//
+function getStatusTagColor(status: StatusType) {
+  switch (status) {
+    case 'COMPLETED':
+      return 'green';
+    case 'RUNNING':
+      return 'cyan';
+    case 'FAILED':
+      return 'red';
+    default:
+      return null;
+  }
+}
+
 function ScheduledWorkflowList() {
   const context = useMemo(() => ({ additionalTypenames: ['Schedule'] }), []);
   const [selectedWorkflow, setSelectedWorkflow] = useState<EditScheduledWorkflow | null>();
@@ -148,7 +160,7 @@ function ScheduledWorkflowList() {
   };
 
   const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: EditScheduledWorkflow) => {
-    const { cronString, isEnabled, performFromDate, performTillDate, workflowContext } = scheduledWf;
+    const { cronString, isEnabled, fromDate: performFromDate, performTillDate, workflowContext } = scheduledWf;
     const input = {
       cronString,
       isEnabled,
@@ -219,19 +231,6 @@ function ScheduledWorkflowList() {
       });
   };
 
-  function getStatusTagColor(status: StatusType) {
-    switch (status) {
-      case 'COMPLETED':
-        return 'green';
-      case 'RUNNING':
-        return 'cyan';
-      case 'FAILED':
-        return 'red';
-      default:
-        return null;
-    }
-  }
-
   if (isLoadingSchedules) {
     return <Progress isIndeterminate size="xs" marginTop={-10} />;
   }
@@ -241,7 +240,7 @@ function ScheduledWorkflowList() {
   }
 
   const schedules =
-    scheduledWorkflows?.schedules.edges.filter(omitNullValue).map((edge) => {
+    scheduledWorkflows?.scheduler.schedules?.edges.filter(omitNullValue).map((edge) => {
       const node = edge?.node;
       const workflowContext = JSON.parse(node?.workflowContext || '{}');
       return { ...node, workflowContext };
@@ -260,14 +259,13 @@ function ScheduledWorkflowList() {
   }
 
   const clientWorkflows: ClientWorkflow[] =
-    workflows?.workflows.edges.map(({ node }) => {
+    workflows?.conductor.workflowDefinitions.edges.map(({ node }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
-      const tasks = jsonParse<Task[]>(node.tasks) ?? [];
       return {
         ...node,
         labels: parsedLabels,
-        tasks,
         hasSchedule: node.hasSchedule ?? false,
+        timeoutSeconds: node.timeoutSeconds ?? 0,
       };
     }) ?? [];
 

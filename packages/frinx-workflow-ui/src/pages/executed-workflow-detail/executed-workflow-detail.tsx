@@ -133,46 +133,46 @@ const EXECUTE_WORKFLOW_MUTATION = gql`
   }
 `;
 
-const RESTART_WORKFLOW_MUTATION = gql`
-  mutation RestartWorkflow($restartWorkflowId: String!) {
-    restartWorkflow(id: $restartWorkflowId) {
-      isOk
-    }
-  }
-`;
-
-const RETRY_WORKFLOW_MUTATION = gql`
-  mutation RetryWorkflow($retryWorkflowId: String!, $retryWorkflowInput: RetryWorkflowInput) {
-    retryWorkflow(id: $retryWorkflowId, input: $retryWorkflowInput) {
-      isOk
-    }
-  }
-`;
-
-const PAUSE_WORKFLOW_MUTATION = gql`
-  mutation PauseWorkflow($pauseWorkflowId: String!) {
-    pauseWorkflow(id: $pauseWorkflowId) {
-      isOk
-    }
-  }
-`;
-
-const RESUME_WORKFLOW_MUTATION = gql`
-  mutation ResumeWorkflow($resumeWorkflowId: String!) {
-    resumeWorkflow(id: $resumeWorkflowId) {
-      isOk
-    }
-  }
-`;
-
-const TERMINATE_WORKFLOW_MUTATION = gql`
-  mutation TerminateWorkflow($terminateWorkflowId: String!) {
-    terminateWorkflow(id: $terminateWorkflowId) {
-      isOk
-    }
-  }
-`;
-
+// const RESTART_WORKFLOW_MUTATION = gql`
+//   mutation RestartWorkflow($restartWorkflowId: String!) {
+//     restartWorkflow(id: $restartWorkflowId) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const RETRY_WORKFLOW_MUTATION = gql`
+//   mutation RetryWorkflow($retryWorkflowId: String!, $retryWorkflowInput: RetryWorkflowInput) {
+//     retryWorkflow(id: $retryWorkflowId, input: $retryWorkflowInput) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const PAUSE_WORKFLOW_MUTATION = gql`
+//   mutation PauseWorkflow($pauseWorkflowId: String!) {
+//     pauseWorkflow(id: $pauseWorkflowId) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const RESUME_WORKFLOW_MUTATION = gql`
+//   mutation ResumeWorkflow($resumeWorkflowId: String!) {
+//     resumeWorkflow(id: $resumeWorkflowId) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const TERMINATE_WORKFLOW_MUTATION = gql`
+//   mutation TerminateWorkflow($terminateWorkflowId: String!) {
+//     terminateWorkflow(id: $terminateWorkflowId) {
+//       isOk
+//     }
+//   }
+// `;
+//
 type Props = {
   onExecutedOperation: (workflowId: string) => void;
 };
