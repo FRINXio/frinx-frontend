@@ -64,14 +64,17 @@ type AllocStrategy = {
 type Props = {
   onFormSubmit: (values: Omit<FormValues, 'resourceTypeName'>) => void;
   onResourceTypeChange: (resourceTypeId: string) => void;
-  requiredPoolProperties?: RequiredPoolPropertiesQuery['QueryRequiredPoolProperties'];
+  requiredPoolProperties?: RequiredPoolPropertiesQuery['resourceManager']['QueryRequiredPoolProperties'];
   isLoadingRequiredPoolProperties: boolean;
-  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'];
+  resourceTypes: SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'];
   resourcePools: SelectPoolsQuery | undefined;
   allocStrategies: AllocStrategy[];
 };
 
-const getInitialValues = (url: string, resourceTypes: SelectResourceTypesQuery['QueryResourceTypes']): FormValues => {
+const getInitialValues = (
+  url: string,
+  resourceTypes: SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'],
+): FormValues => {
   const query = new URLSearchParams(url);
   const resourceType = query.get('resource-type-name') || 'ipv4';
 
@@ -136,7 +139,7 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
   const { isNested, poolType, resourceTypeId, parentPoolId, parentResourceId } = values;
 
-  const poolsData = resourcePools?.QueryRootResourcePools.edges.map((e) => {
+  const poolsData = resourcePools?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
 

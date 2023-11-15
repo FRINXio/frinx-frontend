@@ -15,26 +15,32 @@ import ResourceTypesTable from './resource-types-table';
 
 const RESOURCE_TYPES_QUERY = gql`
   query ResourceTypes {
-    QueryResourceTypes {
-      id
-      Name
+    resourceManager {
+      QueryResourceTypes {
+        id
+        Name
+      }
     }
   }
 `;
 
 const DELETE_RESOURCE_TYPE_MUTATION = gql`
   mutation DeleteResourceType($input: DeleteResourceTypeInput!) {
-    DeleteResourceType(input: $input) {
-      resourceTypeId
+    resourceManager {
+      DeleteResourceType(input: $input) {
+        resourceTypeId
+      }
     }
   }
 `;
 
 const DELETE_STRATEGY_MUTATION = gql`
   mutation DeleteStrategy($input: DeleteAllocationStrategyInput!) {
-    DeleteAllocationStrategy(input: $input) {
-      strategy {
-        id
+    resourceManager {
+      DeleteAllocationStrategy(input: $input) {
+        strategy {
+          id
+        }
       }
     }
   }
@@ -42,9 +48,11 @@ const DELETE_STRATEGY_MUTATION = gql`
 
 const STRATEGIES_QUERY = gql`
   query GetAllocationStrategies {
-    QueryAllocationStrategies {
-      id
-      Name
+    resourceManager {
+      QueryAllocationStrategies {
+        id
+        Name
+      }
     }
   }
 `;
@@ -77,8 +85,10 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
   );
 
   const findStrategyId = (id: string) => {
-    const typeById = data?.QueryResourceTypes.find((type) => type.id === id)?.Name;
-    const strategyId = strategies?.QueryAllocationStrategies.find((strategy) => strategy.Name === typeById);
+    const typeById = data?.resourceManager.QueryResourceTypes.find((type) => type.id === id)?.Name;
+    const strategyId = strategies?.resourceManager.QueryAllocationStrategies.find(
+      (strategy) => strategy.Name === typeById,
+    );
     return strategyId?.id;
   };
 
@@ -135,7 +145,7 @@ const ResourceTypesPage: VoidFunctionComponent = () => {
           Resource Types
         </Heading>
       </Flex>
-      <ResourceTypesTable resourceTypes={data.QueryResourceTypes} onDelete={handleOnDelete} />
+      <ResourceTypesTable resourceTypes={data.resourceManager.QueryResourceTypes} onDelete={handleOnDelete} />
     </>
   );
 };

@@ -8,7 +8,7 @@ import PoolsTable from '../pools-page/pools-table';
 
 type Props = {
   poolId: string;
-  resourcePool: GetPoolDetailQuery['QueryResourcePool'];
+  resourcePool: GetPoolDetailQuery['resourceManager']['QueryResourcePool'];
   isLoadingPool: boolean;
   deleteResourcePool: (id: string, options?: DeleteResourcePoolOptions | undefined) => void;
 };

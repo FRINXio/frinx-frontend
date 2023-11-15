@@ -17,18 +17,22 @@ const CREATE_STRATEGY_MUTATION = gql`
     $stratInput: CreateAllocationStrategyInput!
     $resourceTypeInput: CreateResourceTypeInput!
   ) {
-    createStrat: CreateAllocationStrategy(input: $stratInput) {
-      strategy {
-        id
-        Name
-        Lang
-        Script
+    createStrat: resourceManager {
+      CreateAllocationStrategy(input: $stratInput) {
+        strategy {
+          id
+          Name
+          Lang
+          Script
+        }
       }
     }
-    createResourceType: CreateResourceType(input: $resourceTypeInput) {
-      resourceType {
-        id
-        Name
+    createResourceType: resourceManager {
+      CreateResourceType(input: $resourceTypeInput) {
+        resourceType {
+          id
+          Name
+        }
       }
     }
   }
