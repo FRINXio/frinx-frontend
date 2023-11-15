@@ -4,7 +4,7 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import ExecutedWorkflowDetail from './pages/executed-workflow-detail/executed-workflow-detail';
-import ExecutedWorkflowList from './pages/executed-workflow-list/executed-workflow-list';
+import ExecutedWorkflowList from './pages/executed-workflows/executed-workflows';
 import PollData from './pages/poll-data/poll-data';
 import ScheduledWorkflowList from './pages/scheduled-workflow/scheduled-workflow-list';
 import TaskList from './pages/workflow-list/tasks/task-list';

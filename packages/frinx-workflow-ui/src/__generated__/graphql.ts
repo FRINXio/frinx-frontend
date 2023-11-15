@@ -1294,6 +1294,13 @@ export type Subscription = {
   deviceInventory: DeviceInventorySubscription;
 };
 
+export type Subworkflow = {
+  __typename?: 'Subworkflow';
+  executedWorkflowDetail: Maybe<Workflow>;
+  referenceTaskName: Maybe<Scalars['String']['output']>;
+  workflowDetail: Maybe<WorkflowDefinition>;
+};
+
 export type SyncFromNetworkPayload = {
   __typename?: 'SyncFromNetworkPayload';
   dataStore: Maybe<DataStore>;
@@ -1644,6 +1651,7 @@ export type Workflow = Node & {
   createdBy: Maybe<Scalars['String']['output']>;
   endTime: Maybe<Scalars['String']['output']>;
   failedReferenceTaskNames: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  hasSubworkflows: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   input: Maybe<Scalars['String']['output']>;
   lastRetriedTime: Maybe<Scalars['String']['output']>;
@@ -1742,6 +1750,12 @@ export type WorkflowDefinitionTask = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   taskReferenceName: Scalars['String']['output'];
+};
+
+export type WorkflowInstanceDetail = {
+  __typename?: 'WorkflowInstanceDetail';
+  meta: Maybe<WorkflowDefinition>;
+  subworkflows: Maybe<Array<Subworkflow>>;
 };
 
 export type WorkflowStatus =
@@ -2183,7 +2197,7 @@ export type ConductorQuery = {
   batchPoll: Maybe<Array<Maybe<Task>>>;
   doCheck: Maybe<HealthCheckStatus>;
   eventHandlers: EventHandlerConnection;
-  executedWorkflows: ExecutedWorkflowConnection;
+  executedWorkflows: Maybe<ExecutedWorkflowConnection>;
   /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
   /** Retrieves all workflow definition along with blueprint */
@@ -2257,6 +2271,7 @@ export type ConductorQuery = {
   /** Get the list of pending tasks for a given task type */
   view: Maybe<Array<Maybe<Task>>>;
   workflowDefinitions: WorkflowDefinitionConnection;
+  workflowInstanceDetail: WorkflowInstanceDetail;
   workflowLabels: Array<Scalars['String']['output']>;
 };
 
@@ -2465,6 +2480,12 @@ export type ConductorQueryViewArgs = {
 export type ConductorQueryWorkflowDefinitionsArgs = {
   filter?: InputMaybe<WorkflowsFilterInput>;
   orderBy?: InputMaybe<WorkflowsOrderByInput>;
+};
+
+
+export type ConductorQueryWorkflowInstanceDetailArgs = {
+  shouldIncludeTasks?: InputMaybe<Scalars['Boolean']['input']>;
+  workflowId: Scalars['String']['input'];
 };
 
 export type DeviceInventoryMutation = {
@@ -3299,7 +3320,14 @@ export type ExecutedWorkflowsQueryVariables = Exact<{
 }>;
 
 
-export type ExecutedWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'Workflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: WorkflowStatus | null, variables: string | null, originalId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', name: string, version: number } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type ExecutedWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'Workflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: WorkflowStatus | null, variables: string | null, originalId: string | null, hasSubworkflows: boolean, workflowDefinition: { __typename?: 'WorkflowDefinition', name: string, version: number } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
+
+export type WorkflowInstanceDetailQueryVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type WorkflowInstanceDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'Subworkflow', referenceTaskName: string | null, workflowDetail: { __typename?: 'WorkflowDefinition', id: string, name: string } | null, executedWorkflowDetail: { __typename?: 'Workflow', id: string, startTime: string | null, endTime: string | null, createdAt: string | null, originalId: string | null, status: WorkflowStatus | null } | null }> | null } } };
 
 export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
 

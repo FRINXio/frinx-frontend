@@ -1,28 +1,19 @@
-import { Box, Container, Flex, Heading, Progress, Text, useToast } from '@chakra-ui/react';
+import { Container, Flex, FormControl, FormLabel, Heading, Progress, Switch, Text } from '@chakra-ui/react';
 import { useNotifications, Pagination, omitNullValue } from '@frinx/shared';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useQuery } from 'urql';
 import { makeURLSearchParamsFromObject } from '../../helpers/utils.helpers';
-import {
-  ExecutedWorkflowsQuery,
-  ExecutedWorkflowsQueryVariables,
-  SortExecutedWorkflowsBy,
-  SortExecutedWorkflowsDirection,
-} from '../../__generated__/graphql';
+import { ExecutedWorkflowsQuery, ExecutedWorkflowsQueryVariables } from '../../__generated__/graphql';
 import BulkActionsMenu from './bulk-actions-menu';
-import ExecutedWorkflowFilters from './executed-workflow-filters';
-import ExecutedWorkflowsTable from './executed-workflow-table/executed-workflow-table';
-import { makeFilterFromSearchParams, makeSearchQueryVariableFromFilter } from './executed-workflow.helpers';
-
-export type SortProperty = { key: keyof ExecutedWorkflow; value: 'ASC' | 'DESC' };
-
-export type SortKey = SortExecutedWorkflowsBy;
-
-export type OrderBy = {
-  sortKey: SortKey;
-  direction: SortExecutedWorkflowsDirection;
-};
+import ExecutedWorkflowsFilters from './executed-workflows-filters';
+import ExecutedWorkflowsTable from './executed-workflows-table';
+import {
+  makeFilterFromSearchParams,
+  makeSearchQueryVariableFromFilter,
+  OrderBy,
+  SortKey,
+} from './executed-workflows.helpers';
 
 const EXECUTED_WORKFLOW_QUERY = gql`
   query ExecutedWorkflows(
@@ -43,6 +34,7 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             status
             variables
             originalId
+            hasSubworkflows
             workflowDefinition {
               name
               version
@@ -58,14 +50,13 @@ const EXECUTED_WORKFLOW_QUERY = gql`
   }
 `;
 
-const ExecutedWorkflowList = () => {
+const ExecutedWorkflows = () => {
   const ctx = useMemo(
     () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
     [],
   );
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams<SearchPara>();
   const { addToastNotification } = useNotifications();
-  const toast = useToast();
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'startTime', direction: 'desc' });
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
@@ -150,6 +141,16 @@ const ExecutedWorkflowList = () => {
     });
   };
 
+  const executedWorkflows =
+    data?.conductor.executedWorkflows?.edges
+      .map((e) => {
+        if (e.node.__typename) {
+          return e.node;
+        }
+        return null;
+      })
+      .filter(omitNullValue) ?? [];
+
   return (
     <Container maxWidth={1200} mx="auto">
       <Flex justify="space-between" align="center" marginBottom={6}>
@@ -157,49 +158,47 @@ const ExecutedWorkflowList = () => {
           Executed workflows
         </Heading>
       </Flex>
-      <ExecutedWorkflowFilters
+      <ExecutedWorkflowsFilters
         onSearchBoxSubmit={(searchInput) => {
           setCurrentStartOfPage(0);
           setSearchParams(makeURLSearchParamsFromObject(searchInput));
         }}
-        onTableTypeChange={() => setIsFlat((prev) => !prev)}
-        isFlat={isFlat}
         initialSearchValues={makeFilterFromSearchParams(searchParams)}
       />
-      <Box marginBottom={6}>
+      <Flex marginBottom={6} justifyContent="space-between" alignItems="center">
         <BulkActionsMenu
           selectedWorkflowNames={selectedWorkflows}
           onBulkActionError={handleOnBulkError}
           onBulkActionSuccess={handleOnBulkSuccess}
         />
-      </Box>
+        <FormControl maxWidth="max-content" display="flex" alignItems="center" alignSelf="flex-end">
+          <FormLabel htmlFor="isRootWorkflows" mb="0">
+            Only root workflows
+          </FormLabel>
+          <Switch
+            id="isRootWorkflows"
+            defaultValue={`${makeFilterFromSearchParams(searchParams).isRootWorkflow}`}
+            isChecked={makeFilterFromSearchParams(searchParams).isRootWorkflow}
+            onChange={(event) => {
+              setSearchParams(() => {
+                searchParams.set('isRootWorkflow', String(event.target.checked));
+                return searchParams;
+              });
+            }}
+            name="isRootWorkflow"
+          />
+        </FormControl>
+      </Flex>
       {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
       {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
       {data != null && data.conductor.executedWorkflows != null && !isLoadingWorkflows && (
         <ExecutedWorkflowsTable
-          onSelectAllWorkflows={handleOnAllWorkflowsSelect}
-          handleOnSort={handleOnSort}
-          workflows={data}
-          sort={orderBy}
-          onWorkflowSelect={handleOnWorkflowSelect}
+          workflows={executedWorkflows}
           selectedWorkflows={selectedWorkflows}
-          isFlat={isFlat}
-          onWorkflowStatusClick={(status) => {
-            if (status === 'UNKNOWN') {
-              return toast({
-                description: 'UNKNOWN status is not supported for filtering of executed workflows.',
-                status: 'warning',
-                duration: 4000,
-                isClosable: true,
-              });
-            }
-            return setSearchParams(
-              makeURLSearchParamsFromObject({
-                ...makeFilterFromSearchParams(searchParams),
-                status: [...makeFilterFromSearchParams(searchParams).status, status],
-              }),
-            );
-          }}
+          orderBy={orderBy}
+          onSort={handleOnSort}
+          onWorkflowSelect={handleOnWorkflowSelect}
+          onSelectAllWorkflows={handleOnAllWorkflowsSelect}
         />
       )}
       <Pagination
@@ -212,4 +211,4 @@ const ExecutedWorkflowList = () => {
   );
 };
 
-export default ExecutedWorkflowList;
+export default ExecutedWorkflows;
