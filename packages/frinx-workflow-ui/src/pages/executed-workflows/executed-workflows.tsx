@@ -55,13 +55,11 @@ const ExecutedWorkflows = () => {
     () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
     [],
   );
-  const [searchParams, setSearchParams] = useSearchParams<SearchPara>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { addToastNotification } = useNotifications();
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'startTime', direction: 'desc' });
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
-  const [isFlat, setIsFlat] = useState(false);
-
   const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<
     ExecutedWorkflowsQuery,
     ExecutedWorkflowsQueryVariables
@@ -167,7 +165,7 @@ const ExecutedWorkflows = () => {
       />
       <Flex marginBottom={6} justifyContent="space-between" alignItems="center">
         <BulkActionsMenu
-          selectedWorkflowNames={selectedWorkflows}
+          selectedWorkflowIds={selectedWorkflows}
           onBulkActionError={handleOnBulkError}
           onBulkActionSuccess={handleOnBulkSuccess}
         />

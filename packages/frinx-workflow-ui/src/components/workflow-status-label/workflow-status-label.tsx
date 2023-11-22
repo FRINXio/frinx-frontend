@@ -11,7 +11,7 @@ type Props = {
 const WorkflowStatusLabel: FC<Props> = ({ status, onClick }) => {
   return (
     <Tag
-      as="button"
+      as={onClick ? 'button' : 'span'}
       colorScheme={getLabelColor(status)}
       onClick={() => {
         onClick?.(status);

@@ -57,7 +57,7 @@ const ExecutedWorkflowsTable: FC<Props> = ({
                     <IconButton
                       opacity={workflow.hasSubworkflows ? 1 : 0}
                       pointerEvents={workflow.hasSubworkflows ? 'all' : 'none'}
-                      cursor={workflow.hasSubworkflows ? 'auto' : 'pointer'}
+                      cursor={workflow.hasSubworkflows ? 'pointer' : 'pointer'}
                       size="sm"
                       aria-label="expand"
                       onClick={() => {

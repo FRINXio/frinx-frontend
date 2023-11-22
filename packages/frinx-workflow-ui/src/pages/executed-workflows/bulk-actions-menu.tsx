@@ -74,12 +74,12 @@ function formatWorkflowsNumberString(workflowCount: number): string {
 }
 
 type Props = {
-  selectedWorkflowNames: string[];
+  selectedWorkflowIds: string[];
   onBulkActionSuccess: (message?: string) => void;
   onBulkActionError: (message?: string) => void;
 };
 
-const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess, onBulkActionError }) => {
+const BulkActionsMenu: FC<Props> = ({ selectedWorkflowIds, onBulkActionSuccess, onBulkActionError }) => {
   const ctx = useMemo(
     () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
     [],
@@ -104,10 +104,11 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess
     BulkRestartWorkflowMutation,
     BulkRestartWorkflowMutationVariables
   >(BULK_RESTART_MUTATION);
+
   const isFetching = isPauseFetching || isRetryFetching || isResumeFetching || isTerminateFetching || isRestartFetching;
 
   const handleBulkPauseButtonClick = () => {
-    bulkPauseWorkflows({ input: selectedWorkflowNames }, ctx).then((res) => {
+    bulkPauseWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
       if (res.data?.conductor.pauseWorkflow_1?.bulkErrorResults.length === 0) {
         return onBulkActionSuccess("One or more workflow can't be paused.");
       }
@@ -116,8 +117,8 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess
   };
 
   const handleBulkRetryButtonClick = () => {
-    bulkRetryWorkflows({ input: selectedWorkflowNames }, ctx).then((res) => {
-      if (res.data?.conductor.retry_1?.bulkErrorResults.length === 0) {
+    bulkRetryWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+      if (res.data?.conductor.retry_1?.bulkSuccessfulResults?.length) {
         return onBulkActionSuccess();
       }
       return onBulkActionError("One or more workflow can't be retried.");
@@ -125,8 +126,8 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess
   };
 
   const handleBulkResumeButtonClick = () => {
-    bulkResumeWorkflows({ input: selectedWorkflowNames }, ctx).then((res) => {
-      if (res.data?.conductor.resumeWorkflow_1?.bulkErrorResults.length === 0) {
+    bulkResumeWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+      if (res.data?.conductor.resumeWorkflow_1?.bulkSuccessfulResults?.length) {
         return onBulkActionSuccess();
       }
       return onBulkActionError("One or more workflow can't be resumed.");
@@ -134,8 +135,8 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess
   };
 
   const handleBulkTerminateButtonClick = () => {
-    bulkTermiateWorkflows({ input: selectedWorkflowNames }, ctx).then((res) => {
-      if (res.data?.conductor.terminate?.bulkErrorResults.length === 0) {
+    bulkTermiateWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+      if (res.data?.conductor.terminate?.bulkSuccessfulResults?.length) {
         return onBulkActionSuccess();
       }
       return onBulkActionError("One or more workflow can't be terminated.");
@@ -143,8 +144,8 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess
   };
 
   const handleBulkRestartButtonClick = () => {
-    bulkRestartWorkflows({ input: selectedWorkflowNames }, ctx).then((res) => {
-      if (res.data?.conductor.restart_1?.bulkErrorResults.length === 0) {
+    bulkRestartWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+      if (res.data?.conductor.restart_1?.bulkSuccessfulResults?.length) {
         return onBulkActionSuccess();
       }
       return onBulkActionError("One or more workflows can't be restarted.");
@@ -154,7 +155,7 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess
   return (
     <Menu size="sm">
       <MenuButton
-        isDisabled={isFetching || selectedWorkflowNames.length === 0}
+        isDisabled={isFetching || selectedWorkflowIds.length === 0}
         size="sm"
         as={Button}
         colorScheme="gray"
@@ -162,9 +163,7 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowNames, onBulkActionSuccess
         position="relative"
       >
         <Text opacity={isFetching ? 0 : 1} as="span">
-          {selectedWorkflowNames.length === 0
-            ? 'Bulk actions'
-            : formatWorkflowsNumberString(selectedWorkflowNames.length)}
+          {selectedWorkflowIds.length === 0 ? 'Bulk actions' : formatWorkflowsNumberString(selectedWorkflowIds.length)}
         </Text>
         {isFetching && (
           <Box position="relative" top="50%" left="50%" transform="translate(-50%, -50%)">

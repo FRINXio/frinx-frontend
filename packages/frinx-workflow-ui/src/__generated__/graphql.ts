@@ -32,6 +32,11 @@ export type Action = {
   start_workflow: Maybe<StartWorkflow>;
 };
 
+export type ActionWorkflowPayload = {
+  __typename?: 'ActionWorkflowPayload';
+  workflow: Maybe<Workflow>;
+};
+
 export type Action_Input = {
   action?: InputMaybe<MutationInput_UpdateEventHandler_Input_Actions_Items_Action>;
   complete_task?: InputMaybe<TaskDetails_Input>;
@@ -1921,6 +1926,7 @@ export type ConductorMutation = {
   getWorkflows: Maybe<Scalars['JSON']['output']>;
   /** Log Task Execution Details */
   log: Maybe<Scalars['JSON']['output']>;
+  pauseExecutedWorkflow: ActionWorkflowPayload;
   /** Pauses the workflow */
   pauseWorkflow: Maybe<Scalars['JSON']['output']>;
   /** Pause the list of workflows */
@@ -1937,18 +1943,22 @@ export type ConductorMutation = {
   requeueSweep: Maybe<Scalars['String']['output']>;
   /** Reruns the workflow from a specific task */
   rerun: Maybe<Scalars['String']['output']>;
+  rerunExecutedWorkflow: ActionWorkflowPayload;
   /** Resets callback times of all non-terminal SIMPLE tasks to 0 */
   resetWorkflow: Maybe<Scalars['Void']['output']>;
   /** Restarts a completed workflow */
   restart: Maybe<Scalars['Void']['output']>;
+  restartExecutedWorkflow: ActionWorkflowPayload;
   /** Restart the list of completed workflow */
   restart_1: Maybe<BulkResponse>;
+  resumeExecutedWorkflow: ActionWorkflowPayload;
   /** Resumes the workflow */
   resumeWorkflow: Maybe<Scalars['JSON']['output']>;
   /** Resume the list of workflows */
   resumeWorkflow_1: Maybe<BulkResponse>;
   /** Retries the last failed task */
   retry: Maybe<Scalars['Void']['output']>;
+  retryExecutedWorkflow: ActionWorkflowPayload;
   /** Retry the last failed task for each workflow from the list */
   retry_1: Maybe<BulkResponse>;
   /** Skips a given task from a current running workflow */
@@ -1959,6 +1969,7 @@ export type ConductorMutation = {
   startWorkflow_1: Maybe<Scalars['String']['output']>;
   /** Terminate workflows execution */
   terminate: Maybe<BulkResponse>;
+  terminateExecutedWorkflow: ActionWorkflowPayload;
   /** Terminate workflow execution */
   terminate_1: Maybe<Scalars['JSON']['output']>;
   /** Test workflow execution using mock data */
@@ -2019,6 +2030,11 @@ export type ConductorMutationLogArgs = {
 };
 
 
+export type ConductorMutationPauseExecutedWorkflowArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type ConductorMutationPauseWorkflowArgs = {
   workflowId: Scalars['String']['input'];
 };
@@ -2060,6 +2076,11 @@ export type ConductorMutationRerunArgs = {
 };
 
 
+export type ConductorMutationRerunExecutedWorkflowArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type ConductorMutationResetWorkflowArgs = {
   workflowId: Scalars['String']['input'];
 };
@@ -2071,9 +2092,19 @@ export type ConductorMutationRestartArgs = {
 };
 
 
+export type ConductorMutationRestartExecutedWorkflowArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type ConductorMutationRestart_1Args = {
   input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   useLatestDefinitions?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type ConductorMutationResumeExecutedWorkflowArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -2090,6 +2121,11 @@ export type ConductorMutationResumeWorkflow_1Args = {
 export type ConductorMutationRetryArgs = {
   resumeSubworkflowTasks?: InputMaybe<Scalars['Boolean']['input']>;
   workflowId: Scalars['String']['input'];
+};
+
+
+export type ConductorMutationRetryExecutedWorkflowArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -2122,6 +2158,11 @@ export type ConductorMutationStartWorkflow_1Args = {
 export type ConductorMutationTerminateArgs = {
   input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   reason?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ConductorMutationTerminateExecutedWorkflowArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3262,21 +3303,56 @@ export type ExecutedWorkflowDetailQueryVariables = Exact<{
 }>;
 
 
-export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
+export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, originalId: string | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
 
 export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
-  controlExecutedWorkflowId: Scalars['String']['input'];
+  workflowId: Scalars['String']['input'];
 }>;
 
 
 export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', conductor: { __typename?: 'ConductorSubscription', controlExecutedWorkflow: { __typename?: 'Workflow', endTime: string | null, startTime: string | null, status: WorkflowStatus | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, endTime: string | null, startTime: string | null, updatedAt: string | null, status: WorkflowTaskStatus | null, taskType: string | null, subWorkflowId: string | null }> | null } } };
 
-export type ExecuteWorkflowByItsNameMutationVariables = Exact<{
-  input: StartWorkflowRequest_Input;
+export type RerunWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
 }>;
 
 
-export type ExecuteWorkflowByItsNameMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', startWorkflow: string | null } };
+export type RerunWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', rerunExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type RestartWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type RestartWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', restartExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type RetryWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type RetryWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', retryExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type PauseWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type PauseWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', pauseExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type ResumeWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type ResumeWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', resumeExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type TerminateWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type TerminateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', terminateExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
 
 export type BulkPauseWorkflowMutationVariables = Exact<{
   input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;

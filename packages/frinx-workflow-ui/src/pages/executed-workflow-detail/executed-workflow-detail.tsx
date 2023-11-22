@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Container,
+  Flex,
   Heading,
   Progress,
   Tab,
@@ -14,7 +15,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { useNotifications } from '@frinx/shared';
+import { unwrap, useNotifications } from '@frinx/shared';
 import { Link, useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import {
@@ -22,10 +23,10 @@ import {
   ControlExecutedWorkflowSubscriptionVariables,
   ExecutedWorkflowDetailQuery,
   ExecutedWorkflowDetailQueryVariables,
-  ExecuteWorkflowByItsNameMutation,
-  ExecuteWorkflowByItsNameMutationVariables,
   PauseWorkflowMutation,
   PauseWorkflowMutationVariables,
+  RerunWorkflowMutation,
+  RerunWorkflowMutationVariables,
   RestartWorkflowMutation,
   RestartWorkflowMutationVariables,
   ResumeWorkflowMutation,
@@ -42,7 +43,6 @@ import EditRerunTab from './executed-workflow-detail-tabs/edit-rerun-tab';
 import ExecutedWorkflowDetailHeader from './executed-workflow-detail-header';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 import WorkflowDiagram from '../../components/workflow-diagram';
-import { formatDate } from '../../helpers/utils.helpers';
 import ExecutedWorkflowDetailTaskDetail from './executed-workflow-detail-task-detail/executed-workflow-detail-task-detail';
 
 const EXECUTED_WORKFLOW_QUERY = gql`
@@ -62,6 +62,7 @@ const EXECUTED_WORKFLOW_QUERY = gql`
           output
           reasonForIncompletion
           failedReferenceTaskNames
+          originalId
           workflowDefinition {
             id
             version
@@ -105,9 +106,9 @@ const EXECUTED_WORKFLOW_QUERY = gql`
 `;
 
 const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
-  subscription ControlExecutedWorkflow($controlExecutedWorkflowId: String!) {
+  subscription ControlExecutedWorkflow($workflowId: String!) {
     conductor {
-      controlExecutedWorkflow(workflowId: $controlExecutedWorkflowId) {
+      controlExecutedWorkflow(workflowId: $workflowId) {
         endTime
         startTime
         status
@@ -125,54 +126,84 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
   }
 `;
 
-const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByItsName($input: StartWorkflowRequest_Input!) {
+const RERUN_WORKFLOW_MUTATION = gql`
+  mutation RerunWorkflow($workflowId: String!) {
     conductor {
-      startWorkflow(input: $input)
+      rerunExecutedWorkflow(id: $workflowId) {
+        workflow {
+          id
+          status
+        }
+      }
     }
   }
 `;
 
-// const RESTART_WORKFLOW_MUTATION = gql`
-//   mutation RestartWorkflow($restartWorkflowId: String!) {
-//     restartWorkflow(id: $restartWorkflowId) {
-//       isOk
-//     }
-//   }
-// `;
-//
-// const RETRY_WORKFLOW_MUTATION = gql`
-//   mutation RetryWorkflow($retryWorkflowId: String!, $retryWorkflowInput: RetryWorkflowInput) {
-//     retryWorkflow(id: $retryWorkflowId, input: $retryWorkflowInput) {
-//       isOk
-//     }
-//   }
-// `;
-//
-// const PAUSE_WORKFLOW_MUTATION = gql`
-//   mutation PauseWorkflow($pauseWorkflowId: String!) {
-//     pauseWorkflow(id: $pauseWorkflowId) {
-//       isOk
-//     }
-//   }
-// `;
-//
-// const RESUME_WORKFLOW_MUTATION = gql`
-//   mutation ResumeWorkflow($resumeWorkflowId: String!) {
-//     resumeWorkflow(id: $resumeWorkflowId) {
-//       isOk
-//     }
-//   }
-// `;
-//
-// const TERMINATE_WORKFLOW_MUTATION = gql`
-//   mutation TerminateWorkflow($terminateWorkflowId: String!) {
-//     terminateWorkflow(id: $terminateWorkflowId) {
-//       isOk
-//     }
-//   }
-// `;
-//
+const RESTART_WORKFLOW_MUTATION = gql`
+  mutation RestartWorkflow($workflowId: String!) {
+    conductor {
+      restartExecutedWorkflow(id: $workflowId) {
+        workflow {
+          id
+          status
+        }
+      }
+    }
+  }
+`;
+
+const RETRY_WORKFLOW_MUTATION = gql`
+  mutation RetryWorkflow($workflowId: String!) {
+    conductor {
+      retryExecutedWorkflow(id: $workflowId) {
+        workflow {
+          id
+          status
+        }
+      }
+    }
+  }
+`;
+
+const PAUSE_WORKFLOW_MUTATION = gql`
+  mutation PauseWorkflow($workflowId: String!) {
+    conductor {
+      pauseExecutedWorkflow(id: $workflowId) {
+        workflow {
+          id
+          status
+        }
+      }
+    }
+  }
+`;
+
+const RESUME_WORKFLOW_MUTATION = gql`
+  mutation ResumeWorkflow($workflowId: String!) {
+    conductor {
+      resumeExecutedWorkflow(id: $workflowId) {
+        workflow {
+          id
+          status
+        }
+      }
+    }
+  }
+`;
+
+const TERMINATE_WORKFLOW_MUTATION = gql`
+  mutation TerminateWorkflow($workflowId: String!) {
+    conductor {
+      terminateExecutedWorkflow(id: $workflowId) {
+        workflow {
+          id
+          status
+        }
+      }
+    }
+  }
+`;
+
 type Props = {
   onExecutedOperation: (workflowId: string) => void;
 };
@@ -185,7 +216,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const { addToastNotification } = useNotifications();
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
-
   const [
     { data: executedWorkflowDetail, fetching: isLoadingExecutedWorkflow, error: executedWorkflowDetailError },
     reexecuteQuery,
@@ -199,9 +229,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     ControlExecutedWorkflowSubscriptionVariables
   >({
     query: EXECUTED_WORKFLOW_SUBSCRIPTION,
-    variables: { controlExecutedWorkflowId: workflowId || '' },
+    variables: { workflowId: workflowId || '' },
   });
-
   const [, restartWorkflow] = useMutation<RestartWorkflowMutation, RestartWorkflowMutationVariables>(
     RESTART_WORKFLOW_MUTATION,
   );
@@ -213,10 +242,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const [, terminateWorkflow] = useMutation<TerminateWorkflowMutation, TerminateWorkflowMutationVariables>(
     TERMINATE_WORKFLOW_MUTATION,
   );
-  const [, executeWorkflowByName] = useMutation<
-    ExecuteWorkflowByItsNameMutation,
-    ExecuteWorkflowByItsNameMutationVariables
-  >(EXECUTE_WORKFLOW_MUTATION);
+  const [, rerunWorkflow] = useMutation<RerunWorkflowMutation, RerunWorkflowMutationVariables>(RERUN_WORKFLOW_MUTATION);
 
   useEffect(() => {
     if (data?.conductor.controlExecutedWorkflow?.status !== 'RUNNING') {
@@ -257,28 +283,22 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     })),
   };
 
-  const handleOnRerunClick = (inputParameters: Record<string, string | boolean | number | string[]>) => {
-    executeWorkflowByName({
-      input: {
-        name: executedWorkflow.workflowDefinition?.name || '',
-        version: executedWorkflow.workflowDefinition?.version,
-        correlationId: executedWorkflow.correlationId,
-        priority: 0,
-        input: JSON.stringify(inputParameters),
-      },
+  const handleOnRerunClick = () => {
+    rerunWorkflow({
+      workflowId,
     })
       .then((result) => {
         if (result.error) {
           throw new Error(result.error?.message);
         }
 
-        if (result.data?.conductor.startWorkflow == null) {
+        if (result.data?.conductor.rerunExecutedWorkflow.workflow == null) {
           throw new Error('Something went wrong');
         }
 
         // when specific task detail is opened we need to close it after rerun so that we can see new tasks that have different ids
         setOpenedTaskId(null);
-        onExecutedOperation(result.data?.conductor.startWorkflow || '');
+        onExecutedOperation(result.data?.conductor.rerunExecutedWorkflow.workflow.id);
       })
       .catch((err) => {
         addToastNotification({
@@ -324,7 +344,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const handleOnRestartWorkflow = () => {
     restartWorkflow(
       {
-        restartWorkflowId: workflowId,
+        workflowId,
       },
       ctx,
     ).then(() => {
@@ -336,7 +356,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const handleOnTerminateWorkflow = () => {
     terminateWorkflow(
       {
-        terminateWorkflowId: workflowId,
+        workflowId,
       },
       ctx,
     )
@@ -365,36 +385,31 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const handleOnRetryWorkflow = () => {
     retryWorkflow(
       {
-        retryWorkflowId: workflowId,
+        workflowId,
       },
       ctx,
-    )
-      .then((res) => {
-        if (res.error != null) {
-          throw new Error(res.error.message);
-        }
-
-        addToastNotification({
+    ).then((res) => {
+      if (res.data?.conductor.retryExecutedWorkflow.workflow != null) {
+        return addToastNotification({
           title: 'Workflow retried',
           content: `Workflow ${executedWorkflow.workflowDefinition?.name} retried`,
           type: 'success',
           timeout: 2500,
         });
-      })
-      .catch((err) => {
-        addToastNotification({
-          title: 'Error',
-          content: err.message,
-          type: 'error',
-          timeout: 2500,
-        });
+      }
+      return addToastNotification({
+        title: 'Error',
+        content: "Can't retry workflow",
+        type: 'error',
+        timeout: 2500,
       });
+    });
   };
 
   const handleOnPauseWorkflow = () => {
     pauseWorkflow(
       {
-        pauseWorkflowId: workflowId,
+        workflowId,
       },
       ctx,
     )
@@ -423,7 +438,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const handleOnResumeWorkflow = () => {
     resumeWorkflow(
       {
-        resumeWorkflowId: workflowId,
+        workflowId,
       },
       ctx,
     )
@@ -450,22 +465,22 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   };
 
   return (
-    <Container maxWidth={1280}>
-      <Heading size="xl" marginBottom={10}>
-        Details of {executedWorkflow.workflowDefinition?.name} / {executedWorkflow.workflowDefinition?.version}
-      </Heading>
-      <Box>
+    <Container maxWidth="container.xl">
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h1" size="xl">
+          {executedWorkflow.workflowDefinition?.name} / {executedWorkflow.workflowDefinition?.version}
+        </Heading>
         {executedWorkflow.parentId && (
-          <Button display="inline" margin={2} as={Link} to={`../executed/${executedWorkflow.parentId}`}>
-            Parent
+          <Button margin={2} as={Link} to={`../ executed / ${executedWorkflow.parentId} `}>
+            Go to parent workflow
           </Button>
         )}
-      </Box>
+      </Flex>
       <ExecutedWorkflowDetailHeader
-        endTime={formatDate(executedWorkflow.endTime)}
-        startTime={formatDate(executedWorkflow.startTime)}
+        endTime={executedWorkflow.endTime}
+        startTime={executedWorkflow.startTime}
         status={executedWorkflow.status}
-        visibleRestartButton={executedWorkflow.workflowDefinition?.restartable ?? false}
+        isRestartButtonEnabled={executedWorkflow.workflowDefinition?.restartable ?? false}
         onRestartWorkflow={handleOnRestartWorkflow}
         onTerminateWorkflow={handleOnTerminateWorkflow}
         onRetryWorkflow={handleOnRetryWorkflow}
@@ -494,7 +509,9 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   <ExecutedWorkflowDetailTaskDetail
                     executedWorkflow={executedWorkflowDetail.conductor.node}
                     taskId={openedTaskId}
-                    onClose={() => setOpenedTaskId(null)}
+                    onClose={() => {
+                      setOpenedTaskId(null);
+                    }}
                   />
                 )}
               </TabPanel>
@@ -504,7 +521,9 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   isEscaped={isEscaped}
                   input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
                   output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
-                  onEscapeChange={() => setIsEscaped(!isEscaped)}
+                  onEscapeChange={() => {
+                    setIsEscaped((prev) => !prev);
+                  }}
                 />
               </TabPanel>
               <TabPanel>

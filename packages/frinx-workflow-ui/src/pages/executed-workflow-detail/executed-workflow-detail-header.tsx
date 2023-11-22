@@ -1,14 +1,16 @@
 import React, { FC } from 'react';
-import { Box, Grid } from '@chakra-ui/react';
+import { Box, Flex, Heading } from '@chakra-ui/react';
 import { isEmpty } from 'lodash';
 import ExecutedWorkflowDetailHeaderActionButton from './executed-workflow-detail-header-action-button';
-import { ExecutedWorkflowStatus } from '../../__generated__/graphql';
+import { WorkflowStatus } from '../../__generated__/graphql';
+import { formatDate } from '../../helpers/utils.helpers';
+import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
 
 type Props = {
   startTime: string;
   endTime: string;
-  status: ExecutedWorkflowStatus | null;
-  visibleRestartButton: boolean;
+  status: WorkflowStatus | null;
+  isRestartButtonEnabled: boolean;
   onRestartWorkflow: () => void;
   onTerminateWorkflow: () => void;
   onRetryWorkflow: () => void;
@@ -20,7 +22,6 @@ const getExecutionTime = (end: string, start: string) => {
   if (end == null || isEmpty(end)) {
     return '';
   }
-
   const endTime = new Date(end).getTime();
 
   if (start == null || isEmpty(start)) {
@@ -36,48 +37,44 @@ const ExecutedWorkflowDetailHeader: FC<Props> = ({
   startTime,
   status,
   endTime,
-  visibleRestartButton,
+  isRestartButtonEnabled,
   onRestartWorkflow,
   onTerminateWorkflow,
   onRetryWorkflow,
   onPauseWorkflow,
   onResumeWorkflow,
 }) => (
-  <Box background="blue.600" borderRadius={4} padding={15} marginBottom={10}>
-    <Grid templateColumns={status === 'COMPLETED' ? 'repeat(4, 1fr)' : 'repeat(5,1fr)'}>
-      <Box mx="auto">
-        <Box color="white">
-          <b>Total Time (sec)</b>
-          <br />
-          {getExecutionTime(endTime, startTime)}
-        </Box>
+  <Box background="white" padding={6} borderRadius="md" boxShadow="sm" marginBottom={10}>
+    <Flex>
+      <Box flex={1}>
+        <Heading as="h4" fontSize="lg">
+          Total Time (sec)
+        </Heading>
+        {getExecutionTime(endTime, startTime)}
       </Box>
-      <Box mx="auto">
-        <Box color="white">
-          <b>Start Time</b>
-          <br />
-          {startTime}
-        </Box>
+      <Box flex={1}>
+        <Heading as="h4" fontSize="lg">
+          Start Time
+        </Heading>
+        {formatDate(startTime)}
       </Box>
-      <Box mx="auto">
-        <Box color="white">
-          <b>End Time</b>
-          <br />
-          {endTime}
-        </Box>
+      <Box flex={1}>
+        <Heading as="h4" fontSize="lg">
+          End Time
+        </Heading>
+        {formatDate(endTime)}
       </Box>
-      <Box mx="auto">
-        <Box color="white">
-          <b>Status</b>
-          <br />
-          {status}
-        </Box>
+      <Box flex={1}>
+        <Heading as="h4" fontSize="lg">
+          Status
+        </Heading>
+        <WorkflowStatusLabel status={status ?? 'UNKNOWN'} />
       </Box>
       {status !== 'COMPLETED' && (
-        <Box>
+        <Box flex={1} marginLeft="auto">
           <ExecutedWorkflowDetailHeaderActionButton
             status={status}
-            isVisibleRestartButton={visibleRestartButton}
+            isRestartButtonEnabled={isRestartButtonEnabled}
             onRestartWorkflow={onRestartWorkflow}
             onTerminateWorkflow={onTerminateWorkflow}
             onRetryWorkflow={onRetryWorkflow}
@@ -86,7 +83,7 @@ const ExecutedWorkflowDetailHeader: FC<Props> = ({
           />
         </Box>
       )}
-    </Grid>
+    </Flex>
   </Box>
 );
 

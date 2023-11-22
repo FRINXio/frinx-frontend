@@ -6,7 +6,7 @@ export function getLabelColor(status: WorkflowStatus | 'UNKNOWN'): string {
     case 'TERMINATED':
       return 'red';
     case 'PAUSED':
-      return 'blue.400';
+      return 'teal';
     case 'RUNNING':
       return 'blue';
     case 'TIMED_OUT':
