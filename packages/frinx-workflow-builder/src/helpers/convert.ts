@@ -1,7 +1,21 @@
 import { jsonParse, Workflow } from '@frinx/shared';
-import { WorkflowFragmentFragment } from '../__generated__/graphql';
+// import { WorkflowFragmentFragment } from '../__generated__/graphql';
 
-export function convertWorkflowFragmentToClientWorkflow(fragment: WorkflowFragmentFragment): Workflow {
+type WorkflowDefinitionFragmentFragment = {
+  updatedAt: string;
+  variables: string;
+  outputParameters: { key: string; value: string }[];
+  description: string;
+  name: string;
+  hasSchedule: boolean;
+  version: number;
+  restartable: boolean;
+  ownerEmail: string;
+  timeoutPolicy: string;
+  timeoutSeconds: number;
+};
+
+export function convertWorkflowFragmentToClientWorkflow(fragment: WorkflowDefinitionFragmentFragment): Workflow {
   const updateTime = fragment.updatedAt ? new Date(fragment.updatedAt).getMilliseconds() : 0;
   const variables: Record<string, string> = jsonParse<Record<string, string>>(fragment.variables) ?? {};
   const outputParameters: Record<string, string> =

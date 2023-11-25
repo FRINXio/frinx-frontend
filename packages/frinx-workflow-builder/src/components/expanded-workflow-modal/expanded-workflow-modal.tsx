@@ -32,36 +32,36 @@ import StartEndNode from '../workflow-nodes/start-end-node';
 // TODO; can we somehow reuse WorkflwoFragment from root.tsx?
 // app wont build when try to use that one
 export const ExpandedWorkflowFragment = gql`
-  fragment ExpandedWorkflowFragment on Workflow {
+  fragment ExpandedWorkflowFragment on WorkflowDefinition {
     id
     name
     description
     version
     createdAt
     updatedAt
-    createdBy
-    updatedBy
-    tasks
+    tasksJson
     hasSchedule
     inputParameters
     outputParameters {
       key
       value
     }
-    restartable
+    #restartable
     timeoutSeconds
-    timeoutPolicy
-    ownerEmail
-    variables
+    #timeoutPolicy
+    #ownerEmail
+    #variables
   }
 `;
 
 const EXPANDED_WORKFLOWS_MODAL = gql`
-  query GetExpandedWorkflows($filter: FilterWorkflowsInput) {
-    workflows(filter: $filter) {
-      edges {
-        node {
-          ...ExpandedWorkflowFragment
+  query GetExpandedWorkflows($filter: WorkflowsFilterInput) {
+    conductor {
+      workflowDefinitions(filter: $filter) {
+        edges {
+          node {
+            ...ExpandedWorkflowFragment
+          }
         }
       }
     }
@@ -114,12 +114,12 @@ const ExpandedWorkflowModal: FC<Props> = ({ workflowName, workflowVersion, onClo
     },
   });
 
-  if (workflowsData?.workflows == null) {
+  if (workflowsData?.conductor.workflowDefinitions == null) {
     return null;
   }
 
   // we got from server all versions with workflowName, so we need filter the one with workflowVersion
-  const workflows = workflowsData.workflows.edges
+  const workflows = workflowsData.conductor.workflowDefinitions.edges
     .filter((e) => e.node.version === workflowVersion)
     .map((e) => convertWorkflowFragmentToClientWorkflow(e.node));
 

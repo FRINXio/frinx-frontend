@@ -1,5 +1,5 @@
 schema:
-  - https://localhost:8001/graphql
+  - http://127.0.0.1:5555/graphql
 documents:
   - './src/**/*.tsx'
   - './src/**/*.ts'

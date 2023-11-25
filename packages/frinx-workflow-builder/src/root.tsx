@@ -9,6 +9,7 @@ import {
   Task,
   ClientWorkflow,
   DescriptionJSON,
+  TaskDefinition,
 } from '@frinx/shared';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -18,90 +19,91 @@ import { gql, useMutation, useQuery } from 'urql';
 import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
-import {
-  DeleteWorkflowMutation,
-  DeleteWorkflowMutationVariables,
-  UpdateWorkflowMutation,
-  UpdateWorkflowMutationVariables,
-  WorkflowListQuery,
-  WorkflowQuery,
-  WorkflowQueryVariables,
-} from './__generated__/graphql';
+import // DeleteWorkflowMutation,
+// DeleteWorkflowMutationVariables,
+// UpdateWorkflowMutation,
+// UpdateWorkflowMutationVariables,
+// WorkflowListQuery,
+// WorkflowQuery,
+// WorkflowQueryVariables,
+'./__generated__/graphql';
 
 type Props = {
   onClose: () => void;
 };
 
-export const WorkflowFragment = gql`
-  fragment WorkflowFragment on Workflow {
+export const WorkflowDefinitionFragment = gql`
+  fragment WorkflowDefinitionFragment on WorkflowDefinition {
     id
     name
     description
     version
     createdAt
     updatedAt
-    createdBy
-    updatedBy
-    tasks
+    tasksJson
     hasSchedule
     inputParameters
     outputParameters {
       key
       value
     }
-    restartable
+    #restartable
     timeoutSeconds
-    timeoutPolicy
-    ownerEmail
-    variables
+    #timeoutPolicy
+    #ownerEmail
+    #variables
   }
 `;
 
-const WORKFLOW_DETAIL_QUERY = gql`
-  query Workflow($nodeId: ID!, $version: Int) {
-    workflow: node(id: $nodeId, version: $version) {
-      ...WorkflowFragment
+const WORKFLOW_DEFINITION_DETAIL_QUERY = gql`
+  query WorkflowDefinition($nodeId: ID!) {
+    conductor {
+      workflowDefinition: node(id: $nodeId) {
+        ...WorkflowDefinitionFragment
+      }
     }
   }
-  ${WorkflowFragment}
+  ${WorkflowDefinitionFragment}
 `;
 
-const WORKFLOW_LIST_QUERY = gql`
-  query WorkflowList($filter: FilterWorkflowsInput, $taskDefinitionsFilter: FilterTaskDefinitionsInput) {
-    workflows(filter: $filter) {
-      edges {
-        cursor
-        node {
-          ...WorkflowFragment
+const WORKFLOW_DEFINITIONS_LIST_QUERY = gql`
+  query WorkflowDefinitionList($filter: WorkflowsFilterInput, $taskDefinitionsFilter: FilterTaskDefinitionsInput) {
+    workflowDefinitions(filter: $filter) {
+      conductor {
+        edges {
+          cursor
+          node {
+            ...WorkflowDefinitionFragment
+          }
         }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
       }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
-    taskDefinitions(filter: $taskDefinitionsFilter) {
-      edges {
-        node {
-          name
-          description
-          createdBy
-          retryCount
-          timeoutSeconds
-          timeoutPolicy
-          retryLogic
-          retryDelaySeconds
-          responseTimeoutSeconds
-          ownerEmail
-          inputKeys
+      getTaskDefs {
+        edges {
+          node {
+            name
+            description
+            createdBy
+            retryCount
+            timeoutSeconds
+            timeoutPolicy
+            retryLogic
+            retryDelaySeconds
+            responseTimeoutSeconds
+            ownerEmail
+            inputKeys
+          }
         }
       }
     }
   }
-  ${WorkflowFragment}
+  ${WorkflowDefinitionFragment}
 `;
 
 const UPDATE_WORKFLOW_MUTATION = gql`
@@ -153,8 +155,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
-  const [{ data: workflowListData }] = useQuery<WorkflowListQuery>({
-    query: WORKFLOW_LIST_QUERY,
+  const [{ data: workflowListData }] = useQuery<unknown>({
+    query: WORKFLOW_DEFINITIONS_LIST_QUERY,
     variables: {
       filter: { keyword: workflowFilter },
       taskDefinitionsFilter: {
@@ -163,8 +165,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     },
   });
 
-  const [{ data: workflowData }] = useQuery<WorkflowQuery, WorkflowQueryVariables>({
-    query: WORKFLOW_DETAIL_QUERY,
+  const [{ data: workflowData }] = useQuery<unknown>({
+    query: WORKFLOW_DEFINITION_DETAIL_QUERY,
     variables: {
       nodeId: workflowId ?? '', // query with empty string nodeId wont be called, because query is paused in that case
     },
@@ -172,13 +174,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     pause: workflowId == null,
   });
 
-  const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
-    UPDATE_WORKFLOW_MUTATION,
-  );
+  const [, updateWorkflow] = useMutation<unknown>(UPDATE_WORKFLOW_MUTATION);
 
-  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
-    WORKFLOW_DELETE_MUTATION,
-  );
+  const [, deleteWorkflow] = useMutation<unknown>(WORKFLOW_DELETE_MUTATION);
 
   const [, executeWorkflow] = useMutation(EXECUTE_WORKFLOW_MUTATION);
 
@@ -191,29 +189,26 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   }, [workflowId, version]);
 
   useEffect(() => {
-    if (workflowData?.workflow == null) {
-      return;
-    }
-
-    const { workflow: workflowDetail } = workflowData;
-
-    if (workflowDetail.__typename !== 'Workflow') {
-      return;
-    }
-
-    const tasks = jsonParse<Task[]>(workflowDetail.tasks);
-    const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
-    const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { __typename, ...wfDetail } = workflowDetail;
-    setWorkflow({
-      ...wfDetail,
-      description: description?.description ?? null,
-      labels: description?.labels || [],
-      tasks: extendedTasks,
-      hasSchedule: workflowDetail.hasSchedule ?? false,
-      outputParameters: workflowDetail.outputParameters,
-    });
+    // if (workflowData?.workflow == null) {
+    //   return;
+    // }
+    // const { workflow: workflowDetail } = workflowData;
+    // if (workflowDetail.__typename !== 'Workflow') {
+    //   return;
+    // }
+    // const tasks = jsonParse<Task[]>(workflowDetail.tasks);
+    // const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
+    // const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
+    // // eslint-disable-next-line @typescript-eslint/naming-convention
+    // const { __typename, ...wfDetail } = workflowDetail;
+    // setWorkflow({
+    //   ...wfDetail,
+    //   description: description?.description ?? null,
+    //   labels: description?.labels || [],
+    //   tasks: extendedTasks,
+    //   hasSchedule: workflowDetail.hasSchedule ?? false,
+    //   outputParameters: workflowDetail.outputParameters,
+    // });
   }, [workflowData]);
 
   const handleFileImport = (file: File) => {
@@ -310,17 +305,18 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     setTaskdefsFilter(keyword);
   };
 
-  const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
-    const { node } = e;
-    const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
-    const description = jsonParse<DescriptionJSON | null>(node.description);
-    return {
-      ...node,
-      labels: description?.labels || [],
-      tasks: parsedTasks,
-      hasSchedule: node.hasSchedule || false,
-    };
-  });
+  // const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
+  //   const { node } = e;
+  //   const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
+  //   const description = jsonParse<DescriptionJSON | null>(node.description);
+  //   return {
+  //     ...node,
+  //     labels: description?.labels || [],
+  //     tasks: parsedTasks,
+  //     hasSchedule: node.hasSchedule || false,
+  //   };
+  // });
+  const clientWorkflowList: ClientWorkflow[] = [];
 
   if (shouldCreateWorkflow) {
     return (
@@ -350,7 +346,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     );
   }
 
-  const { taskDefinitions } = workflowListData;
+  // const { taskDefinitions } = workflowListData;
+  const taskDefinitions: TaskDefinition[] = [];
 
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
@@ -363,7 +360,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
           workflows={clientWorkflowList}
-          taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
+          taskDefinitions={taskDefinitions}
+          // taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}
