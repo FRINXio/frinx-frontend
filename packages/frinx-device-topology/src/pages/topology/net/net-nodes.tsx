@@ -1,8 +1,8 @@
 import React, { VoidFunctionComponent } from 'react';
-import NetNodeIcon from '../../components/node-icons/net-node-icon';
-import { addRemoveUnconfirmedNodeIdForShortestPath, setSelectedNetNode } from '../../state.actions';
-import { useStateContext } from '../../state.provider';
-import { GraphNetNode } from './graph.helpers';
+import NetNodeIcon from '../../../components/node-icons/net-node-icon';
+import { addRemoveUnconfirmedNodeIdForShortestPath, setSelectedNetNode } from '../../../state.actions';
+import { useStateContext } from '../../../state.provider';
+import { GraphNetNode } from '../graph.helpers';
 
 type Props = {
   nodes: GraphNetNode[];

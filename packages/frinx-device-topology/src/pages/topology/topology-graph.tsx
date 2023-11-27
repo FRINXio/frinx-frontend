@@ -7,7 +7,7 @@ import { useStateContext } from '../../state.provider';
 import Edges from './edges';
 import { ensureNodeHasDevice, height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
-import Nodes from './nodes';
+import Nodes from './lldp/nodes';
 
 type Props = {
   isCommonNodesFetching: boolean;
