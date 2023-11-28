@@ -12,7 +12,7 @@ type PoolResources = Array<
 >;
 
 type Props = {
-  allocatedResources?: AllocatedResourcesQuery['QueryResourcesByAltId'];
+  allocatedResources?: AllocatedResourcesQuery['resourceManager']['QueryResourcesByAltId'];
   resources: PoolResources;
   onFreeResource: (userInput: Record<string, string | number>) => void;
   onClaimResource: (description?: string | null, userInput?: Record<string, string | number>) => void;
@@ -113,8 +113,8 @@ const PoolDetailSetSingletonTable: VoidFunctionComponent<Props> = ({
         allocatedResources.pageInfo.endCursor &&
         allocatedResources.pageInfo.startCursor && (
           <Pagination
-            onNext={onNext(allocatedResources.pageInfo.startCursor.ID)}
-            onPrevious={onPrevious(allocatedResources.pageInfo.endCursor.ID)}
+            onNext={onNext(allocatedResources.pageInfo.startCursor)}
+            onPrevious={onPrevious(allocatedResources.pageInfo.endCursor)}
             hasNextPage={allocatedResources.pageInfo.hasNextPage}
             hasPreviousPage={allocatedResources.pageInfo.hasPreviousPage}
           />

@@ -26,54 +26,66 @@ import CreatePoolForm from './create-pool-form';
 
 const CREATE_SET_POOL_MUTATION = gql`
   mutation CreateSetPool($input: CreateSetPoolInput!) {
-    CreateSetPool(input: $input) {
-      pool {
-        id
+    resourceManager {
+      CreateSetPool(input: $input) {
+        pool {
+          id
+        }
       }
     }
   }
 `;
 const CREATE_NESTED_SET_POOL_MUTATION = gql`
   mutation CreateNestedSetPool($input: CreateNestedSetPoolInput!) {
-    CreateNestedSetPool(input: $input) {
-      pool {
-        id
+    resourceManager {
+      CreateNestedSetPool(input: $input) {
+        pool {
+          id
+        }
       }
     }
   }
 `;
 const CREATE_SINGLETON_POOL_MUTATION = gql`
   mutation CreateSingletonPool($input: CreateSingletonPoolInput!) {
-    CreateSingletonPool(input: $input) {
-      pool {
-        id
+    resourceManager {
+      CreateSingletonPool(input: $input) {
+        pool {
+          id
+        }
       }
     }
   }
 `;
 const CREATE_NESTED_SINGLETON_POOL_MUTATION = gql`
   mutation CreateNestedSingletonPool($input: CreateNestedSingletonPoolInput!) {
-    CreateNestedSingletonPool(input: $input) {
-      pool {
-        id
+    resourceManager {
+      CreateNestedSingletonPool(input: $input) {
+        pool {
+          id
+        }
       }
     }
   }
 `;
 const CREATE_ALLOCATING_POOL_MUTATION = gql`
   mutation CreateAllocationPool($input: CreateAllocatingPoolInput!) {
-    CreateAllocatingPool(input: $input) {
-      pool {
-        id
+    resourceManager {
+      CreateAllocatingPool(input: $input) {
+        pool {
+          id
+        }
       }
     }
   }
 `;
 const CREATE_NESTED_ALLOCATING_POOL_MUTATION = gql`
   mutation CreateNestedAllocationPool($input: CreateNestedAllocatingPoolInput!) {
-    CreateNestedAllocatingPool(input: $input) {
-      pool {
-        id
+    resourceManager {
+      CreateNestedAllocatingPool(input: $input) {
+        pool {
+          id
+        }
       }
     }
   }
@@ -81,16 +93,18 @@ const CREATE_NESTED_ALLOCATING_POOL_MUTATION = gql`
 
 const SELECT_RESOURCE_TYPES_QUERY = gql`
   query SelectResourceTypes {
-    QueryResourceTypes {
-      Name
-      id
-      Pools {
-        id
+    resourceManager {
+      QueryResourceTypes {
         Name
-      }
-      PropertyTypes {
         id
-        Name
+        Pools {
+          id
+          Name
+        }
+        PropertyTypes {
+          id
+          Name
+        }
       }
     }
   }
@@ -104,44 +118,46 @@ const SELECT_POOLS_QUERY = gql`
     $resourceTypeId: ID
     $filterByResources: Map
   ) {
-    QueryRootResourcePools(
-      first: $first
-      last: $last
-      before: $before
-      after: $after
-      resourceTypeId: $resourceTypeId
-      filterByResources: $filterByResources
-    ) {
-      edges {
-        node {
-          id
-          Name
-          PoolProperties
-          ParentResource {
-            id
-          }
-          ResourceType {
+    resourceManager {
+      QueryRootResourcePools(
+        first: $first
+        last: $last
+        before: $before
+        after: $after
+        resourceTypeId: $resourceTypeId
+        filterByResources: $filterByResources
+      ) {
+        edges {
+          node {
             id
             Name
-            Pools {
-              id
-              Name
-            }
-            PropertyTypes {
-              id
-              Name
-            }
-          }
-          Resources {
-            NestedPool {
+            PoolProperties
+            ParentResource {
               id
             }
-            Description
-            Properties
-            id
-            ParentPool {
+            ResourceType {
               id
               Name
+              Pools {
+                id
+                Name
+              }
+              PropertyTypes {
+                id
+                Name
+              }
+            }
+            Resources {
+              NestedPool {
+                id
+              }
+              Description
+              Properties
+              id
+              ParentPool {
+                id
+                Name
+              }
             }
           }
         }
@@ -151,21 +167,25 @@ const SELECT_POOLS_QUERY = gql`
 `;
 const SELECT_ALLOCATION_STRATEGIES_QUERY = gql`
   query SelectAllocationStrategies {
-    QueryAllocationStrategies {
-      id
-      Name
+    resourceManager {
+      QueryAllocationStrategies {
+        id
+        Name
+      }
     }
   }
 `;
 
 const GET_POOL_PROPERTIES_BY_ALLOC_STRATEGY = gql`
   query RequiredPoolProperties($allocationStrategyName: String!) {
-    QueryRequiredPoolProperties(allocationStrategyName: $allocationStrategyName) {
-      Name
-      Type
-      FloatVal
-      IntVal
-      StringVal
+    resourceManager {
+      QueryRequiredPoolProperties(allocationStrategyName: $allocationStrategyName) {
+        Name
+        Type
+        FloatVal
+        IntVal
+        StringVal
+      }
     }
   }
 `;
@@ -320,7 +340,7 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
     RequiredPoolPropertiesQueryVariables
   >({ query: GET_POOL_PROPERTIES_BY_ALLOC_STRATEGY, variables: { allocationStrategyName: customResourceTypeName } });
 
-  const poolsData = poolsRawData?.QueryRootResourcePools.edges.map((e) => {
+  const poolsData = poolsRawData?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
 
@@ -354,7 +374,10 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
     return null;
   }
 
-  const allocStrategies = allocStratData.QueryAllocationStrategies.map((as) => ({ id: as.id, name: as.Name }));
+  const allocStrategies = allocStratData.resourceManager.QueryAllocationStrategies.map((as) => ({
+    id: as.id,
+    name: as.Name,
+  }));
 
   return (
     <>
@@ -368,12 +391,12 @@ const CreatePoolPage: VoidFunctionComponent<Props> = ({ onCreateSuccess }) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           onFormSubmit={handleFormSubmit}
-          resourceTypes={data.QueryResourceTypes}
+          resourceTypes={data.resourceManager.QueryResourceTypes}
           resourcePools={poolsRawData}
           allocStrategies={allocStrategies}
           isLoadingRequiredPoolProperties={isLoadingPoolProperties}
           onResourceTypeChange={setCustomResourceTypeName}
-          requiredPoolProperties={requiredPoolProperties?.QueryRequiredPoolProperties}
+          requiredPoolProperties={requiredPoolProperties?.resourceManager.QueryRequiredPoolProperties}
         />
       </Box>
     </>
