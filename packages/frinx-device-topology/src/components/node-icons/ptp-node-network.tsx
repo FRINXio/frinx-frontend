@@ -4,7 +4,7 @@ import { height, width } from '../../pages/topology/graph.helpers';
 import { NetNetwork } from '../../__generated__/graphql';
 
 type Props = {
-  network: NetNetwork;
+  network: Omit<NetNetwork, 'ospfRouteType'>;
 };
 
 const G = chakra('g');

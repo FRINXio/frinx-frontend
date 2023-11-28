@@ -31,63 +31,63 @@ const GET_IP_POOLS = gql`
     $filterByResources: Map
     $tags: TagOr
   ) {
-    QueryRootResourcePools(
-      first: $first
-      last: $last
-      before: $before
-      after: $after
-      resourceTypeId: $resourceTypeId
-      filterByResources: $filterByResources
-      tags: $tags
-    ) {
-      edges {
-        node {
-          id
-          Name
-          Tags {
-            id
-            Tag
-          }
-          ResourceType {
+    resourceManager {
+      QueryRootResourcePools(
+        first: $first
+        last: $last
+        before: $before
+        after: $after
+        resourceTypeId: $resourceTypeId
+        filterByResources: $filterByResources
+        tags: $tags
+      ) {
+        edges {
+          node {
             id
             Name
-          }
-          PoolProperties
-          Resources {
-            id
-            NestedPool {
+            Tags {
               id
-              ResourceType {
+              Tag
+            }
+            ResourceType {
+              id
+              Name
+            }
+            PoolProperties
+            Resources {
+              id
+              NestedPool {
                 id
-                Name
+                ResourceType {
+                  id
+                  Name
+                }
               }
             }
+            Capacity {
+              freeCapacity
+              utilizedCapacity
+            }
           }
-          Capacity {
-            freeCapacity
-            utilizedCapacity
-          }
         }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
       }
-      pageInfo {
-        endCursor {
-          ID
-        }
-        hasNextPage
-        hasPreviousPage
-        startCursor {
-          ID
-        }
-      }
-      totalCount
     }
   }
 `;
 
 const DELETE_POOL_MUTATION = gql`
   mutation DeleteIpPool($input: DeleteResourcePoolInput!) {
-    DeleteResourcePool(input: $input) {
-      resourcePoolId
+    resourceManager {
+      DeleteResourcePool(input: $input) {
+        resourcePoolId
+      }
     }
   }
 `;
@@ -119,7 +119,7 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
   });
   const [, deletePoolMutation] = useMutation<DeleteIpPoolMutation, DeleteIpPoolMutationVariables>(DELETE_POOL_MUTATION);
 
-  const allAggregates = (data?.QueryRootResourcePools.edges ?? [])
+  const allAggregates = (data?.resourceManager.QueryRootResourcePools.edges ?? [])
     ?.map((e) => {
       return e?.node ?? null;
     })
@@ -233,14 +233,10 @@ const IpamAggregatesPage: VoidFunctionComponent = () => {
         {data && (
           <Box marginTop={4} paddingX={4}>
             <Pagination
-              onPrevious={previousPage(
-                data.QueryRootResourcePools.pageInfo.startCursor && data.QueryRootResourcePools.pageInfo.startCursor.ID,
-              )}
-              onNext={nextPage(
-                data.QueryRootResourcePools.pageInfo.endCursor && data.QueryRootResourcePools.pageInfo.endCursor.ID,
-              )}
-              hasNextPage={data.QueryRootResourcePools.pageInfo.hasNextPage}
-              hasPreviousPage={data.QueryRootResourcePools.pageInfo.hasPreviousPage}
+              onPrevious={previousPage(data.resourceManager.QueryRootResourcePools.pageInfo.startCursor)}
+              onNext={nextPage(data.resourceManager.QueryRootResourcePools.pageInfo.endCursor)}
+              hasNextPage={data.resourceManager.QueryRootResourcePools.pageInfo.hasNextPage}
+              hasPreviousPage={data.resourceManager.QueryRootResourcePools.pageInfo.hasPreviousPage}
             />
           </Box>
         )}

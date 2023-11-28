@@ -222,6 +222,19 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.netInterfaceGroupPositions = positionMap.interfaceGroups;
         return acc;
       }
+      case 'SET_PTP_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GrahpNetNodeInterface, GraphNetNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.ptpNodes = nodes;
+        acc.ptpEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.ptpNodePositions = positionMap.nodes;
+        acc.ptpInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_TOPOLOGY_LAYER': {
         acc.topologyLayer = action.layer;
         acc.selectedEdge = null;

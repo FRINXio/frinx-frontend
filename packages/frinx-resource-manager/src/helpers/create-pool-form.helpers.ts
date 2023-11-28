@@ -18,7 +18,7 @@ export function getAvailableAllocatedResources(
   pools: SelectPoolsQuery | undefined,
   parentPoolId?: string,
 ): AvailableAllocatedResource[] | undefined {
-  const poolsData = pools?.QueryRootResourcePools.edges.map((e) => {
+  const poolsData = pools?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
   return poolsData?.flatMap(
@@ -33,11 +33,11 @@ export function getAvailableAllocatedResources(
 }
 
 export function getAvailableResourceTypes(
-  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
+  resourceTypes: SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'],
   pools: SelectPoolsQuery | undefined,
   parentPoolId?: string,
-): SelectResourceTypesQuery['QueryResourceTypes'] {
-  const poolsData = pools?.QueryRootResourcePools.edges.map((e) => {
+): SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'] {
+  const poolsData = pools?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
   return parentPoolId
@@ -48,9 +48,9 @@ export function getAvailableResourceTypes(
 }
 
 export function deriveResourceTypesFromAvailableResourceTypes(
-  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
-  availableResourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
-): SelectResourceTypesQuery['QueryResourceTypes'] {
+  resourceTypes: SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'],
+  availableResourceTypes: SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'],
+): SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'] {
   return resourceTypes.filter(
     (resourceType) =>
       resourceTypes.length !== availableResourceTypes.length &&
@@ -87,7 +87,7 @@ export function getAvailablePoolProperties(
   parentPoolId?: string,
   parentResourceId?: string,
 ): Record<string, string>[] | undefined {
-  const poolsData = resourcePools?.QueryRootResourcePools.edges.map((e) => {
+  const poolsData = resourcePools?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
   return poolsData
@@ -137,7 +137,7 @@ export function formatSuggestedProperties(
 }
 
 export function getPoolPropertiesSkeleton(
-  resourceTypes: SelectResourceTypesQuery['QueryResourceTypes'],
+  resourceTypes: SelectResourceTypesQuery['resourceManager']['QueryResourceTypes'],
   resourceTypeId: string,
   values?: Record<string, string | number>,
 ): [poolProperties: Record<string, string | number>, poolValues: Record<string, 'int' | 'string' | 'bool'>] {

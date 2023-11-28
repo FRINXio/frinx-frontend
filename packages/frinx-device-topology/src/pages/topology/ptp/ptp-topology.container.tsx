@@ -9,7 +9,7 @@ import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import {
   clearShortestPathSearch,
   findShortestPath,
-  getNetNodesAndEdges,
+  getPtpNodesAndEdges,
   setAlternativePaths,
   setMode,
   setSelectedAlternativePath,
@@ -103,9 +103,9 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
 
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
-      dispatch(getNetNodesAndEdges(client));
+      dispatch(getPtpNodesAndEdges(client));
     }, 10000);
-    dispatch(getNetNodesAndEdges(client));
+    dispatch(getPtpNodesAndEdges(client));
 
     return () => {
       window.clearInterval(intervalRef.current);
