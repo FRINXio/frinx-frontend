@@ -33,11 +33,13 @@ const EDGE_GAP = 75;
 
 const SHORTEST_PATH_QUERY = gql`
   query ShortestPath($from: String!, $to: String!) {
-    shortestPath(from: $from, to: $to) {
-      weight
-      nodes {
+    deviceInventory {
+      shortestPath(from: $from, to: $to) {
         weight
-        name
+        nodes {
+          weight
+          name
+        }
       }
     }
   }
@@ -85,7 +87,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
 
   useEffect(() => {
     const shortestPath: ShortestPath =
-      shorthestPathData?.shortestPath.map((d) => {
+      shorthestPathData?.deviceInventory.shortestPath.map((d) => {
         return {
           weight: d.weight,
           nodes: d.nodes

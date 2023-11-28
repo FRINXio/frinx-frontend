@@ -20,16 +20,20 @@ import TopologyGraph from './topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdatePosition($input: [GraphNodeCoordinatesInput!]!) {
-    updateGraphNodeCoordinates(input: $input) {
-      deviceNames
+    deviceInventory {
+      updateGraphNodeCoordinates(input: $input) {
+        deviceNames
+      }
     }
   }
 `;
 
 const TOPOLOGY_COMMON_NODES = gql`
   query TopologyCommonNodes($nodes: [String!]!) {
-    topologyCommonNodes(nodes: $nodes) {
-      commonNodes
+    deviceInventory {
+      topologyCommonNodes(nodes: $nodes) {
+        commonNodes
+      }
     }
   }
 `;
@@ -120,7 +124,7 @@ const TopologyContainer: VoidFunctionComponent = () => {
   };
 
   useEffect(() => {
-    const data = commonNodesData?.topologyCommonNodes?.commonNodes || [];
+    const data = commonNodesData?.deviceInventory.topologyCommonNodes?.commonNodes || [];
     dispatch(setCommonNodeIds([...data]));
   }, [commonNodesData, dispatch]);
 

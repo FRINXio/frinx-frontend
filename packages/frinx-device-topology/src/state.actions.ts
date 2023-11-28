@@ -126,35 +126,37 @@ export type ThunkAction<A extends Record<string, unknown>, S> = (
 
 const TOPOLOGY_QUERY = gql`
   query Topology($labels: [String!]) {
-    topology(filter: { labels: $labels }) {
-      nodes {
-        id
-        device {
+    deviceInventory {
+      topology(filter: { labels: $labels }) {
+        nodes {
           id
-          name
-          deviceSize
+          device {
+            id
+            name
+            deviceSize
+          }
+          deviceType
+          softwareVersion
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
         }
-        deviceType
-        softwareVersion
-        interfaces {
+        edges {
           id
-          status
-          name
-        }
-        coordinates {
-          x
-          y
-        }
-      }
-      edges {
-        id
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
       }
     }
@@ -162,38 +164,40 @@ const TOPOLOGY_QUERY = gql`
 `;
 const NET_TOPOLOGY_QUERY = gql`
   query NetTopology {
-    netTopology {
-      nodes {
-        id
-        nodeId
-        name
-        interfaces {
+    deviceInventory {
+      netTopology {
+        nodes {
           id
+          nodeId
           name
-        }
-        networks {
-          id
-          subnet
+          interfaces {
+            id
+            name
+          }
+          networks {
+            id
+            subnet
+            coordinates {
+              x
+              y
+            }
+          }
           coordinates {
             x
             y
           }
         }
-        coordinates {
-          x
-          y
-        }
-      }
-      edges {
-        id
-        weight
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
+        edges {
+          id
+          weight
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
       }
     }
@@ -202,29 +206,31 @@ const NET_TOPOLOGY_QUERY = gql`
 
 const TOPOLOGY_VERSION_DATA_QUERY = gql`
   query TopologyVersionData($version: String!) {
-    topologyVersionData(version: $version) {
-      edges {
-        id
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
-        }
-      }
-      nodes {
-        id
-        name
-        interfaces {
+    deviceInventory {
+      topologyVersionData(version: $version) {
+        edges {
           id
-          status
-          name
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
-        coordinates {
-          x
-          y
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
         }
       }
     }
@@ -252,7 +258,7 @@ export function getNodesAndEdges(client: Client, labels: LabelItem[]): ReturnTyp
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.topology ?? { nodes: [], edges: [] };
         // we need to supply edges with null weight
         const edgesWithWeight = edges.map((e) => ({
           ...e,
@@ -282,7 +288,7 @@ export function getNetNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.netTopology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.netTopology ?? { nodes: [], edges: [] };
         dispatch(setNetNodesAndEdges({ nodes, edges }));
       });
   };
@@ -347,9 +353,9 @@ export function getBackupNodesAndEdges(client: Client, version: string): ReturnT
       .then((data) => {
         dispatch(
           setBackupNodesAndEdges({
-            nodes: data.data?.topologyVersionData.nodes ?? [],
+            nodes: data.data?.deviceInventory.topologyVersionData.nodes ?? [],
             edges:
-              data.data?.topologyVersionData.edges.map((e) => ({
+              data.data?.deviceInventory.topologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],
