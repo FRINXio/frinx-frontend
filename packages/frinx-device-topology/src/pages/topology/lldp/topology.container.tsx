@@ -7,16 +7,16 @@ import {
   setCommonNodeIds,
   setMode,
   setSelectedNodeIdsToFindCommonNode,
-} from '../../state.actions';
-import { useStateContext } from '../../state.provider';
+} from '../../../state.actions';
+import { useStateContext } from '../../../state.provider';
 import {
   TopologyCommonNodesQuery,
   TopologyCommonNodesQueryVariables,
   UpdatePositionMutation,
   UpdatePositionMutationVariables,
-} from '../../__generated__/graphql';
-import { height, Position, width } from './graph.helpers';
-import TopologyGraph from './topology-graph';
+} from '../../../__generated__/graphql';
+import { height, Position, width } from '../graph.helpers';
+import TopologyGraph from '../topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdatePosition($input: [GraphNodeCoordinatesInput!]!) {

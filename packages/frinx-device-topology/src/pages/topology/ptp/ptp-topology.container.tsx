@@ -3,9 +3,9 @@ import { omitNullValue } from '@frinx/shared';
 import { partition } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useQuery } from 'urql';
-import ActionControls from '../../components/action-controls/action-controls';
-import Edge from '../../components/edge/edge';
-import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
+import ActionControls from '../../../components/action-controls/action-controls';
+import Edge from '../../../components/edge/edge';
+import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import {
   clearShortestPathSearch,
   findShortestPath,
@@ -14,10 +14,10 @@ import {
   setMode,
   setSelectedAlternativePath,
   setSelectedEdge,
-} from '../../state.actions';
-import { useStateContext } from '../../state.provider';
-import { ShortestPath, ShortestPathInfo } from '../../state.reducer';
-import { ShortestPathQuery, ShortestPathQueryVariables } from '../../__generated__/graphql';
+} from '../../../state.actions';
+import { useStateContext } from '../../../state.provider';
+import { ShortestPath, ShortestPathInfo } from '../../../state.reducer';
+import { ShortestPathQuery, ShortestPathQueryVariables } from '../../../__generated__/graphql';
 import {
   getControlPoints,
   getLinePoints,
@@ -25,9 +25,9 @@ import {
   height,
   isTargetingActiveNode,
   width,
-} from './graph.helpers';
-import BackgroundSvg from './img/background.svg';
-import NetNodes from './net-nodes';
+} from '../graph.helpers';
+import BackgroundSvg from '../img/background.svg';
+import PtpNodes from './ptp-nodes';
 
 const EDGE_GAP = 75;
 
@@ -54,15 +54,15 @@ const isShortestPathPredicate = (shortestPathInfo: ShortestPathInfo | null, edge
   return shortestPathIds.includes(edge.target.interface, fromInterfaceIndex);
 };
 
-const NetTopologyContainer: VoidFunctionComponent = () => {
+const PtpTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
   const {
-    netEdges,
-    netNodePositions,
-    netInterfaceGroupPositions,
-    netNodes,
+    ptpEdges,
+    ptpNodePositions,
+    ptpInterfaceGroupPositions,
+    ptpNodes,
     selectedNode,
     connectedNodeIds,
     topologyLayer,
@@ -161,25 +161,25 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
 
   const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex) ?? null;
 
-  const [shortestPathEdges, nonShortestPathEdges] = partition(netEdges, (edge) =>
+  const [shortestPathEdges, nonShortestPathEdges] = partition(ptpEdges, (edge) =>
     isShortestPathPredicate(shortestPathInfo, edge),
   );
-  const sortedNetEdges = [...nonShortestPathEdges, ...shortestPathEdges];
+  const sortedPtpEdges = [...nonShortestPathEdges, ...shortestPathEdges];
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <g>
-          {sortedNetEdges.map((edge) => {
-            if (isTargetingActiveNode(edge, getNameFromNode(selectedNode), netInterfaceGroupPositions)) {
+          {sortedPtpEdges.map((edge) => {
+            if (isTargetingActiveNode(edge, getNameFromNode(selectedNode), ptpInterfaceGroupPositions)) {
               return null;
             }
             const isActive = !!selectedNode?.interfaces.find((i) => i.id === edge.source.interface);
             const linePoints = getLinePoints({
               edge,
               connectedNodeIds,
-              nodePositions: netNodePositions,
-              interfaceGroupPositions: netInterfaceGroupPositions,
+              nodePositions: ptpNodePositions,
+              interfaceGroupPositions: ptpInterfaceGroupPositions,
             });
             if (!linePoints) {
               return null;
@@ -188,7 +188,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
             const controlPoints = isActive
               ? getControlPoints({
                   edge,
-                  interfaceGroupPositions: netInterfaceGroupPositions,
+                  interfaceGroupPositions: ptpInterfaceGroupPositions,
                   sourcePosition: start,
                   targetPosition: end,
                   edgeGap: EDGE_GAP,
@@ -216,7 +216,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
             );
           })}
         </g>
-        <NetNodes nodes={netNodes} />
+        <PtpNodes nodes={ptpNodes} />
       </svg>
       {unconfirmedShortestPathNodeIds.filter(omitNullValue).length > 0 && (
         <Box position="absolute" top={2} left="2" background="transparent">
@@ -252,4 +252,4 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
   );
 };
 
-export default NetTopologyContainer;
+export default PtpTopologyContainer;
