@@ -22,6 +22,11 @@ export type NetNodesEdgesPayload = {
   edges: GraphEdge[];
 };
 
+export type PtpNodesEdgesPayload = {
+  nodes: GraphNetNode[];
+  edges: GraphEdge[];
+};
+
 export type BackupNodesEdgesPayload = {
   nodes: BackupGraphNode[];
   edges: GraphEdge[];
@@ -89,6 +94,10 @@ export type StateAction =
   | {
       type: 'SET_NET_NODES_AND_EDGES';
       payload: NetNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_PTP_NODES_AND_EDGES';
+      payload: PtpNodesEdgesPayload;
     }
   | {
       type: 'SET_TOPOLOGY_LAYER';
@@ -290,6 +299,31 @@ export function getNetNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
       .then((data) => {
         const { nodes, edges } = data.data?.deviceInventory.netTopology ?? { nodes: [], edges: [] };
         dispatch(setNetNodesAndEdges({ nodes, edges }));
+      });
+  };
+}
+
+export function setPtpNodesAndEdges(payload: PtpNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_PTP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+export function getPtpNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<NetTopologyQuery, NetTopologyQueryVariables>(
+        NET_TOPOLOGY_QUERY,
+        {},
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes, edges } = data.data?.deviceInventory.netTopology ?? { nodes: [], edges: [] };
+        dispatch(setPtpNodesAndEdges({ nodes, edges }));
       });
   };
 }
