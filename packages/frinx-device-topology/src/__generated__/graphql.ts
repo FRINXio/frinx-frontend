@@ -3685,14 +3685,6 @@ export type VersionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type VersionsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyVersions: Array<string> | null } };
 
-export type ShortestPathQueryVariables = Exact<{
-  from: Scalars['String']['input'];
-  to: Scalars['String']['input'];
-}>;
-
-
-export type ShortestPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', shortestPath: Array<{ __typename?: 'NetRoutingPathNode', weight: number | null, nodes: Array<{ __typename?: 'NetRoutingPathNodeInfo', weight: number | null, name: string | null }> }> } };
-
 export type UpdatePositionMutationVariables = Exact<{
   input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;
 }>;
@@ -3706,6 +3698,14 @@ export type TopologyCommonNodesQueryVariables = Exact<{
 
 
 export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null } };
+
+export type ShortestPathQueryVariables = Exact<{
+  from: Scalars['String']['input'];
+  to: Scalars['String']['input'];
+}>;
+
+
+export type ShortestPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', shortestPath: Array<{ __typename?: 'NetRoutingPathNode', weight: number | null, nodes: Array<{ __typename?: 'NetRoutingPathNodeInfo', weight: number | null, name: string | null }> }> } };
 
 export type TopologyQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;

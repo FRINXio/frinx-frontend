@@ -14,7 +14,7 @@ import {
 } from './pages/topology/graph.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 
-export type TopologyLayer = 'LLDP' | 'BGP-LS';
+export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP';
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -48,6 +48,10 @@ export type State = {
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
+  ptpNodes: GraphNetNode[];
+  ptpEdges: GraphEdgeWithDiff[];
+  ptpNodePositions: Record<string, Position>;
+  ptpInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
   isWeightVisible: boolean;
 };
 
@@ -74,6 +78,10 @@ export const initialState: State = {
   netEdges: [],
   netNodePositions: {},
   netInterfaceGroupPositions: {},
+  ptpNodes: [],
+  ptpEdges: [],
+  ptpNodePositions: {},
+  ptpInterfaceGroupPositions: {},
   isWeightVisible: false,
 };
 
