@@ -100,8 +100,6 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
   );
   const sortedPtpEdges = [...nonShortestPathEdges, ...shortestPathEdges];
 
-  console.log(selectedNode);
-
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
