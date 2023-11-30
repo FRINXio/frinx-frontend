@@ -9,10 +9,12 @@ import {
   GraphNetNode,
   GraphNode,
   GraphNodeInterface,
+  GraphPtpNodeInterface,
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
+import { PtpGraphNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP';
 export type NodeInfo = {
@@ -32,7 +34,7 @@ export type State = {
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
-  selectedNode: (GraphNode | GraphNetNode) | null;
+  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -48,10 +50,10 @@ export type State = {
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
-  ptpNodes: GraphNetNode[];
+  ptpNodes: PtpGraphNode[];
   ptpEdges: GraphEdgeWithDiff[];
   ptpNodePositions: Record<string, Position>;
-  ptpInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
+  ptpInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
   isWeightVisible: boolean;
 };
 
@@ -222,6 +224,19 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.netInterfaceGroupPositions = positionMap.interfaceGroups;
         return acc;
       }
+      case 'SET_PTP_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.ptpNodes = nodes;
+        acc.ptpEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.ptpNodePositions = positionMap.nodes;
+        acc.ptpInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_TOPOLOGY_LAYER': {
         acc.topologyLayer = action.layer;
         acc.selectedEdge = null;
@@ -235,6 +250,20 @@ export function stateReducer(state: State, action: StateAction): State {
         }
         acc.selectedNode = action.node;
         const connectedEdges = acc.netEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_PTP_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.ptpEdges.filter(
           (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
         );
         const connectedNodeIds = [

@@ -1,19 +1,19 @@
 import React, { VoidFunctionComponent } from 'react';
 import PtpNodeIcon from '../../../components/node-icons/ptp-node-icon';
-import { addRemoveUnconfirmedNodeIdForShortestPath, setSelectedNetNode } from '../../../state.actions';
+import { addRemoveUnconfirmedNodeIdForShortestPath, setSelectedPtpNode } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { GraphNetNode } from '../graph.helpers';
+import { PtpGraphNode } from '../../../__generated__/graphql';
 
 type Props = {
-  nodes: GraphNetNode[];
+  nodes: PtpGraphNode[];
 };
 
 const PtpNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
   const { state, dispatch } = useStateContext();
   const {
-    netNodePositions,
+    ptpNodePositions,
     connectedNodeIds,
-    netInterfaceGroupPositions,
+    ptpInterfaceGroupPositions,
     unconfirmedSelectedNodeIds,
     unconfirmedShortestPathNodeIds,
     mode,
@@ -23,11 +23,11 @@ const PtpNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     selectedEdge,
   } = state;
 
-  const handleClick = (node: GraphNetNode) => {
+  const handleClick = (node: PtpGraphNode) => {
     if (mode === 'SHORTEST_PATH') {
       dispatch(addRemoveUnconfirmedNodeIdForShortestPath(node.id));
     } else {
-      dispatch(setSelectedNetNode(node));
+      dispatch(setSelectedPtpNode(node));
     }
   };
 
@@ -39,7 +39,7 @@ const PtpNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
         <PtpNodeIcon
           onClick={handleClick}
           key={node.id}
-          positions={{ nodes: netNodePositions, interfaceGroups: netInterfaceGroupPositions }}
+          positions={{ nodes: ptpNodePositions, interfaceGroups: ptpInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
           isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}
           isSelectedForShortestPath={unconfirmedShortestPathNodeIds.includes(node.id)}

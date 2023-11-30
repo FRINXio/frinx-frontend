@@ -1,23 +1,14 @@
-import { Box, Button, Select } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { omitNullValue } from '@frinx/shared';
 import { partition } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
-import { gql, useClient, useQuery } from 'urql';
+import { useClient } from 'urql';
 import ActionControls from '../../../components/action-controls/action-controls';
 import Edge from '../../../components/edge/edge';
 import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
-import {
-  clearShortestPathSearch,
-  findShortestPath,
-  getNetNodesAndEdges,
-  setAlternativePaths,
-  setMode,
-  setSelectedAlternativePath,
-  setSelectedEdge,
-} from '../../../state.actions';
+import { getPtpNodesAndEdges, setMode, setSelectedEdge } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { ShortestPath, ShortestPathInfo } from '../../../state.reducer';
-import { ShortestPathQuery, ShortestPathQueryVariables } from '../../../__generated__/graphql';
+import { ShortestPathInfo } from '../../../state.reducer';
 import {
   getControlPoints,
   getLinePoints,
@@ -30,20 +21,6 @@ import BackgroundSvg from '../img/background.svg';
 import PtpNodes from './ptp-nodes';
 
 const EDGE_GAP = 75;
-
-const SHORTEST_PATH_QUERY = gql`
-  query ShortestPath($from: String!, $to: String!) {
-    deviceInventory {
-      shortestPath(from: $from, to: $to) {
-        weight
-        nodes {
-          weight
-          name
-        }
-      }
-    }
-  }
-`;
 
 const isShortestPathPredicate = (shortestPathInfo: ShortestPathInfo | null, edge: GraphEdgeWithDiff): boolean => {
   const shortestPathIds = shortestPathInfo?.nodes.map((n) => n.name).filter(omitNullValue) ?? [];
@@ -66,46 +43,16 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
     selectedNode,
     connectedNodeIds,
     topologyLayer,
-    unconfirmedShortestPathNodeIds,
-    selectedShortestPathNodeIds,
     alternativeShortestPaths,
     selectedAlternativeShortestPathIndex,
     isWeightVisible,
   } = state;
 
-  const [{ data: shorthestPathData, fetching: isShortestPathFetching }] = useQuery<
-    ShortestPathQuery,
-    ShortestPathQueryVariables
-  >({
-    query: SHORTEST_PATH_QUERY,
-    variables: {
-      from: selectedShortestPathNodeIds[0] as string,
-      to: selectedShortestPathNodeIds[1] as string,
-    },
-    pause: selectedShortestPathNodeIds.filter(omitNullValue).length !== 2,
-  });
-
-  useEffect(() => {
-    const shortestPath: ShortestPath =
-      shorthestPathData?.deviceInventory.shortestPath.map((d) => {
-        return {
-          weight: d.weight,
-          nodes: d.nodes
-            .map((n) => ({
-              weight: n.weight,
-              name: n.name,
-            }))
-            .filter((n) => n.name != null),
-        };
-      }) ?? [];
-    dispatch(setAlternativePaths(shortestPath));
-  }, [dispatch, shorthestPathData]);
-
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
-      dispatch(getNetNodesAndEdges(client));
+      dispatch(getPtpNodesAndEdges(client));
     }, 10000);
-    dispatch(getNetNodesAndEdges(client));
+    dispatch(getPtpNodesAndEdges(client));
 
     return () => {
       window.clearInterval(intervalRef.current);
@@ -146,25 +93,14 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
     };
   }, [handleKeyDown, handleKeyUp]);
 
-  const handleClearShortestPath = () => {
-    dispatch(clearShortestPathSearch());
-  };
-
-  const handleSearchClick = () => {
-    dispatch(findShortestPath());
-  };
-
-  const handleAlternativePathChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.currentTarget;
-    dispatch(setSelectedAlternativePath(Number(value)));
-  };
-
   const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex) ?? null;
 
   const [shortestPathEdges, nonShortestPathEdges] = partition(ptpEdges, (edge) =>
     isShortestPathPredicate(shortestPathInfo, edge),
   );
   const sortedPtpEdges = [...nonShortestPathEdges, ...shortestPathEdges];
+
+  console.log(selectedNode);
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
@@ -195,10 +131,6 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
                 })
               : [];
             const isUnknown = false;
-            const isShortestPathEdge =
-              shortestPathEdges.findIndex(
-                (e) => e.source.interface === edge.source.interface && e.target.interface === edge.target.interface,
-              ) > -1;
 
             return (
               <Edge
@@ -209,8 +141,8 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
                 onClick={handleEdgeClick}
                 key={edge.id}
                 isUnknown={isUnknown}
-                isShortestPath={isShortestPathEdge}
-                isWeightVisible={(isWeightVisible && isActive) || isShortestPathEdge}
+                isShortestPath={false}
+                isWeightVisible={(isWeightVisible && isActive) || false}
                 weight={edge.weight}
               />
             );
@@ -218,33 +150,6 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
         </g>
         <PtpNodes nodes={ptpNodes} />
       </svg>
-      {unconfirmedShortestPathNodeIds.filter(omitNullValue).length > 0 && (
-        <Box position="absolute" top={2} left="2" background="transparent">
-          <Button onClick={handleClearShortestPath} marginRight={2}>
-            Clear shortest path
-          </Button>
-          <Button onClick={handleSearchClick} isDisabled={isShortestPathFetching} marginRight={2}>
-            Find shortest path
-          </Button>
-          {alternativeShortestPaths.length > 0 && (
-            <Select
-              onChange={handleAlternativePathChange}
-              value={selectedAlternativeShortestPathIndex ?? 0}
-              background="white"
-              width={300}
-              display="inline-block"
-            >
-              {[...alternativeShortestPaths.keys()].map((key) => (
-                <option key={`alternative-key-${key}`} value={key}>
-                  {key === 0
-                    ? `shortest path (weight: ${alternativeShortestPaths[key].weight ?? '-'})`
-                    : `alternative path ${key} (weight: ${alternativeShortestPaths[key].weight ?? '-'})`}
-                </option>
-              ))}
-            </Select>
-          )}
-        </Box>
-      )}
       <Box position="absolute" top={2} right={2}>
         <ActionControls />
       </Box>

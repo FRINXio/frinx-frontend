@@ -6,6 +6,9 @@ import { CustomDispatch } from './use-thunk-reducer';
 import {
   NetTopologyQuery,
   NetTopologyQueryVariables,
+  PtpGraphNode,
+  PtpTopologyQuery,
+  PtpTopologyQueryVariables,
   TopologyQuery,
   TopologyQueryVariables,
   TopologyVersionDataQuery,
@@ -23,7 +26,7 @@ export type NetNodesEdgesPayload = {
 };
 
 export type PtpNodesEdgesPayload = {
-  nodes: GraphNetNode[];
+  nodes: PtpGraphNode[];
   edges: GraphEdge[];
 };
 
@@ -106,6 +109,10 @@ export type StateAction =
   | {
       type: 'SET_SELECTED_NET_NODE';
       node: GraphNetNode | null;
+    }
+  | {
+      type: 'SET_SELECTED_PTP_NODE';
+      node: PtpGraphNode | null;
     }
   | { type: 'CLEAR_SHORTEST_PATH_SEARCH' }
   | {
@@ -246,6 +253,51 @@ const TOPOLOGY_VERSION_DATA_QUERY = gql`
   }
 `;
 
+const PTP_TOPOLOGY_QUERY = gql`
+  query PtpTopology {
+    deviceInventory {
+      ptpTopology {
+        nodes {
+          id
+          nodeId
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+          ptpDeviceDetails {
+            clockType
+            domain
+            ptpProfile
+            clockId
+            parentClockId
+            gmClockId
+          }
+          status
+          labels
+        }
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+          weight
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -313,8 +365,8 @@ export function setPtpNodesAndEdges(payload: PtpNodesEdgesPayload): StateAction 
 export function getPtpNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
   return (dispatch) => {
     client
-      .query<NetTopologyQuery, NetTopologyQueryVariables>(
-        NET_TOPOLOGY_QUERY,
+      .query<PtpTopologyQuery, PtpTopologyQueryVariables>(
+        PTP_TOPOLOGY_QUERY,
         {},
         {
           requestPolicy: 'network-only',
@@ -322,7 +374,7 @@ export function getPtpNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.deviceInventory.netTopology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.ptpTopology ?? { nodes: [], edges: [] };
         dispatch(setPtpNodesAndEdges({ nodes, edges }));
       });
   };
@@ -449,6 +501,13 @@ export function setTopologyLayer(layer: TopologyLayer): StateAction {
 export function setSelectedNetNode(node: GraphNetNode): StateAction {
   return {
     type: 'SET_SELECTED_NET_NODE',
+    node,
+  };
+}
+
+export function setSelectedPtpNode(node: PtpGraphNode): StateAction {
+  return {
+    type: 'SET_SELECTED_PTP_NODE',
     node,
   };
 }
