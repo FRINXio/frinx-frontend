@@ -9,11 +9,13 @@ import NodeInterface from './node-interface';
 
 type Props = {
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
-  isCommon: boolean;
+  // isCommon: boolean;
   isFocused: boolean;
-  isShortestPath: boolean;
-  isSelectedForCommonSearch: boolean;
-  isSelectedForShortestPath: boolean;
+  // isShortestPath: boolean;
+  // isSelectedForCommonSearch: boolean;
+  // isSelectedForShortestPath: boolean;
+  isSelectedForGmPath: boolean;
+  isGmPath: boolean;
   node: PtpGraphNode;
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
@@ -27,10 +29,12 @@ const Text = chakra('text');
 const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
-  isCommon,
-  isShortestPath,
-  isSelectedForCommonSearch,
-  isSelectedForShortestPath,
+  // isCommon,
+  // isShortestPath,
+  // isSelectedForCommonSearch,
+  // isSelectedForShortestPath,
+  isSelectedForGmPath,
+  isGmPath,
   node,
   topologyMode,
   selectedEdge,
@@ -69,7 +73,7 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
         {node.name}
       </Text>
       <NodeIconImage sizeTransform={sizeTransform} />
-      {isSelectedForCommonSearch && (
+      {isSelectedForGmPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
           fill="transparent"
@@ -78,7 +82,7 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
           stroke="red.300"
         />
       )}
-      {isSelectedForShortestPath && (
+      {/* {isSelectedForShortestPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
           fill="transparent"
@@ -86,17 +90,17 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
           strokeDasharray="15, 15"
           stroke="blue.500"
         />
-      )}
-      {isCommon && (
+      )} */}
+      {isGmPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
           fill="transparent"
           strokeWidth={3}
           strokeDasharray="15, 15"
-          stroke="green.300"
+          stroke="red.300"
         />
       )}
-      {isShortestPath && (
+      {/* {isShortestPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
           fill="transparent"
@@ -104,7 +108,7 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
           strokeDasharray="15, 15"
           stroke="blue.400"
         />
-      )}
+      )} */}
       <G>
         {interfaceGroups.map(([group, data]) => {
           const iPosition = data.position;

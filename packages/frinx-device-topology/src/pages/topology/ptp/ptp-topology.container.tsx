@@ -1,14 +1,19 @@
-import { Box } from '@chakra-ui/react';
-import { omitNullValue } from '@frinx/shared';
+import { Box, Button } from '@chakra-ui/react';
 import { partition } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
-import { useClient } from 'urql';
-import ActionControls from '../../../components/action-controls/action-controls';
+import { gql, useClient, useQuery } from 'urql';
 import Edge from '../../../components/edge/edge';
 import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
-import { getPtpNodesAndEdges, setMode, setSelectedEdge } from '../../../state.actions';
+import {
+  clearGmPathSearch,
+  findGmPath,
+  getPtpNodesAndEdges,
+  setGmPathIds,
+  setMode,
+  setSelectedEdge,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { ShortestPathInfo } from '../../../state.reducer';
+import { GetGrandMasterPathQuery, GetGrandMasterPathQueryVariables } from '../../../__generated__/graphql';
 import {
   getControlPoints,
   getLinePoints,
@@ -22,13 +27,20 @@ import PtpNodes from './ptp-nodes';
 
 const EDGE_GAP = 75;
 
-const isShortestPathPredicate = (shortestPathInfo: ShortestPathInfo | null, edge: GraphEdgeWithDiff): boolean => {
-  const shortestPathIds = shortestPathInfo?.nodes.map((n) => n.name).filter(omitNullValue) ?? [];
-  const fromInterfaceIndex = shortestPathIds.findIndex((deviceInterface) => deviceInterface === edge.source.interface);
+const GET_GM_PATH = gql`
+  query GetGrandMasterPath($deviceFrom: String!) {
+    deviceInventory {
+      ptpPathToGrandMaster(deviceFrom: $deviceFrom)
+    }
+  }
+`;
+
+const isGmPathPredicate = (gmPath: string[], edge: GraphEdgeWithDiff): boolean => {
+  const fromInterfaceIndex = gmPath.findIndex((deviceInterface) => deviceInterface === edge.source.interface);
   if (fromInterfaceIndex === -1) {
     return false;
   }
-  return shortestPathIds.includes(edge.target.interface, fromInterfaceIndex);
+  return gmPath.includes(edge.target.interface, fromInterfaceIndex);
 };
 
 const PtpTopologyContainer: VoidFunctionComponent = () => {
@@ -43,10 +55,30 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
     selectedNode,
     connectedNodeIds,
     topologyLayer,
-    alternativeShortestPaths,
-    selectedAlternativeShortestPathIndex,
+    unconfirmedSelectedGmPathNodeId,
+    selectedGmPathNodeId,
     isWeightVisible,
+    gmPathIds,
   } = state;
+
+  const [{ data: gmPathData, fetching: isGmPathFetching }] = useQuery<
+    GetGrandMasterPathQuery,
+    GetGrandMasterPathQueryVariables
+  >({
+    query: GET_GM_PATH,
+    variables: {
+      deviceFrom: selectedGmPathNodeId as string,
+    },
+    pause: selectedGmPathNodeId === null,
+  });
+
+  useEffect(() => {
+    const gmPathDataIds =
+      gmPathData?.deviceInventory.ptpPathToGrandMaster?.map((p) => {
+        return p;
+      }) ?? [];
+    dispatch(setGmPathIds(gmPathDataIds));
+  }, [dispatch, gmPathData]);
 
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
@@ -67,7 +99,7 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
     (event: KeyboardEvent): void => {
       const { code } = event;
       if (code === 'ShiftLeft' || code === 'ShiftRight') {
-        dispatch(setMode('SHORTEST_PATH'));
+        dispatch(setMode('GM_PATH'));
       }
     },
     [dispatch],
@@ -93,12 +125,16 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
     };
   }, [handleKeyDown, handleKeyUp]);
 
-  const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex) ?? null;
+  const handleClearGmPath = () => {
+    dispatch(clearGmPathSearch());
+  };
 
-  const [shortestPathEdges, nonShortestPathEdges] = partition(ptpEdges, (edge) =>
-    isShortestPathPredicate(shortestPathInfo, edge),
-  );
-  const sortedPtpEdges = [...nonShortestPathEdges, ...shortestPathEdges];
+  const handleSearchClick = () => {
+    dispatch(findGmPath());
+  };
+
+  const [gmEdges, nonGmEdges] = partition(ptpEdges, (edge) => isGmPathPredicate(gmPathIds, edge));
+  const sortedPtpEdges = [...nonGmEdges, ...gmEdges];
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
@@ -129,6 +165,11 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
                 })
               : [];
             const isUnknown = false;
+            const isShortestPath = false;
+            const isGmPathEgge =
+              gmEdges.findIndex(
+                (e) => e.source.interface === edge.source.interface && e.target.interface === edge.target.interface,
+              ) > -1;
 
             return (
               <Edge
@@ -139,7 +180,8 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
                 onClick={handleEdgeClick}
                 key={edge.id}
                 isUnknown={isUnknown}
-                isShortestPath={false}
+                isShortestPath={isShortestPath}
+                isGmPath={isGmPathEgge}
                 isWeightVisible={(isWeightVisible && isActive) || false}
                 weight={edge.weight}
               />
@@ -148,9 +190,16 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
         </g>
         <PtpNodes nodes={ptpNodes} />
       </svg>
-      <Box position="absolute" top={2} right={2}>
-        <ActionControls />
-      </Box>
+      {unconfirmedSelectedGmPathNodeId && (
+        <Box position="absolute" top={2} left="2" background="transparent">
+          <Button onClick={handleClearGmPath} marginRight={2}>
+            Clear GM path
+          </Button>
+          <Button onClick={handleSearchClick} isDisabled={isGmPathFetching} marginRight={2}>
+            Find GM path
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

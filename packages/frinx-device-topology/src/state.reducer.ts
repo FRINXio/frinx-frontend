@@ -55,6 +55,9 @@ export type State = {
   ptpNodePositions: Record<string, Position>;
   ptpInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
   isWeightVisible: boolean;
+  unconfirmedSelectedGmPathNodeId: string | null;
+  selectedGmPathNodeId: string | null;
+  gmPathIds: string[];
 };
 
 export const initialState: State = {
@@ -85,6 +88,9 @@ export const initialState: State = {
   ptpNodePositions: {},
   ptpInterfaceGroupPositions: {},
   isWeightVisible: false,
+  unconfirmedSelectedGmPathNodeId: null,
+  selectedGmPathNodeId: null,
+  gmPathIds: [],
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -195,6 +201,24 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_ALTERNATIVE_PATH': {
         acc.selectedAlternativeShortestPathIndex = action.alternativePathIndex;
+        return acc;
+      }
+      case 'SET_UNCONFIRMED_GM_NODE_ID': {
+        acc.unconfirmedSelectedGmPathNodeId = action.nodeId;
+        return acc;
+      }
+      case 'FIND_GM_PATH': {
+        acc.selectedGmPathNodeId = state.unconfirmedSelectedGmPathNodeId;
+        return acc;
+      }
+      case 'CLEAR_GM_PATH': {
+        acc.unconfirmedSelectedGmPathNodeId = null;
+        acc.selectedGmPathNodeId = null;
+        acc.gmPathIds = [];
+        return acc;
+      }
+      case 'SET_GM_PATH_IDS': {
+        acc.gmPathIds = action.nodeIds;
         return acc;
       }
       case 'SET_MODE': {
