@@ -471,7 +471,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           {executedWorkflow.workflowDefinition?.name} / {executedWorkflow.workflowDefinition?.version}
         </Heading>
         {executedWorkflow.parentId && (
-          <Button margin={2} as={Link} to={`../ executed / ${executedWorkflow.parentId} `}>
+          <Button margin={2} as={Link} to={`../executed/${executedWorkflow.parentId}`}>
             Go to parent workflow
           </Button>
         )}

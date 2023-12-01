@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Button, ButtonGroup, HStack } from '@chakra-ui/react';
+import { Button, HStack } from '@chakra-ui/react';
 import { WorkflowStatus } from '../../__generated__/graphql';
 
 type Props = {

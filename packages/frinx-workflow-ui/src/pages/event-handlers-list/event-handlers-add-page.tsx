@@ -6,16 +6,16 @@ import { useNotifications } from '@frinx/shared';
 import EventHandlerForm, { FormValues } from '../../components/event-handler-form/event-handler-form';
 import { CreateEventHandlerMutation, CreateEventHandlerMutationVariables } from '../../__generated__/graphql';
 
-// const CREATE_EVENT_HANDLER = gql`
-//   mutation CreateEventHandler($input: CreateEventHandlerInput!) {
-//     createEventHandler(input: $input) {
-//       id
-//       name
-//       event
-//     }
-//   }
-// `;
-//
+const CREATE_EVENT_HANDLER = gql`
+  mutation CreateEventHandler($input: CreateEventHandlerInput!) {
+    createEventHandler(input: $input) {
+      id
+      name
+      event
+    }
+  }
+`;
+
 const EventHandlersAddPage = () => {
   const navigate = useNavigate();
   const { addToastNotification } = useNotifications();
