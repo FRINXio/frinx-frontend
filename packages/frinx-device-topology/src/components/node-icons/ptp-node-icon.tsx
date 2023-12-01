@@ -1,24 +1,23 @@
 import { chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { GrahpNetNodeInterface, GraphNetNode, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import { GraphPtpNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
-import { GraphEdge } from '../../__generated__/graphql';
-import PtpNodeNetwork from './ptp-node-network';
+import { GraphEdge, PtpGraphNode } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
 import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node-icon.helpers';
 import NodeInterface from './node-interface';
 
 type Props = {
-  positions: PositionsWithGroupsMap<GrahpNetNodeInterface>;
+  positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
   isCommon: boolean;
   isFocused: boolean;
   isShortestPath: boolean;
   isSelectedForCommonSearch: boolean;
   isSelectedForShortestPath: boolean;
-  node: GraphNetNode;
+  node: PtpGraphNode;
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
-  onClick: (node: GraphNetNode) => void;
+  onClick: (node: PtpGraphNode) => void;
 };
 
 const G = chakra('g');
@@ -50,11 +49,6 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
         onClick(node);
       }}
     >
-      <G>
-        {node.networks.map((network) => {
-          return <PtpNodeNetwork key={network.id} network={network} />;
-        })}
-      </G>
       <Circle
         r={isFocused ? `${circleDiameter}px` : 0}
         fill="blackAlpha.100"

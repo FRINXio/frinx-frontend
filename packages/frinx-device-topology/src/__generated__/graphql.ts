@@ -325,11 +325,6 @@ export type CommitConfigPayload = {
   output: CommitConfigOutput;
 };
 
-export type CommonNodesResponse = {
-  __typename?: 'CommonNodesResponse';
-  common_nodes: Array<Scalars['String']['output']>;
-};
-
 export type ConductorSubscription = {
   __typename?: 'ConductorSubscription';
   controlExecutedWorkflow: Workflow;
@@ -338,29 +333,6 @@ export type ConductorSubscription = {
 
 export type ConductorSubscriptionControlExecutedWorkflowArgs = {
   workflowId: Scalars['String']['input'];
-};
-
-export type Coordinates = {
-  __typename?: 'Coordinates';
-  x: Scalars['Float']['output'];
-  y: Scalars['Float']['output'];
-};
-
-export type CoordinatesInput = {
-  node_name: Scalars['String']['input'];
-  node_type: CoordinatesNodeType;
-  x: Scalars['Float']['input'];
-  y: Scalars['Float']['input'];
-};
-
-export type CoordinatesNodeType =
-  | 'device'
-  | 'network';
-
-export type CoordinatesResponse = {
-  __typename?: 'CoordinatesResponse';
-  not_updated: Array<Scalars['String']['output']>;
-  updated: Array<Scalars['String']['output']>;
 };
 
 export type Country = Node & {
@@ -414,11 +386,6 @@ export type CreateAllocationStrategyInput = {
 export type CreateAllocationStrategyPayload = {
   __typename?: 'CreateAllocationStrategyPayload';
   strategy: Maybe<AllocationStrategy>;
-};
-
-export type CreateBackupResponse = {
-  __typename?: 'CreateBackupResponse';
-  db_name: Scalars['String']['output'];
 };
 
 export type CreateEventHandlerInput = {
@@ -590,11 +557,6 @@ export type DeleteAllocationStrategyInput = {
 export type DeleteAllocationStrategyPayload = {
   __typename?: 'DeleteAllocationStrategyPayload';
   strategy: Maybe<AllocationStrategy>;
-};
-
-export type DeleteBackupsResponse = {
-  __typename?: 'DeleteBackupsResponse';
-  deleted_backups: Array<Scalars['String']['output']>;
 };
 
 export type DeleteBlueprintPayload = {
@@ -986,101 +948,21 @@ export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
   deviceInventory: DeviceInventoryMutation;
-  deviceTopology: DeviceTopologyMutation;
   resourceManager: ResourceManagerMutation;
   scheduler: SchedulerMutation;
 };
 
-export type NetDevice = Node & {
-  __typename?: 'NetDevice';
-  id: Scalars['ID']['output'];
-  netInterfaces: NetInterfaceConnection;
-  netNetworks: NetNetworkConnection;
-  ospfAreaId: Scalars['String']['output'];
-  phyDevice: Maybe<PhyDevice>;
-  routerId: Scalars['String']['output'];
-};
-
-
-export type NetDeviceNetInterfacesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<NetInterfaceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type NetDeviceNetNetworksArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<NetNetworkFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type NetDeviceConnection = {
-  __typename?: 'NetDeviceConnection';
-  edges: Maybe<Array<Maybe<NetDeviceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type NetDeviceEdge = {
-  __typename?: 'NetDeviceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<NetDevice>;
-};
-
-export type NetDeviceFilter = {
-  ospfAreaId?: InputMaybe<Scalars['String']['input']>;
-  routerId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type NetInterface = Node & {
+export type NetInterface = {
   __typename?: 'NetInterface';
-  id: Scalars['ID']['output'];
-  igp_metric: Maybe<Scalars['Int']['output']>;
-  ipAddress: Scalars['String']['output'];
+  id: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  netDevice: Maybe<NetDevice>;
-  netLink: Maybe<NetInterface>;
 };
 
-export type NetInterfaceConnection = {
-  __typename?: 'NetInterfaceConnection';
-  edges: Maybe<Array<Maybe<NetInterfaceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type NetInterfaceEdge = {
-  __typename?: 'NetInterfaceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<NetInterface>;
-};
-
-export type NetInterfaceFilter = {
-  ipAddress?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type NetNetwork = Node & {
+export type NetNetwork = {
   __typename?: 'NetNetwork';
-  coordinates: Coordinates;
-  id: Scalars['ID']['output'];
-  ospfRouteType: Scalars['Int']['output'];
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['String']['output'];
   subnet: Scalars['String']['output'];
-};
-
-export type NetNetworkConnection = {
-  __typename?: 'NetNetworkConnection';
-  edges: Maybe<Array<Maybe<NetNetworkEdge>>>;
-  pageInfo: Maybe<PageInfo>;
-};
-
-export type NetNetworkEdge = {
-  __typename?: 'NetNetworkEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<NetNetwork>;
-};
-
-export type NetNetworkFilter = {
-  ospfRouteType?: InputMaybe<Scalars['Int']['input']>;
-  subnet?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type NetNode = {
@@ -1091,11 +973,6 @@ export type NetNode = {
   name: Scalars['String']['output'];
   networks: Array<NetNetwork>;
   nodeId: Scalars['String']['output'];
-};
-
-export type NetRoutingPathConnection = {
-  __typename?: 'NetRoutingPathConnection';
-  edges: Maybe<Array<RoutingPath>>;
 };
 
 export type NetRoutingPathNode = {
@@ -1110,10 +987,6 @@ export type NetRoutingPathNodeInfo = {
   weight: Maybe<Scalars['Int']['output']>;
 };
 
-export type NetRoutingPathOutputCollections =
-  | 'NetDevice'
-  | 'NetInterface';
-
 export type NetTopology = {
   __typename?: 'NetTopology';
   edges: Array<GraphEdge>;
@@ -1123,16 +996,6 @@ export type NetTopology = {
 export type Node = {
   id: Scalars['ID']['output'];
 };
-
-export type NodeInfo = {
-  __typename?: 'NodeInfo';
-  node: Scalars['ID']['output'];
-  weight: Maybe<Scalars['Int']['output']>;
-};
-
-export type NodeStatus =
-  | 'ok'
-  | 'unknown';
 
 export type OrderDirection =
   | 'ASC'
@@ -1156,86 +1019,6 @@ export type PageInfo = {
 export type PaginationArgs = {
   size: Scalars['Int']['input'];
   start: Scalars['Int']['input'];
-};
-
-export type PhyDevice = Node & {
-  __typename?: 'PhyDevice';
-  coordinates: Coordinates;
-  details: PhyDeviceDetails;
-  id: Scalars['ID']['output'];
-  labels: Maybe<Array<Scalars['String']['output']>>;
-  name: Scalars['String']['output'];
-  netDevice: Maybe<NetDevice>;
-  phyInterfaces: PhyInterfaceConnection;
-  routerId: Maybe<Scalars['String']['output']>;
-  status: NodeStatus;
-};
-
-
-export type PhyDevicePhyInterfacesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<PhyInterfaceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type PhyDeviceConnection = {
-  __typename?: 'PhyDeviceConnection';
-  edges: Maybe<Array<Maybe<PhyDeviceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type PhyDeviceDetails = {
-  __typename?: 'PhyDeviceDetails';
-  device_type: Scalars['String']['output'];
-  sw_version: Scalars['String']['output'];
-};
-
-export type PhyDeviceEdge = {
-  __typename?: 'PhyDeviceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<PhyDevice>;
-};
-
-export type PhyDeviceFilter = {
-  label?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type PhyHasAndInterfacesResponse = {
-  __typename?: 'PhyHasAndInterfacesResponse';
-  phy_has_and_interfaces_data: Scalars['JSON']['output'];
-};
-
-export type PhyInterface = Node & {
-  __typename?: 'PhyInterface';
-  id: Scalars['ID']['output'];
-  idLink: Maybe<Scalars['ID']['output']>;
-  name: Scalars['String']['output'];
-  phyDevice: Maybe<PhyDevice>;
-  phyLink: Maybe<PhyInterface>;
-  status: Scalars['String']['output'];
-};
-
-export type PhyInterfaceConnection = {
-  __typename?: 'PhyInterfaceConnection';
-  edges: Maybe<Array<Maybe<PhyInterfaceEdge>>>;
-  pageInfo: PageInfo;
-};
-
-export type PhyInterfaceEdge = {
-  __typename?: 'PhyInterfaceEdge';
-  cursor: Scalars['String']['output'];
-  node: Maybe<PhyInterface>;
-};
-
-export type PhyInterfaceFilter = {
-  name?: InputMaybe<Scalars['String']['input']>;
-  status?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type PhyLinksAndDevicesResponse = {
-  __typename?: 'PhyLinksAndDevicesResponse';
-  phy_links_and_devices_data: Scalars['JSON']['output'];
 };
 
 export type PollData = {
@@ -1271,11 +1054,38 @@ export type PropertyType = Node & {
   id: Scalars['ID']['output'];
 };
 
+export type PtpDeviceDetails = {
+  __typename?: 'PtpDeviceDetails';
+  clockId: Scalars['String']['output'];
+  clockType: Scalars['String']['output'];
+  domain: Scalars['Int']['output'];
+  gmClockId: Scalars['String']['output'];
+  parentClockId: Scalars['String']['output'];
+  ptpProfile: Scalars['String']['output'];
+};
+
+export type PtpGraphNode = {
+  __typename?: 'PtpGraphNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID']['output'];
+  interfaces: Array<GraphNodeInterface>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  name: Scalars['String']['output'];
+  nodeId: Scalars['String']['output'];
+  ptpDeviceDetails: PtpDeviceDetails;
+  status: GraphEdgeStatus;
+};
+
+export type PtpTopology = {
+  __typename?: 'PtpTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<PtpGraphNode>;
+};
+
 export type Query = {
   __typename?: 'Query';
   conductor: ConductorQuery;
   deviceInventory: DeviceInventoryQuery;
-  deviceTopology: DeviceTopologyQuery;
   resourceManager: ResourceManagerQuery;
   scheduler: SchedulerQuery;
 };
@@ -1388,12 +1198,6 @@ export type ResourceType = Node & {
 export type RevertChangesPayload = {
   __typename?: 'RevertChangesPayload';
   isOk: Scalars['Boolean']['output'];
-};
-
-export type RoutingPath = {
-  __typename?: 'RoutingPath';
-  nodes: Array<NodeInfo>;
-  weight: Scalars['Int']['output'];
 };
 
 export type Schedule = {
@@ -1774,15 +1578,6 @@ export type Topology = {
 export type TopologyCommonNodes = {
   __typename?: 'TopologyCommonNodes';
   commonNodes: Array<Scalars['String']['output']>;
-};
-
-export type TopologyDiffCollectionTypes =
-  | 'net'
-  | 'phy';
-
-export type TopologyResponse = {
-  __typename?: 'TopologyResponse';
-  diff_data: Maybe<Scalars['JSON']['output']>;
 };
 
 export type TopologyVersionData = {
@@ -3034,6 +2829,8 @@ export type DeviceInventoryQuery = {
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
   node: Maybe<Node>;
+  ptpPathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
+  ptpTopology: Maybe<PtpTopology>;
   shortestPath: Array<NetRoutingPathNode>;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -3102,7 +2899,11 @@ export type DeviceInventoryQueryLocationsArgs = {
 
 export type DeviceInventoryQueryNodeArgs = {
   id: Scalars['ID']['input'];
-  version?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventoryQueryPtpPathToGrandMasterArgs = {
+  deviceFrom: Scalars['String']['input'];
 };
 
 
@@ -3145,75 +2946,6 @@ export type DeviceInventorySubscriptionUniconfigShellArgs = {
   input?: InputMaybe<Scalars['String']['input']>;
   sessionId: Scalars['String']['input'];
   trigger?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type DeviceTopologyMutation = {
-  __typename?: 'deviceTopologyMutation';
-  createBackup: CreateBackupResponse;
-  deleteBackups: DeleteBackupsResponse;
-  updateCoordinates: CoordinatesResponse;
-};
-
-
-export type DeviceTopologyMutationDeleteBackupsArgs = {
-  delete_age?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type DeviceTopologyMutationUpdateCoordinatesArgs = {
-  coordinates_list: Array<CoordinatesInput>;
-};
-
-export type DeviceTopologyQuery = {
-  __typename?: 'deviceTopologyQuery';
-  backups: Array<Scalars['String']['output']>;
-  commonNodes: CommonNodesResponse;
-  netDevices: NetDeviceConnection;
-  netRoutingPaths: Maybe<NetRoutingPathConnection>;
-  node: Maybe<Node>;
-  phyDevices: PhyDeviceConnection;
-  phyHasAndInterfaces: PhyHasAndInterfacesResponse;
-  phyLinksAndDevices: PhyLinksAndDevicesResponse;
-  topologyDiff: TopologyResponse;
-};
-
-
-export type DeviceTopologyQueryCommonNodesArgs = {
-  db_name?: InputMaybe<Scalars['String']['input']>;
-  selected_nodes: Array<Scalars['String']['input']>;
-};
-
-
-export type DeviceTopologyQueryNetDevicesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<NetDeviceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type DeviceTopologyQueryNetRoutingPathsArgs = {
-  deviceFrom: Scalars['ID']['input'];
-  deviceTo: Scalars['ID']['input'];
-  outputCollection?: InputMaybe<NetRoutingPathOutputCollections>;
-};
-
-
-export type DeviceTopologyQueryNodeArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type DeviceTopologyQueryPhyDevicesArgs = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<PhyDeviceFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type DeviceTopologyQueryTopologyDiffArgs = {
-  collection_type: TopologyDiffCollectionTypes;
-  new_db?: InputMaybe<Scalars['String']['input']>;
-  old_db?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MutationInput_UpdateByTaskId_Status =
@@ -3673,7 +3405,7 @@ export type DeviceQueryVariables = Exact<{
 }>;
 
 
-export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'NetDevice' } | { __typename?: 'NetInterface' } | { __typename?: 'NetNetwork' } | { __typename?: 'PhyDevice' } | { __typename?: 'PhyInterface' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
+export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
 
 export type DeviceLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3717,7 +3449,7 @@ export type TopologyQuery = { __typename?: 'Query', deviceInventory: { __typenam
 export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'Coordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type TopologyVersionDataQueryVariables = Exact<{
   version: Scalars['String']['input'];
@@ -3725,3 +3457,8 @@ export type TopologyVersionDataQueryVariables = Exact<{
 
 
 export type TopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+
+export type PtpTopologyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string, domain: number, ptpProfile: string, clockId: string, parentClockId: string, gmClockId: string } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
