@@ -13,12 +13,11 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
-import { ClientWorkflow, jsonParse } from '@frinx/shared';
+import { ClientWorkflowWithoutTasks } from '@frinx/shared';
 
 type Props = {
-  workflow: ClientWorkflow;
+  workflow: ClientWorkflowWithoutTasks;
   onDeleteBtnClick: () => void;
-  onFavouriteBtnClick: () => void;
   onDiagramBtnClick: () => void;
   onDefinitionBtnClick: () => void;
   onScheduleBtnClick: () => void;
@@ -28,14 +27,11 @@ type Props = {
 const WorkflowActions: FC<Props> = ({
   workflow,
   onDeleteBtnClick,
-  onFavouriteBtnClick,
   onDiagramBtnClick,
   onDefinitionBtnClick,
   onScheduleBtnClick,
   onExecuteBtnClick,
 }) => {
-  const isFavourite = jsonParse<{ labels: string[] }>(workflow.description)?.labels?.includes('FAVOURITE') ?? false;
-
   return (
     <Stack direction="row" spacing={4}>
       <ButtonGroup size="sm" variant="solid">
@@ -87,12 +83,6 @@ const WorkflowActions: FC<Props> = ({
             </Box>
           </MenuButton>
           <MenuList>
-            <MenuItem onClick={onFavouriteBtnClick} data-cy={`favor-${workflow.name}-${workflow.version}`}>
-              <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
-                <Box as={FeatherIcon} size="1em" icon="star" flexShrink={0} lineHeight={4} verticalAlign="middle" />
-              </Box>
-              {isFavourite ? 'Remove from favourites' : 'Add to favourites'}
-            </MenuItem>
             <MenuItem onClick={onDiagramBtnClick} data-cy={`diag-${workflow.name}-${workflow.version}`}>
               <Box as="span" fontSize="0.8em" marginRight={3} flexShrink={0} alignSelf="center">
                 <Box

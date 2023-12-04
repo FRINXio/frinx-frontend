@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   Flex,
   Heading,
   HStack,
@@ -26,24 +25,24 @@ type Props = {
   onImportSuccess: () => void;
 };
 
-const CREATE_WORKFLOW_MUTATION = gql`
-  mutation CreateWorkflow($input: UpdateWorkflowInput!) {
-    updateWorkflow(id: "", input: $input) {
-      workflow {
-        createdBy
-        updatedAt
-        tasks
-        name
-        description
-        version
-        outputParameters {
-          key
-          value
-        }
-      }
-    }
-  }
-`;
+// const CREATE_WORKFLOW_MUTATION = gql`
+//   mutation CreateWorkflow($input: UpdateWorkflowInput!) {
+//     updateWorkflow(id: "", input: $input) {
+//       workflow {
+//         createdBy
+//         updatedAt
+//         tasks
+//         name
+//         description
+//         version
+//         outputParameters {
+//           key
+//           value
+//         }
+//       }
+//     }
+//   }
+// `;
 
 function readFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -115,10 +114,10 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
   };
 
   return (
-    <Container maxWidth={1280} mx="auto">
+    <>
       <Flex as="header" alignItems="center" marginBottom={6}>
         <Heading as="h1" size="xl">
-          Workflows
+          Workflow definitions
         </Heading>
         <Box marginLeft="auto">
           <HStack>
@@ -160,7 +159,7 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
       <VisuallyHidden>
         <Input id="upload-files" multiple type="file" ref={inputRef} onChange={importFiles} />
       </VisuallyHidden>
-    </Container>
+    </>
   );
 };
 

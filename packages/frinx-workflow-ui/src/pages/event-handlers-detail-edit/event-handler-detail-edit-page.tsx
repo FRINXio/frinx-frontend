@@ -12,51 +12,51 @@ import {
   GetEventHandlerDetailQueryVariables,
 } from '../../__generated__/graphql';
 import { removeTypenamesFromActionTasks } from '../../helpers/event-handlers.helpers';
-
-const GET_EVENT_HANDLER_QUERY = gql`
-  query GetEventHandlerDetail($event: String!, $name: String!) {
-    eventHandler(event: $event, name: $name) {
-      id
-      name
-      event
-      condition
-      actions {
-        action
-        startWorkflow {
-          name
-          version
-          input
-          correlationId
-          taskToDomain
-        }
-        completeTask {
-          workflowId
-          taskId
-          output
-          taskRefName
-        }
-        failTask {
-          workflowId
-          taskId
-          output
-          taskRefName
-        }
-        expandInlineJSON
-      }
-      isActive
-      evaluatorType
-    }
-  }
-`;
-
-const UPDATE_EVENT_HANDLER_MUTATION = gql`
-  mutation EditEventHandler($event: String!, $name: String!, $input: UpdateEventHandlerInput!) {
-    updateEventHandler(event: $event, name: $name, input: $input) {
-      id
-      name
-    }
-  }
-`;
+//
+// const GET_EVENT_HANDLER_QUERY = gql`
+//   query GetEventHandlerDetail($event: String!, $name: String!) {
+//     eventHandler(event: $event, name: $name) {
+//       id
+//       name
+//       event
+//       condition
+//       actions {
+//         action
+//         startWorkflow {
+//           name
+//           version
+//           input
+//           correlationId
+//           taskToDomain
+//         }
+//         completeTask {
+//           workflowId
+//           taskId
+//           output
+//           taskRefName
+//         }
+//         failTask {
+//           workflowId
+//           taskId
+//           output
+//           taskRefName
+//         }
+//         expandInlineJSON
+//       }
+//       isActive
+//       evaluatorType
+//     }
+//   }
+// `;
+//
+// const UPDATE_EVENT_HANDLER_MUTATION = gql`
+//   mutation EditEventHandler($event: String!, $name: String!, $input: UpdateEventHandlerInput!) {
+//     updateEventHandler(event: $event, name: $name, input: $input) {
+//       id
+//       name
+//     }
+//   }
+// `;
 
 const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
   const navigate = useNavigate();

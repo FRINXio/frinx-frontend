@@ -15,36 +15,36 @@ type Filter = {
   afterDate?: string;
 };
 
-const POLL_DATA_QUERY = gql`
-  query PollData(
-    $filter: FilterPollDataInput
-    $orderBy: PollsOrderByInput!
-    $first: Int
-    $after: String
-    $last: Int
-    $before: String
-  ) {
-    pollData(filter: $filter, orderBy: $orderBy, first: $first, after: $after, last: $last, before: $before) {
-      totalCount
-      edges {
-        cursor
-        node {
-          id
-          queueName
-          workerId
-          domain
-          lastPollTime
-        }
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`;
+// const POLL_DATA_QUERY = gql`
+//   query PollData(
+//     $filter: FilterPollDataInput
+//     $orderBy: PollsOrderByInput!
+//     $first: Int
+//     $after: String
+//     $last: Int
+//     $before: String
+//   ) {
+//     pollData(filter: $filter, orderBy: $orderBy, first: $first, after: $after, last: $last, before: $before) {
+//       totalCount
+//       edges {
+//         cursor
+//         node {
+//           id
+//           queueName
+//           workerId
+//           domain
+//           lastPollTime
+//         }
+//       }
+//       pageInfo {
+//         startCursor
+//         endCursor
+//         hasNextPage
+//         hasPreviousPage
+//       }
+//     }
+//   }
+// `;
 
 const getISODateString = (dateString: string | undefined): string | undefined => {
   if (dateString === undefined) {

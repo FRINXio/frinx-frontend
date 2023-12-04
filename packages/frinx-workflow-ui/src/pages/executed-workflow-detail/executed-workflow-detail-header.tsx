@@ -1,14 +1,16 @@
 import React, { FC } from 'react';
-import { Box, Grid } from '@chakra-ui/react';
-import { isEmpty } from 'lodash';
+import { Box, Flex, Heading, Spinner } from '@chakra-ui/react';
 import ExecutedWorkflowDetailHeaderActionButton from './executed-workflow-detail-header-action-button';
-import { ExecutedWorkflowStatus } from '../../__generated__/graphql';
+import { WorkflowStatus } from '../../__generated__/graphql';
+import { formatDate } from '../../helpers/utils.helpers';
+import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
+import { getExecutionTime, getFormattedEndTime } from './executed-workflow-detail.helpers';
 
 type Props = {
-  startTime: string;
-  endTime: string;
-  status: ExecutedWorkflowStatus | null;
-  visibleRestartButton: boolean;
+  startTime: string | null;
+  endTime: string | null;
+  status: WorkflowStatus | null;
+  isRestartButtonEnabled: boolean;
   onRestartWorkflow: () => void;
   onTerminateWorkflow: () => void;
   onRetryWorkflow: () => void;
@@ -16,78 +18,60 @@ type Props = {
   onResumeWorkflow: () => void;
 };
 
-const getExecutionTime = (end: string, start: string) => {
-  if (end == null || isEmpty(end)) {
-    return '';
-  }
-
-  const endTime = new Date(end).getTime();
-
-  if (start == null || isEmpty(start)) {
-    return endTime / 1000;
-  }
-
-  const startTime = new Date(start).getTime();
-  const total = endTime - startTime;
-  return total / 1000;
-};
-
 const ExecutedWorkflowDetailHeader: FC<Props> = ({
   startTime,
   status,
   endTime,
-  visibleRestartButton,
+  isRestartButtonEnabled,
   onRestartWorkflow,
   onTerminateWorkflow,
   onRetryWorkflow,
   onPauseWorkflow,
   onResumeWorkflow,
-}) => (
-  <Box background="blue.600" borderRadius={4} padding={15} marginBottom={10}>
-    <Grid templateColumns={status === 'COMPLETED' ? 'repeat(4, 1fr)' : 'repeat(5,1fr)'}>
-      <Box mx="auto">
-        <Box color="white">
-          <b>Total Time (sec)</b>
-          <br />
-          {getExecutionTime(endTime, startTime)}
+}) => {
+  return (
+    <Box background="white" padding={6} borderRadius="md" boxShadow="sm" marginBottom={10}>
+      <Flex>
+        <Box flex={1}>
+          <Heading as="h4" fontSize="lg">
+            Total Time (sec)
+          </Heading>
+          {status === 'RUNNING' ? <Spinner size="xs" /> : getExecutionTime(endTime, startTime)}
         </Box>
-      </Box>
-      <Box mx="auto">
-        <Box color="white">
-          <b>Start Time</b>
-          <br />
-          {startTime}
+        <Box flex={1}>
+          <Heading as="h4" fontSize="lg">
+            Start Time
+          </Heading>
+          {formatDate(startTime)}
         </Box>
-      </Box>
-      <Box mx="auto">
-        <Box color="white">
-          <b>End Time</b>
-          <br />
-          {endTime}
+        <Box flex={1}>
+          <Heading as="h4" fontSize="lg">
+            End Time
+          </Heading>
+          {getFormattedEndTime(endTime, status ?? 'UNKNOWN')}
         </Box>
-      </Box>
-      <Box mx="auto">
-        <Box color="white">
-          <b>Status</b>
-          <br />
-          {status}
+        <Box flex={1}>
+          <Heading as="h4" fontSize="lg">
+            Status
+          </Heading>
+          <WorkflowStatusLabel status={status ?? 'UNKNOWN'} />
         </Box>
-      </Box>
-      {status !== 'COMPLETED' && (
-        <Box>
-          <ExecutedWorkflowDetailHeaderActionButton
-            status={status}
-            isVisibleRestartButton={visibleRestartButton}
-            onRestartWorkflow={onRestartWorkflow}
-            onTerminateWorkflow={onTerminateWorkflow}
-            onRetryWorkflow={onRetryWorkflow}
-            onPauseWorkflow={onPauseWorkflow}
-            onResumeWorkflow={onResumeWorkflow}
-          />
-        </Box>
-      )}
-    </Grid>
-  </Box>
-);
+        {status !== 'COMPLETED' && (
+          <Box flex={1} marginLeft="auto">
+            <ExecutedWorkflowDetailHeaderActionButton
+              status={status}
+              isRestartButtonEnabled={isRestartButtonEnabled}
+              onRestartWorkflow={onRestartWorkflow}
+              onTerminateWorkflow={onTerminateWorkflow}
+              onRetryWorkflow={onRetryWorkflow}
+              onPauseWorkflow={onPauseWorkflow}
+              onResumeWorkflow={onResumeWorkflow}
+            />
+          </Box>
+        )}
+      </Flex>
+    </Box>
+  );
+};
 
 export default ExecutedWorkflowDetailHeader;

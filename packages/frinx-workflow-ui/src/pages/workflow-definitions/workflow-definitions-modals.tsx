@@ -1,5 +1,11 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import { useNotifications, ExecuteWorkflowModal, ClientWorkflow, unwrap, CreateScheduledWorkflow } from '@frinx/shared';
+import {
+  useNotifications,
+  ExecuteWorkflowModal,
+  unwrap,
+  CreateScheduledWorkflow,
+  ClientWorkflowWithoutTasks,
+} from '@frinx/shared';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
 import {
@@ -10,6 +16,9 @@ import {
   ConfirmDeleteModal,
 } from '../../components/modals';
 import {
+  CreateScheduleInput,
+  CreateScheduleMutation,
+  CreateScheduleMutationVariables,
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
   ScheduleWorkflowMutation,
@@ -17,37 +26,39 @@ import {
 } from '../../__generated__/graphql';
 
 type Props = {
-  workflows: ClientWorkflow[];
-  activeWorkflow?: ClientWorkflow;
+  workflows: ClientWorkflowWithoutTasks[];
+  activeWorkflow?: ClientWorkflowWithoutTasks;
   definitionModal: UseDisclosureReturn;
   diagramModal: UseDisclosureReturn;
   dependencyModal: UseDisclosureReturn;
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
+  onDeleteWorkflow: (workflow: ClientWorkflowWithoutTasks) => Promise<void>;
 };
 
 const CREATE_SCHEDULE_MUTATION = gql`
-  mutation ScheduleWorkflow($input: CreateScheduleInput!) {
-    scheduleWorkflow(input: $input) {
-      name
-      isEnabled
-      workflowName
-      workflowVersion
-      cronString
-      workflowContext
-      performFromDate
-      performTillDate
+  mutation CreateSchedule($input: CreateScheduleInput!) {
+    scheduler {
+      createSchedule(input: $input) {
+        name
+        enabled
+        workflowName
+        workflowVersion
+        cronString
+        workflowContext
+        fromDate
+        toDate
+      }
     }
   }
 `;
 
-const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
-    executeWorkflowByName(input: $input)
-  }
-`;
+// const EXECUTE_WORKFLOW_MUTATION = gql`
+//   mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
+//     executeWorkflowByName(input: $input)
+//   }
+// `;
 
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,
@@ -60,7 +71,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   scheduledWorkflowModal,
   onDeleteWorkflow,
 }) => {
-  const [, onCreate] = useMutation<ScheduleWorkflowMutation, ScheduleWorkflowMutationVariables>(
+  const [, createSchedule] = useMutation<CreateScheduleMutation, CreateScheduleMutationVariables>(
     CREATE_SCHEDULE_MUTATION,
   );
 
@@ -70,24 +81,23 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
 
   const { addToastNotification } = useNotifications();
 
-  const handleWorkflowSchedule = (scheduledWf: CreateScheduledWorkflow) => {
+  const handleWorkflowSchedule = (scheduledWf: CreateScheduleInput) => {
     const scheduleInput = {
       ...scheduledWf,
       cronString: unwrap(scheduledWf.cronString),
-      workflowContext: JSON.stringify(scheduledWf.workflowContext),
     };
 
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      onCreate({ input: scheduleInput })
+      createSchedule({ input: scheduleInput })
         .then((res) => {
-          if (!res.data?.scheduleWorkflow) {
+          if (!res.data?.scheduler.createSchedule) {
             addToastNotification({
               type: 'error',
               title: 'Error',
               content: res.error?.message,
             });
           }
-          if (res.data?.scheduleWorkflow || !res.error) {
+          if (res.data?.scheduler.createSchedule || !res.error) {
             addToastNotification({
               content: 'Successfully scheduled',
               title: 'Success',
@@ -164,7 +174,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   return (
     <>
       <DefinitionModal workflow={activeWorkflow} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
-      <DiagramModal workflow={activeWorkflow} isOpen={diagramModal.isOpen} onClose={diagramModal.onClose} />
       <DependencyModal
         workflow={activeWorkflow}
         onClose={dependencyModal.onClose}

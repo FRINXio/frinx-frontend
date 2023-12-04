@@ -26,7 +26,7 @@ import ExternalStorageModal from '../executed-workflow-detail-tabs/external-stor
 import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
 
 type Props = {
-  executedWorkflow: NonNullable<ExecutedWorkflowDetailQuery['node']>;
+  executedWorkflow: NonNullable<ExecutedWorkflowDetailQuery['conductor']['node']>;
   taskId: string;
   onClose: () => void;
 };
@@ -39,7 +39,7 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
   const [isEscaped, setIsEscaped] = useState(true);
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
 
-  if (executedWorkflow.__typename !== 'ExecutedWorkflow') {
+  if (executedWorkflow.__typename !== 'Workflow') {
     return <Text>Workflow not found</Text>;
   }
 

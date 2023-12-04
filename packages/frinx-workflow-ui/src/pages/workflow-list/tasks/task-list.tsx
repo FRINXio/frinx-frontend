@@ -36,74 +36,74 @@ const taskDefinition: TaskDefinition = {
   rateLimitPerFrequency: null,
 };
 
-const TASK_DEFINITIONS_QUERY = gql`
-  query TaskDefinitions(
-    $filter: FilterTaskDefinitionsInput
-    $orderBy: TasksOrderByInput
-    $before: String
-    $last: Int
-    $after: String
-    $first: Int
-  ) {
-    taskDefinitions(filter: $filter, orderBy: $orderBy, before: $before, last: $last, after: $after, first: $first) {
-      edges {
-        node {
-          id
-          name
-          timeoutSeconds
-          createdAt
-          updatedAt
-          createdBy
-          updatedBy
-          description
-          retryCount
-          pollTimeoutSeconds
-          inputKeys
-          outputKeys
-          inputTemplate
-          timeoutPolicy
-          retryLogic
-          retryDelaySeconds
-          responseTimeoutSeconds
-          concurrentExecLimit
-          rateLimitFrequencyInSeconds
-          rateLimitPerFrequency
-          ownerEmail
-        }
-      }
-      totalCount
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
-      }
-    }
-  }
-`;
-
-const DELETE_TASK_DEFINITION_MUTATION = gql`
-  mutation DeleteTask($name: String!) {
-    deleteTask(name: $name) {
-      isOk
-    }
-  }
-`;
-
-const CREATE_TASK_DEFINITION_MUTATION = gql`
-  mutation CreateTaskDefinition($input: CreateTaskDefinitionInput!) {
-    createTaskDefinition(input: $input) {
-      id
-      name
-      timeoutSeconds
-      retryCount
-      timeoutPolicy
-      retryLogic
-      responseTimeoutSeconds
-    }
-  }
-`;
-
+// const TASK_DEFINITIONS_QUERY = gql`
+//   query TaskDefinitions(
+//     $filter: FilterTaskDefinitionsInput
+//     $orderBy: TasksOrderByInput
+//     $before: String
+//     $last: Int
+//     $after: String
+//     $first: Int
+//   ) {
+//     taskDefinitions(filter: $filter, orderBy: $orderBy, before: $before, last: $last, after: $after, first: $first) {
+//       edges {
+//         node {
+//           id
+//           name
+//           timeoutSeconds
+//           createdAt
+//           updatedAt
+//           createdBy
+//           updatedBy
+//           description
+//           retryCount
+//           pollTimeoutSeconds
+//           inputKeys
+//           outputKeys
+//           inputTemplate
+//           timeoutPolicy
+//           retryLogic
+//           retryDelaySeconds
+//           responseTimeoutSeconds
+//           concurrentExecLimit
+//           rateLimitFrequencyInSeconds
+//           rateLimitPerFrequency
+//           ownerEmail
+//         }
+//       }
+//       totalCount
+//       pageInfo {
+//         startCursor
+//         endCursor
+//         hasNextPage
+//         hasPreviousPage
+//       }
+//     }
+//   }
+// `;
+//
+// const DELETE_TASK_DEFINITION_MUTATION = gql`
+//   mutation DeleteTask($name: String!) {
+//     deleteTask(name: $name) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const CREATE_TASK_DEFINITION_MUTATION = gql`
+//   mutation CreateTaskDefinition($input: CreateTaskDefinitionInput!) {
+//     createTaskDefinition(input: $input) {
+//       id
+//       name
+//       timeoutSeconds
+//       retryCount
+//       timeoutPolicy
+//       retryLogic
+//       responseTimeoutSeconds
+//     }
+//   }
+// `;
+//
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
   const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);

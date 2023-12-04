@@ -1,7 +1,7 @@
-import React, { ChangeEvent, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { ChangeEvent, FC, useMemo, useState, VoidFunctionComponent } from 'react';
 import {
   Button,
-  ButtonGroup,
+  Link as ChakraLink,
   Container,
   Flex,
   Heading,
@@ -9,7 +9,6 @@ import {
   Icon,
   IconButton,
   Progress,
-  Spacer,
   Switch,
   Table,
   Tbody,
@@ -20,9 +19,9 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
-import { usePagination, Pagination, useNotifications, SelectItemsPerPage } from '@frinx/shared';
+import { usePagination, Pagination, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   DeleteEventHandlerMutation,
   DeleteEventHandlerMutationVariables,
@@ -30,15 +29,8 @@ import {
   GetEventHandlersQuery,
   GetEventHandlersQueryVariables,
   SortEventHandlersBy,
-  UpdateEventHandlerMutation,
-  UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
-
-type Props = {
-  onEventHandlerDetailClick: (event: string, name: string) => void;
-  onEventHandlerEditClick: (event: string, name: string) => void;
-};
 
 const EVENT_HANDLERS_QUERY = gql`
   query GetEventHandlers(
@@ -49,57 +41,54 @@ const EVENT_HANDLERS_QUERY = gql`
     $before: String
     $orderBy: EventHandlersOrderByInput
   ) {
-    eventHandlers(filter: $filter, first: $first, after: $after, last: $last, before: $before, orderBy: $orderBy) {
-      edges {
-        node {
-          id
-          isActive
-          name
-          evaluatorType
-          event
-          actions {
-            action
+    conductor {
+      eventHandlers(filter: $filter, first: $first, after: $after, last: $last, before: $before, orderBy: $orderBy) {
+        edges {
+          node {
+            id
+            isActive
+            name
+            evaluatorType
+            event
+            actions {
+              action
+            }
           }
+          cursor
         }
-        cursor
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
       }
     }
   }
 `;
 
 const DELETE_EVENT_HANDLER_MUTATION = gql`
-  mutation DeleteEventHandler($deleteEventHandlerId: String!) {
-    deleteEventHandler(id: $deleteEventHandlerId) {
-      isOk
+  mutation DeleteEventHandler($name: String!) {
+    conductor {
+      removeEventHandlerStatus(name: $name)
     }
   }
 `;
 
-const UPDATE_EVENT_HANDLER_MUTATION = gql`
-  mutation UpdateEventHandler($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
-    updateEventHandler(input: $input, name: $name, event: $event) {
-      id
-      name
-      event
-    }
-  }
-`;
+// const UPDATE_EVENT_HANDLER_MUTATION = gql`
+//   mutation UpdateEventHandler($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
+//     updateEventHandler(input: $input, name: $name, event: $event) {
+//       id
+//       name
+//       event
+//     }
+//   }
+// `;
 
-const EventHandlersListPage: VoidFunctionComponent<Props> = ({
-  onEventHandlerDetailClick,
-  onEventHandlerEditClick,
-}) => {
+const EventHandlersListPage: FC = () => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
   const [orderBy, setOrderBy] = useState<EventHandlersOrderByInput>({ sortKey: 'name', direction: 'ASC' });
-  const [paginationArgs, { nextPage, previousPage, setItemsCount, firstPage }] = usePagination();
-
-  const navigate = useNavigate();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const ctx = useMemo(
     () => ({
       additionalTypenames: ['EventHandler'],
@@ -124,10 +113,10 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
 
   const { addToastNotification } = useNotifications();
 
-  const handleOnEventHandlerDelete = (id: string) => {
+  const handleOnEventHandlerDelete = (name: string) => {
     deleteEventHandler(
       {
-        deleteEventHandlerId: id,
+        name,
       },
       ctx,
     )
@@ -193,28 +182,27 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Container mx="auto" maxWidth={1200}>
-      <HStack mb={5}>
-        <Heading as="h1" size="lg">
+    <Container mx="auto" maxWidth="container.xl">
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h1" size="xl">
           Event handlers
         </Heading>
-
-        <Spacer />
-
-        <Button colorScheme="blue" onClick={() => navigate('./add')}>
-          Create new handler
-        </Button>
-      </HStack>
+        <HStack spacing={2} marginLeft="auto">
+          <Button data-cy="add-device" as={Link} colorScheme="blue" to="add">
+            Add new handler
+          </Button>
+        </HStack>
+      </Flex>
       <EventHandlersListSearchbox
         filters={eventHandlersFilter}
         canDoSearch={!fetching}
         onSearchSubmit={setEventHandlersFilter}
       />
       {fetching && <Progress isIndeterminate size="xs" mt={-10} />}
-      {(data == null || data.eventHandlers == null || error != null) && (
+      {(data == null || data.conductor.eventHandlers == null || error != null) && (
         <Text>We had a problem to load event handlers for you. Try again later please.</Text>
       )}
-      {!fetching && data != null && data.eventHandlers != null && error == null && (
+      {!fetching && data != null && data.conductor.eventHandlers != null && error == null && (
         <Table background="white">
           <Thead>
             <Tr>
@@ -243,18 +231,17 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
                 )}
               </Th>
               <Th>Action types</Th>
-              <Th>Available actions</Th>
+              <Th>Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {data.eventHandlers.edges?.length === 0 && (
+            {data.conductor.eventHandlers.edges?.length === 0 && (
               <Tr>
                 <Td>No event handlers were created yet.</Td>
               </Tr>
             )}
-
-            {data.eventHandlers.edges?.length !== 0 &&
-              data.eventHandlers.edges?.map(({ node }) => (
+            {data.conductor.eventHandlers.edges?.length !== 0 &&
+              data.conductor.eventHandlers.edges.map(({ node }) => (
                 <Tr key={node.id}>
                   <Td>
                     <Switch
@@ -267,49 +254,44 @@ const EventHandlersListPage: VoidFunctionComponent<Props> = ({
                       }
                     />
                   </Td>
-                  <Td>{node.name}</Td>
+                  <Td>
+                    <ChakraLink color="blue.500" as={Link} to={`${node.event}/${node.name}`}>
+                      {node.name}
+                    </ChakraLink>
+                  </Td>
                   <Td>{node.event}</Td>
                   <Td>{node.evaluatorType || 'not defined'}</Td>
-                  <Td>{node.actions.map((action) => action.action).join(', ')}</Td>
+                  <Td>{node.actions.map((action) => action?.action).join(', ')}</Td>
                   <Td>
-                    <ButtonGroup variant="solid" size="xs">
-                      <IconButton
-                        aria-label="detail of event handler"
-                        icon={<FeatherIcon icon="settings" size={12} />}
-                        colorScheme="blue"
-                        onClick={() => onEventHandlerDetailClick(node.event, node.name)}
-                      />
+                    <HStack spacing={2}>
                       <IconButton
                         aria-label="edit event handler"
+                        size="sm"
                         icon={<FeatherIcon icon="edit" size={12} />}
-                        onClick={() => onEventHandlerEditClick(node.event, node.name)}
+                        as={Link}
+                        to={`${node.event}/${node.name}/edit`}
                       />
                       <IconButton
                         aria-label="delete event handler"
+                        size="sm"
                         icon={<FeatherIcon icon="trash-2" size={12} />}
                         colorScheme="red"
-                        onClick={() => handleOnEventHandlerDelete(node.id)}
+                        onClick={() => handleOnEventHandlerDelete(node.name)}
                       />
-                    </ButtonGroup>
+                    </HStack>
                   </Td>
                 </Tr>
               ))}
           </Tbody>
         </Table>
       )}
-      {data?.eventHandlers && (
+      {data?.conductor.eventHandlers && (
         <Flex justify="space-between">
           <Pagination
-            onPrevious={previousPage(data.eventHandlers.pageInfo.startCursor)}
-            onNext={nextPage(data.eventHandlers.pageInfo.endCursor)}
-            hasNextPage={data.eventHandlers.pageInfo.hasNextPage}
-            hasPreviousPage={data.eventHandlers.pageInfo.hasPreviousPage}
-          />
-          <SelectItemsPerPage
-            onItemsPerPageChange={firstPage}
-            first={paginationArgs.first}
-            last={paginationArgs.last}
-            setItemsCount={setItemsCount}
+            onPrevious={previousPage(data.conductor.eventHandlers.pageInfo.startCursor)}
+            onNext={nextPage(data.conductor.eventHandlers.pageInfo.endCursor)}
+            hasNextPage={data.conductor.eventHandlers.pageInfo.hasNextPage}
+            hasPreviousPage={data.conductor.eventHandlers.pageInfo.hasPreviousPage}
           />
         </Flex>
       )}
