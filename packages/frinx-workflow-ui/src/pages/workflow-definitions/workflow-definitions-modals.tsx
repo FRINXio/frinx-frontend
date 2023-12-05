@@ -54,11 +54,11 @@ const CREATE_SCHEDULE_MUTATION = gql`
   }
 `;
 
-// const EXECUTE_WORKFLOW_MUTATION = gql`
-//   mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
-//     executeWorkflowByName(input: $input)
-//   }
-// `;
+const EXECUTE_WORKFLOW_MUTATION = gql`
+  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
+    executeWorkflowByName(input: $input)
+  }
+`;
 
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,
