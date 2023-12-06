@@ -1,6 +1,6 @@
 import React, { VoidFunctionComponent } from 'react';
 import PtpNodeIcon from '../../../components/node-icons/ptp-node-icon';
-import { addRemoveUnconfirmedNodeIdForShortestPath, setSelectedPtpNode } from '../../../state.actions';
+import { setSelectedPtpNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { PtpGraphNode } from '../../../__generated__/graphql';
 
@@ -14,24 +14,19 @@ const PtpNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     ptpNodePositions,
     connectedNodeIds,
     ptpInterfaceGroupPositions,
-    unconfirmedSelectedNodeIds,
-    unconfirmedShortestPathNodeIds,
     mode,
-    commonNodeIds,
-    alternativeShortestPaths,
-    selectedAlternativeShortestPathIndex,
     selectedEdge,
+    unconfirmedSelectedGmPathNodeId,
+    gmPathIds,
   } = state;
 
   const handleClick = (node: PtpGraphNode) => {
-    if (mode === 'SHORTEST_PATH') {
-      dispatch(addRemoveUnconfirmedNodeIdForShortestPath(node.id));
+    if (mode === 'GM_PATH') {
+      dispatch(setUnconfimedNodeIdForGmPathSearch(node.id));
     } else {
       dispatch(setSelectedPtpNode(node));
     }
   };
-
-  const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex);
 
   return (
     <g>
@@ -41,10 +36,8 @@ const PtpNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
           key={node.id}
           positions={{ nodes: ptpNodePositions, interfaceGroups: ptpInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
-          isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}
-          isSelectedForShortestPath={unconfirmedShortestPathNodeIds.includes(node.id)}
-          isCommon={commonNodeIds.includes(node.name)}
-          isShortestPath={shortestPathInfo?.nodes.map((n) => n.name).includes(node.nodeId) ?? false}
+          isSelectedForGmPath={unconfirmedSelectedGmPathNodeId === node.id}
+          isGmPath={gmPathIds.includes(node.nodeId)}
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}

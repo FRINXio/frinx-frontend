@@ -40,7 +40,7 @@ export type LabelItem = {
   value: string;
 };
 
-export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH';
+export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
 
 export type StateAction =
   | {
@@ -133,7 +133,18 @@ export type StateAction =
   | {
       type: 'SET_WEIGHT_VISIBILITY';
       isVisible: boolean;
-    };
+    }
+  | {
+      type: 'SET_UNCONFIRMED_GM_NODE_ID';
+      nodeId: string | null;
+    }
+  | {
+      type: 'FIND_GM_PATH';
+    }
+  | {
+      type: 'CLEAR_GM_PATH';
+    }
+  | { type: 'SET_GM_PATH_IDS'; nodeIds: string[] };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -538,5 +549,31 @@ export function setWeightVisibility(isVisible: boolean): StateAction {
   return {
     type: 'SET_WEIGHT_VISIBILITY',
     isVisible,
+  };
+}
+
+export function setUnconfimedNodeIdForGmPathSearch(nodeId: string): StateAction {
+  return {
+    type: 'SET_UNCONFIRMED_GM_NODE_ID',
+    nodeId,
+  };
+}
+
+export function findGmPath(): StateAction {
+  return {
+    type: 'FIND_GM_PATH',
+  };
+}
+
+export function clearGmPathSearch(): StateAction {
+  return {
+    type: 'CLEAR_GM_PATH',
+  };
+}
+
+export function setGmPathIds(nodeIds: string[]): StateAction {
+  return {
+    type: 'SET_GM_PATH_IDS',
+    nodeIds,
   };
 }
