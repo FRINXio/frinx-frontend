@@ -66,10 +66,12 @@ type Props = {
   onWorkflowSearch: (value: string) => void;
   onTaskdefSearch: (value: string) => void;
   workflowFilter: string;
-  workflow: ClientWorkflow<ExtendedTask>;
+  workflow: BuilderWorklfowB;
+  // workflow: ClientWorkflow<ExtendedTask>;
   workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
-  onWorkflowChange: (workflow: ClientWorkflow<ExtendedTask>) => void;
+  // onWorkflowChange: (workflow: ClientWorkflow<ExtendedTask>) => void;
+  onWorkflowChange: (workflow: ClientWorkflow) => void;
   onFileImport: (file: File) => void;
   onFileExport: (workflow: ClientWorkflow) => void; // eslint-disable-line react/no-unused-prop-types
   onWorkflowDelete: (name: string, version?: number | null) => void;

@@ -312,6 +312,9 @@ export type ClientWorkflow = {
   labels: string[];
   inputParameters: string[] | null;
   outputParameters: OutputParameter[] | null;
+  restartable: boolean | null;
+  timeoutPolicy: string | null;
+  ownerEmail: string | null;
 };
 
 export type ClientWorkflowWithTasks<T = Task> = ClientWorkflow & {

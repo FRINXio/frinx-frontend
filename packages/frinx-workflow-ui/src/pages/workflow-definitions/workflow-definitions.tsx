@@ -37,6 +37,10 @@ const WORKFLOWS_QUERY = gql`
               value
             }
             timeoutSeconds
+            restartable
+            variables
+            timeoutPolicy
+            ownerEmail
           }
         }
       }
@@ -142,6 +146,7 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
         ...w,
         timeoutSeconds: w.timeoutSeconds ?? 0,
         labels: parsedLabels,
+        hasSchedule: false,
       };
     }) ?? [];
 

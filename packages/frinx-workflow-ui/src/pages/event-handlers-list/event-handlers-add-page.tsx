@@ -8,10 +8,14 @@ import { CreateEventHandlerMutation, CreateEventHandlerMutationVariables } from 
 
 const CREATE_EVENT_HANDLER = gql`
   mutation CreateEventHandler($input: CreateEventHandlerInput!) {
-    createEventHandler(input: $input) {
-      id
-      name
-      event
+    conductor {
+      createEventHandler(input: $input) {
+        eventHandler {
+          id
+          name
+          event
+        }
+      }
     }
   }
 `;

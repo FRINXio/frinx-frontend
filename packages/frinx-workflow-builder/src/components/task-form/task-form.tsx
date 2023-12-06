@@ -24,7 +24,7 @@ import {
 } from '@chakra-ui/react';
 import {
   ClientWorkflow,
-  Task,
+  // Task,
   convertTaskToExtendedTask,
   ExtendedTask,
   getRandomString,
@@ -40,7 +40,8 @@ import { getValidationSchema, renderInputParamForm } from './input-params-forms'
 type Props = {
   task: ExtendedTask;
   tasks: ExtendedTask[];
-  workflows: ClientWorkflow<Task>[];
+  workflows: ClientWorkflow[];
+  // workflows: ClientWorkflow<Task>[];
   onClose: () => void;
   onFormSubmit: (task: ExtendedTask) => void;
 };

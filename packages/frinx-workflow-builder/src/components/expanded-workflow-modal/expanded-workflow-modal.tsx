@@ -46,11 +46,11 @@ export const ExpandedWorkflowFragment = gql`
       key
       value
     }
-    #restartable
+    restartable
     timeoutSeconds
-    #timeoutPolicy
-    #ownerEmail
-    #variables
+    timeoutPolicy
+    ownerEmail
+    variables
   }
 `;
 

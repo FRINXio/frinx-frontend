@@ -3,7 +3,6 @@ import {
   convertTaskToExtendedTask,
   jsonParse,
   createEmptyWorkflow,
-  ExtendedTask,
   unwrap,
   useNotifications,
   Task,
@@ -19,14 +18,18 @@ import { gql, useMutation, useQuery } from 'urql';
 import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
-import // DeleteWorkflowMutation,
-// DeleteWorkflowMutationVariables,
-// UpdateWorkflowMutation,
-// UpdateWorkflowMutationVariables,
-// WorkflowListQuery,
-// WorkflowQuery,
-// WorkflowQueryVariables,
-'./__generated__/graphql';
+import {
+  DeleteWorkflowDefinitionMutation,
+  DeleteWorkflowDefinitionMutationVariables,
+  ExecuteWorkflowByNameMutation,
+  ExecuteWorkflowByNameMutationVariables,
+  UpdateWorkflowMutation,
+  UpdateWorkflowMutationVariables,
+  WorkflowDefinitionListQuery,
+  WorkflowDefinitionListQueryVariables,
+  WorkflowDefinitionQuery,
+  WorkflowDefinitionQueryVariables,
+} from './__generated__/graphql';
 
 type Props = {
   onClose: () => void;
@@ -47,11 +50,12 @@ export const WorkflowDefinitionFragment = gql`
       key
       value
     }
-    #restartable
+    tasksJson
+    restartable
     timeoutSeconds
-    #timeoutPolicy
-    #ownerEmail
-    #variables
+    timeoutPolicy
+    ownerEmail
+    variables
   }
 `;
 
@@ -68,23 +72,16 @@ const WORKFLOW_DEFINITION_DETAIL_QUERY = gql`
 
 const WORKFLOW_DEFINITIONS_LIST_QUERY = gql`
   query WorkflowDefinitionList($filter: WorkflowsFilterInput, $taskDefinitionsFilter: FilterTaskDefinitionsInput) {
-    workflowDefinitions(filter: $filter) {
-      conductor {
+    conductor {
+      workflowDefinitions(filter: $filter) {
         edges {
           cursor
           node {
             ...WorkflowDefinitionFragment
           }
         }
-        pageInfo {
-          endCursor
-          hasNextPage
-          hasPreviousPage
-          startCursor
-        }
-        totalCount
       }
-      getTaskDefs {
+      taskDefinitions(filter: $taskDefinitionsFilter) {
         edges {
           node {
             name
@@ -92,7 +89,6 @@ const WORKFLOW_DEFINITIONS_LIST_QUERY = gql`
             createdBy
             retryCount
             timeoutSeconds
-            timeoutPolicy
             retryLogic
             retryDelaySeconds
             responseTimeoutSeconds
@@ -107,18 +103,19 @@ const WORKFLOW_DEFINITIONS_LIST_QUERY = gql`
 `;
 
 const UPDATE_WORKFLOW_MUTATION = gql`
-  mutation UpdateWorkflow($updateWorkflowId: String!, $input: UpdateWorkflowInput!) {
-    updateWorkflow(id: $updateWorkflowId, input: $input) {
-      workflow {
-        createdBy
-        updatedAt
-        tasks
-        name
-        description
-        version
-        outputParameters {
-          key
-          value
+  mutation UpdateWorkflow($input: UpdateWorkflowDefinitionInput!) {
+    conductor {
+      updateWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          updatedAt
+          tasksJson
+          name
+          description
+          version
+          outputParameters {
+            key
+            value
+          }
         }
       }
     }
@@ -126,16 +123,20 @@ const UPDATE_WORKFLOW_MUTATION = gql`
 `;
 
 const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
-    executeWorkflowByName(input: $input)
+  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByNameInput!) {
+    conductor {
+      executeWorkflowByName(input: $input)
+    }
   }
 `;
 
 const WORKFLOW_DELETE_MUTATION = gql`
-  mutation DeleteWorkflow($input: DeleteWorkflowInput!) {
-    deleteWorkflow(input: $input) {
-      workflow {
-        id
+  mutation DeleteWorkflowDefinition($input: DeleteWorkflowDefinitionInput!) {
+    conductor {
+      deleteWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          id
+        }
       }
     }
   }
@@ -149,13 +150,13 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     [],
   );
   const { workflowId, version } = useParams<{ workflowId: string; version: string }>();
-  const [workflow, setWorkflow] = useState<ClientWorkflow<ExtendedTask> | null>(null);
+  const [workflow, setWorkflow] = useState<ClientWorkflow | null>(null);
   const [workflowFilter, setWorkflowFilter] = useState<string>('');
   const [taskdefsFilter, setTaskdefsFilter] = useState<string>('');
 
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
-  const [{ data: workflowListData }] = useQuery<unknown>({
+  const [{ data: workflowListData }] = useQuery<WorkflowDefinitionListQuery, WorkflowDefinitionListQueryVariables>({
     query: WORKFLOW_DEFINITIONS_LIST_QUERY,
     variables: {
       filter: { keyword: workflowFilter },
@@ -165,7 +166,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     },
   });
 
-  const [{ data: workflowData }] = useQuery<unknown>({
+  const [{ data: workflowData }] = useQuery<WorkflowDefinitionQuery, WorkflowDefinitionQueryVariables>({
     query: WORKFLOW_DEFINITION_DETAIL_QUERY,
     variables: {
       nodeId: workflowId ?? '', // query with empty string nodeId wont be called, because query is paused in that case
@@ -174,11 +175,17 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     pause: workflowId == null,
   });
 
-  const [, updateWorkflow] = useMutation<unknown>(UPDATE_WORKFLOW_MUTATION);
+  const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
+    UPDATE_WORKFLOW_MUTATION,
+  );
 
-  const [, deleteWorkflow] = useMutation<unknown>(WORKFLOW_DELETE_MUTATION);
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowDefinitionMutation, DeleteWorkflowDefinitionMutationVariables>(
+    WORKFLOW_DELETE_MUTATION,
+  );
 
-  const [, executeWorkflow] = useMutation(EXECUTE_WORKFLOW_MUTATION);
+  const [, executeWorkflow] = useMutation<ExecuteWorkflowByNameMutation, ExecuteWorkflowByNameMutationVariables>(
+    EXECUTE_WORKFLOW_MUTATION,
+  );
 
   const { addToastNotification } = useNotifications();
 
@@ -189,26 +196,26 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   }, [workflowId, version]);
 
   useEffect(() => {
-    // if (workflowData?.workflow == null) {
-    //   return;
-    // }
-    // const { workflow: workflowDetail } = workflowData;
-    // if (workflowDetail.__typename !== 'Workflow') {
-    //   return;
-    // }
-    // const tasks = jsonParse<Task[]>(workflowDetail.tasks);
-    // const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
-    // const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
-    // // eslint-disable-next-line @typescript-eslint/naming-convention
-    // const { __typename, ...wfDetail } = workflowDetail;
-    // setWorkflow({
-    //   ...wfDetail,
-    //   description: description?.description ?? null,
-    //   labels: description?.labels || [],
-    //   tasks: extendedTasks,
-    //   hasSchedule: workflowDetail.hasSchedule ?? false,
-    //   outputParameters: workflowDetail.outputParameters,
-    // });
+    if (workflowData?.conductor.workflowDefinition == null) {
+      return;
+    }
+    const { workflowDefinition: workflowDetail } = workflowData.conductor;
+    if (workflowDetail.__typename !== 'WorkflowDefinition') {
+      return;
+    }
+    const tasks = jsonParse<Task[]>(workflowDetail.tasksJson);
+    const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
+    const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const { __typename, ...wfDetail } = workflowDetail;
+    setWorkflow({
+      ...wfDetail,
+      description: description?.description ?? null,
+      labels: description?.labels || [],
+      tasks: extendedTasks,
+      hasSchedule: workflowDetail.hasSchedule ?? false,
+      outputParameters: workflowDetail.outputParameters,
+    });
   }, [workflowData]);
 
   const handleFileImport = (file: File) => {
@@ -287,7 +294,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
   };
 
-  const handleWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>) => {
+  const handleWorkflowChange = (editedWorkflow: ClientWorkflow) => {
     setWorkflow((wf) => ({
       ...unwrap(wf),
       ...editedWorkflow,
@@ -305,18 +312,17 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     setTaskdefsFilter(keyword);
   };
 
-  // const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
-  //   const { node } = e;
-  //   const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
-  //   const description = jsonParse<DescriptionJSON | null>(node.description);
-  //   return {
-  //     ...node,
-  //     labels: description?.labels || [],
-  //     tasks: parsedTasks,
-  //     hasSchedule: node.hasSchedule || false,
-  //   };
-  // });
-  const clientWorkflowList: ClientWorkflow[] = [];
+  const clientWorkflowList: ClientWorkflow[] = workflowListData.conductor.workflowDefinitions.edges.map((e) => {
+    const { node } = e;
+    const parsedTasks = jsonParse<Task[]>(node.tasksJson) ?? [];
+    const description = jsonParse<DescriptionJSON | null>(node.description);
+    return {
+      ...node,
+      labels: description?.labels || [],
+      tasks: parsedTasks,
+      hasSchedule: node.hasSchedule || false,
+    };
+  });
 
   if (shouldCreateWorkflow) {
     return (
@@ -346,8 +352,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     );
   }
 
-  // const { taskDefinitions } = workflowListData;
-  const taskDefinitions: TaskDefinition[] = [];
+  const { taskDefinitions } = workflowListData.conductor;
 
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
@@ -360,8 +365,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
           workflows={clientWorkflowList}
-          taskDefinitions={taskDefinitions}
-          // taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
+          taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}

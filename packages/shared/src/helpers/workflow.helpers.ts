@@ -116,21 +116,21 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
 }
 
 export function createEmptyWorkflow(): Pick<
-  ClientWorkflow<ExtendedTask>,
+  ClientWorkflow,
   | 'id'
   | 'name'
   | 'description'
   | 'version'
   | 'createdAt'
-  | 'createdBy'
+  // | 'createdBy'
   | 'updatedAt'
-  | 'updatedBy'
+  //  | 'updatedBy'
   | 'hasSchedule'
-  | 'tasks'
+  //  | 'tasks'
   | 'inputParameters'
   | 'labels'
-  | 'restartable'
-  | 'timeoutPolicy'
+  // | 'restartable'
+  //  | 'timeoutPolicy'
   | 'timeoutSeconds'
   | 'outputParameters'
 > {
@@ -140,16 +140,16 @@ export function createEmptyWorkflow(): Pick<
     description: '',
     version: 1,
     createdAt: null,
-    createdBy: null,
+    //   createdBy: null,
     updatedAt: null,
-    updatedBy: null,
+    //    updatedBy: null,
     hasSchedule: false,
-    tasks: [],
+    //    tasks: [],
     inputParameters: [],
     labels: [],
     // ownerEmail: '',
-    restartable: true,
-    timeoutPolicy: 'ALERT_ONLY',
+    //  restartable: true,
+    //   timeoutPolicy: 'ALERT_ONLY',
     timeoutSeconds: 0,
     outputParameters: [],
     // variables: {},
