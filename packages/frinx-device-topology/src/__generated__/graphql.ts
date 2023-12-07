@@ -2091,6 +2091,10 @@ export type TopologyDiffCollectionTypes =
   /** Physical topology. */
   | 'phy';
 
+export type TopologyLayer =
+  | 'PhysicalTopology'
+  | 'PtpTopology';
+
 /** Details specific to PTP (Precision Time Protocol). */
 export type TopologyPtpDeviceDetails = {
   __typename?: 'TopologyPtpDeviceDetails';
@@ -2214,6 +2218,11 @@ export type UpdateDeviceMetadataPayload = {
 export type UpdateDevicePayload = {
   __typename?: 'UpdateDevicePayload';
   device: Maybe<Device>;
+};
+
+export type UpdateGraphNodeCoordinatesInput = {
+  coordinates: Array<GraphNodeCoordinatesInput>;
+  layer?: InputMaybe<TopologyLayer>;
 };
 
 export type UpdateGraphNodeCoordinatesPayload = {
@@ -3362,7 +3371,7 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
-  input: Array<GraphNodeCoordinatesInput>;
+  input: UpdateGraphNodeCoordinatesInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -4160,7 +4169,7 @@ export type VersionsQueryVariables = Exact<{ [key: string]: never; }>;
 export type VersionsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyVersions: Array<string> | null } };
 
 export type UpdatePositionMutationVariables = Exact<{
-  input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;
+  input: UpdateGraphNodeCoordinatesInput;
 }>;
 
 
@@ -4180,6 +4189,13 @@ export type ShortestPathQueryVariables = Exact<{
 
 
 export type ShortestPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', shortestPath: Array<{ __typename?: 'NetRoutingPathNode', weight: number | null, nodes: Array<{ __typename?: 'NetRoutingPathNodeInfo', weight: number | null, name: string | null }> }> } };
+
+export type UpdatePtpPositionMutationVariables = Exact<{
+  input: UpdateGraphNodeCoordinatesInput;
+}>;
+
+
+export type UpdatePtpPositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
 
 export type GetGrandMasterPathQueryVariables = Exact<{
   deviceFrom: Scalars['String']['input'];

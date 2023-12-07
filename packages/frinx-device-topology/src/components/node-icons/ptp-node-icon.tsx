@@ -1,5 +1,5 @@
 import { chakra } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import React, { PointerEvent, VoidFunctionComponent } from 'react';
 import { GraphPtpNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge, PtpGraphNode } from '../../__generated__/graphql';
@@ -9,17 +9,15 @@ import NodeInterface from './node-interface';
 
 type Props = {
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
-  // isCommon: boolean;
   isFocused: boolean;
-  // isShortestPath: boolean;
-  // isSelectedForCommonSearch: boolean;
-  // isSelectedForShortestPath: boolean;
   isSelectedForGmPath: boolean;
   isGmPath: boolean;
   node: PtpGraphNode;
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
-  onClick: (node: PtpGraphNode) => void;
+  onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
+  onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
+  onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
 };
 
 const G = chakra('g');
@@ -29,16 +27,14 @@ const Text = chakra('text');
 const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
-  // isCommon,
-  // isShortestPath,
-  // isSelectedForCommonSearch,
-  // isSelectedForShortestPath,
   isSelectedForGmPath,
   isGmPath,
   node,
   topologyMode,
   selectedEdge,
-  onClick,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
 }) => {
   const { x, y } = positions.nodes[node.name];
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
@@ -49,9 +45,9 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
       cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}
       transform={`translate3d(${x}px, ${y}px, 0)`}
       transformOrigin="center center"
-      onClick={() => {
-        onClick(node);
-      }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
     >
       <Circle
         r={isFocused ? `${circleDiameter}px` : 0}
@@ -82,15 +78,6 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
           stroke="red.300"
         />
       )}
-      {/* {isSelectedForShortestPath && (
-        <Circle
-          r={`${circleDiameter / 2 + 5}px`}
-          fill="transparent"
-          strokeWidth={3}
-          strokeDasharray="15, 15"
-          stroke="blue.500"
-        />
-      )} */}
       {isGmPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
@@ -100,15 +87,6 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
           stroke="red.300"
         />
       )}
-      {/* {isShortestPath && (
-        <Circle
-          r={`${circleDiameter / 2 + 5}px`}
-          fill="transparent"
-          strokeWidth={3}
-          strokeDasharray="15, 15"
-          stroke="blue.400"
-        />
-      )} */}
       <G>
         {interfaceGroups.map(([group, data]) => {
           const iPosition = data.position;
