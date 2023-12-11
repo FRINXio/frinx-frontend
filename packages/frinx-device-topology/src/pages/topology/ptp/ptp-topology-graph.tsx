@@ -1,13 +1,14 @@
 import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
-import DeviceInfoPanel from '../../../components/device-info-panel/device-info-panel';
+import PtpInfoPanel from './ptp-info-panel';
 import { clearGmPathSearch, setSelectedNode, updatePtpNodePosition } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './ptp-edges';
-import { ensureNodeHasDevice, height, Position, width } from '../graph.helpers';
+import { height, Position, width } from '../graph.helpers';
 import BackgroundSvg from '../img/background.svg';
 import PtpNodes from './ptp-nodes';
+import { PtpGraphNode } from '../../../__generated__/graphql';
 
 type Props = {
   isGrandMasterPathFetching: boolean;
@@ -78,7 +79,7 @@ const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
       </svg>
-      {selectedNode != null && ensureNodeHasDevice(selectedNode) && (
+      {selectedNode != null && (
         <Box
           position="absolute"
           top={2}
@@ -90,12 +91,7 @@ const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
           width={60}
           boxShadow="md"
         >
-          <DeviceInfoPanel
-            deviceId={selectedNode.device.id}
-            onClose={handleInfoPanelClose}
-            deviceType={selectedNode.deviceType}
-            softwareVersion={selectedNode.softwareVersion}
-          />
+          <PtpInfoPanel node={selectedNode as PtpGraphNode} onClose={handleInfoPanelClose} />
         </Box>
       )}
       {unconfirmedSelectedGmPathNodeId && (
