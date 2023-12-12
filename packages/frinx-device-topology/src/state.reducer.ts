@@ -121,6 +121,19 @@ export function stateReducer(state: State, action: StateAction): State {
         );
         return acc;
       }
+      case 'UPDATE_PTP_NODE_POSITION': {
+        acc.ptpNodePositions[action.nodeId] = action.position;
+        acc.ptpInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+          {
+            nodes: acc.ptpNodes,
+            edges: acc.ptpEdges,
+            positionMap: acc.ptpNodePositions,
+          },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        return acc;
+      }
       case 'SET_SELECTED_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;

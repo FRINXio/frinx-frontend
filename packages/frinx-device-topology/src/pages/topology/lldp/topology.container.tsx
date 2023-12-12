@@ -19,7 +19,7 @@ import { height, Position, width } from '../graph.helpers';
 import TopologyGraph from '../topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
-  mutation UpdatePosition($input: [GraphNodeCoordinatesInput!]!) {
+  mutation UpdatePosition($input: UpdateGraphNodeCoordinatesInput!) {
     deviceInventory {
       updateGraphNodeCoordinates(input: $input) {
         deviceNames
@@ -78,12 +78,16 @@ const TopologyContainer: VoidFunctionComponent = () => {
   }, [client, dispatch, selectedVersion]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
+    const coordinates = [
+      ...new Set(
+        positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
+      ),
+    ];
     updatePosition({
-      input: [
-        ...new Set(
-          positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
-        ),
-      ],
+      input: {
+        coordinates,
+        layer: 'PhysicalTopology',
+      },
     });
   };
 

@@ -53,6 +53,11 @@ export type StateAction =
       position: Position;
     }
   | {
+      type: 'UPDATE_PTP_NODE_POSITION';
+      nodeId: string;
+      position: Position;
+    }
+  | {
       type: 'SET_SELECTED_NODE';
       node: GraphNode | null;
     }
@@ -394,6 +399,14 @@ export function getPtpNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
+    nodeId,
+    position,
+  };
+}
+
+export function updatePtpNodePosition(nodeId: string, position: Position): StateAction {
+  return {
+    type: 'UPDATE_PTP_NODE_POSITION',
     nodeId,
     position,
   };
