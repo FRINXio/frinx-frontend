@@ -60,6 +60,11 @@ export type StateAction =
       position: Position;
     }
   | {
+      type: 'UPDATE_PTP_NODE_POSITION';
+      nodeId: string;
+      position: Position;
+    }
+  | {
       type: 'SET_SELECTED_NODE';
       node: GraphNode | null;
     }
@@ -483,6 +488,14 @@ export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<St
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
+    nodeId,
+    position,
+  };
+}
+
+export function updatePtpNodePosition(nodeId: string, position: Position): StateAction {
+  return {
+    type: 'UPDATE_PTP_NODE_POSITION',
     nodeId,
     position,
   };

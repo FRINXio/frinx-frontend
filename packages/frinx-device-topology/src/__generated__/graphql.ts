@@ -3551,6 +3551,13 @@ export type ShortestPathQueryVariables = Exact<{
 
 export type ShortestPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', shortestPath: Array<{ __typename?: 'NetRoutingPathNode', weight: number | null, nodes: Array<{ __typename?: 'NetRoutingPathNodeInfo', weight: number | null, name: string | null }> }> } };
 
+export type UpdatePtpPositionMutationVariables = Exact<{
+  input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;
+}>;
+
+
+export type UpdatePtpPositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
+
 export type GetGrandMasterPathQueryVariables = Exact<{
   deviceFrom: Scalars['String']['input'];
 }>;

@@ -78,12 +78,13 @@ const TopologyContainer: VoidFunctionComponent = () => {
   }, [client, dispatch, selectedVersion]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
+    const coordinates = [
+      ...new Set(
+        positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
+      ),
+    ];
     updatePosition({
-      input: [
-        ...new Set(
-          positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
-        ),
-      ],
+      input: coordinates,
     });
   };
 
