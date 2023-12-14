@@ -9,6 +9,8 @@ import {
   PtpGraphNode,
   PtpTopologyQuery,
   PtpTopologyQueryVariables,
+  SynceTopologyQuery,
+  SynceTopologyQueryVariables,
   TopologyQuery,
   TopologyQueryVariables,
   TopologyVersionDataQuery,
@@ -327,9 +329,9 @@ const PTP_TOPOLOGY_QUERY = gql`
 `;
 
 const SYNCE_TOPOLOGY_QUERY = gql`
-  query PtpTopology {
+  query SynceTopology {
     deviceInventory {
-      synceTopology {
+      ptpTopology {
         nodes {
           id
           nodeId
@@ -345,6 +347,14 @@ const SYNCE_TOPOLOGY_QUERY = gql`
           }
           status
           labels
+          ptpDeviceDetails {
+            clockType
+            domain
+            ptpProfile
+            clockId
+            parentClockId
+            gmClockId
+          }
         }
         edges {
           id
@@ -455,7 +465,7 @@ export function setSynceNodesAndEdges(payload: SynceNodesEdgesPayload): StateAct
 export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
   return (dispatch) => {
     client
-      .query<PtpTopologyQuery, PtpTopologyQueryVariables>(
+      .query<SynceTopologyQuery, SynceTopologyQueryVariables>(
         SYNCE_TOPOLOGY_QUERY,
         {},
         {
