@@ -22,6 +22,10 @@ const Root: VoidFunctionComponent = () => {
     navigate(`executed/${id}`);
   };
 
+  const handleOnEventHandlerEditClick = (event: string, name: string) => {
+    navigate(`event-handlers/${event}/${name}/edit`);
+  };
+
   return (
     <Routes>
       <Route index element={<Navigate replace to="definitions" />} />
@@ -43,7 +47,10 @@ const Root: VoidFunctionComponent = () => {
       <Route path="scheduled" element={<ScheduledWorkflowList />} />
       <Route path="event-handlers">
         <Route index element={<EventHandlersListPage />} />
-        <Route path=":event/:name" element={<EventHandlersDetailPage onEventHandlerEditClick={() => {}} />} />
+        <Route
+          path=":event/:name"
+          element={<EventHandlersDetailPage onEventHandlerEditClick={handleOnEventHandlerEditClick} />}
+        />
         <Route path=":event/:name/edit" element={<EventHandlerDetailEditPage />} />
         <Route path="add" element={<EventHandlersAddPage />} />
       </Route>
