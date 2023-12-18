@@ -4,11 +4,10 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import ExecutedWorkflowDetail from './pages/executed-workflow-detail/executed-workflow-detail';
-import ExecutedWorkflowList from './pages/executed-workflow-list/executed-workflow-list';
+import ExecutedWorkflowList from './pages/executed-workflows/executed-workflows';
 import PollData from './pages/poll-data/poll-data';
 import ScheduledWorkflowList from './pages/scheduled-workflow/scheduled-workflow-list';
-import TaskList from './pages/workflow-list/tasks/task-list';
-import WorkflowListHeader from './components/workflow-list-header';
+import TaskList from './pages/task-list/tasks/task-list';
 import WorkflowDefinitions from './pages/workflow-definitions/workflow-definitions';
 import EventHandlersListPage from './pages/event-handlers-list/event-handlers-list-page';
 import EventHandlersDetailPage from './pages/event-handlers-detail/event-handlers-detail-page';
@@ -23,10 +22,6 @@ const Root: VoidFunctionComponent = () => {
     navigate(`executed/${id}`);
   };
 
-  const handleOnEventHandlerDetailClick = (event: string, name: string) => {
-    navigate(`event-handlers/${event}/${name}`);
-  };
-
   const handleOnEventHandlerEditClick = (event: string, name: string) => {
     navigate(`event-handlers/${event}/${name}/edit`);
   };
@@ -37,32 +32,21 @@ const Root: VoidFunctionComponent = () => {
       <Route
         path="definitions"
         element={
-          <>
-            <WorkflowListHeader
-              onImportSuccess={() => {
-                setKey(uuid());
-              }}
-            />
-            <WorkflowDefinitions key={key} />
-          </>
+          <WorkflowDefinitions
+            key={key}
+            onImportSuccess={() => {
+              setKey(uuid());
+            }}
+          />
         }
       />
-      <Route path="executed" element={<ExecutedWorkflowList key={key} />} />
-      <Route
-        path="executed/:workflowId"
-        element={<ExecutedWorkflowDetail onExecutedOperation={handleExecutedWfIdClick} />}
-      />
+      <Route path="executed">
+        <Route index element={<ExecutedWorkflowList key={key} />} />
+        <Route path=":workflowId" element={<ExecutedWorkflowDetail onExecutedOperation={handleExecutedWfIdClick} />} />
+      </Route>
       <Route path="scheduled" element={<ScheduledWorkflowList />} />
       <Route path="event-handlers">
-        <Route
-          index
-          element={
-            <EventHandlersListPage
-              onEventHandlerDetailClick={handleOnEventHandlerDetailClick}
-              onEventHandlerEditClick={handleOnEventHandlerEditClick}
-            />
-          }
-        />
+        <Route index element={<EventHandlersListPage />} />
         <Route
           path=":event/:name"
           element={<EventHandlersDetailPage onEventHandlerEditClick={handleOnEventHandlerEditClick} />}

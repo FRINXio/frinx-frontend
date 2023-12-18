@@ -33,60 +33,60 @@ type Props = {
   onEventHandlerEditClick: (event: string, name: string) => void;
 };
 
-const EVENT_HANDLER_QUERY = gql`
-  query EventHandler($event: String!, $name: String!) {
-    eventHandler(event: $event, name: $name) {
-      id
-      name
-      event
-      actions {
-        action
-        expandInlineJSON
-        completeTask {
-          workflowId
-          taskId
-          output
-          taskRefName
-        }
-        failTask {
-          workflowId
-          taskId
-          output
-          taskRefName
-        }
-        startWorkflow {
-          name
-          version
-          input
-          correlationId
-          taskToDomain
-        }
-      }
-      condition
-      evaluatorType
-      isActive
-    }
-  }
-`;
-
-const DELETE_EVENT_HANDLER_MUTATION = gql`
-  mutation DeleteEventHandlerDetail($deleteEventHandlerId: String!) {
-    deleteEventHandler(id: $deleteEventHandlerId) {
-      isOk
-    }
-  }
-`;
-
-const UPDATE_EVENT_HANDLER_MUTATION = gql`
-  mutation EditEventHandlerActions($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
-    updateEventHandler(input: $input, name: $name, event: $event) {
-      id
-      name
-      event
-    }
-  }
-`;
-
+// const EVENT_HANDLER_QUERY = gql`
+//   query EventHandler($event: String!, $name: String!) {
+//     eventHandler(event: $event, name: $name) {
+//       id
+//       name
+//       event
+//       actions {
+//         action
+//         expandInlineJSON
+//         completeTask {
+//           workflowId
+//           taskId
+//           output
+//           taskRefName
+//         }
+//         failTask {
+//           workflowId
+//           taskId
+//           output
+//           taskRefName
+//         }
+//         startWorkflow {
+//           name
+//           version
+//           input
+//           correlationId
+//           taskToDomain
+//         }
+//       }
+//       condition
+//       evaluatorType
+//       isActive
+//     }
+//   }
+// `;
+//
+// const DELETE_EVENT_HANDLER_MUTATION = gql`
+//   mutation DeleteEventHandlerDetail($deleteEventHandlerId: String!) {
+//     deleteEventHandler(id: $deleteEventHandlerId) {
+//       isOk
+//     }
+//   }
+// `;
+//
+// const UPDATE_EVENT_HANDLER_MUTATION = gql`
+//   mutation EditEventHandlerActions($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
+//     updateEventHandler(input: $input, name: $name, event: $event) {
+//       id
+//       name
+//       event
+//     }
+//   }
+// `;
+//
 const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerEditClick }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const ctx = useMemo(() => ({ additionalTypenames: ['EventHandler'] }), []);

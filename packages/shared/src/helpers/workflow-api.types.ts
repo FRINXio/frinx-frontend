@@ -300,33 +300,34 @@ type OutputParameter = {
   value: string;
 };
 
-export type ClientWorkflow<T = Task> = {
+export type ClientWorkflow = {
   id: string;
   name: string;
   description: string | null;
   timeoutSeconds: number;
-  version: number | null;
+  version: number;
   createdAt: string | null;
   updatedAt: string | null;
-  createdBy: string | null;
-  updatedBy: string | null;
-  tasks: T[];
   hasSchedule: boolean;
   labels: string[];
   inputParameters: string[] | null;
   outputParameters: OutputParameter[] | null;
   restartable: boolean | null;
-  timeoutPolicy: TimeoutPolicy | null;
-  ownerEmail?: string | null;
-  schemaVersion?: number | null;
-  variables?: Record<string, any> | null;
-  ownerApp?: string | null;
+  timeoutPolicy: string | null;
+  ownerEmail: string | null;
   inputTemplate?: string | null;
-  createTime?: number | null;
-  updateTime?: number | null;
-  accessPolicy?: Record<string, string> | null;
   failureWorkflow?: string | null;
+  schemaVersion?: number | null;
+  ownerApp?: string | null;
+  accessPolicy?: Record<string, string> | null;
   workflowStatusListenerEnabled?: boolean | null;
+  variables?: Record<string, any> | null;
+  createdBy: string | null;
+  updatedBy: string | null;
+};
+
+export type ClientWorkflowWithTasks<T = Task> = ClientWorkflow & {
+  tasks: T[];
 };
 
 export type DescriptionJSON = { labels: string[]; description: string };
@@ -359,7 +360,7 @@ export type NodeData = {
   handles?: string[];
 };
 
-type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+// type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
 type RetryLogic = 'FIXED' | 'EXPONENTIAL_BACKOFF' | 'LINEAR_BACKOFF';
 
 export type TaskDefinition = {
@@ -371,7 +372,9 @@ export type TaskDefinition = {
   inputKeys?: string[] | null;
   outputKeys?: string[] | null;
   inputTemplate?: string | null;
-  timeoutPolicy: TaskTimeoutPolicy | null;
+  // timeoutPolicy: {
+  //   _fake?: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY' | null;
+  // } | null;
   retryLogic: RetryLogic | null;
   retryDelaySeconds: number | null;
   responseTimeoutSeconds: number | null;
@@ -428,42 +431,30 @@ export type ScheduleWorkflowInput = {
 };
 
 export type ScheduledWorkflow = {
-  id: string;
-  correlationId?: string;
   cronString: string;
-  lastUpdate?: string;
-  performFromDate?: string;
-  performTillDate?: string;
+  fromDate?: string;
+  toDate?: string;
   name: string;
   parallelRuns?: boolean | undefined;
-  taskToDomain?: string;
   workflowName: string;
   workflowVersion: string;
   workflowContext: string;
-  isEnabled: boolean;
+  enabled: boolean;
   status?: StatusType;
 };
 
 export type CreateScheduledWorkflow = {
-  correlationId?: string;
   cronString: string | undefined;
-  lastUpdate?: string;
-  performFromDate?: string | undefined;
-  performTillDate?: string;
+  fromDate?: string | undefined;
+  toDate?: string;
   name: string;
   parallelRuns?: boolean | undefined;
-  taskToDomain?: string;
   workflowName: string;
   workflowVersion: string;
   workflowContext: Record<string, string>;
-  isEnabled: boolean;
+  enabled: boolean;
   status?: StatusType;
 };
-
-export type EditScheduledWorkflow = CreateScheduledWorkflow & {
-  id: string;
-};
-
 export type ExecutedWorkflow = {
   correlationId: string;
   endTime: string;

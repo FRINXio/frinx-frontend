@@ -20,14 +20,14 @@ import { gql, useQuery } from 'urql';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { ExternalStorageQuery, ExternalStorageQueryVariables } from '../../../__generated__/graphql';
 
-const EXTERNAL_STORAGE = gql`
-  query ExternalStorage($path: String!) {
-    externalStorage(path: $path) {
-      data
-    }
-  }
-`;
-
+// const EXTERNAL_STORAGE = gql`
+//   query ExternalStorage($path: String!) {
+//     externalStorage(path: $path) {
+//       data
+//     }
+//   }
+// `;
+//
 type Props = {
   storagePath: string;
   isOpen: boolean;

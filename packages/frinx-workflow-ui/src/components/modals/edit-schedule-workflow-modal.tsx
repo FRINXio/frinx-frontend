@@ -43,7 +43,7 @@ const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|
 
 type Props = {
   scheduledWorkflow: EditScheduledWorkflow;
-  workflow: ClientWorkflow;
+  workflow: Omit<ClientWorkflow, 'outputParameters'>;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: EditScheduledWorkflow) => void;
@@ -95,16 +95,16 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
       name: scheduledWorkflow?.name || '',
       cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
       isEnabled: scheduledWorkflow?.isEnabled ?? false,
-      performFromDate: scheduledWorkflow?.performFromDate && resetDateFormat(scheduledWorkflow?.performFromDate),
-      performTillDate: scheduledWorkflow?.performFromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
+      fromDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.fromDate),
+      performTillDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
     },
     onSubmit: (formValues) => {
       const formattedValues = {
         ...formValues,
         id: scheduledWorkflow?.id,
         cronString: formValues.cronString || DEFAULT_CRON_STRING,
-        ...(formValues.performFromDate && {
-          performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        ...(formValues.fromDate && {
+          performFromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
         ...(formValues.performTillDate && {
           performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
@@ -155,16 +155,16 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
           </FormControl>
 
           <HStack my={5}>
-            <FormControl isInvalid={errors.performFromDate != null}>
+            <FormControl isInvalid={errors.fromDate != null}>
               <FormLabel>From</FormLabel>
               <Input
-                value={values.performFromDate}
+                value={values.fromDate}
                 onChange={handleChange}
                 name="performFromDate"
                 placeholder="Enter from date"
                 type="datetime-local"
               />
-              <FormErrorMessage>{errors.performFromDate}</FormErrorMessage>
+              <FormErrorMessage>{errors.fromDate}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors.performTillDate != null}>

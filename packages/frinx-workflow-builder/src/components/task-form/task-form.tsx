@@ -23,7 +23,7 @@ import {
   Tabs,
 } from '@chakra-ui/react';
 import {
-  ClientWorkflow,
+  ClientWorkflowWithTasks,
   Task,
   convertTaskToExtendedTask,
   ExtendedTask,
@@ -40,7 +40,8 @@ import { getValidationSchema, renderInputParamForm } from './input-params-forms'
 type Props = {
   task: ExtendedTask;
   tasks: ExtendedTask[];
-  workflows: ClientWorkflow<Task>[];
+  workflows: ClientWorkflowWithTasks<Task>[];
+  // workflows: ClientWorkflows<Task>[];
   onClose: () => void;
   onFormSubmit: (task: ExtendedTask) => void;
 };
