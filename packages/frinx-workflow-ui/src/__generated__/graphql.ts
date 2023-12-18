@@ -14,7 +14,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
   Cursor: { input: any; output: any; }
-  DateTime: { input: any; output: any; }
   File: { input: any; output: any; }
   JSON: { input: any; output: any; }
   Map: { input: any; output: any; }
@@ -478,18 +477,6 @@ export type CreateResourceTypePayload = {
   resourceType: ResourceType;
 };
 
-export type CreateScheduleInput = {
-  cronString: Scalars['String']['input'];
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  fromDate?: InputMaybe<Scalars['DateTime']['input']>;
-  name: Scalars['String']['input'];
-  parallelRuns?: InputMaybe<Scalars['Boolean']['input']>;
-  toDate?: InputMaybe<Scalars['DateTime']['input']>;
-  workflowContext?: InputMaybe<Scalars['String']['input']>;
-  workflowName: Scalars['String']['input'];
-  workflowVersion: Scalars['String']['input'];
-};
-
 /** Input parameters for creating a set pool */
 export type CreateSetPoolInput = {
   description?: InputMaybe<Scalars['String']['input']>;
@@ -618,6 +605,16 @@ export type DeleteTagPayload = {
   tagId: Scalars['ID']['output'];
 };
 
+export type DeleteWorkflowDefinitionInput = {
+  name: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+};
+
+export type DeleteWorkflowDefinitionPayload = {
+  __typename?: 'DeleteWorkflowDefinitionPayload';
+  workflowDefinition: Maybe<WorkflowDefinition>;
+};
+
 export type Device = Node & {
   __typename?: 'Device';
   address: Maybe<Scalars['String']['output']>;
@@ -743,6 +740,15 @@ export type EventHandlersOrderByInput = {
   sortKey: SortEventHandlersBy;
 };
 
+export type ExecuteWorkflowByNameInput = {
+  correlationId?: InputMaybe<Scalars['String']['input']>;
+  /** JSON string of input parameters */
+  inputParameters: Scalars['String']['input'];
+  priority?: InputMaybe<Scalars['Int']['input']>;
+  workflowName: Scalars['String']['input'];
+  workflowVersion?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type ExecutedWorkflowConnection = {
   __typename?: 'ExecutedWorkflowConnection';
   edges: Array<ExecutedWorkflowEdge>;
@@ -798,6 +804,10 @@ export type FilterEventHandlerInput = {
 
 export type FilterLabelsInput = {
   name: Scalars['String']['input'];
+};
+
+export type FilterTaskDefinitionsInput = {
+  keyword?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type FilterTopologyInput = {
@@ -949,7 +959,6 @@ export type Mutation = {
   conductor: ConductorMutation;
   deviceInventory: DeviceInventoryMutation;
   resourceManager: ResourceManagerMutation;
-  scheduler: SchedulerMutation;
 };
 
 export type NetInterface = {
@@ -1087,7 +1096,6 @@ export type Query = {
   conductor: ConductorQuery;
   deviceInventory: DeviceInventoryQuery;
   resourceManager: ResourceManagerQuery;
-  scheduler: SchedulerQuery;
 };
 
 export type RerunWorkflowRequest_Input = {
@@ -1195,41 +1203,14 @@ export type ResourceType = Node & {
   id: Scalars['ID']['output'];
 };
 
+export type RetryLogic =
+  | 'EXPONENTIAL_BACKOFF'
+  | 'FIXED'
+  | 'LINEAR_BACKOFF';
+
 export type RevertChangesPayload = {
   __typename?: 'RevertChangesPayload';
   isOk: Scalars['Boolean']['output'];
-};
-
-export type Schedule = {
-  __typename?: 'Schedule';
-  cronString: Scalars['String']['output'];
-  enabled: Scalars['Boolean']['output'];
-  fromDate: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
-  parallelRuns: Scalars['Boolean']['output'];
-  status: Status;
-  toDate: Scalars['DateTime']['output'];
-  workflowContext: Scalars['String']['output'];
-  workflowName: Scalars['String']['output'];
-  workflowVersion: Scalars['String']['output'];
-};
-
-export type ScheduleConnection = {
-  __typename?: 'ScheduleConnection';
-  edges: Array<Maybe<ScheduleEdge>>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type ScheduleEdge = {
-  __typename?: 'ScheduleEdge';
-  cursor: Scalars['String']['output'];
-  node: Schedule;
-};
-
-export type SchedulesFilterInput = {
-  workflowName: Scalars['String']['input'];
-  workflowVersion: Scalars['String']['input'];
 };
 
 export type SearchResultTask = {
@@ -1298,6 +1279,10 @@ export type SortResourcePoolsInput = {
   field?: InputMaybe<ResourcePoolOrderField>;
 };
 
+export type SortTasksBy = {
+  _fake?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type SortWorkflowsBy =
   | 'name';
 
@@ -1328,15 +1313,6 @@ export type StartWorkflow_Input = {
   taskToDomain?: InputMaybe<Scalars['JSON']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
 };
-
-export type Status =
-  | 'COMPLETED'
-  | 'FAILED'
-  | 'PAUSED'
-  | 'RUNNING'
-  | 'TERMINATED'
-  | 'TIMED_OUT'
-  | 'UNKNOWN';
 
 export type SubWorkflowParams = {
   __typename?: 'SubWorkflowParams';
@@ -1503,6 +1479,44 @@ export type TaskDef_Input = {
   updatedBy?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type TaskDefinition = Node & {
+  __typename?: 'TaskDefinition';
+  concurrentExecLimit: Maybe<Scalars['Int']['output']>;
+  createdAt: Maybe<Scalars['String']['output']>;
+  createdBy: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  inputKeys: Maybe<Array<Scalars['String']['output']>>;
+  inputTemplate: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  outputKeys: Maybe<Array<Scalars['String']['output']>>;
+  ownerEmail: Maybe<Scalars['String']['output']>;
+  pollTimeoutSeconds: Maybe<Scalars['Int']['output']>;
+  rateLimitFrequencyInSeconds: Maybe<Scalars['Int']['output']>;
+  rateLimitPerFrequency: Maybe<Scalars['Int']['output']>;
+  responseTimeoutSeconds: Maybe<Scalars['Int']['output']>;
+  retryCount: Maybe<Scalars['Int']['output']>;
+  retryDelaySeconds: Maybe<Scalars['Int']['output']>;
+  retryLogic: Maybe<RetryLogic>;
+  timeoutPolicy: Maybe<TaskTimeoutPolicy>;
+  timeoutSeconds: Scalars['Int']['output'];
+  updatedAt: Maybe<Scalars['String']['output']>;
+  updatedBy: Maybe<Scalars['String']['output']>;
+};
+
+export type TaskDefinitionConnection = {
+  __typename?: 'TaskDefinitionConnection';
+  edges: Array<TaskDefinitionEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type TaskDefinitionEdge = {
+  __typename?: 'TaskDefinitionEdge';
+  cursor: Scalars['String']['output'];
+  node: TaskDefinition;
+};
+
 export type TaskDetails = {
   __typename?: 'TaskDetails';
   output: Maybe<Scalars['JSON']['output']>;
@@ -1569,6 +1583,21 @@ export type TaskSummary = {
   workflowType: Maybe<Scalars['String']['output']>;
 };
 
+export type TaskTimeoutPolicy = {
+  __typename?: 'TaskTimeoutPolicy';
+  _fake: Maybe<Scalars['String']['output']>;
+};
+
+export type TasksOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortTasksBy;
+};
+
+export type TimeoutPolicy =
+  | 'ALERT_ONLY'
+  | 'RETRY'
+  | 'TIME_OUT_WF';
+
 export type Topology = {
   __typename?: 'Topology';
   edges: Array<GraphEdge>;
@@ -1579,6 +1608,10 @@ export type TopologyCommonNodes = {
   __typename?: 'TopologyCommonNodes';
   commonNodes: Array<Scalars['String']['output']>;
 };
+
+export type TopologyLayer =
+  | 'PhysicalTopology'
+  | 'PtpTopology';
 
 export type TopologyVersionData = {
   __typename?: 'TopologyVersionData';
@@ -1669,6 +1702,11 @@ export type UpdateDevicePayload = {
   device: Maybe<Device>;
 };
 
+export type UpdateGraphNodeCoordinatesInput = {
+  coordinates: Array<GraphNodeCoordinatesInput>;
+  layer?: InputMaybe<TopologyLayer>;
+};
+
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']['output']>;
@@ -1684,17 +1722,6 @@ export type UpdateResourceTypeNameInput = {
 export type UpdateResourceTypeNamePayload = {
   __typename?: 'UpdateResourceTypeNamePayload';
   resourceTypeId: Scalars['ID']['output'];
-};
-
-export type UpdateScheduleInput = {
-  cronString?: InputMaybe<Scalars['String']['input']>;
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  fromDate?: InputMaybe<Scalars['DateTime']['input']>;
-  parallelRuns?: InputMaybe<Scalars['Boolean']['input']>;
-  toDate?: InputMaybe<Scalars['DateTime']['input']>;
-  workflowContext?: InputMaybe<Scalars['String']['input']>;
-  workflowName?: InputMaybe<Scalars['String']['input']>;
-  workflowVersion?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Input parameters for updating an existing tag */
@@ -1801,7 +1828,7 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   restartable: Scalars['Boolean']['output'];
   tasks: Array<WorkflowDefinitionTask>;
   tasksJson: Scalars['JSON']['output'];
-  timeoutPolicy: Maybe<Mutation_GetWorkflows_AdditionalProperties_Items_Tasks_Items_WorkflowTask_SubWorkflowParam_WorkflowDefinition_TimeoutPolicy>;
+  timeoutPolicy: Maybe<TimeoutPolicy>;
   timeoutSeconds: Maybe<Scalars['Int']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
   variables: Maybe<Scalars['JSON']['output']>;
@@ -2013,339 +2040,89 @@ export type ZonesConnection = {
 
 export type ConductorMutation = {
   __typename?: 'conductorMutation';
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event`
-   * Add a new event handler.
-   *
-   */
+  /** Add a new event handler. */
   addEventHandler: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow`
-   * Create a new workflow definition
-   *
-   */
+  /** Create a new workflow definition */
   create: Maybe<Scalars['JSON']['output']>;
   createEventHandler: CreateEventHandlerPayload;
   createWorkflowDefinition: Maybe<WorkflowDefinitionPayload>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/decide/{args.workflowId}`
-   * Starts the decision task for a workflow
-   *
-   */
+  /** Starts the decision task for a workflow */
   decide: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/remove`
-   * Removes the workflow from the system
-   *
-   */
+  /** Removes the workflow from the system */
   delete: Maybe<Scalars['JSON']['output']>;
+  deleteWorkflowDefinition: DeleteWorkflowDefinitionPayload;
   editEventHandler: EditEventHandlerPayload;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.name}/correlated`
-   * Lists workflows for the given correlation id list
-   *
-   */
+  executeWorkflowByName: Maybe<Scalars['String']['output']>;
+  /** Lists workflows for the given correlation id list */
   getWorkflows: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/{args.taskId}/log`
-   * Log Task Execution Details
-   *
-   */
+  /** Log Task Execution Details */
   log: Maybe<Scalars['JSON']['output']>;
   pauseExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/pause`
-   * Pauses the workflow
-   *
-   */
+  /** Pauses the workflow */
   pauseWorkflow: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/pause`
-   * Pause the list of workflows
-   *
-   */
+  /** Pause the list of workflows */
   pauseWorkflow_1: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs`
-   * Update an existing task
-   *
-   */
+  /** Update an existing task */
   registerTaskDef: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs`
-   * Create new task definition(s)
-   *
-   */
+  /** Create new task definition(s) */
   registerTaskDef_1: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event/{args.name}`
-   * Remove an event handler
-   *
-   */
+  /** Remove an event handler */
   removeEventHandlerStatus: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/requeue/{args.taskType}`
-   * Requeue pending tasks
-   *
-   */
+  /** Requeue pending tasks */
   requeuePendingTask: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/sweep/requeue/{args.workflowId}`
-   * Queue up all the running workflows for sweep
-   *
-   */
+  /** Queue up all the running workflows for sweep */
   requeueSweep: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/rerun`
-   * Reruns the workflow from a specific task
-   *
-   */
+  /** Reruns the workflow from a specific task */
   rerun: Maybe<Scalars['String']['output']>;
   rerunExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/resetcallbacks`
-   * Resets callback times of all non-terminal SIMPLE tasks to 0
-   *
-   */
+  /** Resets callback times of all non-terminal SIMPLE tasks to 0 */
   resetWorkflow: Maybe<Scalars['Void']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/restart`
-   * Restarts a completed workflow
-   *
-   */
+  /** Restarts a completed workflow */
   restart: Maybe<Scalars['Void']['output']>;
   restartExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/restart`
-   * Restart the list of completed workflow
-   *
-   */
+  /** Restart the list of completed workflow */
   restart_1: Maybe<BulkResponse>;
   resumeExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/resume`
-   * Resumes the workflow
-   *
-   */
+  /** Resumes the workflow */
   resumeWorkflow: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/resume`
-   * Resume the list of workflows
-   *
-   */
+  /** Resume the list of workflows */
   resumeWorkflow_1: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/retry`
-   * Retries the last failed task
-   *
-   */
+  /** Retries the last failed task */
   retry: Maybe<Scalars['Void']['output']>;
   retryExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/retry`
-   * Retry the last failed task for each workflow from the list
-   *
-   */
+  /** Retry the last failed task for each workflow from the list */
   retry_1: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/skiptask/{args.taskReferenceName}`
-   * Skips a given task from a current running workflow
-   *
-   */
+  /** Skips a given task from a current running workflow */
   skipTaskFromWorkflow: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow`
-   * Start a new workflow with StartWorkflowRequest, which allows task to be executed in a domain
-   *
-   */
+  /** Start a new workflow with StartWorkflowRequest, which allows task to be executed in a domain */
   startWorkflow: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.name}`
-   * Start a new workflow. Returns the ID of the workflow instance that can be later used for tracking
-   *
-   */
+  /** Start a new workflow. Returns the ID of the workflow instance that can be later used for tracking */
   startWorkflow_1: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/terminate`
-   * Terminate workflows execution
-   *
-   */
+  /** Terminate workflows execution */
   terminate: Maybe<BulkResponse>;
   terminateExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}`
-   * Terminate workflow execution
-   *
-   */
+  /** Terminate workflow execution */
   terminate_1: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/test`
-   * Test workflow execution using mock data
-   *
-   */
+  /** Test workflow execution using mock data */
   testWorkflow: Maybe<ApiWorkflow>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs/{args.tasktype}`
-   * Remove a task definition
-   *
-   */
+  /** Remove a task definition */
   unregisterTaskDef: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/{args.name}/{args.version}`
-   * Removes workflow definition. It does not remove workflows associated with the definition.
-   *
-   */
+  /** Removes workflow definition. It does not remove workflows associated with the definition. */
   unregisterWorkflowDef: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow`
-   * Create or update workflow definition
-   *
-   */
+  /** Create or update workflow definition */
   update: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/update/{args.workflowId}/task/{args.taskId}/{args.status}`
-   * Publish a message in queue to mark a wait task (by taskId) as completed.
-   *
-   */
+  /** Publish a message in queue to mark a wait task (by taskId) as completed. */
   updateByTaskId: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event`
-   * Update an existing event handler.
-   *
-   */
+  /** Update an existing event handler. */
   updateEventHandler: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks`
-   * Update a task
-   *
-   */
+  /** Update a task */
   updateTask: Maybe<Scalars['String']['output']>;
   updateWorkflowDefinition: Maybe<WorkflowDefinitionPayload>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/update/{args.workflowId}/{args.taskRefName}/{args.status}`
-   * Publish a message in queue to mark a wait task as completed.
-   *
-   */
+  /** Publish a message in queue to mark a wait task as completed. */
   update_1: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/validate`
-   * Validates a new workflow definition
-   *
-   */
+  /** Validates a new workflow definition */
   validate: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/consistency/verifyAndRepair/{args.workflowId}`
-   * Verify and repair workflow consistency
-   *
-   */
+  /** Verify and repair workflow consistency */
   verifyAndRepairWorkflowConsistency: Maybe<Scalars['String']['output']>;
 };
 
@@ -2381,8 +2158,18 @@ export type ConductorMutationDeleteArgs = {
 };
 
 
+export type ConductorMutationDeleteWorkflowDefinitionArgs = {
+  input: DeleteWorkflowDefinitionInput;
+};
+
+
 export type ConductorMutationEditEventHandlerArgs = {
   input: EditEventHandlerInput;
+};
+
+
+export type ConductorMutationExecuteWorkflowByNameArgs = {
+  input: ExecuteWorkflowByNameInput;
 };
 
 
@@ -2605,351 +2392,87 @@ export type ConductorMutationVerifyAndRepairWorkflowConsistencyArgs = {
 
 export type ConductorQuery = {
   __typename?: 'conductorQuery';
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/all`
-   * Get the details about each queue
-   *
-   */
+  /** Get the details about each queue */
   all: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/all/verbose`
-   * Get the details about each queue
-   *
-   */
+  /** Get the details about each queue */
   allVerbose: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/poll/batch/{args.tasktype}`
-   * Batch poll for a task of a certain type
-   *
-   */
+  /** Batch poll for a task of a certain type */
   batchPoll: Maybe<Array<Maybe<Task>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/health`
-   *
-   *
-   */
   doCheck: Maybe<HealthCheckStatus>;
   eventHandlers: EventHandlerConnection;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/{args.name}`
-   * Retrieves workflow definition along with blueprint
-   *
-   */
+  /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow`
-   * Retrieves all workflow definition along with blueprint
-   *
-   */
+  /** Retrieves all workflow definition along with blueprint */
   getAll: Maybe<Array<Maybe<WorkflowDef>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/config`
-   * Get all the configuration parameters
-   *
-   */
+  /** Get all the configuration parameters */
   getAllConfig: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/polldata/all`
-   * Get the last poll data for all task types
-   *
-   */
+  /** Get the last poll data for all task types */
   getAllPollData: Maybe<Array<Maybe<PollData>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/latest-versions`
-   * Returns only the latest version of all workflow definitions
-   *
-   */
+  /** Returns only the latest version of all workflow definitions */
   getAllWorkflowsWithLatestVersions: Maybe<Array<Maybe<WorkflowDef>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event`
-   * Get all the event handlers
-   *
-   */
+  /** Get all the event handlers */
   getEventHandlers: Maybe<Array<Maybe<ApiEventHandler>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event/{args.event}`
-   * Get event handlers for a given event
-   *
-   */
+  /** Get event handlers for a given event */
   getEventHandlersForEvent: Maybe<Array<Maybe<ApiEventHandler>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/queues`
-   * Get registered queues
-   *
-   */
+  /** Get registered queues */
   getEventQueues: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}`
-   * Gets the workflow by workflow id
-   *
-   */
+  /** Gets the workflow by workflow id */
   getExecutionStatus: Maybe<ApiWorkflow>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/external/postgres/{args.externalPayloadPath}`
-   * Get task or workflow by externalPayloadPath from External PostgreSQL Storage
-   *
-   */
+  /** Get task or workflow by externalPayloadPath from External PostgreSQL Storage */
   getExternalStorageData: Maybe<Scalars['File']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/externalstoragelocation`
-   * Get the uri and path of the external storage where the workflow payload is to be stored
-   *
-   */
+  /** Get the uri and path of the external storage where the workflow payload is to be stored */
   getExternalStorageLocation: Maybe<ExternalStorageLocation>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/externalstoragelocation`
-   * Get the external uri where the task payload is to be stored
-   *
-   */
+  /** Get the external uri where the task payload is to be stored */
   getExternalStorageLocation_1: Maybe<ExternalStorageLocation>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/polldata`
-   * Get the last poll data for a given task type
-   *
-   */
+  /** Get the last poll data for a given task type */
   getPollData: Maybe<Array<Maybe<PollData>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/running/{args.name}`
-   * Retrieve all the running workflows
-   *
-   */
+  /** Retrieve all the running workflows */
   getRunningWorkflow: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/{args.taskId}`
-   * Get task by Id
-   *
-   */
+  /** Get task by Id */
   getTask: Maybe<Task>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs/{args.tasktype}`
-   * Gets the task definition
-   *
-   */
+  /** Gets the task definition */
   getTaskDef: Maybe<TaskDef>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs`
-   * Gets all task definition
-   *
-   */
+  /** Gets all task definition */
   getTaskDefs: Maybe<Array<Maybe<TaskDef>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/{args.taskId}/log`
-   * Get Task Execution Logs
-   *
-   */
+  /** Get Task Execution Logs */
   getTaskLogs: Maybe<Array<Maybe<TaskExecLog>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/family/{args.workflowId}`
-   * Gets the workflow by workflow id
-   *
-   */
+  /** Gets the workflow by workflow id */
   getWorkflowFamily: Maybe<Array<Maybe<ApiWorkflow>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/names-and-versions`
-   * Returns workflow names and versions only (no definition bodies)
-   *
-   */
+  /** Returns workflow names and versions only (no definition bodies) */
   getWorkflowNamesAndVersions: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/path/{args.workflowId}`
-   * Gets the workflow by workflow id
-   *
-   */
+  /** Gets the workflow by workflow id */
   getWorkflowPath: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.name}/correlated/{args.correlationId}`
-   * Lists workflows for the given correlation id
-   *
-   */
+  /** Lists workflows for the given correlation id */
   getWorkflows_1: Maybe<Array<Maybe<ApiWorkflow>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/`
-   * Get Queue Names
-   *
-   */
+  /** Get Queue Names */
   names: Maybe<Scalars['JSON']['output']>;
   node: Maybe<Node>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/poll/{args.tasktype}`
-   * Poll for a task of a certain type
-   *
-   */
+  /** Poll for a task of a certain type */
   poll: Maybe<Task>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC.
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC. */
   search: Maybe<SearchResultWorkflowSummary>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search-v2`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC.
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC. */
   searchV2: Maybe<SearchResultWorkflow>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/search-v2`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   searchV2_1: Maybe<SearchResultTask>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search-by-tasks`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   searchWorkflowsByTasks: Maybe<SearchResultWorkflowSummary>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search-by-tasks-v2`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   searchWorkflowsByTasksV2: Maybe<SearchResultWorkflow>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/search`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   search_1: Maybe<SearchResultTaskSummary>;
   /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/sizes`
    * Deprecated. Please use /tasks/queue/size endpoint
-   *
    * @deprecated deprecated
    */
   size: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/size`
-   * Get the queue length
-   *
-   */
+  /** Get the queue length */
   size_1: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/size`
-   * Get queue size for a task type.
-   *
-   */
+  taskDefinitions: TaskDefinitionConnection;
+  /** Get queue size for a task type. */
   taskDepth: Maybe<Scalars['Int']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/task/{args.tasktype}`
-   * Get the list of pending tasks for a given task type
-   *
-   */
+  /** Get the list of pending tasks for a given task type */
   view: Maybe<Array<Maybe<Task>>>;
   workflowDefinitions: WorkflowDefinitionConnection;
   workflowInstanceDetail: WorkflowInstanceDetail;
@@ -3140,6 +2663,16 @@ export type ConductorQuerySearch_1Args = {
 
 export type ConductorQuerySizeArgs = {
   taskType?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type ConductorQueryTaskDefinitionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterTaskDefinitionsInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<TasksOrderByInput>;
 };
 
 
@@ -3336,7 +2869,7 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
-  input: Array<GraphNodeCoordinatesInput>;
+  input: UpdateGraphNodeCoordinatesInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -3878,236 +3411,28 @@ export type ResourceManagerQueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type SchedulerMutation = {
-  __typename?: 'schedulerMutation';
-  createSchedule: Schedule;
-  deleteSchedule: Scalars['Boolean']['output'];
-  updateSchedule: Schedule;
-};
-
-
-export type SchedulerMutationCreateScheduleArgs = {
-  input: CreateScheduleInput;
-};
-
-
-export type SchedulerMutationDeleteScheduleArgs = {
-  name: Scalars['String']['input'];
-};
-
-
-export type SchedulerMutationUpdateScheduleArgs = {
-  input: UpdateScheduleInput;
-  name: Scalars['String']['input'];
-};
-
-export type SchedulerQuery = {
-  __typename?: 'schedulerQuery';
-  schedule: Maybe<Schedule>;
-  schedules: Maybe<ScheduleConnection>;
-};
-
-
-export type SchedulerQueryScheduleArgs = {
-  name: Scalars['String']['input'];
-};
-
-
-export type SchedulerQuerySchedulesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
+export type TaskDefinitionsQueryVariables = Exact<{
+  filter?: InputMaybe<FilterTaskDefinitionsInput>;
+  orderBy?: InputMaybe<TasksOrderByInput>;
   before?: InputMaybe<Scalars['String']['input']>;
-  filter?: InputMaybe<SchedulesFilterInput>;
-  first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetSchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } | null } };
-
-export type CreateEventHandlerMutationVariables = Exact<{
-  input: CreateEventHandlerInput;
-}>;
-
-
-export type CreateEventHandlerMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', createEventHandler: { __typename?: 'CreateEventHandlerPayload', eventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null } } };
-
-export type GetEventHandlersQueryVariables = Exact<{
-  filter?: InputMaybe<FilterEventHandlerInput>;
-  first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  orderBy?: InputMaybe<EventHandlersOrderByInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type GetEventHandlersQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', cursor: string, node: { __typename?: 'EventHandler', id: string, isActive: boolean | null, name: string, evaluatorType: string | null, event: string, actions: Array<{ __typename?: 'Action', action: MutationInput_UpdateEventHandler_Input_Actions_Items_Action | null } | null> } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type TaskDefinitionsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', taskDefinitions: { __typename?: 'TaskDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', id: string, name: string, timeoutSeconds: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, description: string | null, retryCount: number | null, pollTimeoutSeconds: number | null, inputKeys: Array<string> | null, outputKeys: Array<string> | null, inputTemplate: string | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, concurrentExecLimit: number | null, rateLimitFrequencyInSeconds: number | null, rateLimitPerFrequency: number | null, ownerEmail: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
-export type DeleteEventHandlerMutationVariables = Exact<{
+export type DeleteTaskMutationVariables = Exact<{
   name: Scalars['String']['input'];
 }>;
 
 
-export type DeleteEventHandlerMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', removeEventHandlerStatus: any | null } };
+export type DeleteTaskMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', unregisterTaskDef: any | null } };
 
-export type ExecutedWorkflowDetailQueryVariables = Exact<{
-  nodeId: Scalars['ID']['input'];
+export type CreateTaskDefinitionMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<TaskDef_Input>> | InputMaybe<TaskDef_Input>>;
 }>;
 
 
-export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, originalId: string | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
-
-export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', conductor: { __typename?: 'ConductorSubscription', controlExecutedWorkflow: { __typename?: 'Workflow', endTime: string | null, startTime: string | null, status: WorkflowStatus | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, endTime: string | null, startTime: string | null, updatedAt: string | null, status: WorkflowTaskStatus | null, taskType: string | null, subWorkflowId: string | null }> | null } } };
-
-export type RerunWorkflowMutationVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type RerunWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', rerunExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
-
-export type RestartWorkflowMutationVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type RestartWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', restartExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
-
-export type RetryWorkflowMutationVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type RetryWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', retryExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
-
-export type PauseWorkflowMutationVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type PauseWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', pauseExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
-
-export type ResumeWorkflowMutationVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type ResumeWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', resumeExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
-
-export type TerminateWorkflowMutationVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type TerminateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', terminateExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
-
-export type BulkPauseWorkflowMutationVariables = Exact<{
-  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
-}>;
-
-
-export type BulkPauseWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', pauseWorkflow_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
-
-export type BulkRetryWorkflowMutationVariables = Exact<{
-  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
-}>;
-
-
-export type BulkRetryWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', retry_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
-
-export type BulkResumeWorkflowMutationVariables = Exact<{
-  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
-}>;
-
-
-export type BulkResumeWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', resumeWorkflow_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
-
-export type BulkTerminateWorkflowMutationVariables = Exact<{
-  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
-}>;
-
-
-export type BulkTerminateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', terminate: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
-
-export type BulkRestartWorkflowMutationVariables = Exact<{
-  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
-}>;
-
-
-export type BulkRestartWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', restart_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
-
-export type ExecutedWorkflowsQueryVariables = Exact<{
-  orderBy: ExecutedWorkflowsOrderByInput;
-  searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
-  pagination?: InputMaybe<PaginationArgs>;
-}>;
-
-
-export type ExecutedWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'Workflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: WorkflowStatus | null, variables: string | null, originalId: string | null, hasSubworkflows: boolean, workflowDefinition: { __typename?: 'WorkflowDefinition', name: string, version: number } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
-
-export type WorkflowInstanceDetailQueryVariables = Exact<{
-  workflowId: Scalars['String']['input'];
-}>;
-
-
-export type WorkflowInstanceDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'Subworkflow', referenceTaskName: string | null, workflowDetail: { __typename?: 'WorkflowDefinition', id: string, name: string } | null, executedWorkflowDetail: { __typename?: 'Workflow', id: string, startTime: string | null, endTime: string | null, createdAt: string | null, originalId: string | null, status: WorkflowStatus | null } | null }> | null } } };
-
-export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type WorkflowListQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, hasSchedule: boolean, inputParameters: Array<string> | null, timeoutSeconds: number | null } }> } } };
-
-export type SchedulesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type SchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', totalCount: number, edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, enabled: boolean, fromDate: any, toDate: any, parallelRuns: boolean, status: Status } } | null>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
-
-export type DeleteScheduleMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-}>;
-
-
-export type DeleteScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', deleteSchedule: boolean } };
-
-export type UpdateScheduleMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  input: UpdateScheduleInput;
-}>;
-
-
-export type UpdateScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', updateSchedule: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, enabled: boolean, fromDate: any, toDate: any, parallelRuns: boolean } } };
-
-export type CreateScheduleMutationVariables = Exact<{
-  input: CreateScheduleInput;
-}>;
-
-
-export type CreateScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', createSchedule: { __typename?: 'Schedule', name: string, enabled: boolean, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, fromDate: any, toDate: any } } };
-
-export type WorkflowsQueryVariables = Exact<{
-  filter?: InputMaybe<WorkflowsFilterInput>;
-  orderBy?: InputMaybe<WorkflowsOrderByInput>;
-}>;
-
-
-export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: Mutation_GetWorkflows_AdditionalProperties_Items_Tasks_Items_WorkflowTask_SubWorkflowParam_WorkflowDefinition_TimeoutPolicy | null, ownerEmail: string | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }> } } };
-
-export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type WorkflowLabelsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowLabels: Array<string> } };
-
-export type DeleteWorkflowMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  version: Scalars['Int']['input'];
-}>;
-
-
-export type DeleteWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', unregisterWorkflowDef: any | null } };
+export type CreateTaskDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', registerTaskDef_1: any | null } };

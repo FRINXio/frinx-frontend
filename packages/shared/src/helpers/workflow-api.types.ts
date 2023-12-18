@@ -123,8 +123,8 @@ type TaskValues = {
 type BaseTask<T = undefined> = T extends undefined
   ? TaskValues
   : TaskValues & {
-    inputParameters: T;
-  };
+      inputParameters: T;
+    };
 
 export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
@@ -351,7 +351,6 @@ export type NodeData = {
   handles?: string[];
 };
 
-type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
 type RetryLogic = 'FIXED' | 'EXPONENTIAL_BACKOFF' | 'LINEAR_BACKOFF';
 
 export type TaskDefinition = {
@@ -363,7 +362,9 @@ export type TaskDefinition = {
   inputKeys?: string[] | null;
   outputKeys?: string[] | null;
   inputTemplate?: string | null;
-  timeoutPolicy: TaskTimeoutPolicy | null;
+  // timeoutPolicy: {
+  //   _fake?: 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY' | null;
+  // } | null;
   retryLogic: RetryLogic | null;
   retryDelaySeconds: number | null;
   responseTimeoutSeconds: number | null;
