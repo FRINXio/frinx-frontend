@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 import {
   Button,
   Link as ChakraLink,
@@ -25,12 +25,14 @@ import { Link } from 'react-router-dom';
 import {
   DeleteEventHandlerMutation,
   DeleteEventHandlerMutationVariables,
+  EditEventHandlerInput,
   EventHandlersOrderByInput,
   GetEventHandlersQuery,
   GetEventHandlersQueryVariables,
   SortEventHandlersBy,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
+import { omit } from 'lodash';
 
 const EVENT_HANDLERS_QUERY = gql`
   query GetEventHandlers(
@@ -75,15 +77,13 @@ const DELETE_EVENT_HANDLER_MUTATION = gql`
   }
 `;
 
-// const UPDATE_EVENT_HANDLER_MUTATION = gql`
-//   mutation UpdateEventHandler($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
-//     updateEventHandler(input: $input, name: $name, event: $event) {
-//       id
-//       name
-//       event
-//     }
-//   }
-// `;
+const UPDATE_EVENT_HANDLER_MUTATION = gql`
+  mutation UpdateEventHandler($input: EventHandler_Input!) {
+    conductor {
+      updateEventHandler(input: $input)
+    }
+  }
+`;
 
 const EventHandlersListPage: FC = () => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
@@ -138,22 +138,17 @@ const EventHandlersListPage: FC = () => {
       });
   };
 
-  const handleOnIsActiveClick = (
-    e: ChangeEvent<HTMLInputElement>,
-    eventHandler: {
-      name: string;
-      event: string;
-    },
-  ) => {
+  const handleOnIsActiveClick = (e: ChangeEvent<HTMLInputElement>, eventHandler: EditEventHandlerInput) => {
     const boolChecked = Boolean(e.target.checked);
+
+    const eventHandlerWithoutTypenames = {
+      ...eventHandler,
+      active: boolChecked,
+    };
 
     updateEventHandler(
       {
-        input: {
-          isActive: boolChecked,
-        },
-        event: eventHandler.event,
-        name: eventHandler.name,
+        input: omit(eventHandlerWithoutTypenames, ['__typename']),
       },
       ctx,
     )
@@ -206,12 +201,12 @@ const EventHandlersListPage: FC = () => {
         <Table background="white">
           <Thead>
             <Tr>
-              <Th cursor="pointer" onClick={() => handleSort('isActive')}>
+              {/* <Th cursor="pointer" onClick={() => handleSort('isActive')}>
                 Is active
                 {orderBy.sortKey === 'isActive' && (
                   <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
                 )}
-              </Th>
+              </Th> */}
               <Th cursor="pointer" onClick={() => handleSort('name')}>
                 Name
                 {orderBy.sortKey === 'name' && (
@@ -243,17 +238,9 @@ const EventHandlersListPage: FC = () => {
             {data.conductor.eventHandlers.edges?.length !== 0 &&
               data.conductor.eventHandlers.edges.map(({ node }) => (
                 <Tr key={node.id}>
-                  <Td>
-                    <Switch
-                      isChecked={node.isActive ?? false}
-                      onChange={(e) =>
-                        handleOnIsActiveClick(e, {
-                          event: node.event,
-                          name: node.name,
-                        })
-                      }
-                    />
-                  </Td>
+                  {/* <Td>
+                    <Switch isChecked={node.isActive ?? false} onChange={(e) => handleOnIsActiveClick(e, node)} />
+                  </Td> */}
                   <Td>
                     <ChakraLink color="blue.500" as={Link} to={`${node.event}/${node.name}`}>
                       {node.name}
@@ -264,13 +251,13 @@ const EventHandlersListPage: FC = () => {
                   <Td>{node.actions.map((action) => action?.action).join(', ')}</Td>
                   <Td>
                     <HStack spacing={2}>
-                      <IconButton
+                      {/* <IconButton
                         aria-label="edit event handler"
                         size="sm"
                         icon={<FeatherIcon icon="edit" size={12} />}
                         as={Link}
                         to={`${node.event}/${node.name}/edit`}
-                      />
+                      /> */}
                       <IconButton
                         aria-label="delete event handler"
                         size="sm"
