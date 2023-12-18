@@ -19,25 +19,26 @@ import { compact } from 'lodash';
 import React, { useRef, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation } from 'urql';
-import { CreateWorkflowMutation, CreateWorkflowMutationVariables } from '../__generated__/graphql';
+import { CreateWorkflow, CreateWorkflowMutationVariables } from '../__generated__/graphql';
 
 type Props = {
   onImportSuccess: () => void;
 };
 
 const CREATE_WORKFLOW_MUTATION = gql`
-  mutation CreateWorkflow($input: UpdateWorkflowInput!) {
-    updateWorkflow(id: "", input: $input) {
-      workflow {
-        createdBy
-        updatedAt
-        tasks
-        name
-        description
-        version
-        outputParameters {
-          key
-          value
+  mutation CreateWorkflow($input: UpdateWorkflowDefinitionInput!) {
+    conductor {
+      updateWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          updatedAt
+          tasksJson
+          name
+          description
+          version
+          outputParameters {
+            key
+            value
+          }
         }
       }
     }

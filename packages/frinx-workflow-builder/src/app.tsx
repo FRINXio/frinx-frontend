@@ -1,6 +1,6 @@
 import { Alert, AlertIcon, Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import {
-  ClientWorkflow,
+  ClientWorkflowWithTasks,
   convertTaskToExtendedTask,
   convertToTasks,
   ExecuteWorkflowModal,
@@ -9,6 +9,7 @@ import {
   getNodeType,
   NodeData,
   TaskDefinition,
+  TimeoutPolicy,
   useNotifications,
 } from '@frinx/shared';
 import { produce } from 'immer';
@@ -45,8 +46,8 @@ import { EdgeRemoveProvider } from './edge-remove-provider';
 import { getLayoutedElements } from './helpers/layout.helpers';
 import { useTaskActions } from './task-actions-context';
 import {
-  ExecuteWorkflowByNameMutation,
-  ExecuteWorkflowByNameMutationVariables,
+  ExecuteWorkflowByNameBuilderMutation,
+  ExecuteWorkflowByNameBuilderMutationVariables,
   UpdateWorkflowMutation,
   UpdateWorkflowMutationVariables,
 } from './__generated__/graphql';
@@ -66,20 +67,20 @@ type Props = {
   onWorkflowSearch: (value: string) => void;
   onTaskdefSearch: (value: string) => void;
   workflowFilter: string;
-  workflow: BuilderWorklfowB;
-  // workflow: ClientWorkflow<ExtendedTask>;
-  workflows: ClientWorkflow[];
+  // workflow: BuilderWorklfow;
+  workflow: ClientWorkflowWithTasks<ExtendedTask>;
+  workflows: ClientWorkflowWithTasks[];
   taskDefinitions: TaskDefinition[];
   // onWorkflowChange: (workflow: ClientWorkflow<ExtendedTask>) => void;
-  onWorkflowChange: (workflow: ClientWorkflow) => void;
+  onWorkflowChange: (workflow: ClientWorkflowWithTasks<ExtendedTask>) => void;
   onFileImport: (file: File) => void;
-  onFileExport: (workflow: ClientWorkflow) => void; // eslint-disable-line react/no-unused-prop-types
+  onFileExport: (workflow: ClientWorkflowWithTasks) => void; // eslint-disable-line react/no-unused-prop-types
   onWorkflowDelete: (name: string, version?: number | null) => void;
-  onWorkflowClone: (workflow: ClientWorkflow, name: string) => void; // eslint-disable-line react/no-unused-prop-types
+  onWorkflowClone: (workflow: ClientWorkflowWithTasks, name: string) => void; // eslint-disable-line react/no-unused-prop-types
   updateWorkflow: (variables: UpdateWorkflowMutationVariables) => Promise<OperationResult<UpdateWorkflowMutation>>;
   executeWorkflow: (
-    variables: ExecuteWorkflowByNameMutationVariables,
-  ) => Promise<OperationResult<ExecuteWorkflowByNameMutation>>;
+    variables: ExecuteWorkflowByNameBuilderMutationVariables,
+  ) => Promise<OperationResult<ExecuteWorkflowByNameBuilderMutation>>;
 };
 
 const App: VoidFunctionComponent<Props> = ({
@@ -107,7 +108,7 @@ const App: VoidFunctionComponent<Props> = ({
   );
   const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [workflowToExecute, setWorkflowToExecute] = useState<ClientWorkflow<ExtendedTask>>(workflow);
+  const [workflowToExecute, setWorkflowToExecute] = useState<ClientWorkflowWithTasks<ExtendedTask>>(workflow);
 
   useEffect(() => {
     setElements(getLayoutedElements(getElementsFromWorkflow(workflow.tasks, false)));
@@ -255,13 +256,19 @@ const App: VoidFunctionComponent<Props> = ({
     });
   };
 
-  const handleOnWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>, isWorkflowChanged: boolean) => {
+  const handleOnWorkflowChange = (
+    editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>,
+    isWorkflowChanged: boolean,
+  ) => {
     onWorkflowChange(editedWorkflow);
     setHasUnsavedChanges(isWorkflowChanged);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleOnSaveWorkflow = async (editedWorkflow: ClientWorkflow<ExtendedTask>, shouldOpenExecuteModal = false) => {
+  const handleOnSaveWorkflow = async (
+    editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>,
+    shouldOpenExecuteModal = false,
+  ) => {
     try {
       const newTasks = convertToTasks(elements);
 
@@ -281,9 +288,9 @@ const App: VoidFunctionComponent<Props> = ({
       }));
 
       const result = await updateWorkflow({
-        updateWorkflowId: workflow.id,
         input: {
-          workflow: {
+          id: editedWorkflow.id,
+          workflowDefinition: {
             description,
             name: editedWorkflow.name,
             tasks: JSON.stringify(newTasks),
@@ -299,7 +306,7 @@ const App: VoidFunctionComponent<Props> = ({
             ownerApp: editedWorkflow.ownerApp,
             accessPolicy: editedWorkflow.accessPolicy,
             workflowStatusListenerEnabled: editedWorkflow.workflowStatusListenerEnabled,
-            timeoutPolicy: editedWorkflow.timeoutPolicy,
+            timeoutPolicy: editedWorkflow.timeoutPolicy as TimeoutPolicy,
             variables: editedWorkflow.variables,
             createdBy: editedWorkflow.createdBy,
             updatedBy: editedWorkflow.updatedBy,
@@ -354,7 +361,7 @@ const App: VoidFunctionComponent<Props> = ({
         },
       });
       addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-      return result.data?.executeWorkflowByName ?? null;
+      return result.data?.conductor.executeWorkflowByName ?? null;
     } catch {
       addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
       return null;

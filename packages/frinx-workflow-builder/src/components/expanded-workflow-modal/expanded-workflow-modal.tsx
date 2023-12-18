@@ -39,6 +39,8 @@ export const ExpandedWorkflowFragment = gql`
     version
     createdAt
     updatedAt
+    createdBy
+    updatedBy
     tasksJson
     hasSchedule
     inputParameters

@@ -17,21 +17,27 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { isWorkflowNameAvailable, SearchByTagInput, useTagsInput, ClientWorkflow, ExtendedTask } from '@frinx/shared';
+import {
+  isWorkflowNameAvailable,
+  SearchByTagInput,
+  useTagsInput,
+  ExtendedTask,
+  ClientWorkflowWithTasks,
+} from '@frinx/shared';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 type Props = {
-  workflow: ClientWorkflow<ExtendedTask>;
+  workflow: ClientWorkflowWithTasks<ExtendedTask>;
   canEditName: boolean;
-  workflows: ClientWorkflow[];
+  workflows: ClientWorkflowWithTasks[];
   isCreatingWorkflow: boolean;
   onClose?: () => void;
-  onSubmit: (workflow: ClientWorkflow<ExtendedTask>) => void;
+  onSubmit: (workflow: ClientWorkflowWithTasks<ExtendedTask>) => void;
   onChangeNotify?: () => void;
 };
 
-type FormValues = ClientWorkflow & { labels?: string[] };
+type FormValues = ClientWorkflowWithTasks & { labels?: string[] };
 
 const validationSchema = (isCreatingWorkflow: boolean) =>
   yup.object({
@@ -61,7 +67,7 @@ const WorkflowForm: FC<Props> = ({
   const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
     initialValues: workflow,
     onSubmit: (formValues) => {
-      const editedWorkflow: ClientWorkflow<ExtendedTask> = {
+      const editedWorkflow: ClientWorkflowWithTasks<ExtendedTask> = {
         ...workflow,
         name: formValues.name,
         description: formValues.description,
