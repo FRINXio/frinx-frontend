@@ -9,12 +9,14 @@ import {
   GraphNetNode,
   GraphNode,
   GraphNodeInterface,
+  GraphPtpNodeInterface,
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
+import { PtpGraphNode } from './__generated__/graphql';
 
-export type TopologyLayer = 'LLDP' | 'BGP-LS';
+export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP';
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -32,7 +34,7 @@ export type State = {
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
-  selectedNode: (GraphNode | GraphNetNode) | null;
+  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -48,7 +50,14 @@ export type State = {
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
+  ptpNodes: PtpGraphNode[];
+  ptpEdges: GraphEdgeWithDiff[];
+  ptpNodePositions: Record<string, Position>;
+  ptpInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
   isWeightVisible: boolean;
+  unconfirmedSelectedGmPathNodeId: string | null;
+  selectedGmPathNodeId: string | null;
+  gmPathIds: string[];
 };
 
 export const initialState: State = {
@@ -74,7 +83,14 @@ export const initialState: State = {
   netEdges: [],
   netNodePositions: {},
   netInterfaceGroupPositions: {},
+  ptpNodes: [],
+  ptpEdges: [],
+  ptpNodePositions: {},
+  ptpInterfaceGroupPositions: {},
   isWeightVisible: false,
+  unconfirmedSelectedGmPathNodeId: null,
+  selectedGmPathNodeId: null,
+  gmPathIds: [],
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -102,6 +118,19 @@ export function stateReducer(state: State, action: StateAction): State {
           },
           (n) => n.device.name,
           (n) => n.device.deviceSize,
+        );
+        return acc;
+      }
+      case 'UPDATE_PTP_NODE_POSITION': {
+        acc.ptpNodePositions[action.nodeId] = action.position;
+        acc.ptpInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+          {
+            nodes: acc.ptpNodes,
+            edges: acc.ptpEdges,
+            positionMap: acc.ptpNodePositions,
+          },
+          (n) => n.name,
+          () => 'MEDIUM',
         );
         return acc;
       }
@@ -187,6 +216,24 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.selectedAlternativeShortestPathIndex = action.alternativePathIndex;
         return acc;
       }
+      case 'SET_UNCONFIRMED_GM_NODE_ID': {
+        acc.unconfirmedSelectedGmPathNodeId = action.nodeId;
+        return acc;
+      }
+      case 'FIND_GM_PATH': {
+        acc.selectedGmPathNodeId = state.unconfirmedSelectedGmPathNodeId;
+        return acc;
+      }
+      case 'CLEAR_GM_PATH': {
+        acc.unconfirmedSelectedGmPathNodeId = null;
+        acc.selectedGmPathNodeId = null;
+        acc.gmPathIds = [];
+        return acc;
+      }
+      case 'SET_GM_PATH_IDS': {
+        acc.gmPathIds = action.nodeIds;
+        return acc;
+      }
       case 'SET_MODE': {
         acc.mode = action.mode;
         return acc;
@@ -214,6 +261,19 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.netInterfaceGroupPositions = positionMap.interfaceGroups;
         return acc;
       }
+      case 'SET_PTP_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.ptpNodes = nodes;
+        acc.ptpEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.ptpNodePositions = positionMap.nodes;
+        acc.ptpInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_TOPOLOGY_LAYER': {
         acc.topologyLayer = action.layer;
         acc.selectedEdge = null;
@@ -227,6 +287,20 @@ export function stateReducer(state: State, action: StateAction): State {
         }
         acc.selectedNode = action.node;
         const connectedEdges = acc.netEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_PTP_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.ptpEdges.filter(
           (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
         );
         const connectedNodeIds = [

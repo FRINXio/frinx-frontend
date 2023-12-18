@@ -7,29 +7,33 @@ import {
   setCommonNodeIds,
   setMode,
   setSelectedNodeIdsToFindCommonNode,
-} from '../../state.actions';
-import { useStateContext } from '../../state.provider';
+} from '../../../state.actions';
+import { useStateContext } from '../../../state.provider';
 import {
   TopologyCommonNodesQuery,
   TopologyCommonNodesQueryVariables,
   UpdatePositionMutation,
   UpdatePositionMutationVariables,
-} from '../../__generated__/graphql';
-import { height, Position, width } from './graph.helpers';
-import TopologyGraph from './topology-graph';
+} from '../../../__generated__/graphql';
+import { height, Position, width } from '../graph.helpers';
+import TopologyGraph from '../topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
-  mutation UpdatePosition($input: [GraphNodeCoordinatesInput!]!) {
-    updateGraphNodeCoordinates(input: $input) {
-      deviceNames
+  mutation UpdatePosition($input: UpdateGraphNodeCoordinatesInput!) {
+    deviceInventory {
+      updateGraphNodeCoordinates(input: $input) {
+        deviceNames
+      }
     }
   }
 `;
 
 const TOPOLOGY_COMMON_NODES = gql`
   query TopologyCommonNodes($nodes: [String!]!) {
-    topologyCommonNodes(nodes: $nodes) {
-      commonNodes
+    deviceInventory {
+      topologyCommonNodes(nodes: $nodes) {
+        commonNodes
+      }
     }
   }
 `;
@@ -74,12 +78,16 @@ const TopologyContainer: VoidFunctionComponent = () => {
   }, [client, dispatch, selectedVersion]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
+    const coordinates = [
+      ...new Set(
+        positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
+      ),
+    ];
     updatePosition({
-      input: [
-        ...new Set(
-          positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
-        ),
-      ],
+      input: {
+        coordinates,
+        layer: 'PhysicalTopology',
+      },
     });
   };
 
@@ -120,7 +128,7 @@ const TopologyContainer: VoidFunctionComponent = () => {
   };
 
   useEffect(() => {
-    const data = commonNodesData?.topologyCommonNodes?.commonNodes || [];
+    const data = commonNodesData?.deviceInventory.topologyCommonNodes?.commonNodes || [];
     dispatch(setCommonNodeIds([...data]));
   }, [commonNodesData, dispatch]);
 
