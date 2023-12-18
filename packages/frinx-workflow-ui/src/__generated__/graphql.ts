@@ -3411,6 +3411,11 @@ export type ResourceManagerQueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type PollDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PollDataQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', getAllPollData: Array<{ __typename?: 'PollData', queueName: string | null, domain: string | null, workerId: string | null, lastPollTime: any | null } | null> | null } };
+
 export type TaskDefinitionsQueryVariables = Exact<{
   filter?: InputMaybe<FilterTaskDefinitionsInput>;
   orderBy?: InputMaybe<TasksOrderByInput>;
