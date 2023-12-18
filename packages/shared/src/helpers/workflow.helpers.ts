@@ -122,26 +122,20 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
   };
 }
 
-export function createEmptyWorkflow(): ClientWorkflowWithTasks<ExtendedTask> {
+export function createEmptyWorkflow(): ClientWorkflow & { tasks: ExtendedTask[] } {
   return {
     id: '',
     name: '',
     description: '',
     version: 1,
     createdAt: null,
-    createdBy: null,
     updatedAt: null,
-    updatedBy: null,
     hasSchedule: false,
     tasks: [],
     inputParameters: [],
     labels: [],
-    ownerEmail: '',
-    restartable: true,
-    timeoutPolicy: 'ALERT_ONLY',
     timeoutSeconds: 0,
     outputParameters: [],
-    // variables: {},
   };
 }
 

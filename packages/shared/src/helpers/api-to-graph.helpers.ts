@@ -250,12 +250,12 @@ function createDecisionEdges(previousTask: ExtendedTask, curr: ExtendedDecisionT
       // edge connecting decision task with cases
       const startDecisionEdge = decisionTasks.length
         ? {
-          id: `e${curr.taskReferenceName}-${decisionTasks[0].taskReferenceName}`,
-          source: curr.taskReferenceName,
-          target: decisionTasks[0].taskReferenceName,
-          sourceHandle: `${d}`,
-          type: 'buttonedge',
-        }
+            id: `e${curr.taskReferenceName}-${decisionTasks[0].taskReferenceName}`,
+            source: curr.taskReferenceName,
+            target: decisionTasks[0].taskReferenceName,
+            sourceHandle: `${d}`,
+            type: 'buttonedge',
+          }
         : null;
       return startDecisionEdge ? [...currentDecisionEdges, startDecisionEdge] : currentDecisionEdges;
     })
@@ -266,12 +266,12 @@ function createDecisionEdges(previousTask: ExtendedTask, curr: ExtendedDecisionT
   const startDefaultCaseEdge =
     curr.defaultCase != null && curr.defaultCase.length
       ? {
-        id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
-        source: curr.taskReferenceName,
-        target: curr.defaultCase[0].taskReferenceName,
-        sourceHandle: 'default',
-        type: 'buttonedge',
-      }
+          id: `e${curr.taskReferenceName}-${curr.defaultCase[0].taskReferenceName}`,
+          source: curr.taskReferenceName,
+          target: curr.defaultCase[0].taskReferenceName,
+          sourceHandle: 'default',
+          type: 'buttonedge',
+        }
       : null;
   const allDefaultCaseEdges = startDefaultCaseEdge ? [...defaultCaseEdges, startDefaultCaseEdge] : defaultCaseEdges;
   return hasEdgeToPreviousTask
@@ -315,11 +315,11 @@ function createEdges(tasks: ExtendedTask[]): Edge[] {
           // edge connecting fork task with its branches
           const firstBranchEdge = forkTasks.length
             ? {
-              id: `e${curr.taskReferenceName}-${forkTasks[0].taskReferenceName}`,
-              source: curr.taskReferenceName,
-              target: forkTasks[0].taskReferenceName,
-              type: 'buttonedge',
-            }
+                id: `e${curr.taskReferenceName}-${forkTasks[0].taskReferenceName}`,
+                source: curr.taskReferenceName,
+                target: forkTasks[0].taskReferenceName,
+                type: 'buttonedge',
+              }
             : null;
           const forkBranchEdges = createEdges(forkTasks.map(convertTaskToExtendedTask));
           const allBranchEdges = firstBranchEdge ? [firstBranchEdge, ...forkBranchEdges] : forkBranchEdges;
