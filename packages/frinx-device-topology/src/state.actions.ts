@@ -6,6 +6,9 @@ import { CustomDispatch } from './use-thunk-reducer';
 import {
   NetTopologyQuery,
   NetTopologyQueryVariables,
+  PtpGraphNode,
+  PtpTopologyQuery,
+  PtpTopologyQueryVariables,
   TopologyQuery,
   TopologyQueryVariables,
   TopologyVersionDataQuery,
@@ -22,6 +25,11 @@ export type NetNodesEdgesPayload = {
   edges: GraphEdge[];
 };
 
+export type PtpNodesEdgesPayload = {
+  nodes: PtpGraphNode[];
+  edges: GraphEdge[];
+};
+
 export type BackupNodesEdgesPayload = {
   nodes: BackupGraphNode[];
   edges: GraphEdge[];
@@ -32,7 +40,7 @@ export type LabelItem = {
   value: string;
 };
 
-export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH';
+export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
 
 export type StateAction =
   | {
@@ -41,6 +49,11 @@ export type StateAction =
     }
   | {
       type: 'UPDATE_NODE_POSITION';
+      nodeId: string;
+      position: Position;
+    }
+  | {
+      type: 'UPDATE_PTP_NODE_POSITION';
       nodeId: string;
       position: Position;
     }
@@ -91,12 +104,20 @@ export type StateAction =
       payload: NetNodesEdgesPayload;
     }
   | {
+      type: 'SET_PTP_NODES_AND_EDGES';
+      payload: PtpNodesEdgesPayload;
+    }
+  | {
       type: 'SET_TOPOLOGY_LAYER';
       layer: TopologyLayer;
     }
   | {
       type: 'SET_SELECTED_NET_NODE';
       node: GraphNetNode | null;
+    }
+  | {
+      type: 'SET_SELECTED_PTP_NODE';
+      node: PtpGraphNode | null;
     }
   | { type: 'CLEAR_SHORTEST_PATH_SEARCH' }
   | {
@@ -117,7 +138,18 @@ export type StateAction =
   | {
       type: 'SET_WEIGHT_VISIBILITY';
       isVisible: boolean;
-    };
+    }
+  | {
+      type: 'SET_UNCONFIRMED_GM_NODE_ID';
+      nodeId: string | null;
+    }
+  | {
+      type: 'FIND_GM_PATH';
+    }
+  | {
+      type: 'CLEAR_GM_PATH';
+    }
+  | { type: 'SET_GM_PATH_IDS'; nodeIds: string[] };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,35 +158,37 @@ export type ThunkAction<A extends Record<string, unknown>, S> = (
 
 const TOPOLOGY_QUERY = gql`
   query Topology($labels: [String!]) {
-    topology(filter: { labels: $labels }) {
-      nodes {
-        id
-        device {
+    deviceInventory {
+      topology(filter: { labels: $labels }) {
+        nodes {
           id
-          name
-          deviceSize
+          device {
+            id
+            name
+            deviceSize
+          }
+          deviceType
+          softwareVersion
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
         }
-        deviceType
-        softwareVersion
-        interfaces {
+        edges {
           id
-          status
-          name
-        }
-        coordinates {
-          x
-          y
-        }
-      }
-      edges {
-        id
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
       }
     }
@@ -162,38 +196,40 @@ const TOPOLOGY_QUERY = gql`
 `;
 const NET_TOPOLOGY_QUERY = gql`
   query NetTopology {
-    netTopology {
-      nodes {
-        id
-        nodeId
-        name
-        interfaces {
+    deviceInventory {
+      netTopology {
+        nodes {
           id
+          nodeId
           name
-        }
-        networks {
-          id
-          subnet
+          interfaces {
+            id
+            name
+          }
+          networks {
+            id
+            subnet
+            coordinates {
+              x
+              y
+            }
+          }
           coordinates {
             x
             y
           }
         }
-        coordinates {
-          x
-          y
-        }
-      }
-      edges {
-        id
-        weight
-        source {
-          nodeId
-          interface
-        }
-        target {
-          nodeId
-          interface
+        edges {
+          id
+          weight
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
       }
     }
@@ -202,29 +238,76 @@ const NET_TOPOLOGY_QUERY = gql`
 
 const TOPOLOGY_VERSION_DATA_QUERY = gql`
   query TopologyVersionData($version: String!) {
-    topologyVersionData(version: $version) {
-      edges {
-        id
-        source {
-          nodeId
-          interface
+    deviceInventory {
+      topologyVersionData(version: $version) {
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
         }
-        target {
-          nodeId
-          interface
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
         }
       }
-      nodes {
-        id
-        name
-        interfaces {
+    }
+  }
+`;
+
+const PTP_TOPOLOGY_QUERY = gql`
+  query PtpTopology {
+    deviceInventory {
+      ptpTopology {
+        nodes {
           id
-          status
+          nodeId
           name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+          ptpDeviceDetails {
+            clockType
+            domain
+            ptpProfile
+            clockId
+            parentClockId
+            gmClockId
+          }
+          status
+          labels
         }
-        coordinates {
-          x
-          y
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+          weight
         }
       }
     }
@@ -252,7 +335,7 @@ export function getNodesAndEdges(client: Client, labels: LabelItem[]): ReturnTyp
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.topology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.topology ?? { nodes: [], edges: [] };
         // we need to supply edges with null weight
         const edgesWithWeight = edges.map((e) => ({
           ...e,
@@ -282,8 +365,33 @@ export function getNetNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.netTopology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.netTopology ?? { nodes: [], edges: [] };
         dispatch(setNetNodesAndEdges({ nodes, edges }));
+      });
+  };
+}
+
+export function setPtpNodesAndEdges(payload: PtpNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_PTP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+export function getPtpNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<PtpTopologyQuery, PtpTopologyQueryVariables>(
+        PTP_TOPOLOGY_QUERY,
+        {},
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes, edges } = data.data?.deviceInventory.ptpTopology ?? { nodes: [], edges: [] };
+        dispatch(setPtpNodesAndEdges({ nodes, edges }));
       });
   };
 }
@@ -291,6 +399,14 @@ export function getNetNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
+    nodeId,
+    position,
+  };
+}
+
+export function updatePtpNodePosition(nodeId: string, position: Position): StateAction {
+  return {
+    type: 'UPDATE_PTP_NODE_POSITION',
     nodeId,
     position,
   };
@@ -347,9 +463,9 @@ export function getBackupNodesAndEdges(client: Client, version: string): ReturnT
       .then((data) => {
         dispatch(
           setBackupNodesAndEdges({
-            nodes: data.data?.topologyVersionData.nodes ?? [],
+            nodes: data.data?.deviceInventory.topologyVersionData.nodes ?? [],
             edges:
-              data.data?.topologyVersionData.edges.map((e) => ({
+              data.data?.deviceInventory.topologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],
@@ -413,6 +529,13 @@ export function setSelectedNetNode(node: GraphNetNode): StateAction {
   };
 }
 
+export function setSelectedPtpNode(node: PtpGraphNode): StateAction {
+  return {
+    type: 'SET_SELECTED_PTP_NODE',
+    node,
+  };
+}
+
 export function clearShortestPathSearch(): StateAction {
   return {
     type: 'CLEAR_SHORTEST_PATH_SEARCH',
@@ -439,5 +562,31 @@ export function setWeightVisibility(isVisible: boolean): StateAction {
   return {
     type: 'SET_WEIGHT_VISIBILITY',
     isVisible,
+  };
+}
+
+export function setUnconfimedNodeIdForGmPathSearch(nodeId: string): StateAction {
+  return {
+    type: 'SET_UNCONFIRMED_GM_NODE_ID',
+    nodeId,
+  };
+}
+
+export function findGmPath(): StateAction {
+  return {
+    type: 'FIND_GM_PATH',
+  };
+}
+
+export function clearGmPathSearch(): StateAction {
+  return {
+    type: 'CLEAR_GM_PATH',
+  };
+}
+
+export function setGmPathIds(nodeIds: string[]): StateAction {
+  return {
+    type: 'SET_GM_PATH_IDS',
+    nodeIds,
   };
 }

@@ -12,10 +12,10 @@ import {
   CreateTaskDefinitionMutationVariables,
   DeleteTaskMutation,
   DeleteTaskMutationVariables,
+  SortTasksBy,
   TaskDefinitionsQuery,
   TaskDefinitionsQueryVariables,
   TasksOrderByInput,
-  SortTasksBy,
 } from '../../../__generated__/graphql';
 
 const taskDefinition: TaskDefinition = {
@@ -24,10 +24,11 @@ const taskDefinition: TaskDefinition = {
   retryCount: 0,
   retryLogic: 'FIXED',
   retryDelaySeconds: 0,
-  timeoutPolicy: 'TIME_OUT_WF',
+  // timeoutPolicy: {
+  //   _fake: 'TIME_OUT_WF',
+  // },
   timeoutSeconds: 60,
   responseTimeoutSeconds: 10,
-  inputTemplate: '{}',
   ownerEmail: '',
   inputKeys: [],
   outputKeys: [],
@@ -36,74 +37,69 @@ const taskDefinition: TaskDefinition = {
   rateLimitPerFrequency: null,
 };
 
-// const TASK_DEFINITIONS_QUERY = gql`
-//   query TaskDefinitions(
-//     $filter: FilterTaskDefinitionsInput
-//     $orderBy: TasksOrderByInput
-//     $before: String
-//     $last: Int
-//     $after: String
-//     $first: Int
-//   ) {
-//     taskDefinitions(filter: $filter, orderBy: $orderBy, before: $before, last: $last, after: $after, first: $first) {
-//       edges {
-//         node {
-//           id
-//           name
-//           timeoutSeconds
-//           createdAt
-//           updatedAt
-//           createdBy
-//           updatedBy
-//           description
-//           retryCount
-//           pollTimeoutSeconds
-//           inputKeys
-//           outputKeys
-//           inputTemplate
-//           timeoutPolicy
-//           retryLogic
-//           retryDelaySeconds
-//           responseTimeoutSeconds
-//           concurrentExecLimit
-//           rateLimitFrequencyInSeconds
-//           rateLimitPerFrequency
-//           ownerEmail
-//         }
-//       }
-//       totalCount
-//       pageInfo {
-//         startCursor
-//         endCursor
-//         hasNextPage
-//         hasPreviousPage
-//       }
-//     }
-//   }
-// `;
-//
-// const DELETE_TASK_DEFINITION_MUTATION = gql`
-//   mutation DeleteTask($name: String!) {
-//     deleteTask(name: $name) {
-//       isOk
-//     }
-//   }
-// `;
-//
-// const CREATE_TASK_DEFINITION_MUTATION = gql`
-//   mutation CreateTaskDefinition($input: CreateTaskDefinitionInput!) {
-//     createTaskDefinition(input: $input) {
-//       id
-//       name
-//       timeoutSeconds
-//       retryCount
-//       timeoutPolicy
-//       retryLogic
-//       responseTimeoutSeconds
-//     }
-//   }
-// `;
-//
+const TASK_DEFINITIONS_QUERY = gql`
+  query TaskDefinitions(
+    $filter: FilterTaskDefinitionsInput
+    $orderBy: TasksOrderByInput
+    $before: String
+    $last: Int
+    $after: String
+    $first: Int
+  ) {
+    conductor {
+      taskDefinitions(filter: $filter, orderBy: $orderBy, before: $before, last: $last, after: $after, first: $first) {
+        edges {
+          node {
+            id
+            name
+            timeoutSeconds
+            createdAt
+            updatedAt
+            createdBy
+            updatedBy
+            description
+            retryCount
+            pollTimeoutSeconds
+            inputKeys
+            outputKeys
+            inputTemplate
+            retryLogic
+            retryDelaySeconds
+            responseTimeoutSeconds
+            concurrentExecLimit
+            rateLimitFrequencyInSeconds
+            rateLimitPerFrequency
+            ownerEmail
+          }
+        }
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  }
+`;
+
+const DELETE_TASK_DEFINITION_MUTATION = gql`
+  mutation DeleteTask($name: String!) {
+    conductor {
+      unregisterTaskDef(tasktype: $name)
+    }
+  }
+`;
+
+const CREATE_TASK_DEFINITION_MUTATION = gql`
+  mutation CreateTaskDefinition($input: [TaskDef_Input]) {
+    conductor {
+      registerTaskDef_1(input: $input)
+    }
+  }
+`;
+
 const TaskList = () => {
   const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
   const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);
@@ -126,7 +122,7 @@ const TaskList = () => {
     },
   });
 
-  const taskDefinitions = (taskData?.taskDefinitions.edges ?? [])
+  const taskDefinitions = (taskData?.conductor.taskDefinitions.edges ?? [])
     .map((e) => {
       const { node } = e;
       return {
@@ -154,14 +150,14 @@ const TaskList = () => {
   const handleDeleteTask = (taskToDelete: TaskDefinition) => {
     onDelete({ name: taskToDelete.name }, context)
       .then((res) => {
-        if (!res.data?.deleteTask?.isOk) {
+        if (!res.data) {
           addToastNotification({
             type: 'error',
             title: 'Error',
             content: res.error?.message,
           });
         }
-        if (res.data?.deleteTask?.isOk || !res.error) {
+        if (res.data || !res.error) {
           addToastNotification({
             content: 'Deleted successfuly',
             title: 'Success',
@@ -186,28 +182,30 @@ const TaskList = () => {
       const retryDelaySeconds = Number(tsk?.retryDelaySeconds);
       const timeoutSeconds = Number(tsk?.timeoutSeconds);
       const input = {
-        input: {
-          ...tsk,
-          responseTimeoutSeconds,
-          retryCount,
-          retryDelaySeconds,
-          timeoutSeconds,
-          ownerEmail,
-          outputKeys: [...new Set(tsk.outputKeys?.filter((outputKey) => outputKey !== ''))],
-          inputKeys: [...new Set(tsk.inputKeys?.filter((inputKey) => inputKey !== ''))],
-        },
+        input: [
+          {
+            ...tsk,
+            responseTimeoutSeconds,
+            retryCount,
+            retryDelaySeconds,
+            timeoutSeconds,
+            ownerEmail,
+            outputKeys: [...new Set(tsk.outputKeys?.filter((outputKey) => outputKey !== ''))],
+            inputKeys: [...new Set(tsk.inputKeys?.filter((inputKey) => inputKey !== ''))],
+          },
+        ],
       };
 
       onCreate(input)
         .then((res) => {
-          if (!res.data?.createTaskDefinition?.id) {
+          if (res.error != null) {
             addToastNotification({
               type: 'error',
               title: 'Error',
               content: res.error?.message,
             });
           }
-          if (res.data?.createTaskDefinition?.id || !res.error) {
+          if (res.data?.conductor.registerTaskDef_1 || !res.error) {
             addToastNotification({
               content: 'Task created successfuly',
               title: 'Success',
@@ -280,10 +278,10 @@ const TaskList = () => {
       />
       {taskData && (
         <Pagination
-          onPrevious={previousPage(taskData?.taskDefinitions.pageInfo.startCursor)}
-          onNext={nextPage(taskData.taskDefinitions.pageInfo.endCursor)}
-          hasNextPage={taskData.taskDefinitions.pageInfo.hasNextPage}
-          hasPreviousPage={taskData.taskDefinitions.pageInfo.hasPreviousPage}
+          onPrevious={previousPage(taskData?.conductor.taskDefinitions.pageInfo.startCursor)}
+          onNext={nextPage(taskData.conductor.taskDefinitions.pageInfo.endCursor)}
+          hasNextPage={taskData.conductor.taskDefinitions.pageInfo.hasNextPage}
+          hasPreviousPage={taskData.conductor.taskDefinitions.pageInfo.hasPreviousPage}
         />
       )}
     </Container>

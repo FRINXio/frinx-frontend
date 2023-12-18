@@ -77,10 +77,10 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onS
             onChange={handleChange}
           />
         </FormControl>
-        <FormControl alignSelf="flex-start">
+        {/* <FormControl alignSelf="flex-start">
           <FormLabel htmlFor="isActive">Is active</FormLabel>
           <Switch id="isActive" name="isActive" isChecked={values.isActive ?? false} onChange={handleChange} />
-        </FormControl>
+        </FormControl> */}
         <HStack>
           <Button colorScheme="blue" variant="solid" type="submit">
             Search

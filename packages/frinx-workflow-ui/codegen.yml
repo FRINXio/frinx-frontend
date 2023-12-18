@@ -2,7 +2,8 @@ overwrite: true
 schema:
   - 'http://127.0.0.1:5555/graphql'
 documents:
-  - './src/**/*.tsx'
+  - './src/pages/poll-data/**/*.tsx'
+  - './src/pages/task-list/**/*.tsx'
   - './src/**/*.ts'
 generates:
   src/__generated__/graphql.ts:

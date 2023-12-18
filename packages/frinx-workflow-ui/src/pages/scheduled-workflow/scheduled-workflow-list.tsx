@@ -1,9 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Button,
   Heading,
   Box,
-  ButtonGroup,
   Stack,
   FormControl,
   Switch,
@@ -36,7 +34,6 @@ import {
 } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
-import { Link } from 'react-router-dom';
 import {
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
@@ -63,6 +60,9 @@ const WORKFLOWS_QUERY = gql`
             hasSchedule
             inputParameters
             timeoutSeconds
+            timeoutPolicy
+            ownerEmail
+            restartable
           }
         }
       }

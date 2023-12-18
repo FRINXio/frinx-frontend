@@ -17,39 +17,39 @@ export default function TaskTable({ onSort, tasks, orderBy, onTaskConfigClick, o
     <Table background="white">
       <Thead>
         <Tr>
-          <Th onClick={() => onSort('name')} cursor="pointer">
+          <Th onClick={() => onSort({ _fake: 'name' })} cursor="pointer">
             Name/Version
-            {orderBy?.sortKey === 'name' && (
+            {orderBy?.sortKey._fake === 'name' && (
               <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
           </Th>
-          <Th onClick={() => onSort('timeoutPolicy')} cursor="pointer">
+          {/* <Th onClick={() => onSort({ _fake: 'timeoutPolicy' })} cursor="pointer">
             Timeout Policy
-            {orderBy?.sortKey === 'timeoutPolicy' && (
+            {orderBy?.sortKey._fake === 'timeoutPolicy' && (
               <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
-          </Th>
-          <Th onClick={() => onSort('timeoutSeconds')} cursor="pointer">
+          </Th> */}
+          <Th onClick={() => onSort({ _fake: 'timeoutSeconds' })} cursor="pointer">
             Timeout Seconds
-            {orderBy?.sortKey === 'timeoutSeconds' && (
+            {orderBy?.sortKey._fake === 'timeoutSeconds' && (
               <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
           </Th>
-          <Th onClick={() => onSort('responseTimeoutSeconds')} cursor="pointer">
+          <Th onClick={() => onSort({ _fake: 'responseTimeoutSeconds' })} cursor="pointer">
             Response Timeout
-            {orderBy?.sortKey === 'responseTimeoutSeconds' && (
+            {orderBy?.sortKey._fake === 'responseTimeoutSeconds' && (
               <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
           </Th>
-          <Th onClick={() => onSort('retryCount')} cursor="pointer">
+          <Th onClick={() => onSort({ _fake: 'retryCount' })} cursor="pointer">
             Retry Count
-            {orderBy?.sortKey === 'retryCount' && (
+            {orderBy?.sortKey._fake === 'retryCount' && (
               <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
           </Th>
-          <Th onClick={() => onSort('retryLogic')} cursor="pointer">
+          <Th onClick={() => onSort({ _fake: 'retryLogic' })} cursor="pointer">
             Retry Logic
-            {orderBy?.sortKey === 'retryLogic' && (
+            {orderBy?.sortKey._fake === 'retryLogic' && (
               <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
             )}
           </Th>
@@ -60,7 +60,7 @@ export default function TaskTable({ onSort, tasks, orderBy, onTaskConfigClick, o
         {tasks.map((task) => (
           <Tr key={task.name}>
             <Td>{task.name}</Td>
-            <Td>{task.timeoutPolicy}</Td>
+            {/* <Td>{task.timeoutPolicy?._fake}</Td> */}
             <Td>{task.timeoutSeconds}</Td>
             <Td>{task.responseTimeoutSeconds}</Td>
             <Td>{task.retryCount}</Td>

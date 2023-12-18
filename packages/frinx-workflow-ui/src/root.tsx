@@ -7,7 +7,7 @@ import ExecutedWorkflowDetail from './pages/executed-workflow-detail/executed-wo
 import ExecutedWorkflowList from './pages/executed-workflows/executed-workflows';
 import PollData from './pages/poll-data/poll-data';
 import ScheduledWorkflowList from './pages/scheduled-workflow/scheduled-workflow-list';
-import TaskList from './pages/workflow-list/tasks/task-list';
+import TaskList from './pages/task-list/tasks/task-list';
 import WorkflowDefinitions from './pages/workflow-definitions/workflow-definitions';
 import EventHandlersListPage from './pages/event-handlers-list/event-handlers-list-page';
 import EventHandlersDetailPage from './pages/event-handlers-detail/event-handlers-detail-page';
@@ -20,6 +20,10 @@ const Root: VoidFunctionComponent = () => {
 
   const handleExecutedWfIdClick = (id: string) => {
     navigate(`executed/${id}`);
+  };
+
+  const handleOnEventHandlerEditClick = (event: string, name: string) => {
+    navigate(`event-handlers/${event}/${name}/edit`);
   };
 
   return (
@@ -43,7 +47,10 @@ const Root: VoidFunctionComponent = () => {
       <Route path="scheduled" element={<ScheduledWorkflowList />} />
       <Route path="event-handlers">
         <Route index element={<EventHandlersListPage />} />
-        <Route path=":event/:name" element={<EventHandlersDetailPage />} />
+        <Route
+          path=":event/:name"
+          element={<EventHandlersDetailPage onEventHandlerEditClick={handleOnEventHandlerEditClick} />}
+        />
         <Route path=":event/:name/edit" element={<EventHandlerDetailEditPage />} />
         <Route path="add" element={<EventHandlersAddPage />} />
       </Route>

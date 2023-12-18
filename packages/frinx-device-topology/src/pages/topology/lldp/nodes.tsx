@@ -1,10 +1,10 @@
 import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
-import NodeIcon from '../../components/node-icons/node-icon';
-import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
-import { setSelectedNode, setUnconfirmedSelectedNodeIdsToFindCommonNode } from '../../state.actions';
-import { useStateContext } from '../../state.provider';
-import { ensureNodeHasDevice, GraphNode, Position } from './graph.helpers';
+import NodeIcon from '../../../components/node-icons/node-icon';
+import { GraphNodeWithDiff } from '../../../helpers/topology-helpers';
+import { setSelectedNode, setUnconfirmedSelectedNodeIdsToFindCommonNode } from '../../../state.actions';
+import { useStateContext } from '../../../state.provider';
+import { ensureNodeHasDevice, GraphNode, Position } from '../graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;

@@ -8,11 +8,13 @@ import SelectedLabels from './selected-labels';
 
 const DEVICE_LABELS_QUERY = gql`
   query DeviceLabels {
-    labels {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -36,7 +38,7 @@ const LabelsFilter: VoidFunctionComponent = () => {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  const labels = (labelsData?.labels.edges ?? []).map((e) => ({
+  const labels = (labelsData?.deviceInventory.labels.edges ?? []).map((e) => ({
     label: e.node.name,
     value: e.node.id,
   }));
