@@ -123,8 +123,8 @@ type TaskValues = {
 type BaseTask<T = undefined> = T extends undefined
   ? TaskValues
   : TaskValues & {
-    inputParameters: T;
-  };
+      inputParameters: T;
+    };
 
 export type DecisionTask = BaseTask<DecisionInputParams> & {
   type: 'DECISION';
