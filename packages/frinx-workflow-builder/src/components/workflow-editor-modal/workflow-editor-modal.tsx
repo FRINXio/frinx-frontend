@@ -10,18 +10,18 @@ import {
   Button,
   Box,
 } from '@chakra-ui/react';
-import { ClientWorkflow, Editor, ExtendedTask } from '@frinx/shared';
+import { ClientWorkflowWithTasks, Editor, ExtendedTask } from '@frinx/shared';
 import { omit } from 'lodash';
 
 type Props = {
   isOpen: boolean;
-  workflow: ClientWorkflow<ExtendedTask>;
+  workflow: ClientWorkflowWithTasks<ExtendedTask>;
   onClose: () => void;
-  onSave: (workflow: ClientWorkflow<ExtendedTask>) => void;
+  onSave: (workflow: ClientWorkflowWithTasks<ExtendedTask>) => void;
   onChangeNotify: () => void;
 };
 
-const parseWorkflow = (workflow: ClientWorkflow<ExtendedTask>) => {
+const parseWorkflow = (workflow: ClientWorkflowWithTasks<ExtendedTask>) => {
   const { name, description, ...rest } = omit(workflow, ['__typename']);
   return JSON.stringify(
     {

@@ -2053,7 +2053,14 @@ export type ConductorMutation = {
   deleteWorkflowDefinition: DeleteWorkflowDefinitionPayload;
   editEventHandler: EditEventHandlerPayload;
   executeWorkflowByName: Maybe<Scalars['String']['output']>;
-  /** Lists workflows for the given correlation id list */
+  /**
+   *
+   * >**Method**: `POST`
+   * >**Base URL**: `http://10.19.2.32:8080`
+   * >**Path**: `/api/workflow/{args.name}/correlated`
+   * Lists workflows for the given correlation id list
+   *
+   */
   getWorkflows: Maybe<Scalars['JSON']['output']>;
   /** Log Task Execution Details */
   log: Maybe<Scalars['JSON']['output']>;
@@ -2470,7 +2477,14 @@ export type ConductorQuery = {
   /** Get the queue length */
   size_1: Maybe<Scalars['JSON']['output']>;
   taskDefinitions: TaskDefinitionConnection;
-  /** Get queue size for a task type. */
+  /**
+   *
+   * >**Method**: `GET`
+   * >**Base URL**: `http://10.19.2.32:8080`
+   * >**Path**: `/api/tasks/queue/size`
+   * Get queue size for a task type.
+   *
+   */
   taskDepth: Maybe<Scalars['Int']['output']>;
   /** Get the list of pending tasks for a given task type */
   view: Maybe<Array<Maybe<Task>>>;
@@ -3421,6 +3435,30 @@ export type TaskDefinitionsQueryVariables = Exact<{
   orderBy?: InputMaybe<TasksOrderByInput>;
   before?: InputMaybe<Scalars['String']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type GetSchedulesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string } } | null> } | null } };
+
+export type CreateWorkflowMutationVariables = Exact<{
+  input: UpdateWorkflowDefinitionInput;
+}>;
+
+
+export type CreateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', updateWorkflowDefinition: { __typename?: 'WorkflowDefinitionPayload', workflowDefinition: { __typename?: 'WorkflowDefinition', updatedAt: string | null, tasksJson: any, name: string, description: string | null, version: number, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } | null } | null } };
+
+export type CreateEventHandlerMutationVariables = Exact<{
+  input: CreateEventHandlerInput;
+}>;
+
+
+export type CreateEventHandlerMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', createEventHandler: { __typename?: 'CreateEventHandlerPayload', eventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null } } };
+
+export type GetEventHandlersQueryVariables = Exact<{
+  filter?: InputMaybe<FilterEventHandlerInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
 }>;
@@ -3441,3 +3479,164 @@ export type CreateTaskDefinitionMutationVariables = Exact<{
 
 
 export type CreateTaskDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', registerTaskDef_1: any | null } };
+export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, originalId: string | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
+
+export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', conductor: { __typename?: 'ConductorSubscription', controlExecutedWorkflow: { __typename?: 'Workflow', endTime: string | null, startTime: string | null, status: WorkflowStatus | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, endTime: string | null, startTime: string | null, updatedAt: string | null, status: WorkflowTaskStatus | null, taskType: string | null, subWorkflowId: string | null }> | null } } };
+
+export type RerunWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type RerunWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', rerunExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type RestartWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type RestartWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', restartExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type RetryWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type RetryWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', retryExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type PauseWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type PauseWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', pauseExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type ResumeWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type ResumeWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', resumeExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type TerminateWorkflowMutationVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type TerminateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', terminateExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+
+export type BulkPauseWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkPauseWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', pauseWorkflow_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkRetryWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkRetryWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', retry_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkResumeWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkResumeWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', resumeWorkflow_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkTerminateWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkTerminateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', terminate: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type BulkRestartWorkflowMutationVariables = Exact<{
+  input?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>> | InputMaybe<Scalars['String']['input']>>;
+}>;
+
+
+export type BulkRestartWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', restart_1: { __typename?: 'BulkResponse', bulkErrorResults: any | null, bulkSuccessfulResults: Array<string | null> | null } | null } };
+
+export type ExecutedWorkflowsQueryVariables = Exact<{
+  orderBy: ExecutedWorkflowsOrderByInput;
+  searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+  pagination?: InputMaybe<PaginationArgs>;
+}>;
+
+
+export type ExecutedWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', executedWorkflows: { __typename?: 'ExecutedWorkflowConnection', edges: Array<{ __typename?: 'ExecutedWorkflowEdge', cursor: string, node: { __typename?: 'Workflow', endTime: string | null, id: string, input: string | null, output: string | null, startTime: string | null, status: WorkflowStatus | null, variables: string | null, originalId: string | null, hasSubworkflows: boolean, workflowDefinition: { __typename?: 'WorkflowDefinition', name: string, version: number } | null } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
+
+export type WorkflowInstanceDetailQueryVariables = Exact<{
+  workflowId: Scalars['String']['input'];
+}>;
+
+
+export type WorkflowInstanceDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowInstanceDetail: { __typename?: 'WorkflowInstanceDetail', subworkflows: Array<{ __typename?: 'Subworkflow', referenceTaskName: string | null, workflowDetail: { __typename?: 'WorkflowDefinition', id: string, name: string } | null, executedWorkflowDetail: { __typename?: 'Workflow', id: string, startTime: string | null, endTime: string | null, createdAt: string | null, originalId: string | null, status: WorkflowStatus | null } | null }> | null } } };
+
+export type WorkflowListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WorkflowListQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, hasSchedule: boolean, inputParameters: Array<string> | null, timeoutSeconds: number | null } }> } } };
+
+export type SchedulesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', totalCount: number, edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, enabled: boolean, fromDate: any, toDate: any, parallelRuns: boolean, status: Status } } | null>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
+
+export type DeleteScheduleMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+}>;
+
+
+export type DeleteScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', deleteSchedule: boolean } };
+
+export type UpdateScheduleMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  input: UpdateScheduleInput;
+}>;
+
+
+export type UpdateScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', updateSchedule: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, enabled: boolean, fromDate: any, toDate: any, parallelRuns: boolean } } };
+
+export type CreateScheduleMutationVariables = Exact<{
+  input: CreateScheduleInput;
+}>;
+
+
+export type CreateScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', createSchedule: { __typename?: 'Schedule', name: string, enabled: boolean, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, fromDate: any, toDate: any } } };
+
+export type ExecuteWorkflowByNameMutationVariables = Exact<{
+  input: ExecuteWorkflowByNameInput;
+}>;
+
+
+export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', executeWorkflowByName: string | null } };
+
+export type WorkflowsQueryVariables = Exact<{
+  filter?: InputMaybe<WorkflowsFilterInput>;
+  orderBy?: InputMaybe<WorkflowsOrderByInput>;
+}>;
+
+
+export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }> } } };
+
+export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WorkflowLabelsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowLabels: Array<string> } };
+
+export type DeleteWorkflowMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', unregisterWorkflowDef: any | null } };

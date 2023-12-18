@@ -55,8 +55,10 @@ const CREATE_SCHEDULE_MUTATION = gql`
 `;
 
 const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
-    executeWorkflowByName(input: $input)
+  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByNameInput!) {
+    conductor {
+      executeWorkflowByName(input: $input)
+    }
   }
 `;
 
@@ -145,16 +147,18 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
 
       return null;
     }
+    console.log('execute workflow: ', values);
     return onExecute({
       input: {
         inputParameters: JSON.stringify(values),
         workflowName: activeWorkflow.name,
+        workflowVersion: activeWorkflow.version,
       },
     })
       .then((res) => {
         if (!res.error) {
           addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-          return res.data?.executeWorkflowByName;
+          return res.data?.conductor.executeWorkflowByName;
         }
         if (res.error) {
           addToastNotification({ content: res.error.message, type: 'error' });

@@ -315,6 +315,15 @@ export type ClientWorkflow = {
   restartable: boolean | null;
   timeoutPolicy: string | null;
   ownerEmail: string | null;
+  inputTemplate?: string | null;
+  failureWorkflow?: string | null;
+  schemaVersion?: number | null;
+  ownerApp?: string | null;
+  accessPolicy?: Record<string, string> | null;
+  workflowStatusListenerEnabled?: boolean | null;
+  variables?: Record<string, any> | null;
+  createdBy: string | null;
+  updatedBy: string | null;
 };
 
 export type ClientWorkflowWithTasks<T = Task> = ClientWorkflow & {
@@ -351,6 +360,7 @@ export type NodeData = {
   handles?: string[];
 };
 
+// type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
 type RetryLogic = 'FIXED' | 'EXPONENTIAL_BACKOFF' | 'LINEAR_BACKOFF';
 
 export type TaskDefinition = {
