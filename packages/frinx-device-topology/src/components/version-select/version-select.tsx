@@ -9,7 +9,9 @@ import { VersionsQuery, VersionsQueryVariables } from '../../__generated__/graph
 
 const VERSIONS_QUERY = gql`
   query Versions {
-    topologyVersions
+    deviceInventory {
+      topologyVersions
+    }
   }
 `;
 
@@ -30,7 +32,7 @@ const VersionSelect: VoidFunctionComponent = () => {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  const versions = versionsData?.topologyVersions ?? [];
+  const versions = versionsData?.deviceInventory.topologyVersions ?? [];
 
   return (
     <>

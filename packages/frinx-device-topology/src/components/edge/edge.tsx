@@ -14,6 +14,7 @@ type Props = {
   isUnknown: boolean;
   isShortestPath: boolean;
   isWeightVisible?: boolean;
+  isGmPath?: boolean;
   weight: number | null;
 };
 
@@ -30,6 +31,7 @@ const Edge: VoidFunctionComponent<Props> = ({
   isUnknown,
   isShortestPath,
   isWeightVisible,
+  isGmPath,
   weight,
 }) => {
   const { start, end } = linePoints;
@@ -55,7 +57,7 @@ const Edge: VoidFunctionComponent<Props> = ({
       <path
         ref={edgeRef}
         strokeWidth={1}
-        stroke={get(colors, getEdgeColor(edge.change, isUnknown, isShortestPath))}
+        stroke={get(colors, getEdgeColor(edge.change, isUnknown, isShortestPath, isGmPath ?? false))}
         strokeLinejoin="round"
         fill="none"
         d={getCurvePath(start, end, controlPoints)}
@@ -75,7 +77,12 @@ const Edge: VoidFunctionComponent<Props> = ({
       />
       {isWeightVisible && weightPosition !== null && (
         <G transform={`translate3d(${weightPosition.x}px, ${weightPosition.y}px, 0)`} transformOrigin="center center">
-          <Circle r="15" fill="white" strokeWidth={2} stroke={getEdgeColor(edge.change, isUnknown, isShortestPath)} />
+          <Circle
+            r="15"
+            fill="white"
+            strokeWidth={2}
+            stroke={getEdgeColor(edge.change, isUnknown, isShortestPath, false)}
+          />
           <Text textAnchor="middle" y="5">
             {weight}
           </Text>
@@ -90,7 +97,7 @@ const Edge: VoidFunctionComponent<Props> = ({
         y1={start.y}
         x2={end.x}
         y2={end.y}
-        stroke={getEdgeColor(edge.change, isUnknown, isShortestPath)}
+        stroke={getEdgeColor(edge.change, isUnknown, isShortestPath, isGmPath ?? false)}
         strokeWidth={isActive ? 3 : 1}
         strokeLinecap="round"
         borderWidth={3}
@@ -107,7 +114,7 @@ const Edge: VoidFunctionComponent<Props> = ({
             y={`${(start.y + end.y) / 2}px`}
             fill="white"
             strokeWidth={2}
-            stroke={getEdgeColor(edge.change, isUnknown, isShortestPath)}
+            stroke={getEdgeColor(edge.change, isUnknown, isShortestPath, false)}
           />
           <Text textAnchor="middle" y="5">
             {weight}

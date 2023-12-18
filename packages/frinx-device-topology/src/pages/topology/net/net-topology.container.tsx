@@ -3,9 +3,9 @@ import { omitNullValue } from '@frinx/shared';
 import { partition } from 'lodash';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useQuery } from 'urql';
-import ActionControls from '../../components/action-controls/action-controls';
-import Edge from '../../components/edge/edge';
-import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
+import ActionControls from '../../../components/action-controls/action-controls';
+import Edge from '../../../components/edge/edge';
+import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import {
   clearShortestPathSearch,
   findShortestPath,
@@ -14,10 +14,10 @@ import {
   setMode,
   setSelectedAlternativePath,
   setSelectedEdge,
-} from '../../state.actions';
-import { useStateContext } from '../../state.provider';
-import { ShortestPath, ShortestPathInfo } from '../../state.reducer';
-import { ShortestPathQuery, ShortestPathQueryVariables } from '../../__generated__/graphql';
+} from '../../../state.actions';
+import { useStateContext } from '../../../state.provider';
+import { ShortestPath, ShortestPathInfo } from '../../../state.reducer';
+import { ShortestPathQuery, ShortestPathQueryVariables } from '../../../__generated__/graphql';
 import {
   getControlPoints,
   getLinePoints,
@@ -25,19 +25,21 @@ import {
   height,
   isTargetingActiveNode,
   width,
-} from './graph.helpers';
-import BackgroundSvg from './img/background.svg';
+} from '../graph.helpers';
+import BackgroundSvg from '../img/background.svg';
 import NetNodes from './net-nodes';
 
 const EDGE_GAP = 75;
 
 const SHORTEST_PATH_QUERY = gql`
   query ShortestPath($from: String!, $to: String!) {
-    shortestPath(from: $from, to: $to) {
-      weight
-      nodes {
+    deviceInventory {
+      shortestPath(from: $from, to: $to) {
         weight
-        name
+        nodes {
+          weight
+          name
+        }
       }
     }
   }
@@ -85,7 +87,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
 
   useEffect(() => {
     const shortestPath: ShortestPath =
-      shorthestPathData?.shortestPath.map((d) => {
+      shorthestPathData?.deviceInventory.shortestPath.map((d) => {
         return {
           weight: d.weight,
           nodes: d.nodes

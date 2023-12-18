@@ -9,13 +9,15 @@ import { DeviceQuery, DeviceQueryVariables } from '../../__generated__/graphql';
 
 const DEVICE_QUERY = gql`
   query Device($id: ID!) {
-    node(id: $id) {
-      ... on Device {
-        id
-        name
-        isInstalled
-        createdAt
-        serviceState
+    deviceInventory {
+      node(id: $id) {
+        ... on Device {
+          id
+          name
+          isInstalled
+          createdAt
+          serviceState
+        }
       }
     }
   }
@@ -44,7 +46,7 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose, devi
   if (error || data == null) {
     return null;
   }
-  const { node } = data;
+  const { node } = data.deviceInventory;
 
   if (node == null) {
     return null;
