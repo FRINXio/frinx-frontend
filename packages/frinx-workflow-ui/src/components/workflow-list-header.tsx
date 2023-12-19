@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   Flex,
   Heading,
   HStack,
@@ -20,25 +19,26 @@ import { compact } from 'lodash';
 import React, { useRef, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation } from 'urql';
-import { CreateWorkflowMutation, CreateWorkflowMutationVariables } from '../__generated__/graphql';
+import { CreateWorkflow, CreateWorkflowMutationVariables } from '../__generated__/graphql';
 
 type Props = {
   onImportSuccess: () => void;
 };
 
 const CREATE_WORKFLOW_MUTATION = gql`
-  mutation CreateWorkflow($input: UpdateWorkflowInput!) {
-    updateWorkflow(id: "", input: $input) {
-      workflow {
-        createdBy
-        updatedAt
-        tasks
-        name
-        description
-        version
-        outputParameters {
-          key
-          value
+  mutation CreateWorkflow($input: UpdateWorkflowDefinitionInput!) {
+    conductor {
+      updateWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          updatedAt
+          tasksJson
+          name
+          description
+          version
+          outputParameters {
+            key
+            value
+          }
         }
       }
     }
@@ -115,10 +115,10 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
   };
 
   return (
-    <Container maxWidth={1280} mx="auto">
+    <>
       <Flex as="header" alignItems="center" marginBottom={6}>
         <Heading as="h1" size="xl">
-          Workflows
+          Workflow definitions
         </Heading>
         <Box marginLeft="auto">
           <HStack>
@@ -160,7 +160,7 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
       <VisuallyHidden>
         <Input id="upload-files" multiple type="file" ref={inputRef} onChange={importFiles} />
       </VisuallyHidden>
-    </Container>
+    </>
   );
 };
 

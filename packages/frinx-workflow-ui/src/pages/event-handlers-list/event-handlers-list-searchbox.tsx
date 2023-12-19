@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Button, ButtonGroup, Card, FormControl, FormLabel, HStack, Input, Spacer, Switch } from '@chakra-ui/react';
+import { Button, ButtonGroup, chakra, FormControl, FormLabel, HStack, Input, Switch } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 
 export type SearchEventHandlerValues = {
@@ -22,6 +22,8 @@ const INITIAL_VALUES: SearchEventHandlerValues = {
   name: null,
 };
 
+const Form = chakra('form');
+
 const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onSearchSubmit, canDoSearch }) => {
   const { values, handleChange, submitForm, resetForm } = useFormik<SearchEventHandlerValues>({
     initialValues: filters || INITIAL_VALUES,
@@ -34,11 +36,18 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onS
   };
 
   return (
-    <Card p={10} mb={5}>
-      <HStack spacing={4} mb={5}>
+    <Form
+      mb={8}
+      onSubmit={(event) => {
+        event.preventDefault();
+        submitForm();
+      }}
+    >
+      <HStack spacing={4} mb={5} alignItems="flex-end">
         <FormControl>
           <FormLabel htmlFor="name">Name</FormLabel>
           <Input
+            background="white"
             id="name"
             name="name"
             placeholder="Name of event handler"
@@ -46,10 +55,10 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onS
             onChange={handleChange}
           />
         </FormControl>
-
         <FormControl>
           <FormLabel htmlFor="event">Event</FormLabel>
           <Input
+            background="white"
             id="event"
             name="event"
             placeholder="Event on which event handler is executed"
@@ -57,10 +66,10 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onS
             onChange={handleChange}
           />
         </FormControl>
-
         <FormControl>
           <FormLabel htmlFor="evaluatorType">Evaluator type</FormLabel>
           <Input
+            background="white"
             id="evaluatorType"
             name="evaluatorType"
             placeholder="Evaluator type"
@@ -68,25 +77,20 @@ const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onS
             onChange={handleChange}
           />
         </FormControl>
-      </HStack>
-
-      <HStack>
-        <FormControl>
+        {/* <FormControl alignSelf="flex-start">
           <FormLabel htmlFor="isActive">Is active</FormLabel>
           <Switch id="isActive" name="isActive" isChecked={values.isActive ?? false} onChange={handleChange} />
-        </FormControl>
-
-        <Spacer />
-
-        <ButtonGroup variant="outline" isDisabled={!canDoSearch}>
-          <Button onClick={handleOnClearFiltersClick}>Clear</Button>
-
-          <Button colorScheme="blue" onClick={submitForm}>
+        </FormControl> */}
+        <HStack>
+          <Button colorScheme="blue" variant="solid" type="submit">
             Search
           </Button>
-        </ButtonGroup>
+          <Button colorScheme="red" variant="outline" onClick={handleOnClearFiltersClick}>
+            Clear
+          </Button>
+        </HStack>
       </HStack>
-    </Card>
+    </Form>
   );
 };
 

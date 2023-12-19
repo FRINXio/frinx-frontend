@@ -4,15 +4,33 @@ import { makeArrayFromValue, parseBoolean } from '../../helpers/utils.helpers';
 import {
   ExecutedWorkflowsQuery,
   ExecutedWorkflowsQueryVariables,
-  ExecutedWorkflowStatus,
+  SortExecutedWorkflowsBy,
+  SortExecutedWorkflowsDirection,
+  Workflow,
+  WorkflowStatus,
 } from '../../__generated__/graphql';
-import { SortProperty } from './executed-workflow-list';
-import { ExecutedWorkflowSearchQuery } from './executed-workflow-searchbox/executed-workflow-searchbox';
 
+export type SortProperty = { key: keyof Workflow | 'workflowName'; value: 'ASC' | 'DESC' };
+
+export type SortKey = SortExecutedWorkflowsBy;
+
+export type OrderBy = {
+  sortKey: SortKey;
+  direction: SortExecutedWorkflowsDirection;
+};
+export type ExecutedWorkflowSearchQuery = {
+  isRootWorkflow: boolean;
+  from?: string;
+  to?: string;
+  status: string[];
+  workflowId: string[];
+  workflowType: string[];
+  workflowsPerPage: number;
+};
 export function makeSearchQueryVariableFromFilter(
   filter: ExecutedWorkflowSearchQuery,
 ): Partial<ExecutedWorkflowsQueryVariables> {
-  const initialStatus: ExecutedWorkflowStatus[] = [];
+  const initialStatus: WorkflowStatus[] = [];
   const status = filter.status.map((s) => {
     if (
       s === 'PAUSED' ||
@@ -87,28 +105,27 @@ export function sortExecutedWorkflows(
       case 'endTime':
         return orderBy(workflows, ['node.endTime'], ['asc']);
       case 'workflowName':
-        return orderBy(workflows, ['node.workflowName'], ['asc']);
-      case 'workflowId':
-        return orderBy(workflows, ['node.workflowId'], ['asc']);
+        return orderBy(workflows, ['node.workflowDefinition.name'], ['asc']);
+      case 'originalId':
+        return orderBy(workflows, ['node.originalId'], ['asc']);
       case 'status':
         return orderBy(workflows, ['node.status'], ['asc']);
       default:
         return workflows;
     }
-  } else {
-    switch (sort.key) {
-      case 'startTime':
-        return orderBy(workflows, ['node.startTime'], ['desc']);
-      case 'endTime':
-        return orderBy(workflows, ['node.endTime'], ['desc']);
-      case 'workflowName':
-        return orderBy(workflows, ['node.workflowName'], ['desc']);
-      case 'workflowId':
-        return orderBy(workflows, ['node.workflowId'], ['desc']);
-      case 'status':
-        return orderBy(workflows, ['node.status'], ['desc']);
-      default:
-        return workflows;
-    }
+  }
+  switch (sort.key) {
+    case 'startTime':
+      return orderBy(workflows, ['node.startTime'], ['desc']);
+    case 'endTime':
+      return orderBy(workflows, ['node.endTime'], ['desc']);
+    case 'workflowName':
+      return orderBy(workflows, ['node.workflowDefinition.name'], ['desc']);
+    case 'originalId':
+      return orderBy(workflows, ['node.originalId'], ['desc']);
+    case 'status':
+      return orderBy(workflows, ['node.status'], ['desc']);
+    default:
+      return workflows;
   }
 }

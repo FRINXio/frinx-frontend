@@ -20,9 +20,9 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import { ClientWorkflow, jsonParse } from '@frinx/shared';
+import { ClientWorkflowWithoutTasks, jsonParse } from '@frinx/shared';
 import WorkflowActions from './workflow-actions';
-import WorkflowLabels from '../../components/workflow-labels';
+import WorkflowLabel from '../../components/workflow-label';
 
 type OrderBy = {
   sortKey: 'name';
@@ -30,8 +30,7 @@ type OrderBy = {
 };
 
 type Props = {
-  workflows: ClientWorkflow[];
-  allLabels: string[];
+  workflows: ClientWorkflowWithoutTasks[];
   onSort: () => void;
   orderBy: OrderBy;
   executeWorkflowModal: UseDisclosureReturn;
@@ -40,19 +39,16 @@ type Props = {
   dependencyModal: UseDisclosureReturn;
   scheduleWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-
   onLabelClick: (label: string) => void;
-  onFavoriteClick: (wf: ClientWorkflow) => void;
-  setActiveWorkflow: (wf: ClientWorkflow) => void;
+  setActiveWorkflow: (wf: ClientWorkflowWithoutTasks) => void;
 };
 
-function getLabelsFromJSON(description?: string) {
+function getLabelsFromJSON(description?: string): string[] {
   return jsonParse<{ labels: string[] }>(description)?.labels || [];
 }
 
-const Labels: VoidFunctionComponent<{ wf: ClientWorkflow; labels: string[]; onClick: (label: string) => void }> = ({
+const Labels: VoidFunctionComponent<{ wf: ClientWorkflowWithoutTasks; onClick: (label: string) => void }> = ({
   wf,
-  labels,
   onClick,
 }) => {
   const { description } = wf;
@@ -61,13 +57,10 @@ const Labels: VoidFunctionComponent<{ wf: ClientWorkflow; labels: string[]; onCl
   return (
     <>
       {labelsDef.map((label: string) => {
-        const index = labels.findIndex((lab) => lab === label);
-
         return (
-          <WorkflowLabels
+          <WorkflowLabel
             key={label}
             label={label}
-            index={index}
             onClick={() => {
               onClick(label);
             }}
@@ -80,20 +73,18 @@ const Labels: VoidFunctionComponent<{ wf: ClientWorkflow; labels: string[]; onCl
 
 const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   setActiveWorkflow,
-  onFavoriteClick,
   confirmDeleteModal,
   onLabelClick,
   onSort,
   orderBy,
   workflows,
-  allLabels,
   definitionModal,
   dependencyModal,
   diagramModal,
   executeWorkflowModal,
   scheduleWorkflowModal,
 }) => {
-  const getDependencies = (workflow: ClientWorkflow) => {
+  const getDependencies = (workflow: ClientWorkflowWithoutTasks) => {
     const usedInWfs = workflows.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
@@ -134,7 +125,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                   </Text>
                 </Td>
                 <Td>
-                  <Labels labels={allLabels} wf={workflow} onClick={onLabelClick} />
+                  <Labels wf={workflow} onClick={onLabelClick} />
                 </Td>
                 <Td>
                   <Popover trigger="hover">
@@ -168,9 +159,6 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                     onDeleteBtnClick={() => {
                       setActiveWorkflow(workflow);
                       confirmDeleteModal.onOpen();
-                    }}
-                    onFavouriteBtnClick={() => {
-                      onFavoriteClick(workflow);
                     }}
                     onDiagramBtnClick={() => {
                       diagramModal.onOpen();
