@@ -142,6 +142,19 @@ export function stateReducer(state: State, action: StateAction): State {
         );
         return acc;
       }
+      case 'UPDATE_SYNCE_NODE_POSITION': {
+        acc.synceNodePositions[action.nodeId] = action.position;
+        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+          {
+            nodes: acc.synceNodes,
+            edges: acc.synceEdges,
+            positionMap: acc.synceNodePositions,
+          },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        return acc;
+      }
       case 'SET_SELECTED_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;

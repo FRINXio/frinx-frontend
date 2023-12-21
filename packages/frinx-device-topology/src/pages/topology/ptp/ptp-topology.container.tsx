@@ -12,7 +12,7 @@ import { height, width, Position } from '../graph.helpers';
 import PtpTopologyGraph from './ptp-topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
-  mutation UpdatePtpPosition($input: [GraphNodeCoordinatesInput!]!) {
+  mutation UpdatePtpPosition($input: UpdateGraphNodeCoordinatesInput!) {
     deviceInventory {
       updateGraphNodeCoordinates(input: $input) {
         deviceNames
@@ -68,7 +68,10 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
       ),
     ];
     updatePosition({
-      input: coordinates,
+      input: {
+        coordinates,
+        layer: 'PtpTopology',
+      },
     });
   };
 

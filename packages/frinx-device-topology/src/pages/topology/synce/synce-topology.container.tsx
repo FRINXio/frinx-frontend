@@ -1,37 +1,30 @@
-import { Box } from '@chakra-ui/react';
 import React, { useEffect, useRef, VoidFunctionComponent } from 'react';
-import { useClient } from 'urql';
-import Edge from '../../../components/edge/edge';
-import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
-import { getSynceNodesAndEdges, setSelectedEdge } from '../../../state.actions';
+import { gql, useClient, useMutation } from 'urql';
+import { getSynceNodesAndEdges } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import {
-  getControlPoints,
-  getLinePoints,
-  getNameFromNode,
-  height,
-  isTargetingActiveNode,
-  width,
-} from '../graph.helpers';
-import BackgroundSvg from '../img/background.svg';
-import SynceNodes from './synce-nodes';
+import { UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables } from '../../../__generated__/graphql';
+import { height, Position, width } from '../graph.helpers';
+import SynceTopologyGraph from './synce-topology-graph';
 
-const EDGE_GAP = 75;
+const UPDATE_POSITION_MUTATION = gql`
+  mutation UpdateSyncePosition($input: UpdateGraphNodeCoordinatesInput!) {
+    deviceInventory {
+      updateGraphNodeCoordinates(input: $input) {
+        deviceNames
+      }
+    }
+  }
+`;
 
 const SynceTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
-  const {
-    selectedNode,
-    connectedNodeIds,
-    topologyLayer,
-    isWeightVisible,
-    synceEdges,
-    synceInterfaceGroupPositions,
-    synceNodePositions,
-    synceNodes,
-  } = state;
+  const { topologyLayer } = state;
+
+  const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
+    UPDATE_POSITION_MUTATION,
+  );
 
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
@@ -44,62 +37,21 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
     };
   }, [client, dispatch, topologyLayer]);
 
-  const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
-    dispatch(setSelectedEdge(edge));
+  const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
+    const coordinates = [
+      ...new Set(
+        positions.map((p) => ({ deviceName: p.deviceName, x: p.position.x / width, y: p.position.y / height })),
+      ),
+    ];
+    updatePosition({
+      input: {
+        coordinates,
+        layer: 'PtpTopology',
+      },
+    });
   };
 
-  return (
-    <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <g>
-          {synceEdges.map((edge) => {
-            if (isTargetingActiveNode(edge, getNameFromNode(selectedNode), synceInterfaceGroupPositions)) {
-              return null;
-            }
-            const isActive = !!selectedNode?.interfaces.find((i) => i.id === edge.source.interface);
-            const linePoints = getLinePoints({
-              edge,
-              connectedNodeIds,
-              nodePositions: synceNodePositions,
-              interfaceGroupPositions: synceInterfaceGroupPositions,
-            });
-            if (!linePoints) {
-              return null;
-            }
-            const { start, end } = linePoints;
-            const controlPoints = isActive
-              ? getControlPoints({
-                  edge,
-                  interfaceGroupPositions: synceInterfaceGroupPositions,
-                  sourcePosition: start,
-                  targetPosition: end,
-                  edgeGap: EDGE_GAP,
-                })
-              : [];
-            const isUnknown = false;
-            const isShortestPath = false;
-
-            return (
-              <Edge
-                controlPoints={controlPoints}
-                edge={edge}
-                isActive={isActive}
-                linePoints={linePoints}
-                onClick={handleEdgeClick}
-                key={edge.id}
-                isUnknown={isUnknown}
-                isShortestPath={isShortestPath}
-                isGmPath={false}
-                isWeightVisible={(isWeightVisible && isActive) || false}
-                weight={edge.weight}
-              />
-            );
-          })}
-        </g>
-        <SynceNodes nodes={synceNodes} />
-      </svg>
-    </Box>
-  );
+  return <SynceTopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />;
 };
 
 export default SynceTopologyContainer;

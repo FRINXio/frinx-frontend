@@ -14,7 +14,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
   Cursor: { input: any; output: any; }
-  DateTime: { input: any; output: any; }
   File: { input: any; output: any; }
   JSON: { input: any; output: any; }
   Map: { input: any; output: any; }
@@ -476,18 +475,6 @@ export type CreateResourceTypeInput = {
 export type CreateResourceTypePayload = {
   __typename?: 'CreateResourceTypePayload';
   resourceType: ResourceType;
-};
-
-export type CreateScheduleInput = {
-  cronString: Scalars['String']['input'];
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  fromDate?: InputMaybe<Scalars['DateTime']['input']>;
-  name: Scalars['String']['input'];
-  parallelRuns?: InputMaybe<Scalars['Boolean']['input']>;
-  toDate?: InputMaybe<Scalars['DateTime']['input']>;
-  workflowContext?: InputMaybe<Scalars['String']['input']>;
-  workflowName: Scalars['String']['input'];
-  workflowVersion: Scalars['String']['input'];
 };
 
 /** Input parameters for creating a set pool */
@@ -972,7 +959,6 @@ export type Mutation = {
   conductor: ConductorMutation;
   deviceInventory: DeviceInventoryMutation;
   resourceManager: ResourceManagerMutation;
-  scheduler: SchedulerMutation;
 };
 
 export type NetInterface = {
@@ -1110,7 +1096,6 @@ export type Query = {
   conductor: ConductorQuery;
   deviceInventory: DeviceInventoryQuery;
   resourceManager: ResourceManagerQuery;
-  scheduler: SchedulerQuery;
 };
 
 export type RerunWorkflowRequest_Input = {
@@ -1228,38 +1213,6 @@ export type RevertChangesPayload = {
   isOk: Scalars['Boolean']['output'];
 };
 
-export type Schedule = {
-  __typename?: 'Schedule';
-  cronString: Scalars['String']['output'];
-  enabled: Scalars['Boolean']['output'];
-  fromDate: Scalars['DateTime']['output'];
-  name: Scalars['String']['output'];
-  parallelRuns: Scalars['Boolean']['output'];
-  status: Status;
-  toDate: Scalars['DateTime']['output'];
-  workflowContext: Scalars['String']['output'];
-  workflowName: Scalars['String']['output'];
-  workflowVersion: Scalars['String']['output'];
-};
-
-export type ScheduleConnection = {
-  __typename?: 'ScheduleConnection';
-  edges: Array<Maybe<ScheduleEdge>>;
-  pageInfo: PageInfo;
-  totalCount: Scalars['Int']['output'];
-};
-
-export type ScheduleEdge = {
-  __typename?: 'ScheduleEdge';
-  cursor: Scalars['String']['output'];
-  node: Schedule;
-};
-
-export type SchedulesFilterInput = {
-  workflowName: Scalars['String']['input'];
-  workflowVersion: Scalars['String']['input'];
-};
-
 export type SearchResultTask = {
   __typename?: 'SearchResultTask';
   results: Maybe<Array<Maybe<Task>>>;
@@ -1360,15 +1313,6 @@ export type StartWorkflow_Input = {
   taskToDomain?: InputMaybe<Scalars['JSON']['input']>;
   version?: InputMaybe<Scalars['Int']['input']>;
 };
-
-export type Status =
-  | 'COMPLETED'
-  | 'FAILED'
-  | 'PAUSED'
-  | 'RUNNING'
-  | 'TERMINATED'
-  | 'TIMED_OUT'
-  | 'UNKNOWN';
 
 export type SubWorkflowParams = {
   __typename?: 'SubWorkflowParams';
@@ -1665,6 +1609,10 @@ export type TopologyCommonNodes = {
   commonNodes: Array<Scalars['String']['output']>;
 };
 
+export type TopologyLayer =
+  | 'PhysicalTopology'
+  | 'PtpTopology';
+
 export type TopologyVersionData = {
   __typename?: 'TopologyVersionData';
   edges: Array<GraphVersionEdge>;
@@ -1754,6 +1702,11 @@ export type UpdateDevicePayload = {
   device: Maybe<Device>;
 };
 
+export type UpdateGraphNodeCoordinatesInput = {
+  coordinates: Array<GraphNodeCoordinatesInput>;
+  layer?: InputMaybe<TopologyLayer>;
+};
+
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']['output']>;
@@ -1769,17 +1722,6 @@ export type UpdateResourceTypeNameInput = {
 export type UpdateResourceTypeNamePayload = {
   __typename?: 'UpdateResourceTypeNamePayload';
   resourceTypeId: Scalars['ID']['output'];
-};
-
-export type UpdateScheduleInput = {
-  cronString?: InputMaybe<Scalars['String']['input']>;
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  fromDate?: InputMaybe<Scalars['DateTime']['input']>;
-  parallelRuns?: InputMaybe<Scalars['Boolean']['input']>;
-  toDate?: InputMaybe<Scalars['DateTime']['input']>;
-  workflowContext?: InputMaybe<Scalars['String']['input']>;
-  workflowName?: InputMaybe<Scalars['String']['input']>;
-  workflowVersion?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Input parameters for updating an existing tag */
@@ -2927,7 +2869,7 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
-  input: Array<GraphNodeCoordinatesInput>;
+  input: UpdateGraphNodeCoordinatesInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -3469,49 +3411,6 @@ export type ResourceManagerQueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type SchedulerMutation = {
-  __typename?: 'schedulerMutation';
-  createSchedule: Schedule;
-  deleteSchedule: Scalars['Boolean']['output'];
-  updateSchedule: Schedule;
-};
-
-
-export type SchedulerMutationCreateScheduleArgs = {
-  input: CreateScheduleInput;
-};
-
-
-export type SchedulerMutationDeleteScheduleArgs = {
-  name: Scalars['String']['input'];
-};
-
-
-export type SchedulerMutationUpdateScheduleArgs = {
-  input: UpdateScheduleInput;
-  name: Scalars['String']['input'];
-};
-
-export type SchedulerQuery = {
-  __typename?: 'schedulerQuery';
-  schedule: Maybe<Schedule>;
-  schedules: Maybe<ScheduleConnection>;
-};
-
-
-export type SchedulerQueryScheduleArgs = {
-  name: Scalars['String']['input'];
-};
-
-
-export type SchedulerQuerySchedulesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  filter?: InputMaybe<SchedulesFilterInput>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-};
-
 export type DeviceQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -3530,7 +3429,7 @@ export type VersionsQueryVariables = Exact<{ [key: string]: never; }>;
 export type VersionsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyVersions: Array<string> | null } };
 
 export type UpdatePositionMutationVariables = Exact<{
-  input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;
+  input: UpdateGraphNodeCoordinatesInput;
 }>;
 
 
@@ -3552,7 +3451,7 @@ export type ShortestPathQueryVariables = Exact<{
 export type ShortestPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', shortestPath: Array<{ __typename?: 'NetRoutingPathNode', weight: number | null, nodes: Array<{ __typename?: 'NetRoutingPathNodeInfo', weight: number | null, name: string | null }> }> } };
 
 export type UpdatePtpPositionMutationVariables = Exact<{
-  input: Array<GraphNodeCoordinatesInput> | GraphNodeCoordinatesInput;
+  input: UpdateGraphNodeCoordinatesInput;
 }>;
 
 
@@ -3564,6 +3463,13 @@ export type GetGrandMasterPathQueryVariables = Exact<{
 
 
 export type GetGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpPathToGrandMaster: Array<string> | null } };
+
+export type UpdateSyncePositionMutationVariables = Exact<{
+  input: UpdateGraphNodeCoordinatesInput;
+}>;
+
+
+export type UpdateSyncePositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
 
 export type TopologyQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;

@@ -19,7 +19,7 @@ import { height, Position, width } from '../graph.helpers';
 import TopologyGraph from '../topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
-  mutation UpdatePosition($input: [GraphNodeCoordinatesInput!]!) {
+  mutation UpdatePosition($input: UpdateGraphNodeCoordinatesInput!) {
     deviceInventory {
       updateGraphNodeCoordinates(input: $input) {
         deviceNames
@@ -84,7 +84,10 @@ const TopologyContainer: VoidFunctionComponent = () => {
       ),
     ];
     updatePosition({
-      input: coordinates,
+      input: {
+        coordinates,
+        layer: 'PhysicalTopology',
+      },
     });
   };
 

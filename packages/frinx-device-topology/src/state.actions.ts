@@ -65,6 +65,11 @@ export type StateAction =
       position: Position;
     }
   | {
+      type: 'UPDATE_SYNCE_NODE_POSITION';
+      nodeId: string;
+      position: Position;
+    }
+  | {
       type: 'SET_SELECTED_NODE';
       node: GraphNode | null;
     }
@@ -496,6 +501,14 @@ export function updateNodePosition(nodeId: string, position: Position): StateAct
 export function updatePtpNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_PTP_NODE_POSITION',
+    nodeId,
+    position,
+  };
+}
+
+export function updateSynceNodePosition(nodeId: string, position: Position): StateAction {
+  return {
+    type: 'UPDATE_SYNCE_NODE_POSITION',
     nodeId,
     position,
   };
