@@ -1,6 +1,6 @@
 import { Alert, AlertIcon, Box, Button, Flex, Grid, Heading, HStack, useDisclosure } from '@chakra-ui/react';
 import {
-  ClientWorkflowWithTasks,
+  ClientWorkflow,
   convertTaskToExtendedTask,
   convertToTasks,
   ExecuteWorkflowModal,
@@ -68,15 +68,15 @@ type Props = {
   onTaskdefSearch: (value: string) => void;
   workflowFilter: string;
   // workflow: BuilderWorklfow;
-  workflow: ClientWorkflowWithTasks<ExtendedTask>;
-  workflows: ClientWorkflowWithTasks[];
+  workflow: ClientWorkflow<ExtendedTask>;
+  workflows: ClientWorkflow[];
   taskDefinitions: TaskDefinition[];
   // onWorkflowChange: (workflow: ClientWorkflow<ExtendedTask>) => void;
-  onWorkflowChange: (workflow: ClientWorkflowWithTasks<ExtendedTask>) => void;
+  onWorkflowChange: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onFileImport: (file: File) => void;
-  onFileExport: (workflow: ClientWorkflowWithTasks) => void; // eslint-disable-line react/no-unused-prop-types
+  onFileExport: (workflow: ClientWorkflow) => void; // eslint-disable-line react/no-unused-prop-types
   onWorkflowDelete: (name: string, version?: number | null) => void;
-  onWorkflowClone: (workflow: ClientWorkflowWithTasks, name: string) => void; // eslint-disable-line react/no-unused-prop-types
+  onWorkflowClone: (workflow: ClientWorkflow, name: string) => void; // eslint-disable-line react/no-unused-prop-types
   updateWorkflow: (variables: UpdateWorkflowMutationVariables) => Promise<OperationResult<UpdateWorkflowMutation>>;
   executeWorkflow: (
     variables: ExecuteWorkflowByNameBuilderMutationVariables,
@@ -108,7 +108,7 @@ const App: VoidFunctionComponent<Props> = ({
   );
   const [isWorkflowEdited, setIsWorkflowEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [workflowToExecute, setWorkflowToExecute] = useState<ClientWorkflowWithTasks<ExtendedTask>>(workflow);
+  const [workflowToExecute, setWorkflowToExecute] = useState<ClientWorkflow<ExtendedTask>>(workflow);
 
   useEffect(() => {
     setElements(getLayoutedElements(getElementsFromWorkflow(workflow.tasks, false)));
@@ -257,7 +257,7 @@ const App: VoidFunctionComponent<Props> = ({
   };
 
   const handleOnWorkflowChange = (
-    editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>,
+    editedWorkflow: ClientWorkflow<ExtendedTask>,
     isWorkflowChanged: boolean,
   ) => {
     onWorkflowChange(editedWorkflow);
@@ -266,7 +266,7 @@ const App: VoidFunctionComponent<Props> = ({
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleOnSaveWorkflow = async (
-    editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>,
+    editedWorkflow: ClientWorkflow<ExtendedTask>,
     shouldOpenExecuteModal = false,
   ) => {
     try {

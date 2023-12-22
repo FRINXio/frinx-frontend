@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react';
 import * as yup from 'yup';
 import { Text } from '@chakra-ui/react';
 import {
-  ClientWorkflowWithTasks,
+  ClientWorkflow,
   DecisionInputParams,
   EventInputParams,
   ExtendedTask,
@@ -73,7 +73,7 @@ export function getValidationSchema(task: ExtendedTask) {
 }
 
 export function renderInputParamForm(
-  workflows: ClientWorkflowWithTasks[],
+  workflows: ClientWorkflow[],
   task: GraphExtendedTask,
   errors: FormikErrors<GraphExtendedTask>,
   onChange: (p: InputParameters) => void,

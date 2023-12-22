@@ -1,40 +1,25 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import {
-  useNotifications,
-  ExecuteWorkflowModal,
-  unwrap,
-  CreateScheduledWorkflow,
-  ClientWorkflowWithoutTasks,
-} from '@frinx/shared';
+import { useNotifications, ExecuteWorkflowModal, unwrap, ClientWorkflow } from '@frinx/shared';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
-import {
-  DefinitionModal,
-  DiagramModal,
-  DependencyModal,
-  ScheduleWorkflowModal,
-  ConfirmDeleteModal,
-} from '../../components/modals';
+import { DefinitionModal, DependencyModal, ScheduleWorkflowModal, ConfirmDeleteModal } from '../../components/modals';
 import {
   CreateScheduleInput,
   CreateScheduleMutation,
   CreateScheduleMutationVariables,
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
-  ScheduleWorkflowMutation,
-  ScheduleWorkflowMutationVariables,
 } from '../../__generated__/graphql';
 
 type Props = {
-  workflows: ClientWorkflowWithoutTasks[];
-  activeWorkflow?: ClientWorkflowWithoutTasks;
+  workflows: ClientWorkflow[];
+  activeWorkflow?: ClientWorkflow;
   definitionModal: UseDisclosureReturn;
-  diagramModal: UseDisclosureReturn;
   dependencyModal: UseDisclosureReturn;
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  onDeleteWorkflow: (workflow: ClientWorkflowWithoutTasks) => Promise<void>;
+  onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
 };
 
 const CREATE_SCHEDULE_MUTATION = gql`
@@ -68,7 +53,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   confirmDeleteModal,
   definitionModal,
   dependencyModal,
-  diagramModal,
   executeWorkflowModal,
   scheduledWorkflowModal,
   onDeleteWorkflow,

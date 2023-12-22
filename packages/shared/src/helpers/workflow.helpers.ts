@@ -2,14 +2,7 @@ import { utcToZonedTime } from 'date-fns-tz';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
-import {
-  Workflow,
-  ExtendedTask,
-  ClientWorkflow,
-  Task,
-  SubworkflowTask,
-  ClientWorkflowWithTasks,
-} from './workflow-api.types';
+import { Workflow, ExtendedTask, ClientWorkflow, Task, SubworkflowTask } from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
@@ -33,7 +26,7 @@ type ModalWorkflow = {
 };
 
 export const getDynamicInputParametersFromWorkflow = (
-  workflow?: ModalWorkflow | Workflow | ClientWorkflowWithTasks | null,
+  workflow?: ModalWorkflow | Workflow | ClientWorkflow | null,
 ): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});
@@ -78,7 +71,7 @@ export function parseInputParameters(inputParameters?: (string | null)[] | null)
   }, {});
 }
 
-export function isWorkflowNameAvailable(workflows: ClientWorkflowWithTasks[], name: string): boolean {
+export function isWorkflowNameAvailable(workflows: ClientWorkflow[], name: string): boolean {
   return workflows.every((wf) => wf.name !== name);
 }
 
@@ -122,7 +115,7 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
   };
 }
 
-export function createEmptyWorkflow(): ClientWorkflow & { tasks: ExtendedTask[] } {
+export function createEmptyWorkflow(): ClientWorkflow {
   return {
     id: '',
     name: '',
@@ -136,6 +129,10 @@ export function createEmptyWorkflow(): ClientWorkflow & { tasks: ExtendedTask[] 
     labels: [],
     timeoutSeconds: 0,
     outputParameters: [],
+    ownerEmail: '',
+    variables: null,
+    restartable: false,
+    timeoutPolicy: null,
   };
 }
 

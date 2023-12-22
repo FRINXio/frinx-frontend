@@ -8,7 +8,7 @@ import {
   ExtendedTask,
   Task,
   DescriptionJSON,
-  ClientWorkflowWithTasks,
+  ClientWorkflow,
   TimeoutPolicy,
 } from '@frinx/shared';
 import { saveAs } from 'file-saver';
@@ -152,7 +152,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     [],
   );
   const { workflowId, version } = useParams<{ workflowId: string; version: string }>();
-  const [workflow, setWorkflow] = useState<ClientWorkflowWithTasks<ExtendedTask> | null>(null);
+  const [workflow, setWorkflow] = useState<ClientWorkflow<ExtendedTask> | null>(null);
   const [workflowFilter, setWorkflowFilter] = useState<string>('');
   const [taskdefsFilter, setTaskdefsFilter] = useState<string>('');
 
@@ -238,7 +238,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     fileReader.readAsText(file);
   };
 
-  const handleFileExport = (wf: ClientWorkflowWithTasks) => {
+  const handleFileExport = (wf: ClientWorkflow) => {
     const parsedWf = JSON.stringify(wf, null, 2);
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
@@ -246,7 +246,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     saveAs(file, `${wf.name}_v${wf.version}.json`);
   };
 
-  const handleWorkflowClone = async (wf: ClientWorkflowWithTasks, wfName: string) => {
+  const handleWorkflowClone = async (wf: ClientWorkflow, wfName: string) => {
     const { hasSchedule, id, createdAt, updatedAt, labels, timeoutPolicy, ...wfData } = wf;
     const updatedWorkflow = {
       ...wfData,
@@ -303,7 +303,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
   };
 
-  const handleWorkflowChange = (editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>) => {
+  const handleWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>) => {
     setWorkflow((wf) => ({
       ...unwrap(wf),
       ...editedWorkflow,
@@ -321,7 +321,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     setTaskdefsFilter(keyword);
   };
 
-  const clientWorkflowList: ClientWorkflowWithTasks[] = workflowListData.conductor.workflowDefinitions.edges.map(
+  const clientWorkflowList: ClientWorkflow[] = workflowListData.conductor.workflowDefinitions.edges.map(
     (e) => {
       const { node } = e;
       const parsedTasks = jsonParse<Task[]>(node.tasksJson) ?? [];

@@ -17,7 +17,7 @@ import {
   Portal,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ClientWorkflowWithTasks } from '@frinx/shared';
+import { ClientWorkflow } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { FC, useRef, useState } from 'react';
 import CloneWorkflowModal from '../clone-workflow-modal/clone-worflow-modal';
@@ -32,8 +32,8 @@ type Props = {
   onWorkflowDelete: (name: string, version?: number | null) => void;
   onWorkflowClone: (name: string) => void;
   onWorkflowEditorBtnClick: () => void;
-  workflows: ClientWorkflowWithTasks[];
-  workflow: ClientWorkflowWithTasks;
+  workflows: ClientWorkflow[];
+  workflow: ClientWorkflow;
 };
 
 const ActionsMenu: FC<Props> = ({

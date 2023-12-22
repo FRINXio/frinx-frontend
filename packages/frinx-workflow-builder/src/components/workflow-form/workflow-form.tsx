@@ -22,22 +22,22 @@ import {
   SearchByTagInput,
   useTagsInput,
   ExtendedTask,
-  ClientWorkflowWithTasks,
+  ClientWorkflow,
 } from '@frinx/shared';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 type Props = {
-  workflow: ClientWorkflowWithTasks<ExtendedTask>;
+  workflow: ClientWorkflow<ExtendedTask>;
   canEditName: boolean;
-  workflows: ClientWorkflowWithTasks[];
+  workflows: ClientWorkflow[];
   isCreatingWorkflow: boolean;
   onClose?: () => void;
-  onSubmit: (workflow: ClientWorkflowWithTasks<ExtendedTask>) => void;
+  onSubmit: (workflow: ClientWorkflow<ExtendedTask>) => void;
   onChangeNotify?: () => void;
 };
 
-type FormValues = ClientWorkflowWithTasks & { labels?: string[] };
+type FormValues = ClientWorkflow & { labels?: string[] };
 
 const validationSchema = (isCreatingWorkflow: boolean) =>
   yup.object({
@@ -67,7 +67,7 @@ const WorkflowForm: FC<Props> = ({
   const { errors, values, handleSubmit, setFieldValue, handleChange } = useFormik<FormValues>({
     initialValues: workflow,
     onSubmit: (formValues) => {
-      const editedWorkflow: ClientWorkflowWithTasks<ExtendedTask> = {
+      const editedWorkflow: ClientWorkflow<ExtendedTask> = {
         ...workflow,
         name: formValues.name,
         description: formValues.description,

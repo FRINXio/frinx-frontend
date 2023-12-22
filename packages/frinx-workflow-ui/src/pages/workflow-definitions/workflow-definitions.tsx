@@ -1,5 +1,5 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow } from '@frinx/shared';
+import { jsonParse, ClientWorkflow, Task } from '@frinx/shared';
 import { debounce } from 'lodash';
 import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -32,6 +32,8 @@ const WORKFLOWS_QUERY = gql`
             createdAt
             updatedAt
             inputParameters
+            tasks
+            hasSchedule
             outputParameters {
               key
               value
@@ -142,8 +144,10 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const workflows: ClientWorkflow[] =
     workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
+      const tasks = jsonParse<Task[]>(w.tasks) ?? [];
       return {
         ...w,
+        tasks,
         timeoutSeconds: w.timeoutSeconds ?? 0,
         labels: parsedLabels,
         hasSchedule: false,
@@ -156,7 +160,6 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}
-        diagramModal={diagramModal}
         dependencyModal={dependencyModal}
         executeWorkflowModal={inputParametersModal}
         scheduledWorkflowModal={schedulingModal}

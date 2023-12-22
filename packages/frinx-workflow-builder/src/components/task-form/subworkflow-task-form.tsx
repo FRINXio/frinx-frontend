@@ -1,5 +1,5 @@
 import {
-  ClientWorkflowWithTasks,
+  ClientWorkflow,
   getDynamicInputParametersFromWorkflow,
   parseInputParameters,
   WorkflowInputsForm,
@@ -9,7 +9,7 @@ import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
   taskInputParameters: Record<string, string>;
-  workflow: ClientWorkflowWithTasks;
+  workflow: ClientWorkflow;
   onChange: (inputParameters: Record<string, string>) => void;
 };
 
