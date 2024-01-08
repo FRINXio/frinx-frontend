@@ -16,7 +16,7 @@ import {
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 import { PtpGraphNode } from './__generated__/graphql';
 
-export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP';
+export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -58,6 +58,10 @@ export type State = {
   unconfirmedSelectedGmPathNodeId: string | null;
   selectedGmPathNodeId: string | null;
   gmPathIds: string[];
+  synceNodes: PtpGraphNode[];
+  synceEdges: GraphEdgeWithDiff[];
+  synceNodePositions: Record<string, Position>;
+  synceInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
 };
 
 export const initialState: State = {
@@ -91,6 +95,10 @@ export const initialState: State = {
   unconfirmedSelectedGmPathNodeId: null,
   selectedGmPathNodeId: null,
   gmPathIds: [],
+  synceNodes: [],
+  synceEdges: [],
+  synceNodePositions: {},
+  synceInterfaceGroupPositions: {},
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -128,6 +136,19 @@ export function stateReducer(state: State, action: StateAction): State {
             nodes: acc.ptpNodes,
             edges: acc.ptpEdges,
             positionMap: acc.ptpNodePositions,
+          },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        return acc;
+      }
+      case 'UPDATE_SYNCE_NODE_POSITION': {
+        acc.synceNodePositions[action.nodeId] = action.position;
+        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+          {
+            nodes: acc.synceNodes,
+            edges: acc.synceEdges,
+            positionMap: acc.synceNodePositions,
           },
           (n) => n.name,
           () => 'MEDIUM',
@@ -274,6 +295,19 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.ptpInterfaceGroupPositions = positionMap.interfaceGroups;
         return acc;
       }
+      case 'SET_SYNCE_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.synceNodes = nodes;
+        acc.synceEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.synceNodePositions = positionMap.nodes;
+        acc.synceInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_TOPOLOGY_LAYER': {
         acc.topologyLayer = action.layer;
         acc.selectedEdge = null;
@@ -301,6 +335,20 @@ export function stateReducer(state: State, action: StateAction): State {
         }
         acc.selectedNode = action.node;
         const connectedEdges = acc.ptpEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_SYNCE_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.synceEdges.filter(
           (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
         );
         const connectedNodeIds = [

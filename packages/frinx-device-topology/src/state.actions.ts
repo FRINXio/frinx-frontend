@@ -9,6 +9,8 @@ import {
   PtpGraphNode,
   PtpTopologyQuery,
   PtpTopologyQueryVariables,
+  SynceTopologyQuery,
+  SynceTopologyQueryVariables,
   TopologyQuery,
   TopologyQueryVariables,
   TopologyVersionDataQuery,
@@ -26,6 +28,11 @@ export type NetNodesEdgesPayload = {
 };
 
 export type PtpNodesEdgesPayload = {
+  nodes: PtpGraphNode[];
+  edges: GraphEdge[];
+};
+
+export type SynceNodesEdgesPayload = {
   nodes: PtpGraphNode[];
   edges: GraphEdge[];
 };
@@ -54,6 +61,11 @@ export type StateAction =
     }
   | {
       type: 'UPDATE_PTP_NODE_POSITION';
+      nodeId: string;
+      position: Position;
+    }
+  | {
+      type: 'UPDATE_SYNCE_NODE_POSITION';
       nodeId: string;
       position: Position;
     }
@@ -149,7 +161,19 @@ export type StateAction =
   | {
       type: 'CLEAR_GM_PATH';
     }
-  | { type: 'SET_GM_PATH_IDS'; nodeIds: string[] };
+  | { type: 'SET_GM_PATH_IDS'; nodeIds: string[] }
+  | {
+      type: 'SET_SYNCE_NODES_AND_EDGES';
+      payload: PtpNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_SELECTED_SYNCE_NODE';
+      node: PtpGraphNode | null;
+    }
+  | {
+      type: 'SET_SYNCE_NODES_AND_EDGES';
+      payload: PtpNodesEdgesPayload;
+    };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -314,6 +338,51 @@ const PTP_TOPOLOGY_QUERY = gql`
   }
 `;
 
+const SYNCE_TOPOLOGY_QUERY = gql`
+  query SynceTopology {
+    deviceInventory {
+      ptpTopology {
+        nodes {
+          id
+          nodeId
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+          status
+          labels
+          ptpDeviceDetails {
+            clockType
+            domain
+            ptpProfile
+            clockId
+            parentClockId
+            gmClockId
+          }
+        }
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+          weight
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -396,6 +465,31 @@ export function getPtpNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
   };
 }
 
+export function setSynceNodesAndEdges(payload: SynceNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_SYNCE_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<SynceTopologyQuery, SynceTopologyQueryVariables>(
+        SYNCE_TOPOLOGY_QUERY,
+        {},
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes, edges } = data.data?.deviceInventory.ptpTopology ?? { nodes: [], edges: [] };
+        dispatch(setSynceNodesAndEdges({ nodes, edges }));
+      });
+  };
+}
+
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
@@ -407,6 +501,14 @@ export function updateNodePosition(nodeId: string, position: Position): StateAct
 export function updatePtpNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_PTP_NODE_POSITION',
+    nodeId,
+    position,
+  };
+}
+
+export function updateSynceNodePosition(nodeId: string, position: Position): StateAction {
+  return {
+    type: 'UPDATE_SYNCE_NODE_POSITION',
     nodeId,
     position,
   };
@@ -532,6 +634,13 @@ export function setSelectedNetNode(node: GraphNetNode): StateAction {
 export function setSelectedPtpNode(node: PtpGraphNode): StateAction {
   return {
     type: 'SET_SELECTED_PTP_NODE',
+    node,
+  };
+}
+
+export function setSelectedSynceNode(node: PtpGraphNode): StateAction {
+  return {
+    type: 'SET_SELECTED_SYNCE_NODE',
     node,
   };
 }

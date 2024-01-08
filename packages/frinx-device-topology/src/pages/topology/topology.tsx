@@ -8,6 +8,7 @@ import { TopologyLayer } from '../../state.reducer';
 import NetTopologyContainer from './net/net-topology.container';
 import PtpTopologyContainer from './ptp/ptp-topology.container';
 import TopologyContainer from './lldp/topology.container';
+import SynceTopologyContainer from './synce/synce-topology.container';
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
@@ -29,7 +30,7 @@ const Topology: VoidFunctionComponent = () => {
               dispatch(setTopologyLayer(event.target.value as TopologyLayer));
             }}
           >
-            {['LLDP', 'BGP-LS', 'PTP'].map((option) => (
+            {['LLDP', 'BGP-LS', 'PTP', 'Synchronous Ethernet'].map((option) => (
               <option value={option} key={option}>
                 {option}
               </option>
@@ -51,6 +52,7 @@ const Topology: VoidFunctionComponent = () => {
         {topologyLayer === 'LLDP' && <TopologyContainer />}
         {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
         {topologyLayer === 'PTP' && <PtpTopologyContainer />}
+        {topologyLayer === 'Synchronous Ethernet' && <SynceTopologyContainer />}
       </Box>
     </Container>
   );
