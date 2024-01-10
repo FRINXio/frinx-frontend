@@ -1,9 +1,9 @@
 import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
-import PtpNodeIcon from '../../../components/node-icons/ptp-node-icon';
+import SynceNodeIcon from '../../../components/node-icons/synce-node-icon';
 import { setSelectedSynceNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { PtpGraphNode } from '../../../__generated__/graphql';
+import { SynceGraphNode } from '../../../__generated__/graphql';
 import { Position } from '../graph.helpers';
 
 type StatePosition = {
@@ -13,7 +13,7 @@ type StatePosition = {
 };
 
 type Props = {
-  nodes: PtpGraphNode[];
+  nodes: SynceGraphNode[];
   onNodePositionUpdate: (deviceName: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
 };
@@ -22,15 +22,7 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
   const [isPointerDown, setIsPointerDown] = useState(false);
   const [isMoved, setIsMoved] = useState(false);
   const { state, dispatch } = useStateContext();
-  const {
-    synceNodePositions,
-    connectedNodeIds,
-    synceInterfaceGroupPositions,
-    mode,
-    selectedEdge,
-    unconfirmedSelectedGmPathNodeId,
-    gmPathIds,
-  } = state;
+  const { synceNodePositions, connectedNodeIds, synceInterfaceGroupPositions, mode, selectedEdge } = state;
 
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
@@ -38,7 +30,7 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
     offset: { x: 0, y: 0 },
   });
 
-  const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: PtpGraphNode) => {
+  const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: SynceGraphNode) => {
     if (mode === 'GM_PATH') {
       dispatch(setUnconfimedNodeIdForGmPathSearch(node.id));
     } else {
@@ -72,7 +64,7 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
       onNodePositionUpdate(nodeId, { x: newX, y: newY });
     }
   };
-  const handlePointerUp = (node: PtpGraphNode) => {
+  const handlePointerUp = (node: SynceGraphNode) => {
     setIsPointerDown(false);
     if (isMoved) {
       setPosition({
@@ -89,12 +81,10 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
   return (
     <g>
       {nodes.map((node) => (
-        <PtpNodeIcon
+        <SynceNodeIcon
           key={node.id}
           positions={{ nodes: synceNodePositions, interfaceGroups: synceInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
-          isSelectedForGmPath={unconfirmedSelectedGmPathNodeId === node.id}
-          isGmPath={gmPathIds.includes(node.nodeId)}
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}

@@ -76,6 +76,11 @@ export type GraphPtpNodeInterface = {
   name: string;
 };
 
+export type GraphSynceNodeInterface = {
+  id: string;
+  name: string;
+};
+
 export const NODE_CIRCLE_RADIUS = 30;
 
 export type PositionsMap = {

@@ -10,11 +10,12 @@ import {
   GraphNode,
   GraphNodeInterface,
   GraphPtpNodeInterface,
+  GraphSynceNodeInterface,
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
-import { PtpGraphNode } from './__generated__/graphql';
+import { PtpGraphNode, SynceGraphNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
@@ -34,7 +35,7 @@ export type State = {
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
-  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode) | null;
+  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -58,10 +59,10 @@ export type State = {
   unconfirmedSelectedGmPathNodeId: string | null;
   selectedGmPathNodeId: string | null;
   gmPathIds: string[];
-  synceNodes: PtpGraphNode[];
+  synceNodes: SynceGraphNode[];
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
-  synceInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
+  synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
 };
 
 export const initialState: State = {
@@ -144,7 +145,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'UPDATE_SYNCE_NODE_POSITION': {
         acc.synceNodePositions[action.nodeId] = action.position;
-        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, SynceGraphNode>(
           {
             nodes: acc.synceNodes,
             edges: acc.synceEdges,
@@ -297,7 +298,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SYNCE_NODES_AND_EDGES': {
         const { nodes, edges } = action.payload;
-        const positionMap = getDefaultPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
+        const positionMap = getDefaultPositionsMap<GraphSynceNodeInterface, SynceGraphNode>(
           { nodes, edges },
           (n) => n.name,
           () => 'MEDIUM',
