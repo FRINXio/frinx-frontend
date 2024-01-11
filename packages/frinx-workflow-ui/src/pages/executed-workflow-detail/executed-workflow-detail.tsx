@@ -480,7 +480,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         endTime={executedWorkflow.endTime}
         startTime={executedWorkflow.startTime}
         status={executedWorkflow.status}
-        isRestartButtonEnabled={executedWorkflow.workflowDefinition?.restartable ?? false}
+        isRestartButtonEnabled
         onRestartWorkflow={handleOnRestartWorkflow}
         onTerminateWorkflow={handleOnTerminateWorkflow}
         onRetryWorkflow={handleOnRetryWorkflow}
@@ -551,7 +551,10 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                 )}
               </TabPanel>
               <TabPanel>
-                <WorkflowDiagram meta={executedWorkflow.workflowDefinition} result={data?.controlExecutedWorkflow} />
+                <WorkflowDiagram
+                  meta={executedWorkflow.workflowDefinition}
+                  result={data?.conductor.controlExecutedWorkflow}
+                />
               </TabPanel>
             </TabPanels>
           </Tabs>

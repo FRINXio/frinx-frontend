@@ -265,7 +265,7 @@ function ScheduledWorkflowList() {
     );
   }
 
-  const clientWorkflows: Omit<ClientWorkflow, 'outputParameters'>[] =
+  const clientWorkflows: Omit<ClientWorkflow, 'outputParameters' | 'tasks'>[] =
     workflows?.conductor.workflowDefinitions.edges.map(({ node }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
       return {

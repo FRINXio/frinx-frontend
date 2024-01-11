@@ -7,7 +7,7 @@ import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
 
 type Props = {
   isEscaped: boolean;
-  result: NonNullable<ExecutedWorkflowDetailQuery['node']>;
+  result: NonNullable<ExecutedWorkflowDetailQuery>;
   copyToClipBoard: (value: Record<string, unknown>) => void;
   onEscapeChange: (isEscaped: boolean) => void;
 };

@@ -92,7 +92,7 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
   };
 }
 
-type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>['edges'];
+type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>['edges'];
 
 export function sortExecutedWorkflows(
   workflows: GeneratedExecutedWorkflows,
