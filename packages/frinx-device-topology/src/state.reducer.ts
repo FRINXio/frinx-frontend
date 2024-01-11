@@ -13,6 +13,7 @@ import {
   Position,
   PositionGroupsMap,
 } from './pages/topology/graph.helpers';
+import { identity, Matrix, translate, multiplyMatrices } from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 import { PtpGraphNode } from './__generated__/graphql';
 
@@ -62,6 +63,8 @@ export type State = {
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
+  transform: Matrix;
+  isMouseDown: boolean;
 };
 
 export const initialState: State = {
@@ -99,6 +102,8 @@ export const initialState: State = {
   synceEdges: [],
   synceNodePositions: {},
   synceInterfaceGroupPositions: {},
+  transform: identity(),
+  isMouseDown: false,
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -359,6 +364,12 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_WEIGHT_VISIBILITY': {
         acc.isWeightVisible = action.isVisible;
+        return acc;
+      }
+      case 'PAN_TOPOLOGY': {
+        const currentTransform = state.transform;
+        const xform = translate(action.panDelta.x, action.panDelta.y);
+        acc.transform = multiplyMatrices(xform, currentTransform);
         return acc;
       }
       default:

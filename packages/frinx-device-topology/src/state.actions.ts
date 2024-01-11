@@ -173,7 +173,8 @@ export type StateAction =
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: PtpNodesEdgesPayload;
-    };
+    }
+  | { type: 'PAN_TOPOLOGY'; panDelta: Position };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -697,5 +698,12 @@ export function setGmPathIds(nodeIds: string[]): StateAction {
   return {
     type: 'SET_GM_PATH_IDS',
     nodeIds,
+  };
+}
+
+export function panTopology(panDelta: Position): StateAction {
+  return {
+    type: 'PAN_TOPOLOGY',
+    panDelta,
   };
 }

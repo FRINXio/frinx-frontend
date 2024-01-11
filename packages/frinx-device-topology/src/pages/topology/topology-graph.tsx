@@ -1,13 +1,14 @@
 import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
-import React, { useRef, VoidFunctionComponent } from 'react';
+import React, { PointerEventHandler, useRef, useState, VoidFunctionComponent } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
-import { clearCommonSearch, setSelectedNode, updateNodePosition } from '../../state.actions';
+import { clearCommonSearch, panTopology, setSelectedNode, updateNodePosition } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
 import { ensureNodeHasDevice, height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './lldp/nodes';
+import { getTransformMatrix } from './transform.helpers';
 
 type Props = {
   isCommonNodesFetching: boolean;
@@ -15,16 +16,85 @@ type Props = {
   onCommonNodesSearch: (nodeIds: string[]) => void;
 };
 
+type PanState = {
+  isMouseDown: boolean;
+  oldPan?: Position | null;
+};
+
 const TopologyGraph: VoidFunctionComponent<Props> = ({
   isCommonNodesFetching,
   onNodePositionUpdate,
   onCommonNodesSearch,
 }) => {
+  const elementRef = useRef<SVGSVGElement | null>(null);
+  const [panState, setPanState] = useState<PanState>({
+    isMouseDown: false,
+    oldPan: null,
+  });
   const { state, dispatch } = useStateContext();
   const lastPositionRef = useRef<{ deviceName: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { edges, nodes, selectedNode, unconfirmedSelectedNodeIds } = state;
+  const { edges, nodes, selectedNode, unconfirmedSelectedNodeIds, transform } = state;
+  const transformMatrix = getTransformMatrix(transform);
+
+  const handlePointerDown: PointerEventHandler<SVGGElement> = (event) => {
+    const svgEl = elementRef.current;
+    if (svgEl == null) {
+      return;
+    }
+    const { clientX, clientY } = event;
+    const svgPoint = new DOMPoint(clientX, clientY);
+    const svgPosition = svgPoint.matrixTransform(svgEl.getScreenCTM()?.inverse());
+
+    setPanState({
+      isMouseDown: true,
+      oldPan: svgPosition,
+    });
+  };
+
+  const handlePointerUp = () => {
+    setPanState({
+      isMouseDown: false,
+    });
+  };
+  const handlePointerMove: PointerEventHandler<SVGSVGElement> = (event) => {
+    const { clientX, clientY } = event;
+    const svgPoint = new DOMPoint(clientX, clientY);
+    event.preventDefault();
+
+    svgPoint.x = event.clientX;
+    svgPoint.y = event.clientY;
+
+    const svgEl = elementRef.current;
+    if (!svgEl) {
+      return;
+    }
+    const svgPosition = svgPoint.matrixTransform(svgEl.getScreenCTM()?.inverse());
+
+    if (panState.isMouseDown) {
+      if (panState.oldPan == null) {
+        throw new Error('should never happen');
+      }
+
+      // we need to calculate delta so we can pan both images in locking state
+      const deltaX = svgPosition.x - panState.oldPan.x;
+      const deltaY = svgPosition.y - panState.oldPan.y;
+      setPanState({
+        isMouseDown: true,
+        oldPan: {
+          x: svgPosition.x,
+          y: svgPosition.y,
+        },
+      });
+      dispatch(
+        panTopology({
+          x: deltaX,
+          y: deltaY,
+        }),
+      );
+    }
+  };
 
   const handleNodePositionUpdate = (deviceName: string, position: Position) => {
     if (timeoutRef.current != null) {
@@ -64,13 +134,23 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Edges edgesWithDiff={edges} />
-        <Nodes
-          nodesWithDiff={nodes}
-          onNodePositionUpdate={handleNodePositionUpdate}
-          onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
-        />
+      <svg
+        ref={elementRef}
+        width={width}
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerMove={handlePointerMove}
+      >
+        <g transform={`matrix(${transformMatrix.toString()})`}>
+          <Edges edgesWithDiff={edges} />
+          <Nodes
+            nodesWithDiff={nodes}
+            onNodePositionUpdate={handleNodePositionUpdate}
+            onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
+          />
+        </g>
       </svg>
       {selectedNode != null && ensureNodeHasDevice(selectedNode) && (
         <Box
