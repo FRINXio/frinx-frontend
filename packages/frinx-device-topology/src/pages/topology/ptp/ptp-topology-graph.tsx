@@ -79,21 +79,7 @@ const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
       </svg>
-      {selectedNode != null && (
-        <Box
-          position="absolute"
-          top={2}
-          right={2}
-          background="white"
-          borderRadius="md"
-          paddingX={4}
-          paddingY={6}
-          width={60}
-          boxShadow="md"
-        >
-          <PtpInfoPanel node={selectedNode as PtpGraphNode} onClose={handleInfoPanelClose} />
-        </Box>
-      )}
+      {selectedNode != null && <PtpInfoPanel node={selectedNode as PtpGraphNode} onClose={handleInfoPanelClose} />}
       {unconfirmedSelectedGmPathNodeId && (
         <Box position="absolute" top={2} left="2" background="transparent">
           <Button onClick={handleClearGmPath} marginRight={2}>
