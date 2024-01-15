@@ -23,12 +23,12 @@ import { usePagination, Pagination, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import {
-  DeleteEventHandlerMutation,
-  DeleteEventHandlerMutationVariables,
+  // DeleteEventHandlerMutation,
+  // DeleteEventHandlerMutationVariables,
   EditEventHandlerInput,
   EventHandlersOrderByInput,
-  GetEventHandlersQuery,
-  GetEventHandlersQueryVariables,
+  // GetEventHandlersQuery,
+  // GetEventHandlersQueryVariables,
   SortEventHandlersBy,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
@@ -95,7 +95,8 @@ const EventHandlersListPage: FC = () => {
     }),
     [],
   );
-  const [{ data, fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
+  // TODO: FIXME
+  const [{ fetching, error }] = useQuery<unknown>({
     query: EVENT_HANDLERS_QUERY,
     context: ctx,
     variables: {
@@ -104,12 +105,29 @@ const EventHandlersListPage: FC = () => {
       ...paginationArgs,
     },
   });
-  const [, deleteEventHandler] = useMutation<DeleteEventHandlerMutation, DeleteEventHandlerMutationVariables>(
-    DELETE_EVENT_HANDLER_MUTATION,
-  );
-  const [, updateEventHandler] = useMutation<UpdateEventHandlerMutation, UpdateEventHandlerMutationVariables>(
-    UPDATE_EVENT_HANDLER_MUTATION,
-  );
+
+  type Node = {
+    id: string;
+    name: string;
+    event: string;
+    evaluatorType: string;
+    actions: { action: string }[];
+  };
+  const data = {
+    conductor: {
+      eventHandlers: {
+        edges: [] as { node: Node }[],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          endCursor: 'adsf',
+          startCursor: 'sadf',
+        },
+      },
+    },
+  };
+  const [, deleteEventHandler] = useMutation<unknown>(DELETE_EVENT_HANDLER_MUTATION);
+  const [, updateEventHandler] = useMutation<unknown>(UPDATE_EVENT_HANDLER_MUTATION);
 
   const { addToastNotification } = useNotifications();
 

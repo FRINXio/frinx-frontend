@@ -2,18 +2,17 @@ import { ChevronDownIcon } from '@chakra-ui/icons';
 import { Box, Button, Menu, MenuButton, MenuItem, MenuList, Spinner, Text } from '@chakra-ui/react';
 import React, { FC, useMemo } from 'react';
 import { gql, useMutation } from 'urql';
-import {
-  BulkPauseWorkflowMutation,
-  BulkPauseWorkflowMutationVariables,
-  BulkRestartWorkflowMutation,
-  BulkRestartWorkflowMutationVariables,
-  BulkResumeWorkflowMutation,
-  BulkResumeWorkflowMutationVariables,
-  BulkRetryWorkflowMutation,
-  BulkRetryWorkflowMutationVariables,
-  BulkTerminateWorkflowMutation,
-  BulkTerminateWorkflowMutationVariables,
-} from '../../__generated__/graphql';
+import //  BulkPauseWorkflowMutation,
+//  BulkPauseWorkflowMutationVariables,
+//  BulkRestartWorkflowMutation,
+//  BulkRestartWorkflowMutationVariables,
+//  BulkResumeWorkflowMutation,
+//  BulkResumeWorkflowMutationVariables,
+//  BulkRetryWorkflowMutation,
+//  BulkRetryWorkflowMutationVariables,
+//  BulkTerminateWorkflowMutation,
+//  BulkTerminateWorkflowMutationVariables,
+'../../__generated__/graphql';
 
 const BULK_PAUSE_MUTATION = gql`
   mutation BulkPauseWorkflow($input: [String]) {
@@ -84,72 +83,62 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowIds, onBulkActionSuccess, 
     () => ({ additionalTypenames: ['ExecutedWorkflows', 'ExecutedWorkflowConnection', 'ExecutedWorkflowEdge'] }),
     [],
   );
-  const [{ fetching: isPauseFetching }, bulkPauseWorkflows] = useMutation<
-    BulkPauseWorkflowMutation,
-    BulkPauseWorkflowMutationVariables
-  >(BULK_PAUSE_MUTATION);
-  const [{ fetching: isRetryFetching }, bulkRetryWorkflows] = useMutation<
-    BulkRetryWorkflowMutation,
-    BulkRetryWorkflowMutationVariables
-  >(BULK_RETRY_MUTATION);
-  const [{ fetching: isResumeFetching }, bulkResumeWorkflows] = useMutation<
-    BulkResumeWorkflowMutation,
-    BulkResumeWorkflowMutationVariables
-  >(BULK_RESUME_MUTATION);
-  const [{ fetching: isTerminateFetching }, bulkTermiateWorkflows] = useMutation<
-    BulkTerminateWorkflowMutation,
-    BulkTerminateWorkflowMutationVariables
-  >(BULK_TERMINATE_MUTATION);
-  const [{ fetching: isRestartFetching }, bulkRestartWorkflows] = useMutation<
-    BulkRestartWorkflowMutation,
-    BulkRestartWorkflowMutationVariables
-  >(BULK_RESTART_MUTATION);
+  const [{ fetching: isPauseFetching }, bulkPauseWorkflows] = useMutation<unknown>(BULK_PAUSE_MUTATION);
+  const [{ fetching: isRetryFetching }, bulkRetryWorkflows] = useMutation<unknown>(BULK_RETRY_MUTATION);
+  const [{ fetching: isResumeFetching }, bulkResumeWorkflows] = useMutation<unknown>(BULK_RESUME_MUTATION);
+  const [{ fetching: isTerminateFetching }, bulkTermiateWorkflows] = useMutation<unknown>(BULK_TERMINATE_MUTATION);
+  const [{ fetching: isRestartFetching }, bulkRestartWorkflows] = useMutation<unknown>(BULK_RESTART_MUTATION);
 
   const isFetching = isPauseFetching || isRetryFetching || isResumeFetching || isTerminateFetching || isRestartFetching;
 
   const handleBulkPauseButtonClick = () => {
-    bulkPauseWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
-      if (res.data?.conductor.pauseWorkflow_1?.bulkErrorResults.length === 0) {
-        return onBulkActionSuccess("One or more workflow can't be paused.");
-      }
-      return onBulkActionError();
-    });
+    // TODO: FIXME
+    // bulkPauseWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+    //   if (res.data?.conductor.pauseWorkflow_1?.bulkErrorResults.length === 0) {
+    //     return onBulkActionSuccess("One or more workflow can't be paused.");
+    //   }
+    //   return onBulkActionError();
+    // });
   };
 
   const handleBulkRetryButtonClick = () => {
-    bulkRetryWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
-      if (res.data?.conductor.retry_1?.bulkSuccessfulResults?.length) {
-        return onBulkActionSuccess();
-      }
-      return onBulkActionError("One or more workflow can't be retried.");
-    });
+    // TODO: FIXME
+    // bulkRetryWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+    //   if (res.data?.conductor.retry_1?.bulkSuccessfulResults?.length) {
+    //     return onBulkActionSuccess();
+    //   }
+    //   return onBulkActionError("One or more workflow can't be retried.");
+    // });
   };
 
   const handleBulkResumeButtonClick = () => {
-    bulkResumeWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
-      if (res.data?.conductor.resumeWorkflow_1?.bulkSuccessfulResults?.length) {
-        return onBulkActionSuccess();
-      }
-      return onBulkActionError("One or more workflow can't be resumed.");
-    });
+    // TODO: FIXME
+    // bulkResumeWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+    //   if (res.data?.conductor.resumeWorkflow_1?.bulkSuccessfulResults?.length) {
+    //     return onBulkActionSuccess();
+    //   }
+    //   return onBulkActionError("One or more workflow can't be resumed.");
+    // });
   };
 
   const handleBulkTerminateButtonClick = () => {
-    bulkTermiateWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
-      if (res.data?.conductor.terminate?.bulkSuccessfulResults?.length) {
-        return onBulkActionSuccess();
-      }
-      return onBulkActionError("One or more workflow can't be terminated.");
-    });
+    // TODO: FIXME
+    // bulkTermiateWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+    //   if (res.data?.conductor.terminate?.bulkSuccessfulResults?.length) {
+    //     return onBulkActionSuccess();
+    //   }
+    //   return onBulkActionError("One or more workflow can't be terminated.");
+    // });
   };
 
   const handleBulkRestartButtonClick = () => {
-    bulkRestartWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
-      if (res.data?.conductor.restart_1?.bulkSuccessfulResults?.length) {
-        return onBulkActionSuccess();
-      }
-      return onBulkActionError("One or more workflows can't be restarted.");
-    });
+    // TODO: FIXME
+    // bulkRestartWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
+    //   if (res.data?.conductor.restart_1?.bulkSuccessfulResults?.length) {
+    //     return onBulkActionSuccess();
+    //   }
+    //   return onBulkActionError("One or more workflows can't be restarted.");
+    // });
   };
 
   return (

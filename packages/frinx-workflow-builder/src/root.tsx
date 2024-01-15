@@ -10,6 +10,7 @@ import {
   DescriptionJSON,
   ClientWorkflowWithTasks,
   TimeoutPolicy,
+  TaskDefinition,
 } from '@frinx/shared';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -96,6 +97,7 @@ const WORKFLOW_DEFINITIONS_LIST_QUERY = gql`
             responseTimeoutSeconds
             ownerEmail
             inputKeys
+            timeoutPolicy
           }
         }
       }
@@ -365,6 +367,11 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   }
 
   const { taskDefinitions } = workflowListData.conductor;
+  // TODO: FIXME
+  const taskDefintionsWithPolicy: TaskDefinition[] = taskDefinitions.edges.map((td) => ({
+    ...td.node,
+    timeoutPolicy: null,
+  }));
 
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
@@ -377,7 +384,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
           workflows={clientWorkflowList}
-          taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
+          // taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
+          taskDefinitions={taskDefintionsWithPolicy}
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}

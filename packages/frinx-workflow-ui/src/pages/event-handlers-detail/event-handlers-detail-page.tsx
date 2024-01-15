@@ -18,14 +18,13 @@ import { gql, useMutation, useQuery } from 'urql';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ConfirmDeleteModal, Editor, unwrap, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import {
-  DeleteEventHandlerDetailMutation,
-  DeleteEventHandlerDetailMutationVariables,
-  EditEventHandlerActionsMutation,
-  EditEventHandlerActionsMutationVariables,
-  EventHandlerQuery,
-  EventHandlerQueryVariables,
-} from '../../__generated__/graphql';
+import //  DeleteEventHandlerDetailMutation,
+//  DeleteEventHandlerDetailMutationVariables,
+//  EditEventHandlerActionsMutation,
+//  EditEventHandlerActionsMutationVariables,
+//  EventHandlerQuery,
+//  EventHandlerQueryVariables,
+'../../__generated__/graphql';
 import EventHandlersDetailActions from './event-handlers-detail-actions';
 import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
 
@@ -93,20 +92,20 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
   const { event, name } = useParams<{ event: string; name: string }>();
   const navigate = useNavigate();
   const { addToastNotification } = useNotifications();
-  const [{ data, fetching, error }] = useQuery<EventHandlerQuery, EventHandlerQueryVariables>({
-    query: EVENT_HANDLER_QUERY,
-    variables: {
-      event: unwrap(event),
-      name: unwrap(name),
-    },
-  });
-  const [, deleteEventHandler] = useMutation<
-    DeleteEventHandlerDetailMutation,
-    DeleteEventHandlerDetailMutationVariables
-  >(DELETE_EVENT_HANDLER_MUTATION);
-  const [, updateEventHandler] = useMutation<EditEventHandlerActionsMutation, EditEventHandlerActionsMutationVariables>(
-    UPDATE_EVENT_HANDLER_MUTATION,
-  );
+  // TODO: FIXME
+  // const [{ data, fetching, error }] = useQuery<EventHandlerQuery, EventHandlerQueryVariables>({
+  //   query: EVENT_HANDLER_QUERY,
+  //   variables: {
+  //     event: unwrap(event),
+  //     name: unwrap(name),
+  //   },
+  // });
+  // const [, deleteEventHandler] = useMutation<
+  // unknown
+  // >(DELETE_EVENT_HANDLER_MUTATION);
+  // const [, updateEventHandler] = useMutation<EditEventHandlerActionsMutation, EditEventHandlerActionsMutationVariables>(
+  //   UPDATE_EVENT_HANDLER_MUTATION,
+  // );
   const [selectedConditionLang, setSelectedConditionLang] = useState<'javascript' | 'python'>('javascript');
 
   const handleOnConditionLangSelect = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -119,59 +118,71 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
   };
 
   const handleOnEventHandlerDelete = (id: string) => {
-    deleteEventHandler(
-      {
-        deleteEventHandlerId: id,
-      },
-      {
-        additionalTypenames: ['EventHandler'],
-      },
-    )
-      .then((response) => {
-        if (response.error != null) {
-          throw new Error(response.error.message);
-        }
-
-        navigate('/workflow-manager/event-handlers');
-      })
-      .catch((err) => {
-        addToastNotification({
-          content: err.message,
-          type: 'error',
-        });
-      });
+    // deleteEventHandler(
+    //   {
+    //     deleteEventHandlerId: id,
+    //   },
+    //   {
+    //     additionalTypenames: ['EventHandler'],
+    //   },
+    // )
+    //   .then((response) => {
+    //     if (response.error != null) {
+    //       throw new Error(response.error.message);
+    //     }
+    //     navigate('/workflow-manager/event-handlers');
+    //   })
+    //   .catch((err) => {
+    //     addToastNotification({
+    //       content: err.message,
+    //       type: 'error',
+    //     });
+    //   });
   };
 
   const handleOnEventHandlerActionDelete = (
-    eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
+    // TODO: FIXME
+    // eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
+    eventHandler: unknown,
     actionIndex: number,
   ) => {
-    updateEventHandler(
-      {
-        input: {
-          actions: eventHandler.actions
-            .filter((_, index) => index === actionIndex)
-            .map(removeTypenamesFromEventHandlerAction),
-        },
-        event: eventHandler.event,
-        name: eventHandler.name,
-      },
-      ctx,
-    );
+    // updateEventHandler(
+    //   {
+    //     input: {
+    //       actions: eventHandler.actions
+    //         .filter((_, index) => index === actionIndex)
+    //         .map(removeTypenamesFromEventHandlerAction),
+    //     },
+    //     event: eventHandler.event,
+    //     name: eventHandler.name,
+    //   },
+    //   ctx,
+    // );
   };
 
-  if (fetching) {
-    return <Progress isIndeterminate size="xs" mt={-10} />;
-  }
+  // if (fetching) {
+  //   return <Progress isIndeterminate size="xs" mt={-10} />;
+  // }
 
-  if (data == null || data.eventHandler == null || error != null) {
-    return (
-      <Container maxWidth={1200} mx="auto">
-        <Text>We could not find expected event handler. Try again later please.</Text>
-      </Container>
-    );
-  }
+  // if (data == null || data.eventHandler == null || error != null) {
+  //   return (
+  //     <Container maxWidth={1200} mx="auto">
+  //       <Text>We could not find expected event handler. Try again later please.</Text>
+  //     </Container>
+  //   );
+  // }
 
+  const data = {
+    eventHandler: {
+      id: '',
+      name: '',
+      isActive: false,
+      evaluatorType: '',
+      condition: '',
+      event: '',
+      actions: [],
+    },
+  };
   const { eventHandler } = data;
   const editorComment =
     selectedConditionLang === 'python' ? '# condition was not defined' : '// condition was not defined';

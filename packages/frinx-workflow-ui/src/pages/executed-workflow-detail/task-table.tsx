@@ -5,6 +5,7 @@ import FeatherIcon from 'feather-icons-react';
 import { formatDate } from '../../helpers/utils.helpers';
 import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
 import { WorkflowTaskStatus } from '../../__generated__/graphql';
+import { WorkflowStatus } from '@frinx/shared';
 
 type ExecutedWorkflowTask = {
   id: string;
@@ -83,7 +84,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick }) => {
                 {formatDate(task.endTime)}
               </Td>
               <Td>
-                <WorkflowStatusLabel status={(task.status as WorkflowTaskStatus) ?? 'UNKNOWN'} />
+                <WorkflowStatusLabel status={(task.status as WorkflowStatus) ?? 'UNKNOWN'} />
               </Td>
             </Tr>
           ))}

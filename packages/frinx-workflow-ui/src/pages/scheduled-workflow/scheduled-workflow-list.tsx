@@ -31,18 +31,20 @@ import {
   Pagination,
   usePagination,
   CreateScheduledWorkflow,
+  WorkflowDefinition,
+  ClientWorkflowWithTasks,
 } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
-import {
-  DeleteScheduleMutation,
-  DeleteScheduleMutationVariables,
-  SchedulesQuery,
-  UpdateScheduleMutation,
-  UpdateScheduleMutationVariables,
-  WorkflowListQuery,
-  WorkflowListQueryVariables,
-} from '../../__generated__/graphql';
+import //  DeleteScheduleMutation,
+//  DeleteScheduleMutationVariables,
+//  SchedulesQuery,
+//  UpdateScheduleMutation,
+//  UpdateScheduleMutationVariables,
+//  WorkflowListQuery,
+//  WorkflowListQueryVariables,
+//  }
+'../../__generated__/graphql';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
 const WORKFLOWS_QUERY = gql`
@@ -138,30 +140,28 @@ function getStatusTagColor(status: StatusType) {
   }
 }
 
+type EditScheduledWorkflow = CreateScheduledWorkflow & { id: string };
+
 function ScheduledWorkflowList() {
   const context = useMemo(() => ({ additionalTypenames: ['Schedule'] }), []);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<CreateScheduledWorkflow | null>();
+  const [selectedWorkflow, setSelectedWorkflow] = useState<EditScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
-  const [{ data: workflows }] = useQuery<WorkflowListQuery, WorkflowListQueryVariables>({
+  const [{ data: workflows }] = useQuery<unknown>({
     query: WORKFLOWS_QUERY,
   });
-  const [{ data: scheduledWorkflows, fetching: isLoadingSchedules, error }] = useQuery<SchedulesQuery>({
+  const [{ data: scheduledWorkflows, fetching: isLoadingSchedules, error }] = useQuery<unknown>({
     query: SCHEDULED_WORKFLOWS_QUERY,
     variables: {
       ...paginationArgs,
     },
   });
-  const [, deleteSchedule] = useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(
-    DELETE_SCHEDULE_MUTATION,
-  );
-  const [, updateSchedule] = useMutation<UpdateScheduleMutation, UpdateScheduleMutationVariables>(
-    UPDATE_SCHEDULE_MUTATION,
-  );
+  const [, deleteSchedule] = useMutation<unknown>(DELETE_SCHEDULE_MUTATION);
+  const [, updateSchedule] = useMutation<unknown>(UPDATE_SCHEDULE_MUTATION);
 
-  const handleOnEditClick = (workflow: CreateScheduledWorkflow) => {
+  const handleOnEditClick = (workflow: EditScheduledWorkflow) => {
     setSelectedWorkflow(workflow);
     onOpen();
   };
@@ -186,20 +186,20 @@ function ScheduledWorkflowList() {
     } else {
       updateSchedule({ input, name: scheduledWf.name })
         .then((res) => {
-          if (!res.data?.scheduler.updateSchedule) {
-            addToastNotification({
-              type: 'error',
-              title: 'Error',
-              content: res.error?.message,
-            });
-          }
-          if (res.data?.scheduler.updateSchedule || !res.error) {
-            addToastNotification({
-              content: 'Schedule successfully updated',
-              title: 'Success',
-              type: 'success',
-            });
-          }
+          // if (!res.data?.scheduler.updateSchedule) {
+          //   addToastNotification({
+          //     type: 'error',
+          //     title: 'Error',
+          //     content: res.error?.message,
+          //   });
+          // }
+          // if (res.data?.scheduler.updateSchedule || !res.error) {
+          //   addToastNotification({
+          //     content: 'Schedule successfully updated',
+          //     title: 'Success',
+          //     type: 'success',
+          //   });
+          // }
         })
         .catch((err) => {
           addToastNotification({
@@ -211,23 +211,23 @@ function ScheduledWorkflowList() {
     }
   };
 
-  const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
+  const handleDeleteBtnClick = (workflow: CreateScheduledWorkflow) => {
     deleteSchedule({ name: workflow.name }, context)
       .then((res) => {
-        if (!res.data?.scheduler.deleteSchedule) {
-          addToastNotification({
-            type: 'error',
-            title: 'Error',
-            content: res.error?.message,
-          });
-        }
-        if (res.data?.scheduler.deleteSchedule || !res.error) {
-          addToastNotification({
-            content: 'Deleted successfuly',
-            title: 'Success',
-            type: 'success',
-          });
-        }
+        // if (!res.data?.scheduler.deleteSchedule) {
+        //   addToastNotification({
+        //     type: 'error',
+        //     title: 'Error',
+        //     content: res.error?.message,
+        //   });
+        // }
+        // if (res.data?.scheduler.deleteSchedule || !res.error) {
+        //   addToastNotification({
+        //     content: 'Deleted successfuly',
+        //     title: 'Success',
+        //     type: 'success',
+        //   });
+        // }
       })
       .catch((err) => {
         addToastNotification({
@@ -246,12 +246,14 @@ function ScheduledWorkflowList() {
     return <div>{error?.message}</div>;
   }
 
-  const schedules =
-    scheduledWorkflows?.scheduler.schedules?.edges.filter(omitNullValue).map((edge) => {
-      const node = edge?.node;
-      const workflowContext = JSON.parse(node?.workflowContext || '{}');
-      return { ...node, workflowContext };
-    }) ?? [];
+  // TODO: FIXME
+  // const schedules =
+  //   scheduledWorkflows?.scheduler.schedules?.edges.filter(omitNullValue).map((edge) => {
+  //     const node = edge?.node;
+  //     const workflowContext = JSON.parse(node?.workflowContext || '{}');
+  //     return { ...node, workflowContext };
+  //   }) ?? [];
+  const schedules: EditScheduledWorkflow[] = [];
 
   const sortedSchedules = sortBy(schedules, [(u) => u.name?.toLowerCase()]);
 
@@ -265,16 +267,17 @@ function ScheduledWorkflowList() {
     );
   }
 
-  const clientWorkflows: Omit<ClientWorkflow, 'outputParameters'>[] =
-    workflows?.conductor.workflowDefinitions.edges.map(({ node }) => {
-      const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
-      return {
-        ...node,
-        labels: parsedLabels,
-        hasSchedule: node.hasSchedule ?? false,
-        timeoutSeconds: node.timeoutSeconds ?? 0,
-      };
-    }) ?? [];
+  // const clientWorkflows: Omit<ClientWorkflow, 'outputParameters'>[] =
+  //   workflows?.conductor.workflowDefinitions.edges.map(({ node }) => {
+  //     const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
+  //     return {
+  //       ...node,
+  //       labels: parsedLabels,
+  //       hasSchedule: node.hasSchedule ?? false,
+  //       timeoutSeconds: node.timeoutSeconds ?? 0,
+  //     };
+  //   }) ?? [];
+  const clientWorkflows: ClientWorkflowWithTasks[] = [];
 
   const selectedClientWorkflow = clientWorkflows.find((wf) => wf.name === selectedWorkflow?.workflowName);
 
@@ -363,12 +366,14 @@ function ScheduledWorkflowList() {
           </Tbody>
         )}
       </Table>
+      {/*
       <Pagination
         onPrevious={previousPage(scheduledWorkflows.scheduler.schedules?.pageInfo.startCursor)}
         onNext={nextPage(scheduledWorkflows.scheduler.schedules?.pageInfo.endCursor)}
         hasNextPage={scheduledWorkflows.scheduler.schedules?.pageInfo.hasNextPage ?? false}
         hasPreviousPage={scheduledWorkflows.scheduler.schedules?.pageInfo.hasPreviousPage ?? false}
       />
+      */}
     </Container>
   );
 }

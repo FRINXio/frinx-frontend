@@ -30,20 +30,24 @@ import {
   ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
   CreateScheduledWorkflow,
-  EditScheduledWorkflow,
+  // EditScheduledWorkflow,
   ExecuteWorkflowModalFormInput,
+  ClientWorkflowWithTasks,
 } from '@frinx/shared';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
 import FeatherIcon from 'feather-icons-react';
+import { omit } from 'lodash';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
 
+type EditScheduledWorkflow = CreateScheduledWorkflow & { id: string };
+
 type Props = {
   scheduledWorkflow: EditScheduledWorkflow;
-  workflow: Omit<ClientWorkflow, 'outputParameters'>;
+  workflow: ClientWorkflowWithTasks;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: EditScheduledWorkflow) => void;
@@ -94,9 +98,11 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
         : getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
       name: scheduledWorkflow?.name || '',
       cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
-      isEnabled: scheduledWorkflow?.isEnabled ?? false,
+      // TODO: FIXME
+      // isEnabled: scheduledWorkflow?.isEnabled ?? false,
+      enabled: false,
       fromDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.fromDate),
-      performTillDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
+      // performTillDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
     },
     onSubmit: (formValues) => {
       const formattedValues = {
@@ -106,9 +112,9 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
         ...(formValues.fromDate && {
           performFromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
-        ...(formValues.performTillDate && {
-          performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-        }),
+        // ...(formValues.performTillDate && {
+        //   performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        // }),
         ...(formValues.workflowContext && {
           workflowContext: formValues.workflowContext,
         }),
@@ -167,7 +173,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               <FormErrorMessage>{errors.fromDate}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={errors.performTillDate != null}>
+            {/* <FormControl isInvalid={errors.performTillDate != null}>
               <FormLabel>To</FormLabel>
               <Input
                 value={values.performTillDate}
@@ -178,9 +184,10 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               />
               <FormErrorMessage>{errors.performTillDate}</FormErrorMessage>
             </FormControl>
+            */}
           </HStack>
 
-          <HStack my={5} alignItems="flex-start">
+          {/* <HStack my={5} alignItems="flex-start">
             <FormControl isInvalid={errors.isEnabled != null} isRequired>
               <FormLabel>Enabled</FormLabel>
               <Checkbox onChange={handleChange} name="isEnabled" isChecked={values.isEnabled}>
@@ -201,6 +208,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               <FormErrorMessage>{errors.cronString}</FormErrorMessage>
             </FormControl>
           </HStack>
+          */}
 
           <HStack
             my={5}

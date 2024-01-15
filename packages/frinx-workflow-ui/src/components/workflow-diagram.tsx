@@ -12,7 +12,7 @@ import {
 } from '@frinx/shared';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './index';
-import { ControlExecutedWorkflowSubscription, Workflow } from '../__generated__/graphql';
+import { Workflow } from '../__generated__/graphql';
 
 const nodeTypes = {
   base: BaseNode,
@@ -34,7 +34,9 @@ type UnusedWorkflowProperties =
   | 'ownerApp';
 
 type Props = {
-  result?: ControlExecutedWorkflowSubscription['controlExecutedWorkflow'] | null;
+  // TODO: FIXME
+  // result?: ControlExecutedWorkflowSubscription['controlExecutedWorkflow'] | null;
+  result?: { tasks: { id: string }[] };
   meta?: Omit<Workflow, UnusedWorkflowProperties> | null;
 };
 
@@ -57,7 +59,9 @@ const WorkflowDiagram = ({ meta, result }: Props) => {
     );
   }
 
-  const tasks = jsonParse<Task[]>(meta.tasks) || [];
+  // TODO: FIXME
+  // const tasks = jsonParse<Task[]>(meta.tasks) || [];
+  const tasks: Task[] = [];
   const taskMap = new Map(unwrap(result.tasks).map((t) => [t.id, t]));
   const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(
     getElementsFromWorkflow(tasks.map(convertWorkflowTaskToExtendedTask), true),
@@ -66,8 +70,11 @@ const WorkflowDiagram = ({ meta, result }: Props) => {
 
   const nodesWithExecutionState = elements.nodes.map((n) => {
     const taskReferenceName = n.data?.task?.taskReferenceName || '';
-    const task = taskMap.get(taskReferenceName);
-    const isSubWorkflow = task?.taskType === 'SUB_WORKFLOW';
+    // TODO:FIXME
+    const task = { status: 'NONE', subWorkflowId: null };
+    // const task = taskMap.get(taskReferenceName);
+    // const isSubWorkflow = task?.taskType === 'SUB_WORKFLOW';
+    const isSubWorkflow = false;
     return {
       ...n,
       draggable: false,

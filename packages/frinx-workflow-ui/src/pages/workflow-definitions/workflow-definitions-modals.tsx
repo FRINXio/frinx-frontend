@@ -4,7 +4,8 @@ import {
   ExecuteWorkflowModal,
   unwrap,
   CreateScheduledWorkflow,
-  ClientWorkflowWithoutTasks,
+  ClientWorkflow,
+  ClientWorkflowWithTasks,
 } from '@frinx/shared';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
@@ -15,26 +16,25 @@ import {
   ScheduleWorkflowModal,
   ConfirmDeleteModal,
 } from '../../components/modals';
-import {
-  CreateScheduleInput,
-  CreateScheduleMutation,
-  CreateScheduleMutationVariables,
-  ExecuteWorkflowByNameMutation,
-  ExecuteWorkflowByNameMutationVariables,
-  ScheduleWorkflowMutation,
-  ScheduleWorkflowMutationVariables,
-} from '../../__generated__/graphql';
+import //  CreateScheduleInput,
+//  CreateScheduleMutation,
+//  CreateScheduleMutationVariables,
+//  ExecuteWorkflowByNameMutation,
+//  ExecuteWorkflowByNameMutationVariables,
+// ScheduleWorkflowMutation,
+// ScheduleWorkflowMutationVariables,
+'../../__generated__/graphql';
 
 type Props = {
-  workflows: ClientWorkflowWithoutTasks[];
-  activeWorkflow?: ClientWorkflowWithoutTasks;
+  workflows: ClientWorkflowWithTasks[];
+  activeWorkflow?: ClientWorkflowWithTasks;
   definitionModal: UseDisclosureReturn;
   diagramModal: UseDisclosureReturn;
   dependencyModal: UseDisclosureReturn;
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  onDeleteWorkflow: (workflow: ClientWorkflowWithoutTasks) => Promise<void>;
+  onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
 };
 
 const CREATE_SCHEDULE_MUTATION = gql`
@@ -73,48 +73,44 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   scheduledWorkflowModal,
   onDeleteWorkflow,
 }) => {
-  const [, createSchedule] = useMutation<CreateScheduleMutation, CreateScheduleMutationVariables>(
-    CREATE_SCHEDULE_MUTATION,
-  );
+  const [, createSchedule] = useMutation<unknown>(CREATE_SCHEDULE_MUTATION);
 
-  const [, onExecute] = useMutation<ExecuteWorkflowByNameMutation, ExecuteWorkflowByNameMutationVariables>(
-    EXECUTE_WORKFLOW_MUTATION,
-  );
+  const [, onExecute] = useMutation<unknown>(EXECUTE_WORKFLOW_MUTATION);
 
   const { addToastNotification } = useNotifications();
 
-  const handleWorkflowSchedule = (scheduledWf: CreateScheduleInput) => {
-    const scheduleInput = {
-      ...scheduledWf,
-      cronString: unwrap(scheduledWf.cronString),
-    };
-
-    if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
-      createSchedule({ input: scheduleInput })
-        .then((res) => {
-          if (!res.data?.scheduler.createSchedule) {
-            addToastNotification({
-              type: 'error',
-              title: 'Error',
-              content: res.error?.message,
-            });
-          }
-          if (res.data?.scheduler.createSchedule || !res.error) {
-            addToastNotification({
-              content: 'Successfully scheduled',
-              title: 'Success',
-              type: 'success',
-            });
-          }
-        })
-        .catch(() => {
-          addToastNotification({
-            type: 'error',
-            title: 'Error',
-            content: 'Failed to schedule workflow',
-          });
-        });
-    }
+  const handleWorkflowSchedule = (scheduledWf: unknown) => {
+    //    const scheduleInput = {
+    //      ...scheduledWf,
+    //      cronString: unwrap(scheduledWf.cronString),
+    //    };
+    //
+    //    if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
+    //      createSchedule({ input: scheduleInput })
+    //        .then((res) => {
+    //          if (!res.data?.scheduler.createSchedule) {
+    //            addToastNotification({
+    //              type: 'error',
+    //              title: 'Error',
+    //              content: res.error?.message,
+    //            });
+    //          }
+    //          if (res.data?.scheduler.createSchedule || !res.error) {
+    //            addToastNotification({
+    //              content: 'Successfully scheduled',
+    //              title: 'Success',
+    //              type: 'success',
+    //            });
+    //          }
+    //        })
+    //        .catch(() => {
+    //          addToastNotification({
+    //            type: 'error',
+    //            title: 'Error',
+    //            content: 'Failed to schedule workflow',
+    //          });
+    //        });
+    //    }
   };
 
   const handleOnDeleteWorkflowClick = async () => {
@@ -147,7 +143,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
 
       return null;
     }
-    console.log('execute workflow: ', values);
     return onExecute({
       input: {
         inputParameters: JSON.stringify(values),
@@ -156,13 +151,13 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       },
     })
       .then((res) => {
-        if (!res.error) {
-          addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-          return res.data?.conductor.executeWorkflowByName;
-        }
-        if (res.error) {
-          addToastNotification({ content: res.error.message, type: 'error' });
-        }
+        //        if (!res.error) {
+        //          addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
+        //          return res.data?.conductor.executeWorkflowByName;
+        //        }
+        //        if (res.error) {
+        //          addToastNotification({ content: res.error.message, type: 'error' });
+        //        }
         return null;
       })
       .catch(() => {

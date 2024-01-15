@@ -3,11 +3,13 @@ import { Box, Stack, IconButton, Button, Text, Textarea, Icon } from '@chakra-ui
 import FeatherIcon from 'feather-icons-react';
 import { omit } from 'lodash';
 import { unescapedJSON } from '../../../helpers/utils.helpers';
-import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
+import {} from '../../../__generated__/graphql';
 
 type Props = {
   isEscaped: boolean;
-  result: NonNullable<ExecutedWorkflowDetailQuery['node']>;
+  // TODO: FIXME
+  // result: NonNullable<ExecutedWorkflowDetailQuery['node']>;
+  result: Record<string, string>;
   copyToClipBoard: (value: Record<string, unknown>) => void;
   onEscapeChange: (isEscaped: boolean) => void;
 };

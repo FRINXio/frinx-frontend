@@ -18,7 +18,7 @@ import FeatherIcon from 'feather-icons-react';
 import unescapeJs from 'unescape-js';
 import { gql, useQuery } from 'urql';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
-import { ExternalStorageQuery, ExternalStorageQueryVariables } from '../../../__generated__/graphql';
+import {} from '../../../__generated__/graphql';
 
 // const EXTERNAL_STORAGE = gql`
 //   query ExternalStorage($path: String!) {
@@ -27,7 +27,7 @@ import { ExternalStorageQuery, ExternalStorageQueryVariables } from '../../../__
 //     }
 //   }
 // `;
-//
+
 type Props = {
   storagePath: string;
   isOpen: boolean;
@@ -36,12 +36,14 @@ type Props = {
 };
 
 const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, storagePath, title }) => {
-  const [{ data }] = useQuery<ExternalStorageQuery, ExternalStorageQueryVariables>({
-    query: EXTERNAL_STORAGE,
-    variables: {
-      path: storagePath,
-    },
-  });
+  //  TODO: FIXME
+  //  const [{ data }] = useQuery<unknown>({
+  //    query: EXTERNAL_STORAGE,
+  //    variables: {
+  //      path: storagePath,
+  //    },
+  //  });
+  const data = null;
 
   const [isEscaped, setIsEscaped] = useState(false);
 
@@ -53,7 +55,9 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
     return null;
   }
 
-  const payload = data.externalStorage?.data ?? '';
+  // TODO: FIXME
+  // const payload = data.externalStorage?.data ?? '';
+  const payload = '';
 
   const value = isEscaped ? payload : unescapeJs(payload);
 

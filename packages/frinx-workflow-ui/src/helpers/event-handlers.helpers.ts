@@ -1,9 +1,11 @@
 import { omit } from 'lodash';
 import { EventHandlerAction } from '../components/event-handler-form/event-handler-form';
-import { EventHandlerQuery } from '../__generated__/graphql';
+import {} from '../__generated__/graphql';
 
 export function removeTypenamesFromEventHandlerAction(
-  action: NonNullable<EventHandlerQuery['eventHandler']>['actions'][0],
+  // TODO: FIXME
+  // action: NonNullable<EventHandlerQuery['eventHandler']>['actions'][0],
+  action: Record<string, unknown>,
 ) {
   const newAction = omit(action, '__typename');
 
