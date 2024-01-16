@@ -92,13 +92,10 @@ const ExecutedWorkflows = () => {
 
   const handleOnAllWorkflowsSelect = () => {
     const areAllWorkflowsSelected = data?.conductor.executedWorkflows?.edges.length === selectedWorkflows.length;
-
     if (data?.conductor.executedWorkflows == null || data?.conductor.executedWorkflows?.edges.length === 0) {
       setSelectedWorkflows([]);
-
       return;
     }
-
     if (areAllWorkflowsSelected) {
       setSelectedWorkflows([]);
     } else {
@@ -199,6 +196,7 @@ const ExecutedWorkflows = () => {
           onSelectAllWorkflows={handleOnAllWorkflowsSelect}
         />
       )}
+
       <Pagination
         hasNextPage={data?.conductor.executedWorkflows?.pageInfo.hasNextPage ?? false}
         hasPreviousPage={data?.conductor.executedWorkflows?.pageInfo.hasPreviousPage ?? false}

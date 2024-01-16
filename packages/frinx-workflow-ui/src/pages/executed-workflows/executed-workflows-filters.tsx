@@ -1,4 +1,4 @@
-import { Box, Button, chakra, Flex, FormControl, FormLabel, HStack, Input, Select } from '@chakra-ui/react';
+import { Button, chakra, Flex, FormControl, FormLabel, HStack, Input, Select } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { FC } from 'react';
 import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';

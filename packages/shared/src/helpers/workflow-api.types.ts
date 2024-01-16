@@ -360,7 +360,7 @@ export type NodeData = {
   handles?: string[];
 };
 
-// type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
+type TaskTimeoutPolicy = 'RETRY' | 'TIME_OUT_WF' | 'ALERT_ONLY';
 type RetryLogic = 'FIXED' | 'EXPONENTIAL_BACKOFF' | 'LINEAR_BACKOFF';
 
 export type TaskDefinition = {
@@ -382,6 +382,7 @@ export type TaskDefinition = {
   rateLimitFrequencyInSeconds?: number | null;
   rateLimitPerFrequency?: number | null;
   ownerEmail: string | null;
+  timeoutPolicy: TaskTimeoutPolicy | null;
 };
 
 export type ExecutedWorkflowTask = {
