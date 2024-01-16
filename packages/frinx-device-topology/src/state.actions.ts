@@ -318,6 +318,12 @@ const PTP_TOPOLOGY_QUERY = gql`
             clockId
             parentClockId
             gmClockId
+            clockClass
+            clockAccuracy
+            clockVariance
+            timeRecoveryStatus
+            globalPriority
+            userPriority
           }
           status
           labels

@@ -15,7 +15,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { unwrap, useNotifications } from '@frinx/shared';
+import { ClientWorkflow, useNotifications } from '@frinx/shared';
 import { Link, useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import {
@@ -35,6 +35,7 @@ import {
   RetryWorkflowMutationVariables,
   TerminateWorkflowMutation,
   TerminateWorkflowMutationVariables,
+  // TaskDefinition,
 } from '../../__generated__/graphql';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
@@ -67,6 +68,23 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             id
             version
             name
+            ownerEmail
+            restartable
+            tasksJson
+            hasSchedule
+            description
+            tasksJson
+            createdAt
+            updatedAt
+            createdBy
+            updatedBy
+            inputParameters
+            outputParameters {
+              key
+              value
+            }
+            timeoutPolicy
+            timeoutSeconds
           }
           variables
           lastRetriedTime
@@ -244,6 +262,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   );
   const [, rerunWorkflow] = useMutation<RerunWorkflowMutation, RerunWorkflowMutationVariables>(RERUN_WORKFLOW_MUTATION);
 
+  // TODO: FIXME
   useEffect(() => {
     if (data?.conductor.controlExecutedWorkflow?.status !== 'RUNNING') {
       reexecuteQuery();
@@ -291,11 +310,9 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         if (result.error) {
           throw new Error(result.error?.message);
         }
-
         if (result.data?.conductor.rerunExecutedWorkflow.workflow == null) {
           throw new Error('Something went wrong');
         }
-
         // when specific task detail is opened we need to close it after rerun so that we can see new tasks that have different ids
         setOpenedTaskId(null);
         onExecutedOperation(result.data?.conductor.rerunExecutedWorkflow.workflow.id);
@@ -364,7 +381,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         if (res.error != null) {
           throw new Error(res.error.message);
         }
-
         addToastNotification({
           title: 'Workflow terminated',
           content: `Workflow ${executedWorkflow.workflowDefinition?.name} terminated`,
@@ -417,7 +433,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         if (res.error != null) {
           throw new Error(res.error.message);
         }
-
         addToastNotification({
           title: 'Workflow paused',
           content: `Workflow ${executedWorkflow.workflowDefinition?.name} paused`,
@@ -446,7 +461,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         if (res.error != null) {
           throw new Error(res.error.message);
         }
-
         addToastNotification({
           title: 'Workflow resumed',
           content: `Workflow ${executedWorkflow.workflowDefinition?.name} resumed`,
@@ -463,6 +477,17 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         });
       });
   };
+
+  // TODO: FIXME
+  // some propery typing or helper function
+  const clientWorkflow: ClientWorkflow | null =
+    executedWorkflow.workflowDefinition != null
+      ? {
+          ...executedWorkflow.workflowDefinition,
+          labels: [],
+          timeoutSeconds: executedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
+        }
+      : null;
 
   return (
     <Container maxWidth="container.xl">
@@ -540,18 +565,18 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                 {executedWorkflow != null && executedWorkflow.workflowDefinition != null && (
                   <EditRerunTab
                     onRerunClick={handleOnRerunClick}
-                    workflowDefinition={{
-                      ...executedWorkflow.workflowDefinition,
-                      labels: [],
-                      tasks: JSON.parse(executedWorkflow.workflowDefinition.tasks || '[]'),
-                      hasSchedule: executedWorkflow.workflowDefinition.hasSchedule ?? false,
-                    }}
+                    workflowDefinition={clientWorkflow}
                     workflowInput={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
                   />
                 )}
               </TabPanel>
               <TabPanel>
-                <WorkflowDiagram meta={executedWorkflow.workflowDefinition} result={data?.controlExecutedWorkflow} />
+                {executedWorkflow.workflowDefinition && (
+                  <WorkflowDiagram
+                    meta={{ ...executedWorkflow.workflowDefinition, tasks: [] }}
+                    result={data?.conductor.controlExecutedWorkflow}
+                  />
+                )}
               </TabPanel>
             </TabPanels>
           </Tabs>

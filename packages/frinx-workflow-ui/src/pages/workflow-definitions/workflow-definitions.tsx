@@ -1,10 +1,15 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow } from '@frinx/shared';
+import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks, Task } from '@frinx/shared';
 import { debounce } from 'lodash';
 import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import WorkflowListHeader from '../../components/workflow-list-header';
-import { DeleteWorkflowMutation, DeleteWorkflowMutationVariables, WorkflowsQuery } from '../../__generated__/graphql';
+import {
+  DeleteWorkflowMutation,
+  DeleteWorkflowMutationVariables,
+  WorkflowsQuery,
+  WorkflowsQueryVariables,
+} from '../../__generated__/graphql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
@@ -15,7 +20,7 @@ type OrderBy = {
 };
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
-  keyword: string[] | null;
+  keyword: string | null;
   labels: string[] | [];
 };
 
@@ -31,6 +36,8 @@ const WORKFLOWS_QUERY = gql`
             version
             createdAt
             updatedAt
+            createdBy
+            updatedBy
             inputParameters
             outputParameters {
               key
@@ -41,6 +48,7 @@ const WORKFLOWS_QUERY = gql`
             variables
             timeoutPolicy
             ownerEmail
+            tasksJson
           }
         }
       }
@@ -77,22 +85,24 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     labels: [],
   });
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'ASC' });
-  const [activeWf, setActiveWf] = useState<ClientWorkflow>();
+  const [activeWf, setActiveWf] = useState<ClientWorkflowWithTasks>();
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
   const dependencyModal = useDisclosure();
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
-  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] =
-    useQuery<WorkflowsQuery>({
-      query: WORKFLOWS_QUERY,
-      variables: {
-        filter,
-        orderBy,
-      },
-      context,
-    });
+  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] = useQuery<
+    WorkflowsQuery,
+    WorkflowsQueryVariables
+  >({
+    query: WORKFLOWS_QUERY,
+    variables: {
+      filter,
+      orderBy,
+    },
+    context,
+  });
   const [{ data: labelsData }] = useQuery({
     query: WORKFLOW_LABELS_QUERY,
   });
@@ -139,14 +149,16 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     return <Text>We are sorry, but something went wrong when we were loading workflow definitions.</Text>;
   }
 
-  const workflows: ClientWorkflow[] =
+  const workflows: ClientWorkflowWithTasks[] =
     workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
+      const tasks = jsonParse<Task[]>(w.tasksJson) ?? [];
       return {
         ...w,
         timeoutSeconds: w.timeoutSeconds ?? 0,
         labels: parsedLabels,
         hasSchedule: false,
+        tasks,
       };
     }) ?? [];
 
