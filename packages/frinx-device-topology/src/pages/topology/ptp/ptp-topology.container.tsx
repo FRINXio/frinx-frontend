@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, VoidFunctionComponent } from 'react';
+import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
 import { findGmPath, getPtpNodesAndEdges, setGmPathIds, setMode } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
@@ -31,6 +31,7 @@ const GET_GM_PATH = gql`
 
 const PtpTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
+  const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
   const { selectedGmPathNodeId } = state;
 
@@ -58,7 +59,14 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
   }, [dispatch, gmPathData]);
 
   useEffect(() => {
+    intervalRef.current = window.setInterval(() => {
+      dispatch(getPtpNodesAndEdges(client));
+    }, 10000);
     dispatch(getPtpNodesAndEdges(client));
+
+    return () => {
+      window.clearInterval(intervalRef.current);
+    };
   }, [client, dispatch]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
