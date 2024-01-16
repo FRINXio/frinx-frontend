@@ -3,7 +3,6 @@ import moment from 'moment';
 import { makeArrayFromValue, parseBoolean } from '../../helpers/utils.helpers';
 import {
   ExecutedWorkflowsQuery,
-  ExecutedWorkflowsQueryVariables,
   SortExecutedWorkflowsBy,
   SortExecutedWorkflowsDirection,
   Workflow,
@@ -27,9 +26,9 @@ export type ExecutedWorkflowSearchQuery = {
   workflowType: string[];
   workflowsPerPage: number;
 };
-export function makeSearchQueryVariableFromFilter(
-  filter: ExecutedWorkflowSearchQuery,
-): Partial<ExecutedWorkflowsQueryVariables> {
+
+// TODO: FIXME
+export function makeSearchQueryVariableFromFilter(filter: ExecutedWorkflowSearchQuery): Partial<unknown> {
   const initialStatus: WorkflowStatus[] = [];
   const status = filter.status.map((s) => {
     if (
@@ -92,7 +91,7 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
   };
 }
 
-type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>['edges'];
+type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>['edges'];
 
 export function sortExecutedWorkflows(
   workflows: GeneratedExecutedWorkflows,

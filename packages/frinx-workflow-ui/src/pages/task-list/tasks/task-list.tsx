@@ -24,9 +24,7 @@ const taskDefinition: TaskDefinition = {
   retryCount: 0,
   retryLogic: 'FIXED',
   retryDelaySeconds: 0,
-  // timeoutPolicy: {
-  //   _fake: 'TIME_OUT_WF',
-  // },
+  timeoutPolicy: 'TIME_OUT_WF',
   timeoutSeconds: 60,
   responseTimeoutSeconds: 10,
   ownerEmail: '',
@@ -70,6 +68,7 @@ const TASK_DEFINITIONS_QUERY = gql`
             rateLimitFrequencyInSeconds
             rateLimitPerFrequency
             ownerEmail
+            timeoutPolicy
           }
         }
         totalCount
@@ -127,6 +126,7 @@ const TaskList = () => {
       const { node } = e;
       return {
         ...node,
+        timeoutPolicy: null, // TODO: FIXME
       };
     })
     .filter(omitNullValue);

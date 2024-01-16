@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { ChangeEvent, useState, VoidFunctionComponent } from 'react';
 import {
   ButtonGroup,
   Card,
@@ -8,26 +8,26 @@ import {
   Heading,
   HStack,
   IconButton,
-  Progress,
+  // Progress,
   Select,
   Spacer,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { gql, useMutation, useQuery } from 'urql';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ConfirmDeleteModal, Editor, unwrap, useNotifications } from '@frinx/shared';
+// import { gql, useMutation, useQuery } from 'urql';
+// import { useNavigate, useParams } from 'react-router-dom';
+import { ConfirmDeleteModal, Editor } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import {
-  DeleteEventHandlerDetailMutation,
-  DeleteEventHandlerDetailMutationVariables,
-  EditEventHandlerActionsMutation,
-  EditEventHandlerActionsMutationVariables,
-  EventHandlerQuery,
-  EventHandlerQueryVariables,
-} from '../../__generated__/graphql';
+// import {
+//   DeleteEventHandlerDetailMutation,
+//   DeleteEventHandlerDetailMutationVariables,
+//   EditEventHandlerActionsMutation,
+//   EditEventHandlerActionsMutationVariables,
+//   EventHandlerQuery,
+//   EventHandlerQueryVariables,
+// } from '../../__generated__/graphql';
 import EventHandlersDetailActions from './event-handlers-detail-actions';
-import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
+// import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
 
 type Props = {
   onEventHandlerEditClick: (event: string, name: string) => void;
@@ -89,24 +89,24 @@ type Props = {
 //
 const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerEditClick }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const ctx = useMemo(() => ({ additionalTypenames: ['EventHandler'] }), []);
-  const { event, name } = useParams<{ event: string; name: string }>();
-  const navigate = useNavigate();
-  const { addToastNotification } = useNotifications();
-  const [{ data, fetching, error }] = useQuery<EventHandlerQuery, EventHandlerQueryVariables>({
-    query: EVENT_HANDLER_QUERY,
-    variables: {
-      event: unwrap(event),
-      name: unwrap(name),
-    },
-  });
-  const [, deleteEventHandler] = useMutation<
-    DeleteEventHandlerDetailMutation,
-    DeleteEventHandlerDetailMutationVariables
-  >(DELETE_EVENT_HANDLER_MUTATION);
-  const [, updateEventHandler] = useMutation<EditEventHandlerActionsMutation, EditEventHandlerActionsMutationVariables>(
-    UPDATE_EVENT_HANDLER_MUTATION,
-  );
+  // const ctx = useMemo(() => ({ additionalTypenames: ['EventHandler'] }), []);
+  // const { event, name } = useParams<{ event: string; name: string }>();
+  // const navigate = useNavigate();
+  // const { addToastNotification } = useNotifications();
+  // TODO: FIXME
+  // const [{ data, fetching, error }] = useQuery<EventHandlerQuery, EventHandlerQueryVariables>({
+  //   query: EVENT_HANDLER_QUERY,
+  //   variables: {
+  //     event: unwrap(event),
+  //     name: unwrap(name),
+  //   },
+  // });
+  // const [, deleteEventHandler] = useMutation<
+  // unknown
+  // >(DELETE_EVENT_HANDLER_MUTATION);
+  // const [, updateEventHandler] = useMutation<EditEventHandlerActionsMutation, EditEventHandlerActionsMutationVariables>(
+  //   UPDATE_EVENT_HANDLER_MUTATION,
+  // );
   const [selectedConditionLang, setSelectedConditionLang] = useState<'javascript' | 'python'>('javascript');
 
   const handleOnConditionLangSelect = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -118,60 +118,76 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     setSelectedConditionLang('python');
   };
 
-  const handleOnEventHandlerDelete = (id: string) => {
-    deleteEventHandler(
-      {
-        deleteEventHandlerId: id,
-      },
-      {
-        additionalTypenames: ['EventHandler'],
-      },
-    )
-      .then((response) => {
-        if (response.error != null) {
-          throw new Error(response.error.message);
-        }
-
-        navigate('/workflow-manager/event-handlers');
-      })
-      .catch((err) => {
-        addToastNotification({
-          content: err.message,
-          type: 'error',
-        });
-      });
-  };
-
-  const handleOnEventHandlerActionDelete = (
-    eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
-    actionIndex: number,
+  /* tslint:disable-next-line */
+  const handleOnEventHandlerDelete = (
+    id: string, // eslint-disable-line @typescript-eslint/no-unused-vars
   ) => {
-    updateEventHandler(
-      {
-        input: {
-          actions: eventHandler.actions
-            .filter((_, index) => index === actionIndex)
-            .map(removeTypenamesFromEventHandlerAction),
-        },
-        event: eventHandler.event,
-        name: eventHandler.name,
-      },
-      ctx,
-    );
+    // deleteEventHandler(
+    //   {
+    //     deleteEventHandlerId: id,
+    //   },
+    //   {
+    //     additionalTypenames: ['EventHandler'],
+    //   },
+    // )
+    //   .then((response) => {
+    //     if (response.error != null) {
+    //       throw new Error(response.error.message);
+    //     }
+    //     navigate('/workflow-manager/event-handlers');
+    //   })
+    //   .catch((err) => {
+    //     addToastNotification({
+    //       content: err.message,
+    //       type: 'error',
+    //     });
+    //   });
   };
 
-  if (fetching) {
-    return <Progress isIndeterminate size="xs" mt={-10} />;
-  }
+  /* tslint:disable-next-line */
+  const handleOnEventHandlerActionDelete = (
+    // TODO: FIXME
+    // eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
+    eventHandler: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
+    actionIndex: number, // eslint-disable-line @typescript-eslint/no-unused-vars
+  ) => {
+    // updateEventHandler(
+    //   {
+    //     input: {
+    //       actions: eventHandler.actions
+    //         .filter((_, index) => index === actionIndex)
+    //         .map(removeTypenamesFromEventHandlerAction),
+    //     },
+    //     event: eventHandler.event,
+    //     name: eventHandler.name,
+    //   },
+    //   ctx,
+    // );
+  };
 
-  if (data == null || data.eventHandler == null || error != null) {
-    return (
-      <Container maxWidth={1200} mx="auto">
-        <Text>We could not find expected event handler. Try again later please.</Text>
-      </Container>
-    );
-  }
+  // if (fetching) {
+  //   return <Progress isIndeterminate size="xs" mt={-10} />;
+  // }
 
+  // if (data == null || data.eventHandler == null || error != null) {
+  //   return (
+  //     <Container maxWidth={1200} mx="auto">
+  //       <Text>We could not find expected event handler. Try again later please.</Text>
+  //     </Container>
+  //   );
+  // }
+
+  const data = {
+    eventHandler: {
+      id: '',
+      name: '',
+      isActive: false,
+      evaluatorType: '',
+      condition: '',
+      event: '',
+      actions: [],
+    },
+  };
   const { eventHandler } = data;
   const editorComment =
     selectedConditionLang === 'python' ? '# condition was not defined' : '// condition was not defined';

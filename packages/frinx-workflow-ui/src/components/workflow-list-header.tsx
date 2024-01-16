@@ -19,7 +19,8 @@ import { compact } from 'lodash';
 import React, { useRef, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation } from 'urql';
-import { CreateWorkflow, CreateWorkflowMutationVariables } from '../__generated__/graphql';
+// TODO: FIXME
+import {} from '../__generated__/graphql';
 
 type Props = {
   onImportSuccess: () => void;
@@ -65,9 +66,7 @@ function readFile(file: File): Promise<string> {
 }
 
 const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) => {
-  const [, createWorkflow] = useMutation<CreateWorkflowMutation, CreateWorkflowMutationVariables>(
-    CREATE_WORKFLOW_MUTATION,
-  );
+  const [, createWorkflow] = useMutation<unknown>(CREATE_WORKFLOW_MUTATION);
   const inputRef = useRef<HTMLInputElement>(null);
   const { addToastNotification } = useNotifications();
 
