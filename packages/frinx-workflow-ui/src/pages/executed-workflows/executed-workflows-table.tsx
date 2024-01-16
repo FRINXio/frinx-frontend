@@ -5,14 +5,13 @@ import moment from 'moment';
 import FeatherIcon from 'feather-icons-react';
 import ExecutedWorkflowsTableHead from './executed-workflows-table-head';
 import { OrderBy, SortKey } from './executed-workflows.helpers';
-import { WorkflowStatus } from '../../__generated__/graphql';
+import { ExecutedWorkflowsQuery, WorkflowStatus } from '../../__generated__/graphql';
 import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
 import SubworkflowTableRow from './subworkflows-table-row';
 
 type Props = {
   orderBy: OrderBy;
-  // workflows: NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>['edges'][0]['node'][];
-  workflows: unknown[]; // TODO: FIXME
+  workflows: NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>['edges'][0]['node'][];
   selectedWorkflows: string[];
   onSort: (value: SortKey) => void;
   onSelectAllWorkflows: () => void;
@@ -43,8 +42,7 @@ const ExecutedWorkflowsTable: FC<Props> = ({
         />
         <Tbody>
           {workflows.map((workflow) => {
-            return {
-              /*           
+            return (
               <Fragment key={workflow.id}>
                 <Tr key={workflow.id}>
                   <Td>
@@ -97,8 +95,7 @@ const ExecutedWorkflowsTable: FC<Props> = ({
                 </Tr>
                 {selectedWorkflowId === workflow.id && <SubworkflowTableRow workflowId={selectedWorkflowId} />}
               </Fragment>
-              */
-            };
+            );
           })}
         </Tbody>
       </Table>

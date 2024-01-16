@@ -28,7 +28,6 @@ import {
 import {
   parseInputParameters,
   getDynamicInputParametersFromWorkflow,
-  ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
   ExecuteWorkflowModalFormInput,
   ClientWorkflowWithTasks,
@@ -38,7 +37,7 @@ import * as Yup from 'yup';
 import moment from 'moment';
 import FeatherIcon from 'feather-icons-react';
 import { gql, useQuery } from 'urql';
-import { CreateScheduleInput, Schedule } from '../../__generated__/graphql';
+import { CreateScheduleInput, GetSchedulesQuery, GetSchedulesQueryVariables } from '../../__generated__/graphql';
 
 const SCHEDULED_WORKFLOWS_QUERY = gql`
   query GetSchedules {
@@ -59,7 +58,7 @@ const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|
 function getCrontabGuruUrl(cronString: string = DEFAULT_CRON_STRING) {
   return `https://crontab.guru/#${cronString.replace(/\s/g, '_')}`;
 }
-function createValidationSchema(schedules: unknown[]) {
+function createValidationSchema(schedules: GetSchedulesQuery['scheduler']['schedules']) {
   return Yup.object().shape({
     workflowName: Yup.string().required('Workflow name is required'),
     workflowVersion: Yup.number().required('Workflow version is required'),
@@ -69,14 +68,13 @@ function createValidationSchema(schedules: unknown[]) {
         name: 'name',
         message: 'Schedule name must be unique',
         test: (value) => {
-          // TODO: FIXME
-          // const scheduleNames = schedules?.edges.map((edge) => {
-          //   return edge?.node.name;
-          // });
-          // const isNameUnique = !scheduleNames?.some((wfName) => wfName === value);
-          // if (!isNameUnique) {
-          //   return false;
-          // }
+          const scheduleNames = schedules?.edges.map((edge) => {
+            return edge?.node.name;
+          });
+          const isNameUnique = !scheduleNames?.some((wfName) => wfName === value);
+          if (!isNameUnique) {
+            return false;
+          }
           return true;
         },
       }),
@@ -108,12 +106,14 @@ type Props = {
 };
 
 const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
-  const [{ data: scheduledWorkflows, fetching: isLoadingScheduledWorkflows }] = useQuery<unknown>({
+  const [{ data: scheduledWorkflows, fetching: isLoadingScheduledWorkflows }] = useQuery<
+    GetSchedulesQuery,
+    GetSchedulesQueryVariables
+  >({
     query: SCHEDULED_WORKFLOWS_QUERY,
   });
 
-  // const { current: validationSchema } = useRef(createValidationSchema(scheduledWorkflows?.scheduler.schedules ?? null));
-  const { current: validationSchema } = useRef(createValidationSchema([])); // TODO: FIXME
+  const { current: validationSchema } = useRef(createValidationSchema(scheduledWorkflows?.scheduler.schedules ?? null));
 
   const parsedInputParameters = parseInputParameters(workflow.inputParameters);
   const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);

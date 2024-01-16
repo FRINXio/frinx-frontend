@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import {
   Button,
   Link as ChakraLink,
@@ -9,7 +9,7 @@ import {
   Icon,
   IconButton,
   Progress,
-  Switch,
+  // Switch,
   Table,
   Tbody,
   Td,
@@ -23,16 +23,18 @@ import { usePagination, Pagination, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import {
-  // DeleteEventHandlerMutation,
-  // DeleteEventHandlerMutationVariables,
-  EditEventHandlerInput,
+  DeleteEventHandlerMutation,
+  DeleteEventHandlerMutationVariables,
+  // EditEventHandlerInput,
   EventHandlersOrderByInput,
-  // GetEventHandlersQuery,
-  // GetEventHandlersQueryVariables,
+  GetEventHandlersQuery,
+  GetEventHandlersQueryVariables,
   SortEventHandlersBy,
+  // UpdateEventHandlerMutation,
+  // UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
-import { omit } from 'lodash';
+// import { omit } from 'lodash';
 
 const EVENT_HANDLERS_QUERY = gql`
   query GetEventHandlers(
@@ -77,13 +79,13 @@ const DELETE_EVENT_HANDLER_MUTATION = gql`
   }
 `;
 
-const UPDATE_EVENT_HANDLER_MUTATION = gql`
-  mutation UpdateEventHandler($input: EventHandler_Input!) {
-    conductor {
-      updateEventHandler(input: $input)
-    }
-  }
-`;
+// const UPDATE_EVENT_HANDLER_MUTATION = gql`
+//   mutation UpdateEventHandler($input: EventHandler_Input!) {
+//     conductor {
+//       updateEventHandler(input: $input)
+//     }
+//   }
+// `;
 
 const EventHandlersListPage: FC = () => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
@@ -96,7 +98,7 @@ const EventHandlersListPage: FC = () => {
     [],
   );
   // TODO: FIXME
-  const [{ fetching, error }] = useQuery<unknown>({
+  const [{ fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
     query: EVENT_HANDLERS_QUERY,
     context: ctx,
     variables: {
@@ -126,8 +128,12 @@ const EventHandlersListPage: FC = () => {
       },
     },
   };
-  const [, deleteEventHandler] = useMutation<unknown>(DELETE_EVENT_HANDLER_MUTATION);
-  const [, updateEventHandler] = useMutation<unknown>(UPDATE_EVENT_HANDLER_MUTATION);
+  const [, deleteEventHandler] = useMutation<DeleteEventHandlerMutation, DeleteEventHandlerMutationVariables>(
+    DELETE_EVENT_HANDLER_MUTATION,
+  );
+  // const [, updateEventHandler] = useMutation<UpdateEventHandlerMutation, UpdateEventHandlerMutationVariables>(
+  //   UPDATE_EVENT_HANDLER_MUTATION,
+  // );
 
   const { addToastNotification } = useNotifications();
 
@@ -156,37 +162,37 @@ const EventHandlersListPage: FC = () => {
       });
   };
 
-  const handleOnIsActiveClick = (e: ChangeEvent<HTMLInputElement>, eventHandler: EditEventHandlerInput) => {
-    const boolChecked = Boolean(e.target.checked);
+  // const handleOnIsActiveClick = (e: ChangeEvent<HTMLInputElement>, eventHandler: EditEventHandlerInput) => {
+  //   const boolChecked = Boolean(e.target.checked);
 
-    const eventHandlerWithoutTypenames = {
-      ...eventHandler,
-      active: boolChecked,
-    };
+  //   const eventHandlerWithoutTypenames = {
+  //     ...eventHandler,
+  //     active: boolChecked,
+  //   };
 
-    updateEventHandler(
-      {
-        input: omit(eventHandlerWithoutTypenames, ['__typename']),
-      },
-      ctx,
-    )
-      .then((response) => {
-        if (response.error != null) {
-          throw new Error(response.error.message);
-        }
+  //   updateEventHandler(
+  //     {
+  //       input: omit(eventHandlerWithoutTypenames, ['__typename']),
+  //     },
+  //     ctx,
+  //   )
+  //     .then((response) => {
+  //       if (response.error != null) {
+  //         throw new Error(response.error.message);
+  //       }
 
-        addToastNotification({
-          type: 'success',
-          content: 'Successfully updated event handler',
-        });
-      })
-      .catch((err) => {
-        addToastNotification({
-          content: err.message,
-          type: 'error',
-        });
-      });
-  };
+  //       addToastNotification({
+  //         type: 'success',
+  //         content: 'Successfully updated event handler',
+  //       });
+  //     })
+  //     .catch((err) => {
+  //       addToastNotification({
+  //         content: err.message,
+  //         type: 'error',
+  //       });
+  //     });
+  // };
 
   const handleSort = (sortKey: SortEventHandlersBy) => {
     return orderBy.direction === 'DESC'

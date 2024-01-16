@@ -4,11 +4,7 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useQuery } from 'urql';
 import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
-import {
-  Subworkflow,
-  // WorkflowInstanceDetailQuery,
-  // WorkflowInstanceDetailQueryVariables,
-} from '../../__generated__/graphql';
+import { WorkflowInstanceDetailQuery, WorkflowInstanceDetailQueryVariables } from '../../__generated__/graphql';
 
 const WORKFLOW_INSTANCE_DETAIL_QUERY = gql`
   query WorkflowInstanceDetail($workflowId: String!) {
@@ -39,12 +35,11 @@ type Props = {
 };
 
 const SubworkflowTableRow: FC<Props> = ({ workflowId }) => {
-  const [{ data, fetching }] = useQuery<unknown>({
+  const [{ data, fetching }] = useQuery<WorkflowInstanceDetailQuery, WorkflowInstanceDetailQueryVariables>({
     query: WORKFLOW_INSTANCE_DETAIL_QUERY,
     variables: { workflowId },
   });
-  // const subworkflows = data?.conductor.workflowInstanceDetail.subworkflows;
-  const subworkflows: Subworkflow[] = [];
+  const subworkflows = data?.conductor.workflowInstanceDetail.subworkflows;
 
   if (fetching) {
     return (

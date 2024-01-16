@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { ChangeEvent, useState, VoidFunctionComponent } from 'react';
 import {
   ButtonGroup,
   Card,
@@ -8,25 +8,26 @@ import {
   Heading,
   HStack,
   IconButton,
-  Progress,
+  // Progress,
   Select,
   Spacer,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { gql, useMutation, useQuery } from 'urql';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ConfirmDeleteModal, Editor, unwrap, useNotifications } from '@frinx/shared';
+// import { gql, useMutation, useQuery } from 'urql';
+// import { useNavigate, useParams } from 'react-router-dom';
+import { ConfirmDeleteModal, Editor } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
-import //  DeleteEventHandlerDetailMutation,
-//  DeleteEventHandlerDetailMutationVariables,
-//  EditEventHandlerActionsMutation,
-//  EditEventHandlerActionsMutationVariables,
-//  EventHandlerQuery,
-//  EventHandlerQueryVariables,
-'../../__generated__/graphql';
+// import {
+//   DeleteEventHandlerDetailMutation,
+//   DeleteEventHandlerDetailMutationVariables,
+//   EditEventHandlerActionsMutation,
+//   EditEventHandlerActionsMutationVariables,
+//   EventHandlerQuery,
+//   EventHandlerQueryVariables,
+// } from '../../__generated__/graphql';
 import EventHandlersDetailActions from './event-handlers-detail-actions';
-import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
+// import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
 
 type Props = {
   onEventHandlerEditClick: (event: string, name: string) => void;
@@ -88,10 +89,10 @@ type Props = {
 //
 const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerEditClick }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const ctx = useMemo(() => ({ additionalTypenames: ['EventHandler'] }), []);
-  const { event, name } = useParams<{ event: string; name: string }>();
-  const navigate = useNavigate();
-  const { addToastNotification } = useNotifications();
+  // const ctx = useMemo(() => ({ additionalTypenames: ['EventHandler'] }), []);
+  // const { event, name } = useParams<{ event: string; name: string }>();
+  // const navigate = useNavigate();
+  // const { addToastNotification } = useNotifications();
   // TODO: FIXME
   // const [{ data, fetching, error }] = useQuery<EventHandlerQuery, EventHandlerQueryVariables>({
   //   query: EVENT_HANDLER_QUERY,
@@ -117,7 +118,10 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     setSelectedConditionLang('python');
   };
 
-  const handleOnEventHandlerDelete = (id: string) => {
+  /* tslint:disable-next-line */
+  const handleOnEventHandlerDelete = (
+    id: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+  ) => {
     // deleteEventHandler(
     //   {
     //     deleteEventHandlerId: id,
@@ -140,11 +144,12 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     //   });
   };
 
+  /* tslint:disable-next-line */
   const handleOnEventHandlerActionDelete = (
     // TODO: FIXME
     // eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
-    eventHandler: unknown,
-    actionIndex: number,
+    eventHandler: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
+    actionIndex: number, // eslint-disable-line @typescript-eslint/no-unused-vars
   ) => {
     // updateEventHandler(
     //   {

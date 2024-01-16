@@ -2,8 +2,7 @@ import { orderBy } from 'lodash';
 import moment from 'moment';
 import { makeArrayFromValue, parseBoolean } from '../../helpers/utils.helpers';
 import {
-  //  ExecutedWorkflowsQuery,
-  //  ExecutedWorkflowsQueryVariables,
+  ExecutedWorkflowsQuery,
   SortExecutedWorkflowsBy,
   SortExecutedWorkflowsDirection,
   Workflow,
@@ -92,11 +91,7 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
   };
 }
 
-// TODO: FIXME
-// type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['executedWorkflows']>['edges'];
-type GeneratedExecutedWorkflows = {
-  node: unknown;
-}[];
+type GeneratedExecutedWorkflows = NonNullable<ExecutedWorkflowsQuery['conductor']['executedWorkflows']>['edges'];
 
 export function sortExecutedWorkflows(
   workflows: GeneratedExecutedWorkflows,

@@ -30,27 +30,22 @@ import {
   ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
   CreateScheduledWorkflow,
-  // EditScheduledWorkflow,
   ExecuteWorkflowModalFormInput,
-  ClientWorkflowWithTasks,
 } from '@frinx/shared';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
 import FeatherIcon from 'feather-icons-react';
-import { omit } from 'lodash';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
 
-type EditScheduledWorkflow = CreateScheduledWorkflow & { id: string };
-
 type Props = {
-  scheduledWorkflow: EditScheduledWorkflow;
-  workflow: ClientWorkflowWithTasks;
+  scheduledWorkflow: CreateScheduledWorkflow;
+  workflow: ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (workflow: EditScheduledWorkflow) => void;
+  onSubmit: (workflow: CreateScheduledWorkflow) => void;
 };
 
 const resetDateFormat = (dateTime: string | undefined): string => {
@@ -98,16 +93,15 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
         : getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
       name: scheduledWorkflow?.name || '',
       cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
-      // TODO: FIXME
-      // isEnabled: scheduledWorkflow?.isEnabled ?? false,
-      enabled: false,
+      enabled: scheduledWorkflow?.enabled ?? false,
       fromDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.fromDate),
+      // TODO: FIXME
       // performTillDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
     },
     onSubmit: (formValues) => {
       const formattedValues = {
         ...formValues,
-        id: scheduledWorkflow?.id,
+        id: scheduledWorkflow?.name,
         cronString: formValues.cronString || DEFAULT_CRON_STRING,
         ...(formValues.fromDate && {
           performFromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
@@ -187,13 +181,13 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
             */}
           </HStack>
 
-          {/* <HStack my={5} alignItems="flex-start">
-            <FormControl isInvalid={errors.isEnabled != null} isRequired>
+          <HStack my={5} alignItems="flex-start">
+            <FormControl isInvalid={errors.enabled != null} isRequired>
               <FormLabel>Enabled</FormLabel>
-              <Checkbox onChange={handleChange} name="isEnabled" isChecked={values.isEnabled}>
+              <Checkbox onChange={handleChange} name="isEnabled" isChecked={values.enabled}>
                 Enabled
               </Checkbox>
-              <FormErrorMessage>{errors.isEnabled}</FormErrorMessage>
+              <FormErrorMessage>{errors.enabled}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors.cronString != null} isRequired>
@@ -208,7 +202,6 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               <FormErrorMessage>{errors.cronString}</FormErrorMessage>
             </FormControl>
           </HStack>
-          */}
 
           <HStack
             my={5}

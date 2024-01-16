@@ -23,12 +23,10 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { unescapedJSON } from '../../../helpers/utils.helpers';
 import ExternalStorageModal from '../executed-workflow-detail-tabs/external-storage-modal';
-import {} from '../../../__generated__/graphql';
+import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
 
 type Props = {
-  // TODO: FIXME
-  // executedWorkflow: NonNullable<ExecutedWorkflowDetailQuery['conductor']['node']>;
-  executedWorkflow: unknown;
+  executedWorkflow: NonNullable<ExecutedWorkflowDetailQuery['conductor']['node']>;
   taskId: string;
   onClose: () => void;
 };
@@ -41,13 +39,11 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
   const [isEscaped, setIsEscaped] = useState(true);
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
 
-  // TODO:FIXME
-  // if (executedWorkflow.__typename !== 'Workflow') {
-  //   return <Text>Workflow not found</Text>;
-  // }
+  if (executedWorkflow.__typename !== 'Workflow') {
+    return <Text>Workflow not found</Text>;
+  }
 
-  // const task = executedWorkflow.tasks?.find((t) => t.id === taskId);
-  const task = null;
+  const task = executedWorkflow.tasks?.find((t) => t.id === taskId);
 
   return (
     <>
@@ -78,9 +74,9 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
       {task != null && (
         <>
           <HStack>
-            {/* <Heading size="md" as="h2">
-              { task.taskType} ({task.status})
-            </Heading> */}
+            <Heading size="md" as="h2">
+              {task.taskType} ({task.status})
+            </Heading>
             <Spacer />
             <IconButton
               aria-label="close task detail"
@@ -95,7 +91,7 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
               <Tab>Logs</Tab>
             </TabList>
             <TabPanels css="display: flex; flex-direction: column; flex: 1">
-              {/* <TabPanel css="display: flex; flex-direction: column; flex: 1">
+              <TabPanel css="display: flex; flex-direction: column; flex: 1">
                 <SimpleGrid columns={2} spacing={4} mb={4}>
                   <Box>
                     <b>Task Ref. Name: </b>
@@ -186,7 +182,7 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                     height="46vh"
                   />
                 </Box>
-              </TabPanel> */}
+              </TabPanel>
               <TabPanel>
                 <Box>
                   <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -225,13 +221,13 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                       icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
                       size="sm"
                       className="clp"
-                      // onClick={() => copyToClipBoard(task.reasonForIncompletion)}
+                      onClick={() => copyToClipBoard(task.reasonForIncompletion)}
                     />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
                   </Stack>
-                  {/* <Text>{task.reasonForIncompletion || 'No logs'}</Text> */}
+                  <Text>{task.reasonForIncompletion || 'No logs'}</Text>
                 </Box>
               </TabPanel>
             </TabPanels>

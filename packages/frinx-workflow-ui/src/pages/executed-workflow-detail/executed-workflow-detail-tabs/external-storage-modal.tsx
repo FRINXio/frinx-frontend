@@ -16,7 +16,7 @@ import {
 import React, { VoidFunctionComponent, useState } from 'react';
 import FeatherIcon from 'feather-icons-react';
 import unescapeJs from 'unescape-js';
-import { gql, useQuery } from 'urql';
+// import { gql, useQuery } from 'urql';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import {} from '../../../__generated__/graphql';
 
@@ -35,6 +35,7 @@ type Props = {
   title: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, storagePath, title }) => {
   //  TODO: FIXME
   //  const [{ data }] = useQuery<unknown>({

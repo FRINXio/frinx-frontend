@@ -1,12 +1,10 @@
 import { Container, Flex, FormControl, FormLabel, Heading, Progress, Switch, Text } from '@chakra-ui/react';
-import { useNotifications, Pagination, omitNullValue, ExecutedWorkflow } from '@frinx/shared';
+import { useNotifications, Pagination, omitNullValue } from '@frinx/shared';
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useQuery } from 'urql';
 import { makeURLSearchParamsFromObject } from '../../helpers/utils.helpers';
-import // ExecutedWorkflowsQuery,
-// ExecutedWorkflowsQueryVariables
-'../../__generated__/graphql';
+import { ExecutedWorkflowsQuery, ExecutedWorkflowsQueryVariables } from '../../__generated__/graphql';
 import BulkActionsMenu from './bulk-actions-menu';
 import ExecutedWorkflowsFilters from './executed-workflows-filters';
 import ExecutedWorkflowsTable from './executed-workflows-table';
@@ -62,7 +60,10 @@ const ExecutedWorkflows = () => {
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'startTime', direction: 'desc' });
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
-  const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<unknown>({
+  const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<
+    ExecutedWorkflowsQuery,
+    ExecutedWorkflowsQueryVariables
+  >({
     query: EXECUTED_WORKFLOW_QUERY,
     variables: {
       ...makeSearchQueryVariableFromFilter(makeFilterFromSearchParams(searchParams)),
@@ -90,18 +91,18 @@ const ExecutedWorkflows = () => {
   };
 
   const handleOnAllWorkflowsSelect = () => {
-    // const areAllWorkflowsSelected = data?.conductor.executedWorkflows?.edges.length === selectedWorkflows.length;
-    // if (data?.conductor.executedWorkflows == null || data?.conductor.executedWorkflows?.edges.length === 0) {
-    //   setSelectedWorkflows([]);
-    //   return;
-    // }
-    // if (areAllWorkflowsSelected) {
-    //   setSelectedWorkflows([]);
-    // } else {
-    //   setSelectedWorkflows(
-    //     data.conductor.executedWorkflows.edges.map(({ node }) => node.originalId).filter(omitNullValue),
-    //   );
-    // }
+    const areAllWorkflowsSelected = data?.conductor.executedWorkflows?.edges.length === selectedWorkflows.length;
+    if (data?.conductor.executedWorkflows == null || data?.conductor.executedWorkflows?.edges.length === 0) {
+      setSelectedWorkflows([]);
+      return;
+    }
+    if (areAllWorkflowsSelected) {
+      setSelectedWorkflows([]);
+    } else {
+      setSelectedWorkflows(
+        data.conductor.executedWorkflows.edges.map(({ node }) => node.originalId).filter(omitNullValue),
+      );
+    }
   };
 
   const handleOnNext = () => {
@@ -135,16 +136,15 @@ const ExecutedWorkflows = () => {
     });
   };
 
-  // TODO: FIXME
-  // const executedWorkflows =
-  //   data?.conductor.executedWorkflows?.edges
-  //     .map((e) => {
-  //       if (e.node.__typename) {
-  //         return e.node;
-  //       }
-  //       return null;
-  //     })
-  //     .filter(omitNullValue) ?? [];
+  const executedWorkflows =
+    data?.conductor.executedWorkflows?.edges
+      .map((e) => {
+        if (e.node.__typename) {
+          return e.node;
+        }
+        return null;
+      })
+      .filter(omitNullValue) ?? [];
 
   return (
     <Container maxWidth={1200} mx="auto">
@@ -186,7 +186,6 @@ const ExecutedWorkflows = () => {
       </Flex>
       {error != null && <Text textColor="red">{JSON.stringify(error)}</Text>}
       {isLoadingWorkflows && <Progress isIndeterminate size="sm" />}
-      {/* TODO: FIXME
       {data != null && data.conductor.executedWorkflows != null && !isLoadingWorkflows && (
         <ExecutedWorkflowsTable
           workflows={executedWorkflows}
@@ -197,14 +196,13 @@ const ExecutedWorkflows = () => {
           onSelectAllWorkflows={handleOnAllWorkflowsSelect}
         />
       )}
-      */}
-      {/* <Pagination
+
+      <Pagination
         hasNextPage={data?.conductor.executedWorkflows?.pageInfo.hasNextPage ?? false}
         hasPreviousPage={data?.conductor.executedWorkflows?.pageInfo.hasPreviousPage ?? false}
         onNext={handleOnNext}
         onPrevious={handleOnPrevious}
       />
-      */}
     </Container>
   );
 };

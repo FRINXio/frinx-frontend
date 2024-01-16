@@ -1,11 +1,15 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks } from '@frinx/shared';
+import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks, Task } from '@frinx/shared';
 import { debounce } from 'lodash';
 import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import WorkflowListHeader from '../../components/workflow-list-header';
-// import { DeleteWorkflowMutation, DeleteWorkflowMutationVariables, WorkflowsQuery } from '../../__generated__/graphql';
-import { ConductorQuery, Query } from '../../__generated__/graphql';
+import {
+  DeleteWorkflowMutation,
+  DeleteWorkflowMutationVariables,
+  WorkflowsQuery,
+  WorkflowsQueryVariables,
+} from '../../__generated__/graphql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
 import WorkflowDefinitionsTable from './workflow-definitions-table';
@@ -16,7 +20,7 @@ type OrderBy = {
 };
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
-  keyword: string[] | null;
+  keyword: string | null;
   labels: string[] | [];
 };
 
@@ -32,6 +36,8 @@ const WORKFLOWS_QUERY = gql`
             version
             createdAt
             updatedAt
+            createdBy
+            updatedBy
             inputParameters
             outputParameters {
               key
@@ -42,6 +48,7 @@ const WORKFLOWS_QUERY = gql`
             variables
             timeoutPolicy
             ownerEmail
+            tasksJson
           }
         }
       }
@@ -85,19 +92,23 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
-  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] =
-    useQuery<unknown>({
-      query: WORKFLOWS_QUERY,
-      variables: {
-        filter,
-        orderBy,
-      },
-      context,
-    });
+  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] = useQuery<
+    WorkflowsQuery,
+    WorkflowsQueryVariables
+  >({
+    query: WORKFLOWS_QUERY,
+    variables: {
+      filter,
+      orderBy,
+    },
+    context,
+  });
   const [{ data: labelsData }] = useQuery({
     query: WORKFLOW_LABELS_QUERY,
   });
-  const [, deleteWorkflow] = useMutation<unknown>(WORKFLOW_DELETE_MUTATION);
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+    WORKFLOW_DELETE_MUTATION,
+  );
   const debouncedKeywordFilter = useMemo(
     () =>
       debounce((value) => {
@@ -138,17 +149,18 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     return <Text>We are sorry, but something went wrong when we were loading workflow definitions.</Text>;
   }
 
-  // const workflows: ClientWorkflow[] =
-  //   workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
-  //     const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
-  //     return {
-  //       ...w,
-  //       timeoutSeconds: w.timeoutSeconds ?? 0,
-  //       labels: parsedLabels,
-  //       hasSchedule: false,
-  //     };
-  //   }) ?? [];
-  const workflows: ClientWorkflowWithTasks[] = [];
+  const workflows: ClientWorkflowWithTasks[] =
+    workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
+      const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
+      const tasks = jsonParse<Task[]>(w.tasksJson) ?? [];
+      return {
+        ...w,
+        timeoutSeconds: w.timeoutSeconds ?? 0,
+        labels: parsedLabels,
+        hasSchedule: false,
+        tasks,
+      };
+    }) ?? [];
 
   return (
     <Container maxWidth="container.xl" mx="auto">

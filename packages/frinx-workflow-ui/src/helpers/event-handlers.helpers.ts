@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import { EventHandlerAction } from '../components/event-handler-form/event-handler-form';
-import {} from '../__generated__/graphql';
+// import { GetEventHandlersQuery } from '../__generated__/graphql';
 
 export function removeTypenamesFromEventHandlerAction(
   // TODO: FIXME

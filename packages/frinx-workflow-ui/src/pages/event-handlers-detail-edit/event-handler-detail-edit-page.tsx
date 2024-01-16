@@ -1,16 +1,17 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Container, Heading, Progress, Text } from '@chakra-ui/react';
-import { gql, useMutation, useQuery } from 'urql';
-import { useNavigate, useParams } from 'react-router-dom';
-import { unwrap, useNotifications } from '@frinx/shared';
+import { Container, Heading } from '@chakra-ui/react';
+// import { gql, useMutation, useQuery } from 'urql';
+// import { useNavigate, useParams } from 'react-router-dom';
+// import { useNotifications } from '@frinx/shared';
+import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
-import EventHandlerForm, { FormValues } from '../../components/event-handler-form/event-handler-form';
+import EventHandlerForm from '../../components/event-handler-form/event-handler-form';
 import //   EditEventHandlerMutation,
 //   EditEventHandlerMutationVariables,
 //   GetEventHandlerDetailQuery,
 //   GetEventHandlerDetailQueryVariables,
 '../../__generated__/graphql';
-import { removeTypenamesFromActionTasks } from '../../helpers/event-handlers.helpers';
+// import { removeTypenamesFromActionTasks } from '../../helpers/event-handlers.helpers';
 //
 // const GET_EVENT_HANDLER_QUERY = gql`
 //   query GetEventHandlerDetail($event: String!, $name: String!) {
@@ -58,9 +59,9 @@ import { removeTypenamesFromActionTasks } from '../../helpers/event-handlers.hel
 // `;
 
 const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
-  const navigate = useNavigate();
-  const { addToastNotification } = useNotifications();
-  const { event, name } = useParams<{ event: string; name: string }>();
+  // const navigate = useNavigate();
+  // const { addToastNotification } = useNotifications();
+  const { name } = useParams<{ event: string; name: string }>();
   // TODO: FIXME
   // const [{ data, fetching, error }] = useQuery<GetEventHandlerDetailQuery, GetEventHandlerDetailQueryVariables>({
   //   query: GET_EVENT_HANDLER_QUERY,
@@ -73,7 +74,8 @@ const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
   //   UPDATE_EVENT_HANDLER_MUTATION,
   // );
 
-  const handleOnSubmit = (formValues: FormValues) => {
+  const handleOnSubmit = () => {
+    // const handleOnSubmit = (formValues: FormValues) => {
     // updateEventHandler({
     //   name: formValues.name,
     //   event: formValues.event,
