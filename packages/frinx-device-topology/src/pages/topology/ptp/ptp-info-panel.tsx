@@ -1,10 +1,11 @@
-import { Badge, Box, Button, Divider, Flex, Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import { Badge, Box, Button, Divider, Flex, Heading, HStack, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { PtpGraphNode } from '../../../__generated__/graphql';
 import { setSelectedEdge } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { GraphNodeInterface } from '../graph.helpers';
+import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
 
 type Props = {
   onClose: () => void;
@@ -89,58 +90,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
           </Button>
         </HStack>
       </Box>
-      {isShowingAdditionalInfo && (
-        <VStack spacing={2} marginTop={4} align="flex-start" mx={5}>
-          <Heading as="h4" fontSize="xs">
-            Clock class
-          </Heading>
-          <Text fontSize="xs" textColor="GrayText">
-            {details.clockClass || 'N/A'}
-          </Text>
-
-          <Heading as="h4" fontSize="xs">
-            Clock accuracy
-          </Heading>
-          <Text fontSize="xs" textColor="GrayText">
-            {details.clockAccuracy || 'N/A'}
-          </Text>
-
-          <Heading as="h4" fontSize="xs">
-            Clock variance
-          </Heading>
-          <Text fontSize="xs" textColor="GrayText">
-            {details.clockVariance || 'N/A'}
-          </Text>
-
-          <Heading as="h4" fontSize="xs">
-            Time recovery status
-          </Heading>
-          <Text fontSize="xs" textColor="GrayText">
-            {details.timeRecoveryStatus || 'N/A'}
-          </Text>
-
-          <Heading as="h4" fontSize="xs">
-            Domain
-          </Heading>
-          <Text fontSize="xs" textColor="GrayText">
-            {details.domain || 'N/A'}
-          </Text>
-
-          <Heading as="h4" fontSize="xs">
-            Global priority
-          </Heading>
-          <Text fontSize="xs" textColor="GrayText">
-            {details.globalPriority || 'N/A'}
-          </Text>
-
-          <Heading as="h4" fontSize="xs">
-            User priority
-          </Heading>
-          <Text fontSize="xs" textColor="GrayText">
-            {details.userPriority || 'N/A'}
-          </Text>
-        </VStack>
-      )}
+      {isShowingAdditionalInfo && <DeviceInfoPanelAdditionalInfo additionalInfo={details} />}
     </HStack>
   );
 };

@@ -70,7 +70,13 @@ const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
   };
 
   return (
-    <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
+    <Box
+      background="white"
+      borderRadius="md"
+      position="relative"
+      backgroundImage={`url(${BackgroundSvg})`}
+      overflow="scroll"
+    >
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Edges edgesWithDiff={edges} />
         <PtpNodes
