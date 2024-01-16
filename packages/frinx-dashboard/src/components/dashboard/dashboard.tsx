@@ -7,7 +7,7 @@ import InventoryActions from './inventory-actions';
 import UniflowActions from './uniflow-actions';
 
 const Dashboard: VoidFunctionComponent = () => {
-  const { uniflowApiDocsURL, inventoryApiURL, isAuthEnabled, uniconfigApiDocsURL, commitHash } = useConfig();
+  const { uniflowApiDocsURL, gatewayApiUrl, isAuthEnabled, uniconfigApiDocsURL, commitHash } = useConfig();
   return (
     <Flex flexDirection="column" minHeight="calc(100vh - 10px - 64px - 32px)">
       <Container maxWidth={1280} marginBottom={8}>
@@ -78,7 +78,7 @@ const Dashboard: VoidFunctionComponent = () => {
                 label="Device Inventory"
                 description="Execute and inspect queries with GraphQL Playground."
                 icon="book"
-                path={inventoryApiURL}
+                path={gatewayApiUrl}
                 isLinkExternal
               />
             )}

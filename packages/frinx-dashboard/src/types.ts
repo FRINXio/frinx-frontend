@@ -4,9 +4,8 @@ export type GlobalConfig = Readonly<{
   uniconfigApiDocsURL: string;
   unistoreApiURL: string;
   URLBasename: string;
-  inventoryApiURL: string;
   inventoryWsURL: string;
-  uniresourceApiURL: string;
+  gatewayApiUrl: string;
   uniflowApiDocsURL: string;
   commitHash: string;
 }>;

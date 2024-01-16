@@ -5,7 +5,7 @@ import { useConfig } from './config.provider';
 type DeviceTopologyComponents = typeof import('@frinx/device-topology');
 
 const DeviceTopologyApp: FC = () => {
-  const { inventoryApiURL } = useConfig();
+  const { gatewayApiUrl } = useConfig();
   const [components, setComponents] = useState<DeviceTopologyComponents | null>(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const DeviceTopologyApp: FC = () => {
   const { InventoryAPIProvider, DeviceTopologyApp: App } = components;
 
   return (
-    <InventoryAPIProvider client={InventoryApi.create({ url: inventoryApiURL }).client}>
+    <InventoryAPIProvider client={InventoryApi.create({ url: gatewayApiUrl }).client}>
       <App />
     </InventoryAPIProvider>
   );

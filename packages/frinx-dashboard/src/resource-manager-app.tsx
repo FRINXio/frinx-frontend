@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { useConfig } from './config.provider';
 
 const ResourceManagerApp: FC = () => {
-  const { uniresourceApiURL } = useConfig();
+  const { gatewayApiUrl } = useConfig();
   const [components, setComponents] = useState<typeof import('@frinx/resource-manager') | null>(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const ResourceManagerApp: FC = () => {
   const { ResourceManagerAppProvider, ResourceManagerApp: App } = components;
 
   return (
-    <ResourceManagerAppProvider client={ResourceManagerApi.create({ url: uniresourceApiURL }).client}>
+    <ResourceManagerAppProvider client={ResourceManagerApi.create({ url: gatewayApiUrl }).client}>
       <App />
     </ResourceManagerAppProvider>
   );

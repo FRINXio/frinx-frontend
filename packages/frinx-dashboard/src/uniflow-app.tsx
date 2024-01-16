@@ -5,7 +5,7 @@ import { useConfig } from './config.provider';
 type UniflowComponents = typeof import('@frinx/workflow-ui');
 
 const UniflowApp: FC = () => {
-  const { inventoryApiURL, inventoryWsURL } = useConfig();
+  const { gatewayApiUrl, inventoryWsURL } = useConfig();
   const [components, setComponents] = useState<UniflowComponents | null>(null);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const UniflowApp: FC = () => {
   const { UniflowApp: App, InventoryAPIProvider } = components;
 
   return (
-    <InventoryAPIProvider client={InventoryApi.create({ url: inventoryApiURL }).client} wsUrl={inventoryWsURL}>
+    <InventoryAPIProvider client={InventoryApi.create({ url: gatewayApiUrl }).client} wsUrl={inventoryWsURL}>
       <App />
     </InventoryAPIProvider>
   );

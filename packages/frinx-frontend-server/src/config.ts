@@ -26,9 +26,8 @@ function stringToBoolean(value: string): boolean {
 const config = {
   isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
   URLBasename: envString('URL_BASENAME'),
-  inventoryApiURL: envString('INVENTORY_API_URL'),
+  gatewayApiUrl: envString('GATEWAY_API_URL'),
   inventoryWsURL: envString('INVENTORY_WS_URL'),
-  uniresourceApiURL: envString('RESOURCE_MANAGER_API_URL'),
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
   commitHash: envString('COMMIT_HASH'),
