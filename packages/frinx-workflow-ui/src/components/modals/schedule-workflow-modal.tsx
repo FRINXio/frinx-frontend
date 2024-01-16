@@ -28,9 +28,9 @@ import {
 import {
   parseInputParameters,
   getDynamicInputParametersFromWorkflow,
-  ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
   ExecuteWorkflowModalFormInput,
+  ClientWorkflowWithTasks,
 } from '@frinx/shared';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -99,7 +99,7 @@ function createValidationSchema(schedules: GetSchedulesQuery['scheduler']['sched
 }
 
 type Props = {
-  workflow: ClientWorkflow;
+  workflow: ClientWorkflowWithTasks;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (workflow: CreateScheduleInput) => void;

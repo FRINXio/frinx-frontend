@@ -33,7 +33,7 @@ type ModalWorkflow = {
 };
 
 export const getDynamicInputParametersFromWorkflow = (
-  workflow?: ModalWorkflow | Workflow | ClientWorkflowWithTasks | null,
+  workflow?: ModalWorkflow | Workflow | ClientWorkflowWithTasks | ClientWorkflow | null,
 ): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});

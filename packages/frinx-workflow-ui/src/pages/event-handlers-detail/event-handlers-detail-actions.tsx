@@ -2,12 +2,22 @@ import React, { Fragment, useState, VoidFunctionComponent } from 'react';
 import { Heading, useDisclosure } from '@chakra-ui/react';
 import { v4 as uuid } from 'uuid';
 import { ConfirmDeleteModal } from '@frinx/shared';
-import { EventHandlerQuery } from '../../__generated__/graphql';
+import {} from '../../__generated__/graphql';
 import EventHandlerDetailActionJsonModal from './event-handler-detail-action-json-modal';
 import { CompleteTaskAction, FailTaskAction, StartWorkflowAction } from './event-handlers-detail-actions-tasks';
 
+// TODO: FIXME
+type StartWorkflow = { name: string; version: string; input: string; correlationId: string; taskToDomain: string };
+type CompleteFailTask = { workflowId: string; taskId: string; taskRefName: string; output: string };
+
 type Props = {
-  actions: NonNullable<EventHandlerQuery['eventHandler']>['actions'];
+  // actions: NonNullable<EventHandlerQuery['eventHandler']>['actions'];
+  actions: {
+    action: string;
+    startWorkflow: StartWorkflow;
+    completeTask: CompleteFailTask;
+    failTask: CompleteFailTask;
+  }[];
   onEventHandlerActionDelete: (actionIndex: number) => void;
 };
 
