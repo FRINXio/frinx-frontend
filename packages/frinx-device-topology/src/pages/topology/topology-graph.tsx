@@ -1,14 +1,19 @@
 import { Box, Button } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
-import React, { PointerEventHandler, useRef, useState, VoidFunctionComponent } from 'react';
+import React, { PointerEventHandler, useRef, useState, VoidFunctionComponent, WheelEvent } from 'react';
 import DeviceInfoPanel from '../../components/device-info-panel/device-info-panel';
-import { clearCommonSearch, panTopology, setSelectedNode, updateNodePosition } from '../../state.actions';
+import { clearCommonSearch, panTopology, setSelectedNode, updateNodePosition, zoomTopology } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import Edges from './edges';
 import { ensureNodeHasDevice, height, Position, width } from './graph.helpers';
 import BackgroundSvg from './img/background.svg';
 import Nodes from './lldp/nodes';
+import { normalizeWheelPixelY } from './topology.helpers';
 import { getTransformMatrix } from './transform.helpers';
+
+// These constant were chosen empirically:
+// mouse-wheel for zooming (ALL TOOLS)
+const WHEEL_ZOOM_COEFFICIENT = 1000;
 
 type Props = {
   isCommonNodesFetching: boolean;
@@ -96,6 +101,16 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
     }
   };
 
+  const handleWheel = (event: WheelEvent<SVGSVGElement>) => {
+    event.preventDefault();
+    const delta = normalizeWheelPixelY(event);
+
+    // if alt, ctrl, cmd or shift is down apply rotation
+    if (event.metaKey || event.shiftKey) {
+      dispatch(zoomTopology(1 + delta / WHEEL_ZOOM_COEFFICIENT));
+    }
+  };
+
   const handleNodePositionUpdate = (deviceName: string, position: Position) => {
     if (timeoutRef.current != null) {
       clearTimeout(timeoutRef.current);
@@ -142,6 +157,7 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerMove={handlePointerMove}
+        onWheel={handleWheel}
       >
         <g transform={`matrix(${transformMatrix.toString()})`}>
           <Edges edgesWithDiff={edges} />

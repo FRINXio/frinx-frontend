@@ -1,5 +1,10 @@
 import { inv } from 'mathjs'; // this should be imported from mathjs
 
+export type Dimensions = {
+  width: number;
+  height: number;
+};
+
 export type Position = {
   x: number;
   y: number;
@@ -18,6 +23,14 @@ export function translate(x: number, y: number): Matrix {
 
 export function scale(zoom: number): Matrix {
   return [zoom, 0, 0, zoom, 0, 0];
+}
+
+export function getDegreesFromRadians(radians: number): number {
+  return radians * (180 / Math.PI);
+}
+
+export function getRadiansFromDegrees(degrees: number): number {
+  return (degrees * Math.PI) / 180;
 }
 
 export function rotate(angle: number): Matrix {
@@ -94,10 +107,11 @@ export function getZoomLevel(transform: Matrix): number {
   return transformedDistance / unitDistance;
 }
 
-export function getDegreesFromRadians(radians: number): number {
-  return radians * (180 / Math.PI);
-}
+export function getMidPoint(dimensions: Dimensions, transform: Matrix): Position {
+  const mid = {
+    x: dimensions.width / 2,
+    y: dimensions.height / 2,
+  };
 
-export function getRadiansFromDegrees(degrees: number): number {
-  return (degrees * Math.PI) / 180;
+  return multiplyMatrixWithPosition(transform, mid);
 }

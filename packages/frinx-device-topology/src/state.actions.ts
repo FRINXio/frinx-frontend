@@ -174,7 +174,8 @@ export type StateAction =
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: PtpNodesEdgesPayload;
     }
-  | { type: 'PAN_TOPOLOGY'; panDelta: Position };
+  | { type: 'PAN_TOPOLOGY'; panDelta: Position }
+  | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -705,5 +706,12 @@ export function panTopology(panDelta: Position): StateAction {
   return {
     type: 'PAN_TOPOLOGY',
     panDelta,
+  };
+}
+
+export function zoomTopology(zoomDelta: number): StateAction {
+  return {
+    type: 'ZOOM_TOPOLOGY',
+    zoomDelta,
   };
 }

@@ -1,5 +1,5 @@
 import { difference } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState, VoidFunctionComponent } from 'react';
+import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
 import {
   getBackupNodesAndEdges,
@@ -41,7 +41,6 @@ const TOPOLOGY_COMMON_NODES = gql`
 const TopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
-  const oldPan = useState(null);
   const { state, dispatch } = useStateContext();
   const { selectedNodeIds, unconfirmedSelectedNodeIds, selectedLabels, selectedVersion, topologyLayer } = state;
   const [, updatePosition] = useMutation<UpdatePositionMutation, UpdatePositionMutationVariables>(

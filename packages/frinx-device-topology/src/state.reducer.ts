@@ -12,8 +12,18 @@ import {
   GraphPtpNodeInterface,
   Position,
   PositionGroupsMap,
+  width as topologyWidth,
+  height as topologyHeight,
 } from './pages/topology/graph.helpers';
-import { identity, Matrix, translate, multiplyMatrices } from './pages/topology/transform.helpers';
+import {
+  identity,
+  Matrix,
+  translate,
+  multiplyMatrices,
+  getMidPoint,
+  scale,
+  getZoomLevel,
+} from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 import { PtpGraphNode } from './__generated__/graphql';
 
@@ -27,6 +37,12 @@ export type ShortestPathInfo = {
   nodes: NodeInfo[];
 };
 export type ShortestPath = ShortestPathInfo[];
+
+// We need to limit zoomLevel to reasonable numbers,
+// these were picked as a good start.
+// (Safari on Mac should have lower MAX, but we will stick with it for now)
+const MIN_ZOOM_LEVEL = 0.01;
+const MAX_ZOOM_LEVEL = 20;
 
 export type State = {
   topologyLayer: TopologyLayer;
@@ -64,7 +80,7 @@ export type State = {
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
   transform: Matrix;
-  isMouseDown: boolean;
+  // isMouseDown: boolean;
 };
 
 export const initialState: State = {
@@ -103,7 +119,7 @@ export const initialState: State = {
   synceNodePositions: {},
   synceInterfaceGroupPositions: {},
   transform: identity(),
-  isMouseDown: false,
+  // isMouseDown: false,
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -370,6 +386,25 @@ export function stateReducer(state: State, action: StateAction): State {
         const currentTransform = state.transform;
         const xform = translate(action.panDelta.x, action.panDelta.y);
         acc.transform = multiplyMatrices(xform, currentTransform);
+        return acc;
+      }
+      case 'ZOOM_TOPOLOGY': {
+        const currentTransform = state.transform;
+        const dimensions = {
+          width: topologyWidth,
+          height: topologyHeight,
+        };
+        const mid = getMidPoint(dimensions, state.transform);
+        const xform = multiplyMatrices(translate(mid.x, mid.y), scale(action.zoomDelta), translate(-mid.x, -mid.y));
+        const finalTransform = multiplyMatrices(xform, currentTransform);
+
+        // We will limit zoomlevel to a reasonable number
+        const zoomLevel = getZoomLevel(finalTransform);
+        if (zoomLevel < MIN_ZOOM_LEVEL || zoomLevel > MAX_ZOOM_LEVEL) {
+          return acc;
+        }
+
+        acc.transform = finalTransform;
         return acc;
       }
       default:
