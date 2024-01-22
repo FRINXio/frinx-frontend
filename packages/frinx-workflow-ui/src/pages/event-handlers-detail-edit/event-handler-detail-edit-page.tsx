@@ -6,11 +6,6 @@ import { Container, Heading } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import EventHandlerForm from '../../components/event-handler-form/event-handler-form';
-import //   EditEventHandlerMutation,
-//   EditEventHandlerMutationVariables,
-//   GetEventHandlerDetailQuery,
-//   GetEventHandlerDetailQueryVariables,
-'../../__generated__/graphql';
 // import { removeTypenamesFromActionTasks } from '../../helpers/event-handlers.helpers';
 //
 // const GET_EVENT_HANDLER_QUERY = gql`

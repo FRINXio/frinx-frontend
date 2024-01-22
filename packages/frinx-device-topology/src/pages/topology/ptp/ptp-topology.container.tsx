@@ -44,6 +44,7 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
     GetGrandMasterPathQueryVariables
   >({
     query: GET_GM_PATH,
+    requestPolicy: 'network-only',
     variables: {
       deviceFrom: selectedGmPathNodeId as string,
     },
