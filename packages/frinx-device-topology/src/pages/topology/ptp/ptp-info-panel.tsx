@@ -37,6 +37,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
       paddingY={6}
       boxShadow="md"
       spacing={4}
+      alignItems="flex-start"
     >
       <Box>
         <Flex alignItems="center">
