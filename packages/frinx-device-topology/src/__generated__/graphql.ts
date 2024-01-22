@@ -15,7 +15,6 @@ export type Scalars = {
   BigInt: { input: any; output: any; }
   Cursor: { input: any; output: any; }
   DateTime: { input: any; output: any; }
-  File: { input: any; output: any; }
   JSON: { input: any; output: any; }
   Map: { input: any; output: any; }
   ObjMap: { input: any; output: any; }
@@ -1668,10 +1667,10 @@ export type TaskSummary = {
   workflowType: Maybe<Scalars['String']['output']>;
 };
 
-export type TaskTimeoutPolicy = {
-  __typename?: 'TaskTimeoutPolicy';
-  _fake: Maybe<Scalars['String']['output']>;
-};
+export type TaskTimeoutPolicy =
+  | 'ALERT_ONLY'
+  | 'RETRY'
+  | 'TIME_OUT_WF';
 
 export type TasksOrderByInput = {
   direction: SortDirection;
@@ -1680,7 +1679,6 @@ export type TasksOrderByInput = {
 
 export type TimeoutPolicy =
   | 'ALERT_ONLY'
-  | 'RETRY'
   | 'TIME_OUT_WF';
 
 export type Topology = {
@@ -1860,7 +1858,7 @@ export type Workflow = Node & {
   updatedAt: Maybe<Scalars['String']['output']>;
   updatedBy: Maybe<Scalars['String']['output']>;
   variables: Maybe<Scalars['String']['output']>;
-  workflowDefinition: Maybe<BaseWorkflowDefinition>;
+  workflowDefinition: Maybe<WorkflowDefinition>;
 };
 
 export type WorkflowDef = {
@@ -1915,6 +1913,7 @@ export type WorkflowDef_Input = {
 export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   __typename?: 'WorkflowDefinition';
   createdAt: Maybe<Scalars['String']['output']>;
+  createdBy: Maybe<Scalars['String']['output']>;
   description: Maybe<Scalars['String']['output']>;
   hasSchedule: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -1928,6 +1927,7 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   timeoutPolicy: Maybe<TimeoutPolicy>;
   timeoutSeconds: Maybe<Scalars['Int']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
+  updatedBy: Maybe<Scalars['String']['output']>;
   variables: Maybe<Scalars['JSON']['output']>;
   version: Scalars['Int']['output'];
 };
@@ -1958,7 +1958,7 @@ export type WorkflowDefinitionInput = {
   restartable?: InputMaybe<Scalars['Boolean']['input']>;
   schemaVersion?: InputMaybe<Scalars['Int']['input']>;
   tasks: Scalars['String']['input'];
-  timeoutPolicy?: InputMaybe<Mutation_GetWorkflows_AdditionalProperties_Items_Tasks_Items_WorkflowTask_SubWorkflowParam_WorkflowDefinition_TimeoutPolicy>;
+  timeoutPolicy?: InputMaybe<TimeoutPolicy>;
   timeoutSeconds: Scalars['BigInt']['input'];
   updateTime?: InputMaybe<Scalars['BigInt']['input']>;
   updatedBy?: InputMaybe<Scalars['String']['input']>;
@@ -2389,7 +2389,7 @@ export type ConductorMutationRetry_1Args = {
 
 
 export type ConductorMutationSkipTaskFromWorkflowArgs = {
-  skipTaskRequest: SkipTaskRequest_Input;
+  input?: InputMaybe<SkipTaskRequest_Input>;
   taskReferenceName: Scalars['String']['input'];
   workflowId: Scalars['String']['input'];
 };
@@ -2517,7 +2517,7 @@ export type ConductorQuery = {
   /** Gets the workflow by workflow id */
   getExecutionStatus: Maybe<ApiWorkflow>;
   /** Get task or workflow by externalPayloadPath from External PostgreSQL Storage */
-  getExternalStorageData: Maybe<Scalars['File']['output']>;
+  getExternalStorageData: Maybe<Scalars['JSON']['output']>;
   /** Get the uri and path of the external storage where the workflow payload is to be stored */
   getExternalStorageLocation: Maybe<ExternalStorageLocation>;
   /** Get the external uri where the task payload is to be stored */
@@ -3639,4 +3639,4 @@ export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __type
 export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string, domain: number, ptpProfile: string, clockId: string, parentClockId: string, gmClockId: string, clockClass: number | null, clockAccuracy: string | null, clockVariance: string | null, timeRecoveryStatus: string | null, globalPriority: number | null, userPriority: number | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
