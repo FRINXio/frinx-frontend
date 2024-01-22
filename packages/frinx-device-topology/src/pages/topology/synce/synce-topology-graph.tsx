@@ -1,12 +1,14 @@
 import { Box } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
-import { updateSynceNodePosition } from '../../../state.actions';
+import { setSelectedNode, updateSynceNodePosition } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './synce-edges';
 import { height, Position, width } from '../graph.helpers';
 import BackgroundSvg from '../img/background.svg';
 import SynceNodes from './synce-nodes';
+import { SynceGraphNode } from '../../../__generated__/graphql';
+import SynceInfoPanel from './synce-info-panel';
 
 type Props = {
   onNodePositionUpdate: (positions: { deviceName: string; position: Position }[]) => Promise<void>;
@@ -17,7 +19,7 @@ const SynceTopologyGraph: VoidFunctionComponent<Props> = ({ onNodePositionUpdate
   const lastPositionRef = useRef<{ deviceName: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const { synceEdges: edges, synceNodes: nodes } = state;
+  const { synceEdges: edges, synceNodes: nodes, selectedNode } = state;
 
   const handleNodePositionUpdate = (deviceName: string, position: Position) => {
     if (timeoutRef.current != null) {
@@ -43,6 +45,10 @@ const SynceTopologyGraph: VoidFunctionComponent<Props> = ({ onNodePositionUpdate
     }
   };
 
+  const handleInfoPanelClose = () => {
+    dispatch(setSelectedNode(null));
+  };
+
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
@@ -53,6 +59,21 @@ const SynceTopologyGraph: VoidFunctionComponent<Props> = ({ onNodePositionUpdate
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
       </svg>
+      {selectedNode != null && (
+        <Box
+          position="absolute"
+          top={2}
+          right={2}
+          background="white"
+          borderRadius="md"
+          paddingX={4}
+          paddingY={6}
+          width={60}
+          boxShadow="md"
+        >
+          <SynceInfoPanel node={selectedNode as SynceGraphNode} onClose={handleInfoPanelClose} />
+        </Box>
+      )}
     </Box>
   );
 };

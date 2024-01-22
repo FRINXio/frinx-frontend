@@ -46,7 +46,7 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
     updatePosition({
       input: {
         coordinates,
-        layer: 'PtpTopology',
+        layer: 'EthTopology',
       },
     });
   };

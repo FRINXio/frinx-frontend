@@ -1,40 +1,28 @@
 import { UseDisclosureReturn } from '@chakra-ui/react';
-import {
-  useNotifications,
-  ExecuteWorkflowModal,
-  unwrap,
-  CreateScheduledWorkflow,
-  ClientWorkflowWithoutTasks,
-} from '@frinx/shared';
+import { useNotifications, ExecuteWorkflowModal, unwrap, ClientWorkflow, ClientWorkflowWithTasks } from '@frinx/shared';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
-import {
-  DefinitionModal,
-  DiagramModal,
-  DependencyModal,
-  ScheduleWorkflowModal,
-  ConfirmDeleteModal,
-} from '../../components/modals';
+import { DefinitionModal, DependencyModal, ScheduleWorkflowModal, ConfirmDeleteModal } from '../../components/modals';
 import {
   CreateScheduleInput,
   CreateScheduleMutation,
   CreateScheduleMutationVariables,
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
-  ScheduleWorkflowMutation,
-  ScheduleWorkflowMutationVariables,
+  // ScheduleWorkflowMutation,
+  // ScheduleWorkflowMutationVariables,
 } from '../../__generated__/graphql';
 
 type Props = {
-  workflows: ClientWorkflowWithoutTasks[];
-  activeWorkflow?: ClientWorkflowWithoutTasks;
+  workflows: ClientWorkflowWithTasks[];
+  activeWorkflow?: ClientWorkflowWithTasks;
   definitionModal: UseDisclosureReturn;
   diagramModal: UseDisclosureReturn;
   dependencyModal: UseDisclosureReturn;
   executeWorkflowModal: UseDisclosureReturn;
   scheduledWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
-  onDeleteWorkflow: (workflow: ClientWorkflowWithoutTasks) => Promise<void>;
+  onDeleteWorkflow: (workflow: ClientWorkflow) => Promise<void>;
 };
 
 const CREATE_SCHEDULE_MUTATION = gql`
@@ -68,7 +56,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   confirmDeleteModal,
   definitionModal,
   dependencyModal,
-  diagramModal,
+  diagramModal, // eslint-disable-line @typescript-eslint/no-unused-vars
   executeWorkflowModal,
   scheduledWorkflowModal,
   onDeleteWorkflow,
@@ -88,7 +76,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       ...scheduledWf,
       cronString: unwrap(scheduledWf.cronString),
     };
-
     if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
       createSchedule({ input: scheduleInput })
         .then((res) => {
@@ -147,7 +134,6 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
 
       return null;
     }
-    console.log('execute workflow: ', values);
     return onExecute({
       input: {
         inputParameters: JSON.stringify(values),

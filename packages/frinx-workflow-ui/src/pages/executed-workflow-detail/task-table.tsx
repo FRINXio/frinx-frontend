@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 import { Icon, IconButton, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
+import { WorkflowStatus } from '@frinx/shared';
 import { formatDate } from '../../helpers/utils.helpers';
 import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
-import { WorkflowTaskStatus } from '../../__generated__/graphql';
 
 type ExecutedWorkflowTask = {
   id: string;
@@ -83,7 +83,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick }) => {
                 {formatDate(task.endTime)}
               </Td>
               <Td>
-                <WorkflowStatusLabel status={(task.status as WorkflowTaskStatus) ?? 'UNKNOWN'} />
+                <WorkflowStatusLabel status={(task.status as WorkflowStatus) ?? 'UNKNOWN'} />
               </Td>
             </Tr>
           ))}

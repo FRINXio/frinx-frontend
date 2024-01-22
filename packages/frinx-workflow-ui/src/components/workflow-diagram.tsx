@@ -12,7 +12,7 @@ import {
 } from '@frinx/shared';
 import { getLayoutedElements } from '../helpers/layout.helpers';
 import { BaseNode, DecisionNode, StartEndNode } from './index';
-import { ControlExecutedWorkflowSubscription, Workflow } from '../__generated__/graphql';
+import { ControlExecutedWorkflowSubscription, WorkflowDefinition } from '../__generated__/graphql';
 
 const nodeTypes = {
   base: BaseNode,
@@ -34,8 +34,8 @@ type UnusedWorkflowProperties =
   | 'ownerApp';
 
 type Props = {
-  result?: ControlExecutedWorkflowSubscription['controlExecutedWorkflow'] | null;
-  meta?: Omit<Workflow, UnusedWorkflowProperties> | null;
+  result?: ControlExecutedWorkflowSubscription['conductor']['controlExecutedWorkflow'] | null;
+  meta?: Omit<WorkflowDefinition, UnusedWorkflowProperties> | null;
 };
 
 type NodeData = {
@@ -57,7 +57,7 @@ const WorkflowDiagram = ({ meta, result }: Props) => {
     );
   }
 
-  const tasks = jsonParse<Task[]>(meta.tasks) || [];
+  const tasks = jsonParse<Task[]>(meta.tasksJson) || [];
   const taskMap = new Map(unwrap(result.tasks).map((t) => [t.id, t]));
   const elements: { nodes: Node<NodeData>[]; edges: Edge[] } = getLayoutedElements(
     getElementsFromWorkflow(tasks.map(convertWorkflowTaskToExtendedTask), true),

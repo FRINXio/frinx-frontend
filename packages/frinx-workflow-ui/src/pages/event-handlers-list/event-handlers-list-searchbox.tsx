@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Button, ButtonGroup, chakra, FormControl, FormLabel, HStack, Input, Switch } from '@chakra-ui/react';
+import { Button, chakra, FormControl, FormLabel, HStack, Input } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 
 export type SearchEventHandlerValues = {
@@ -24,6 +24,7 @@ const INITIAL_VALUES: SearchEventHandlerValues = {
 
 const Form = chakra('form');
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const EventHandlersListSearchbox: VoidFunctionComponent<Props> = ({ filters, onSearchSubmit, canDoSearch }) => {
   const { values, handleChange, submitForm, resetForm } = useFormik<SearchEventHandlerValues>({
     initialValues: filters || INITIAL_VALUES,
