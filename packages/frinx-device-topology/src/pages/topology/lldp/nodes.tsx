@@ -63,6 +63,12 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
   };
   const handlePointerMove = (event: React.PointerEvent<SVGRectElement>) => {
     if (position.isActive && isPointerDown) {
+      // TODO: these prevent fire panning handler
+      // we should probably introduce some toolbar where we can switch between
+      // pan/zoom/normal mode and use different events based on its state
+      event.preventDefault();
+      event.stopPropagation();
+
       setIsMoved(true);
       const bbox = event.currentTarget.getBoundingClientRect();
       const x = event.clientX - bbox.left;
