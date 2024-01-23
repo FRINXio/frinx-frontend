@@ -22,6 +22,7 @@ import { gql, useMutation, useQuery } from 'urql';
 import { usePagination, Pagination, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
+import { truncate } from 'lodash';
 import {
   DeleteEventHandlerMutation,
   DeleteEventHandlerMutationVariables,
@@ -97,8 +98,7 @@ const EventHandlersListPage: FC = () => {
     }),
     [],
   );
-  // TODO: FIXME
-  const [{ fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
+  const [{ data, fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
     query: EVENT_HANDLERS_QUERY,
     context: ctx,
     variables: {
@@ -108,26 +108,6 @@ const EventHandlersListPage: FC = () => {
     },
   });
 
-  type Node = {
-    id: string;
-    name: string;
-    event: string;
-    evaluatorType: string;
-    actions: { action: string }[];
-  };
-  const data = {
-    conductor: {
-      eventHandlers: {
-        edges: [] as { node: Node }[],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-          endCursor: 'adsf',
-          startCursor: 'sadf',
-        },
-      },
-    },
-  };
   const [, deleteEventHandler] = useMutation<DeleteEventHandlerMutation, DeleteEventHandlerMutationVariables>(
     DELETE_EVENT_HANDLER_MUTATION,
   );
@@ -266,11 +246,11 @@ const EventHandlersListPage: FC = () => {
                     <Switch isChecked={node.isActive ?? false} onChange={(e) => handleOnIsActiveClick(e, node)} />
                   </Td> */}
                   <Td>
-                    <ChakraLink color="blue.500" as={Link} to={`${node.event}/${node.name}`}>
-                      {node.name}
+                    <ChakraLink color="blue.500" as={Link} to={`${node.event}/${node.name}`} title={node.name}>
+                      {truncate(node.name, { length: 40 })}
                     </ChakraLink>
                   </Td>
-                  <Td>{node.event}</Td>
+                  <Td title={node.event}>{truncate(node.event, { length: 40 })}</Td>
                   <Td>{node.evaluatorType || 'not defined'}</Td>
                   <Td>{node.actions.map((action) => action?.action).join(', ')}</Td>
                   <Td>
