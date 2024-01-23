@@ -13,7 +13,18 @@ import {
   GraphSynceNodeInterface,
   Position,
   PositionGroupsMap,
+  width as topologyWidth,
+  height as topologyHeight,
 } from './pages/topology/graph.helpers';
+import {
+  identity,
+  Matrix,
+  translate,
+  multiplyMatrices,
+  getMidPoint,
+  scale,
+  getZoomLevel,
+} from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 import { PtpGraphNode, SynceGraphNode } from './__generated__/graphql';
 
@@ -27,6 +38,12 @@ export type ShortestPathInfo = {
   nodes: NodeInfo[];
 };
 export type ShortestPath = ShortestPathInfo[];
+
+// We need to limit zoomLevel to reasonable numbers,
+// these were picked as a good start.
+// (Safari on Mac should have lower MAX, but we will stick with it for now)
+const MIN_ZOOM_LEVEL = 0.01;
+const MAX_ZOOM_LEVEL = 20;
 
 export type State = {
   topologyLayer: TopologyLayer;
@@ -63,6 +80,8 @@ export type State = {
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
+  transform: Matrix;
+  // isMouseDown: boolean;
 };
 
 export const initialState: State = {
@@ -100,6 +119,8 @@ export const initialState: State = {
   synceEdges: [],
   synceNodePositions: {},
   synceInterfaceGroupPositions: {},
+  transform: identity(),
+  // isMouseDown: false,
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -360,6 +381,31 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_WEIGHT_VISIBILITY': {
         acc.isWeightVisible = action.isVisible;
+        return acc;
+      }
+      case 'PAN_TOPOLOGY': {
+        const currentTransform = state.transform;
+        const xform = translate(action.panDelta.x, action.panDelta.y);
+        acc.transform = multiplyMatrices(xform, currentTransform);
+        return acc;
+      }
+      case 'ZOOM_TOPOLOGY': {
+        const currentTransform = state.transform;
+        const dimensions = {
+          width: topologyWidth,
+          height: topologyHeight,
+        };
+        const mid = getMidPoint(dimensions, state.transform);
+        const xform = multiplyMatrices(translate(mid.x, mid.y), scale(action.zoomDelta), translate(-mid.x, -mid.y));
+        const finalTransform = multiplyMatrices(xform, currentTransform);
+
+        // We will limit zoomlevel to a reasonable number
+        const zoomLevel = getZoomLevel(finalTransform);
+        if (zoomLevel < MIN_ZOOM_LEVEL || zoomLevel > MAX_ZOOM_LEVEL) {
+          return acc;
+        }
+
+        acc.transform = finalTransform;
         return acc;
       }
       default:
