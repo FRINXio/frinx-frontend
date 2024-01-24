@@ -29,10 +29,26 @@ const GET_GM_PATH = gql`
   }
 `;
 
+const PTP_DIFF_SYNCE = gql`
+  query PtPDiffSyncE{
+    ptpDiffSyncE {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+`;
+
 const PtpTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const { dispatch, state } = useStateContext();
   const { selectedGmPathNodeId } = state;
+
+  const [{ data: ptpDiffSynce, error }] = useQuery<any, any>(PTP_DIFF_SYNCE);
+
+  
 
   const [, updatePosition] = useMutation<UpdatePtpPositionMutation, UpdatePtpPositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
