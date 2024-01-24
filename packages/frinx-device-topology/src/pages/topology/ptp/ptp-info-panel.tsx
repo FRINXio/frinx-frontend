@@ -37,6 +37,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
       paddingY={6}
       boxShadow="md"
       spacing={4}
+      alignItems="flex-start"
     >
       <Box>
         <Flex alignItems="center">
@@ -64,11 +65,22 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
           </Heading>
           {interfaces.map((i) => {
             return (
-              <Box key={`device-interface-${i.id}`}>
+              <Box key={`device-interface-${i.id}`} my={2}>
                 <Button as={Link} onClick={() => handleInterfaceClick(i)}>
                   {i.name}
                 </Button>
-                <Text>{i.status}</Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>Status:</strong> {i.status}
+                </Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>Admin op. status:</strong> {i.details?.adminOperStatus}
+                </Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>PTP status:</strong> {i.details?.ptpStatus}
+                </Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>PTSF unusable:</strong> {i.details?.ptsfUnusable}
+                </Text>
               </Box>
             );
           })}

@@ -866,9 +866,17 @@ export type GraphNodeCoordinatesInput = {
 
 export type GraphNodeInterface = {
   __typename?: 'GraphNodeInterface';
+  details: Maybe<GraphNodeInterfaceDetails>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   status: GraphEdgeStatus;
+};
+
+export type GraphNodeInterfaceDetails = {
+  __typename?: 'GraphNodeInterfaceDetails';
+  adminOperStatus: Maybe<Scalars['String']['output']>;
+  ptpStatus: Maybe<Scalars['String']['output']>;
+  ptsfUnusable: Maybe<Scalars['String']['output']>;
 };
 
 export type GraphVersionEdge = {
@@ -3634,9 +3642,9 @@ export type TopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: 
 export type PtpTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string, domain: number, ptpProfile: string, clockId: string, parentClockId: string, gmClockId: string, clockClass: number | null, clockAccuracy: string | null, clockVariance: string | null, timeRecoveryStatus: string | null, globalPriority: number | null, userPriority: number | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'GraphNodeInterfaceDetails', ptpStatus: string | null, adminOperStatus: string | null, ptsfUnusable: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string, domain: number, ptpProfile: string, clockId: string, parentClockId: string, gmClockId: string, clockClass: number | null, clockAccuracy: string | null, clockVariance: string | null, timeRecoveryStatus: string | null, globalPriority: number | null, userPriority: number | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'GraphNodeInterfaceDetails', ptpStatus: string | null, adminOperStatus: string | null, ptsfUnusable: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
