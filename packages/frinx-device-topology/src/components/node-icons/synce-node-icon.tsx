@@ -10,6 +10,8 @@ import NodeInterface from './node-interface';
 type Props = {
   positions: PositionsWithGroupsMap<GraphSynceNodeInterface>;
   isFocused: boolean;
+  isSelectedForGmPath: boolean;
+  isGmPath: boolean;
   node: SynceGraphNode;
   topologyMode: TopologyMode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
@@ -25,6 +27,8 @@ const Text = chakra('text');
 const SynceNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
+  isSelectedForGmPath,
+  isGmPath,
   node,
   topologyMode,
   onPointerDown,
@@ -65,6 +69,24 @@ const SynceNodeIcon: VoidFunctionComponent<Props> = ({
         {node.name}
       </Text>
       <NodeIconImage sizeTransform={sizeTransform} />
+      {isSelectedForGmPath && (
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="red.300"
+        />
+      )}
+      {isGmPath && (
+        <Circle
+          r={`${circleDiameter / 2 + 5}px`}
+          fill="transparent"
+          strokeWidth={3}
+          strokeDasharray="15, 15"
+          stroke="red.300"
+        />
+      )}
       <G>
         {interfaceGroups.map(([group, data]) => {
           const iPosition = data.position;

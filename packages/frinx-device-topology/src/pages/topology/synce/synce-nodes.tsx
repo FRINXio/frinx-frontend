@@ -22,7 +22,15 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
   const [isPointerDown, setIsPointerDown] = useState(false);
   const [isMoved, setIsMoved] = useState(false);
   const { state, dispatch } = useStateContext();
-  const { synceNodePositions, connectedNodeIds, synceInterfaceGroupPositions, mode, selectedEdge } = state;
+  const {
+    synceNodePositions,
+    connectedNodeIds,
+    synceInterfaceGroupPositions,
+    mode,
+    selectedEdge,
+    unconfirmedSelectedGmPathNodeId,
+    gmPathIds,
+  } = state;
 
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
@@ -85,6 +93,8 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
           key={node.id}
           positions={{ nodes: synceNodePositions, interfaceGroups: synceInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
+          isSelectedForGmPath={unconfirmedSelectedGmPathNodeId === node.id}
+          isGmPath={gmPathIds.includes(node.nodeId)}
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}

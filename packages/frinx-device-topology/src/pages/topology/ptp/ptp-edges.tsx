@@ -4,17 +4,15 @@ import Edge from '../../../components/edge/edge';
 import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedEdge } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { getControlPoints, getLinePoints, getNameFromNode, isTargetingActiveNode } from '../graph.helpers';
+import {
+  getControlPoints,
+  getLinePoints,
+  getNameFromNode,
+  isGmPathPredicate,
+  isTargetingActiveNode,
+} from '../graph.helpers';
 
 const EDGE_GAP = 75;
-
-const isGmPathPredicate = (gmPath: string[], edge: GraphEdgeWithDiff): boolean => {
-  const fromInterfaceIndex = gmPath.findIndex((deviceInterface) => deviceInterface === edge.source.interface);
-  if (fromInterfaceIndex === -1) {
-    return false;
-  }
-  return gmPath.includes(edge.target.interface, fromInterfaceIndex);
-};
 
 type Props = {
   edgesWithDiff: GraphEdgeWithDiff[];
