@@ -335,6 +335,9 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.selectedEdge = null;
         acc.selectedNode = null;
         acc.connectedNodeIds = [];
+        acc.gmPathIds = [];
+        acc.selectedGmPathNodeId = null;
+        acc.unconfirmedSelectedGmPathNodeId = null;
         return acc;
       }
       case 'SET_SELECTED_NET_NODE': {

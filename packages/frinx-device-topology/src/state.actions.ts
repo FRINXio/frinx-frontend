@@ -308,6 +308,11 @@ const PTP_TOPOLOGY_QUERY = gql`
             id
             status
             name
+            details {
+              ptpStatus
+              adminOperStatus
+              ptsfUnusable
+            }
           }
           coordinates {
             x
@@ -359,6 +364,11 @@ const SYNCE_TOPOLOGY_QUERY = gql`
             id
             status
             name
+            details {
+              ptpStatus
+              adminOperStatus
+              ptsfUnusable
+            }
           }
           coordinates {
             x

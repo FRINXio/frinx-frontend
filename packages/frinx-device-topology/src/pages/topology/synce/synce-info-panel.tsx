@@ -50,6 +50,9 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
                 {i.name}
               </Button>
               <Text>{i.status}</Text>
+              <Text>{i.details?.adminOperStatus}</Text>
+              <Text>{i.details?.ptpStatus}</Text>
+              <Text>{i.details?.ptsfUnusable}</Text>
             </Box>
           );
         })}
