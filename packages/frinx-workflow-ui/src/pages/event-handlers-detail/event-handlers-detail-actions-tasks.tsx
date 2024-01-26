@@ -1,28 +1,28 @@
 import React, { VoidFunctionComponent } from 'react';
 import { Button, Card, Heading, HStack, IconButton, Spacer, Text } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import {} from '../../__generated__/graphql';
+import { EventHandlerDetailQuery } from '../../__generated__/graphql';
 
 type StartWorkflowActionProps = {
-  // TODO: FIXME
-  // startWorkflow: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['startWorkflow'];
-  startWorkflow: { name: string; version: string; input: string; correlationId: string; taskToDomain: string };
+  startWorkflow: NonNullable<
+    NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>['actions']['0']
+  >['startWorkflow'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
   cannotBeDeleted: boolean;
 };
 
 type CompleteTaskActionProps = {
-  // completeTask: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['completeTask'];
-  completeTask: { workflowId: string; taskId: string; taskRefName: string; output: string };
+  completeTask: NonNullable<
+    NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>['actions']['0']
+  >['completeTask'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
   cannotBeDeleted: boolean;
 };
 
 type FailTaskActionProps = {
-  // failTask: NonNullable<EventHandlerQuery['eventHandler']>['actions']['0']['failTask'];
-  failTask: { workflowId: string; taskId: string; taskRefName: string; output: string };
+  failTask: NonNullable<NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>['actions']['0']>['failTask'];
   onShowJsonModalClick: (json: string) => void;
   onDeleteClick: () => void;
   cannotBeDeleted: boolean;

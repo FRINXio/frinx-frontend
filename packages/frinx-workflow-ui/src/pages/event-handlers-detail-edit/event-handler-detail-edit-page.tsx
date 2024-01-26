@@ -22,20 +22,20 @@ const GET_EVENT_HANDLER_QUERY = gql`
         condition
         actions {
           action
-          start_workflow {
+          startWorkflow {
             name
             version
             input
             correlationId
             taskToDomain
           }
-          complete_task {
+          completeTask {
             workflowId
             taskId
             output
             taskRefName
           }
-          fail_task {
+          failTask {
             workflowId
             taskId
             output
@@ -135,17 +135,17 @@ const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
             action: action?.action,
             expandInlineJSON: action?.expandInlineJSON,
             completeTask: {
-              ...action?.complete_task,
-              output: Object.entries(action?.complete_task?.output),
+              ...action?.completeTask,
+              output: Object.entries(action?.completeTask?.output ?? {}),
             },
             failTask: {
-              ...action?.fail_task,
-              output: Object.entries(action?.fail_task?.output),
+              ...action?.failTask,
+              output: Object.entries(action?.failTask?.output ?? {}),
             },
             startWorkflow: {
-              ...action?.start_workflow,
-              input: Object.entries(action?.start_workflow?.input),
-              taskToDomain: Object.entries(action?.start_workflow?.taskToDomain),
+              ...action?.startWorkflow,
+              input: Object.entries(action?.startWorkflow?.input ?? {}),
+              taskToDomain: Object.entries(action?.startWorkflow?.taskToDomain ?? {}),
             },
           })),
         }}

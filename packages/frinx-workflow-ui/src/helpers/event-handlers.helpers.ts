@@ -1,11 +1,9 @@
 import { omit } from 'lodash';
 import { EventHandlerAction } from '../components/event-handler-form/event-handler-form';
-// import { GetEventHandlersQuery } from '../__generated__/graphql';
+import { EventHandlerDetailQuery } from '../__generated__/graphql';
 
 export function removeTypenamesFromEventHandlerAction(
-  // TODO: FIXME
-  // action: NonNullable<EventHandlerQuery['eventHandler']>['actions'][0],
-  action: Record<string, unknown>,
+  action: NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>['actions'][0],
 ) {
   const newAction = omit(action, '__typename');
 
@@ -25,24 +23,21 @@ export function removeTypenamesFromEventHandlerAction(
 
 export function removeTypenamesFromActionTasks(action: EventHandlerAction) {
   return {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    complete_task: omit(
+    completeTask: omit(
       {
         ...action.completeTask,
         output: Object.fromEntries(action.completeTask?.output ?? []),
       },
       ['__typename'],
     ),
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    fail_task: omit(
+    failTask: omit(
       {
         ...action.failTask,
         output: Object.fromEntries(action.failTask?.output ?? []),
       },
       ['__typename'],
     ),
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    start_workflow: omit(
+    startWorkflow: omit(
       {
         ...action.startWorkflow,
         input: Object.fromEntries(action.startWorkflow?.input ?? []),

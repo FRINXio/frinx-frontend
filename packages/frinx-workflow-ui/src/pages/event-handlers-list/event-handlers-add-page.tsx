@@ -35,18 +35,15 @@ const EventHandlersAddPage = () => {
         actions: formValues.actions.map((action) => ({
           action: action.action,
           expandInlineJSON: action.expandInlineJSON,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          complete_task: {
+          completeTask: {
             ...action.completeTask,
             output: Object.fromEntries(action.completeTask?.output ?? []),
           },
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          fail_task: {
+          failTask: {
             ...action.failTask,
             output: Object.fromEntries(action.failTask?.output ?? []),
           },
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          start_workflow: {
+          startWorkflow: {
             ...action.startWorkflow,
             input: Object.fromEntries(action.startWorkflow?.input ?? []),
             taskToDomain: Object.fromEntries(action.startWorkflow?.taskToDomain ?? []),

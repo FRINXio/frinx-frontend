@@ -22,8 +22,8 @@ const Root: VoidFunctionComponent = () => {
     navigate(`executed/${id}`);
   };
 
-  const handleOnEventHandlerEditClick = (event: string, name: string) => {
-    navigate(`event-handlers/${event}/${name}/edit`);
+  const handleOnEventHandlerEditClick = (id: string) => {
+    navigate(`event-handlers/${id}/edit`);
   };
 
   return (

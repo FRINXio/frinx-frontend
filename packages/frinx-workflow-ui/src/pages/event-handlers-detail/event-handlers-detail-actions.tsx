@@ -2,22 +2,12 @@ import React, { Fragment, useState, VoidFunctionComponent } from 'react';
 import { Heading, useDisclosure } from '@chakra-ui/react';
 import { v4 as uuid } from 'uuid';
 import { ConfirmDeleteModal } from '@frinx/shared';
-import {} from '../../__generated__/graphql';
+import { EventHandlerDetailQuery } from '../../__generated__/graphql';
 import EventHandlerDetailActionJsonModal from './event-handler-detail-action-json-modal';
 import { CompleteTaskAction, FailTaskAction, StartWorkflowAction } from './event-handlers-detail-actions-tasks';
 
-// TODO: FIXME
-type StartWorkflow = { name: string; version: string; input: string; correlationId: string; taskToDomain: string };
-type CompleteFailTask = { workflowId: string; taskId: string; taskRefName: string; output: string };
-
 type Props = {
-  // actions: NonNullable<EventHandlerQuery['eventHandler']>['actions'];
-  actions: {
-    action: string;
-    startWorkflow: StartWorkflow;
-    completeTask: CompleteFailTask;
-    failTask: CompleteFailTask;
-  }[];
+  actions: NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>['actions'];
   onEventHandlerActionDelete: (actionIndex: number) => void;
 };
 
@@ -50,7 +40,7 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({ onEventHandl
               />
               {action.action === 'start_workflow' && (
                 <StartWorkflowAction
-                  startWorkflow={action.startWorkflow}
+                  startWorkflow={action.startWorkflow ?? null}
                   onShowJsonModalClick={(jsonValue) => {
                     setJson(JSON.stringify(jsonValue, null, 2));
                     onOpen();
@@ -62,7 +52,7 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({ onEventHandl
 
               {action.action === 'complete_task' && (
                 <CompleteTaskAction
-                  completeTask={action.completeTask}
+                  completeTask={action.completeTask ?? null}
                   onShowJsonModalClick={(jsonValue) => {
                     setJson(JSON.stringify(jsonValue, null, 2));
                     onOpen();
@@ -74,7 +64,7 @@ const EventHandlersDetailActions: VoidFunctionComponent<Props> = ({ onEventHandl
 
               {action.action === 'fail_task' && (
                 <FailTaskAction
-                  failTask={action.failTask}
+                  failTask={action.failTask ?? null}
                   onShowJsonModalClick={(jsonValue) => {
                     setJson(JSON.stringify(jsonValue, null, 2));
                     onOpen();
