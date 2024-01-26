@@ -1,4 +1,5 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
+import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import { DeviceSize, PtpGraphNode, SynceGraphNode } from '../../__generated__/graphql';
 
 export const width = 1248;
@@ -354,3 +355,11 @@ export function ensureNodeHasDevice(
 ): value is GraphNode {
   return value != null && 'device' in value;
 }
+
+export const isGmPathPredicate = (gmPath: string[], edge: GraphEdgeWithDiff): boolean => {
+  const fromInterfaceIndex = gmPath.findIndex((deviceInterface) => deviceInterface === edge.source.interface);
+  if (fromInterfaceIndex === -1) {
+    return false;
+  }
+  return gmPath.includes(edge.target.interface, fromInterfaceIndex);
+};

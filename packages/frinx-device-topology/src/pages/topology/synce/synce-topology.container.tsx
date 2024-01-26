@@ -1,8 +1,13 @@
-import React, { useEffect, useRef, VoidFunctionComponent } from 'react';
-import { gql, useClient, useMutation } from 'urql';
-import { getSynceNodesAndEdges } from '../../../state.actions';
+import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
+import { gql, useClient, useMutation, useQuery } from 'urql';
+import { findGmPath, getSynceNodesAndEdges, setGmPathIds, setMode } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables } from '../../../__generated__/graphql';
+import {
+  GetSynceGrandMasterPathQuery,
+  GetSynceGrandMasterPathQueryVariables,
+  UpdateSyncePositionMutation,
+  UpdateSyncePositionMutationVariables,
+} from '../../../__generated__/graphql';
 import { height, Position, width } from '../graph.helpers';
 import SynceTopologyGraph from './synce-topology-graph';
 
@@ -16,15 +21,43 @@ const UPDATE_POSITION_MUTATION = gql`
   }
 `;
 
+const GET_SYNCE_GM_PATH = gql`
+  query GetSynceGrandMasterPath($deviceFrom: String!) {
+    deviceInventory {
+      syncePathToGrandMaster(deviceFrom: $deviceFrom)
+    }
+  }
+`;
+
 const SynceTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
-  const { topologyLayer } = state;
+  const { topologyLayer, selectedGmPathNodeId } = state;
 
   const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
+
+  const [{ data: gmPathData, fetching: isGmPathFetching }] = useQuery<
+    GetSynceGrandMasterPathQuery,
+    GetSynceGrandMasterPathQueryVariables
+  >({
+    query: GET_SYNCE_GM_PATH,
+    requestPolicy: 'network-only',
+    variables: {
+      deviceFrom: selectedGmPathNodeId as string,
+    },
+    pause: selectedGmPathNodeId === null,
+  });
+
+  useEffect(() => {
+    const gmPathDataIds =
+      gmPathData?.deviceInventory.syncePathToGrandMaster?.map((p) => {
+        return p;
+      }) ?? [];
+    dispatch(setGmPathIds(gmPathDataIds));
+  }, [dispatch, gmPathData]);
 
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
@@ -51,7 +84,47 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
     });
   };
 
-  return <SynceTopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />;
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent): void => {
+      const { code } = event;
+      if (code === 'ShiftLeft' || code === 'ShiftRight') {
+        dispatch(setMode('GM_PATH'));
+      }
+    },
+    [dispatch],
+  );
+
+  const handleKeyUp = useCallback(
+    (event: KeyboardEvent): void => {
+      const { code } = event;
+      if (code === 'ShiftLeft' || code === 'ShiftRight') {
+        dispatch(setMode('NORMAL'));
+      }
+    },
+    [dispatch],
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.addEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyDown, handleKeyUp]);
+
+  const handleSearchClick = () => {
+    dispatch(findGmPath());
+  };
+
+  return (
+    <SynceTopologyGraph
+      onNodePositionUpdate={handleNodePositionUpdate}
+      onGrandMasterPathSearch={handleSearchClick}
+      isGrandMasterPathFetching={isGmPathFetching}
+    />
+  );
 };
 
 export default SynceTopologyContainer;
