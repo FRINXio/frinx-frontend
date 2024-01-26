@@ -25,25 +25,28 @@ export function removeTypenamesFromEventHandlerAction(
 
 export function removeTypenamesFromActionTasks(action: EventHandlerAction) {
   return {
-    completeTask: omit(
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    complete_task: omit(
       {
         ...action.completeTask,
-        output: JSON.stringify(Object.fromEntries(action.completeTask?.output ?? [])),
+        output: Object.fromEntries(action.completeTask?.output ?? []),
       },
       ['__typename'],
     ),
-    failTask: omit(
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    fail_task: omit(
       {
         ...action.failTask,
-        output: JSON.stringify(Object.fromEntries(action.failTask?.output ?? [])),
+        output: Object.fromEntries(action.failTask?.output ?? []),
       },
       ['__typename'],
     ),
-    startWorkflow: omit(
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    start_workflow: omit(
       {
         ...action.startWorkflow,
-        input: JSON.stringify(Object.fromEntries(action.startWorkflow?.input ?? [])),
-        taskToDomain: JSON.stringify(Object.fromEntries(action.startWorkflow?.taskToDomain ?? [])),
+        input: Object.fromEntries(action.startWorkflow?.input ?? []),
+        taskToDomain: Object.fromEntries(action.startWorkflow?.taskToDomain ?? []),
       },
       ['__typename'],
     ),

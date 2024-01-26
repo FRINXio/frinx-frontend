@@ -2106,6 +2106,7 @@ export type ConductorQuery = {
   /** Batch poll for a task of a certain type */
   batchPoll: Maybe<Array<Maybe<Task>>>;
   doCheck: Maybe<HealthCheckStatus>;
+  eventHandler: Maybe<EventHandler>;
   eventHandlers: EventHandlerConnection;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
   /** Retrieves workflow definition along with blueprint */
@@ -2193,6 +2194,11 @@ export type ConductorQueryBatchPollArgs = {
   tasktype: Scalars['String']['input'];
   timeout?: InputMaybe<Scalars['Int']['input']>;
   workerid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ConductorQueryEventHandlerArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2873,6 +2879,20 @@ export type CreateWorkflowMutationVariables = Exact<{
 
 
 export type CreateWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', updateWorkflowDefinition: { __typename?: 'WorkflowDefinitionPayload', workflowDefinition: { __typename?: 'WorkflowDefinition', updatedAt: string | null, tasksJson: any, name: string, description: string | null, version: number, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } | null } | null } };
+
+export type GetEventHandlerDetailQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetEventHandlerDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', eventHandler: { __typename?: 'EventHandler', name: string, event: string, condition: string | null, isActive: boolean | null, evaluatorType: string | null, actions: Array<{ __typename?: 'Action', action: MutationInput_UpdateEventHandler_Input_Actions_Items_Action | null, expandInlineJSON: boolean | null, start_workflow: { __typename?: 'StartWorkflow', name: string | null, version: number | null, input: any | null, correlationId: string | null, taskToDomain: any | null } | null, complete_task: { __typename?: 'TaskDetails', workflowId: string | null, taskId: string | null, output: any | null, taskRefName: string | null } | null, fail_task: { __typename?: 'TaskDetails', workflowId: string | null, taskId: string | null, output: any | null, taskRefName: string | null } | null } | null> } | null } };
+
+export type EditEventHandlerMutationVariables = Exact<{
+  input: EditEventHandlerInput;
+}>;
+
+
+export type EditEventHandlerMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', editEventHandler: { __typename?: 'EditEventHandlerPayload', eventHandler: { __typename?: 'EventHandler', id: string, name: string } | null } } };
 
 export type CreateEventHandlerMutationVariables = Exact<{
   input: CreateEventHandlerInput;

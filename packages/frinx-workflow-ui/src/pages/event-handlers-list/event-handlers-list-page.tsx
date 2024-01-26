@@ -266,7 +266,7 @@ const EventHandlersListPage: FC = () => {
                     />
                   </Td>
                   <Td>
-                    <ChakraLink color="blue.500" as={Link} to={`${node.event}/${node.name}`} title={node.name}>
+                    <ChakraLink color="blue.500" as={Link} to={node.id} title={node.name}>
                       {truncate(node.name, { length: 40 })}
                     </ChakraLink>
                   </Td>
@@ -280,7 +280,7 @@ const EventHandlersListPage: FC = () => {
                         size="sm"
                         icon={<FeatherIcon icon="edit" size={12} />}
                         as={Link}
-                        to={`${node.event}/${node.name}/edit`}
+                        to={`${node.id}/edit`}
                       />
                       <IconButton
                         aria-label="delete event handler"
