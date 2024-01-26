@@ -14,7 +14,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
   DateTime: { input: any; output: any; }
-  File: { input: any; output: any; }
   JSON: { input: any; output: any; }
   ObjMap: { input: any; output: any; }
   Upload: { input: any; output: any; }
@@ -664,9 +663,17 @@ export type GraphNodeCoordinatesInput = {
 
 export type GraphNodeInterface = {
   __typename?: 'GraphNodeInterface';
+  details: Maybe<GraphNodeInterfaceDetails>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   status: GraphEdgeStatus;
+};
+
+export type GraphNodeInterfaceDetails = {
+  __typename?: 'GraphNodeInterfaceDetails';
+  adminOperStatus: Maybe<Scalars['String']['output']>;
+  ptpStatus: Maybe<Scalars['String']['output']>;
+  ptsfUnusable: Maybe<Scalars['String']['output']>;
 };
 
 export type GraphVersionEdge = {
@@ -845,12 +852,18 @@ export type PollData = {
 
 export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
+  clockAccuracy: Maybe<Scalars['String']['output']>;
+  clockClass: Maybe<Scalars['Int']['output']>;
   clockId: Scalars['String']['output'];
   clockType: Scalars['String']['output'];
+  clockVariance: Maybe<Scalars['String']['output']>;
   domain: Scalars['Int']['output'];
+  globalPriority: Maybe<Scalars['Int']['output']>;
   gmClockId: Scalars['String']['output'];
   parentClockId: Scalars['String']['output'];
   ptpProfile: Scalars['String']['output'];
+  timeRecoveryStatus: Maybe<Scalars['String']['output']>;
+  userPriority: Maybe<Scalars['Int']['output']>;
 };
 
 export type PtpGraphNode = {
@@ -1986,7 +1999,7 @@ export type ConductorMutationRetry_1Args = {
 
 
 export type ConductorMutationSkipTaskFromWorkflowArgs = {
-  skipTaskRequest: SkipTaskRequest_Input;
+  input?: InputMaybe<SkipTaskRequest_Input>;
   taskReferenceName: Scalars['String']['input'];
   workflowId: Scalars['String']['input'];
 };
@@ -2114,7 +2127,7 @@ export type ConductorQuery = {
   /** Gets the workflow by workflow id */
   getExecutionStatus: Maybe<ApiWorkflow>;
   /** Get task or workflow by externalPayloadPath from External PostgreSQL Storage */
-  getExternalStorageData: Maybe<Scalars['File']['output']>;
+  getExternalStorageData: Maybe<Scalars['JSON']['output']>;
   /** Get the uri and path of the external storage where the workflow payload is to be stored */
   getExternalStorageLocation: Maybe<ExternalStorageLocation>;
   /** Get the external uri where the task payload is to be stored */
@@ -2886,6 +2899,13 @@ export type DeleteEventHandlerMutationVariables = Exact<{
 
 
 export type DeleteEventHandlerMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', removeEventHandlerStatus: any | null } };
+
+export type UpdateEventHandlerMutationVariables = Exact<{
+  input: EditEventHandlerInput;
+}>;
+
+
+export type UpdateEventHandlerMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', editEventHandler: { __typename?: 'EditEventHandlerPayload', eventHandler: { __typename?: 'EventHandler', id: string, name: string, event: string } | null } } };
 
 export type ExecutedWorkflowDetailQueryVariables = Exact<{
   nodeId: Scalars['ID']['input'];
