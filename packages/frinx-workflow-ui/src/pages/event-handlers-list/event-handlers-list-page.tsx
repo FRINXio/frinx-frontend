@@ -209,8 +209,8 @@ const EventHandlersListPage: FC = () => {
         canDoSearch={!fetching}
         onSearchSubmit={setEventHandlersFilter}
       />
-      {fetching && <Progress isIndeterminate size="xs" mt={-10} />}
-      {(data == null || data.conductor.eventHandlers == null || error != null) && (
+      {fetching && <Progress isIndeterminate size="xs" mt={10} />}
+      {!fetching && (data == null || data.conductor.eventHandlers == null || error != null) && (
         <Text>We had a problem to load event handlers for you. Try again later please.</Text>
       )}
       {!fetching && data != null && data.conductor.eventHandlers != null && error == null && (
