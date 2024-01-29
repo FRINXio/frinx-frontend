@@ -1,5 +1,5 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks, Task } from '@frinx/shared';
+import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks, Task, Pagination, usePagination } from '@frinx/shared';
 import { debounce } from 'lodash';
 import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -25,9 +25,23 @@ type WorkflowFilter = {
 };
 
 const WORKFLOWS_QUERY = gql`
-  query Workflows($filter: WorkflowsFilterInput, $orderBy: WorkflowsOrderByInput) {
+  query Workflows(
+    $filter: WorkflowsFilterInput
+    $orderBy: WorkflowsOrderByInput
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+  ) {
     conductor {
-      workflowDefinitions(filter: $filter, orderBy: $orderBy) {
+      workflowDefinitions(
+        filter: $filter
+        orderBy: $orderBy
+        first: $first
+        after: $after
+        last: $last
+        before: $before
+      ) {
         edges {
           node {
             id
@@ -50,6 +64,13 @@ const WORKFLOWS_QUERY = gql`
             ownerEmail
             tasksJson
           }
+        }
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
         }
       }
     }
@@ -92,6 +113,7 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const schedulingModal = useDisclosure();
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] = useQuery<
     WorkflowsQuery,
     WorkflowsQueryVariables
@@ -100,6 +122,7 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     variables: {
       filter,
       orderBy,
+      ...paginationArgs,
     },
     context,
   });
@@ -214,6 +237,14 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
           setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}
       />
+      {workflowsData && (
+        <Pagination
+          onPrevious={previousPage(workflowsData.conductor.workflowDefinitions.pageInfo.startCursor)}
+          onNext={nextPage(workflowsData.conductor.workflowDefinitions.pageInfo.endCursor)}
+          hasNextPage={workflowsData.conductor.workflowDefinitions.pageInfo.hasNextPage}
+          hasPreviousPage={workflowsData.conductor.workflowDefinitions.pageInfo.hasPreviousPage}
+        />
+      )}
     </Container>
   );
 };

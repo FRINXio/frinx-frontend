@@ -14,7 +14,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
   DateTime: { input: any; output: any; }
-  File: { input: any; output: any; }
   JSON: { input: any; output: any; }
   ObjMap: { input: any; output: any; }
   Upload: { input: any; output: any; }
@@ -845,12 +844,18 @@ export type PollData = {
 
 export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
+  clockAccuracy: Maybe<Scalars['String']['output']>;
+  clockClass: Maybe<Scalars['Int']['output']>;
   clockId: Scalars['String']['output'];
   clockType: Scalars['String']['output'];
+  clockVariance: Maybe<Scalars['String']['output']>;
   domain: Scalars['Int']['output'];
+  globalPriority: Maybe<Scalars['Int']['output']>;
   gmClockId: Scalars['String']['output'];
   parentClockId: Scalars['String']['output'];
   ptpProfile: Scalars['String']['output'];
+  timeRecoveryStatus: Maybe<Scalars['String']['output']>;
+  userPriority: Maybe<Scalars['Int']['output']>;
 };
 
 export type PtpGraphNode = {
@@ -1532,6 +1537,8 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
 export type WorkflowDefinitionConnection = {
   __typename?: 'WorkflowDefinitionConnection';
   edges: Array<WorkflowDefinitionEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type WorkflowDefinitionEdge = {
@@ -1986,7 +1993,7 @@ export type ConductorMutationRetry_1Args = {
 
 
 export type ConductorMutationSkipTaskFromWorkflowArgs = {
-  skipTaskRequest: SkipTaskRequest_Input;
+  input?: InputMaybe<SkipTaskRequest_Input>;
   taskReferenceName: Scalars['String']['input'];
   workflowId: Scalars['String']['input'];
 };
@@ -2114,7 +2121,7 @@ export type ConductorQuery = {
   /** Gets the workflow by workflow id */
   getExecutionStatus: Maybe<ApiWorkflow>;
   /** Get task or workflow by externalPayloadPath from External PostgreSQL Storage */
-  getExternalStorageData: Maybe<Scalars['File']['output']>;
+  getExternalStorageData: Maybe<Scalars['JSON']['output']>;
   /** Get the uri and path of the external storage where the workflow payload is to be stored */
   getExternalStorageLocation: Maybe<ExternalStorageLocation>;
   /** Get the external uri where the task payload is to be stored */
@@ -2386,7 +2393,11 @@ export type ConductorQueryViewArgs = {
 
 
 export type ConductorQueryWorkflowDefinitionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<WorkflowsFilterInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<WorkflowsOrderByInput>;
 };
 
@@ -2580,6 +2591,7 @@ export type DeviceInventoryQuery = {
   ptpPathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   ptpTopology: Maybe<PtpTopology>;
   shortestPath: Array<NetRoutingPathNode>;
+  syncePathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   synceTopology: Maybe<SynceTopology>;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -2659,6 +2671,11 @@ export type DeviceInventoryQueryPtpPathToGrandMasterArgs = {
 export type DeviceInventoryQueryShortestPathArgs = {
   from: Scalars['String']['input'];
   to: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQuerySyncePathToGrandMasterArgs = {
+  deviceFrom: Scalars['String']['input'];
 };
 
 
@@ -3067,10 +3084,14 @@ export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', conductor
 export type WorkflowsQueryVariables = Exact<{
   filter?: InputMaybe<WorkflowsFilterInput>;
   orderBy?: InputMaybe<WorkflowsOrderByInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }> } } };
+export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
