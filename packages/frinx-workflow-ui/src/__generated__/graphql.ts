@@ -13,8 +13,10 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
+  Cursor: { input: any; output: any; }
   DateTime: { input: any; output: any; }
   JSON: { input: any; output: any; }
+  Map: { input: any; output: any; }
   ObjMap: { input: any; output: any; }
   Upload: { input: any; output: any; }
   Void: { input: any; output: any; }
@@ -103,6 +105,21 @@ export type AddZonePayload = {
   __typename?: 'AddZonePayload';
   zone: Zone;
 };
+
+/** Represents an allocation strategy */
+export type AllocationStrategy = Node & {
+  __typename?: 'AllocationStrategy';
+  Description: Maybe<Scalars['String']['output']>;
+  Lang: AllocationStrategyLang;
+  Name: Scalars['String']['output'];
+  Script: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+};
+
+/** Supported languages for allocation strategy scripts */
+export type AllocationStrategyLang =
+  | 'js'
+  | 'py';
 
 export type ApiEventHandler = {
   __typename?: 'ApiEventHandler';
@@ -337,6 +354,39 @@ export type CountryEdge = {
   node: Country;
 };
 
+/** Input parameters for creating an allocation pool */
+export type CreateAllocatingPoolInput = {
+  allocationStrategyId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolProperties: Scalars['Map']['input'];
+  poolPropertyTypes: Scalars['Map']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating an allocating pool */
+export type CreateAllocatingPoolPayload = {
+  __typename?: 'CreateAllocatingPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a new allocation strategy */
+export type CreateAllocationStrategyInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  expectedPoolPropertyTypes?: InputMaybe<Scalars['Map']['input']>;
+  lang: AllocationStrategyLang;
+  name: Scalars['String']['input'];
+  script: Scalars['String']['input'];
+};
+
+/** Output of creating a new allocation strategy */
+export type CreateAllocationStrategyPayload = {
+  __typename?: 'CreateAllocationStrategyPayload';
+  strategy: Maybe<AllocationStrategy>;
+};
+
 export type CreateEventHandlerInput = {
   actions: Array<EventHandlerActionInput>;
   condition?: InputMaybe<Scalars['String']['input']>;
@@ -360,6 +410,70 @@ export type CreateLabelPayload = {
   label: Maybe<Label>;
 };
 
+/** Input parameters for creating a nested allocation pool */
+export type CreateNestedAllocatingPoolInput = {
+  allocationStrategyId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a nested allocating pool */
+export type CreateNestedAllocatingPoolPayload = {
+  __typename?: 'CreateNestedAllocatingPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a nested set pool */
+export type CreateNestedSetPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<InputMaybe<Scalars['Map']['input']>>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a nested set pool */
+export type CreateNestedSetPoolPayload = {
+  __typename?: 'CreateNestedSetPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a nested singleton pool */
+export type CreateNestedSingletonPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  parentResourceId: Scalars['ID']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<InputMaybe<Scalars['Map']['input']>>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a nested singleton pool */
+export type CreateNestedSingletonPoolPayload = {
+  __typename?: 'CreateNestedSingletonPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Creating a new resource-type */
+export type CreateResourceTypeInput = {
+  /** name of the resource type AND property type (should they be different?) */
+  resourceName: Scalars['String']['input'];
+  /** resourceProperties: Map! - for key "init" the value is the initial value of the property type (like 7) - for key "type" the value is the name of the type like "int" */
+  resourceProperties: Scalars['Map']['input'];
+};
+
+/** Output of creating a new resource-type */
+export type CreateResourceTypePayload = {
+  __typename?: 'CreateResourceTypePayload';
+  resourceType: ResourceType;
+};
+
 export type CreateScheduleInput = {
   cronString: Scalars['String']['input'];
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -370,6 +484,48 @@ export type CreateScheduleInput = {
   workflowContext?: InputMaybe<Scalars['String']['input']>;
   workflowName: Scalars['String']['input'];
   workflowVersion: Scalars['String']['input'];
+};
+
+/** Input parameters for creating a set pool */
+export type CreateSetPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolDealocationSafetyPeriod: Scalars['Int']['input'];
+  poolName: Scalars['String']['input'];
+  poolValues: Array<Scalars['Map']['input']>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating set pool */
+export type CreateSetPoolPayload = {
+  __typename?: 'CreateSetPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a singleton pool */
+export type CreateSingletonPoolInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolName: Scalars['String']['input'];
+  poolValues: Array<Scalars['Map']['input']>;
+  resourceTypeId: Scalars['ID']['input'];
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** Output of creating a singleton pool */
+export type CreateSingletonPoolPayload = {
+  __typename?: 'CreateSingletonPoolPayload';
+  pool: Maybe<ResourcePool>;
+};
+
+/** Input parameters for creating a new tag */
+export type CreateTagInput = {
+  tagText: Scalars['String']['input'];
+};
+
+/** Output of creating a tag */
+export type CreateTagPayload = {
+  __typename?: 'CreateTagPayload';
+  tag: Maybe<Tag>;
 };
 
 export type CreateTransactionPayload = {
@@ -388,6 +544,17 @@ export type DataStore = {
   snapshots: Array<Snapshot>;
 };
 
+/** Input parameters for deleting an existing allocation strategy */
+export type DeleteAllocationStrategyInput = {
+  allocationStrategyId: Scalars['ID']['input'];
+};
+
+/** Output of deleting an existing allocation strategy */
+export type DeleteAllocationStrategyPayload = {
+  __typename?: 'DeleteAllocationStrategyPayload';
+  strategy: Maybe<AllocationStrategy>;
+};
+
 export type DeleteBlueprintPayload = {
   __typename?: 'DeleteBlueprintPayload';
   blueprint: Maybe<Blueprint>;
@@ -403,6 +570,28 @@ export type DeleteLabelPayload = {
   label: Maybe<Label>;
 };
 
+/** Input entity for deleting a pool */
+export type DeleteResourcePoolInput = {
+  resourcePoolId: Scalars['ID']['input'];
+};
+
+/** Output entity for deleting a pool */
+export type DeleteResourcePoolPayload = {
+  __typename?: 'DeleteResourcePoolPayload';
+  resourcePoolId: Scalars['ID']['output'];
+};
+
+/** Input parameters for deleting an existing resource-type */
+export type DeleteResourceTypeInput = {
+  resourceTypeId: Scalars['ID']['input'];
+};
+
+/** Output of deleting a resource-type */
+export type DeleteResourceTypePayload = {
+  __typename?: 'DeleteResourceTypePayload';
+  resourceTypeId: Scalars['ID']['output'];
+};
+
 export type DeleteSnapshotInput = {
   deviceId: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -412,6 +601,17 @@ export type DeleteSnapshotInput = {
 export type DeleteSnapshotPayload = {
   __typename?: 'DeleteSnapshotPayload';
   snapshot: Maybe<Snapshot>;
+};
+
+/** Input parameters for deleting an existing tag */
+export type DeleteTagInput = {
+  tagId: Scalars['ID']['input'];
+};
+
+/** Output of deleting a tag */
+export type DeleteTagPayload = {
+  __typename?: 'DeleteTagPayload';
+  tagId: Scalars['ID']['output'];
 };
 
 export type DeleteWorkflowDefinitionInput = {
@@ -792,6 +992,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
   deviceInventory: DeviceInventoryMutation;
+  resourceManager: ResourceManagerMutation;
   scheduler: SchedulerMutation;
 };
 
@@ -840,6 +1041,10 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
+export type OrderDirection =
+  | 'ASC'
+  | 'DESC';
+
 export type OutputParameters = {
   __typename?: 'OutputParameters';
   key: Scalars['String']['output'];
@@ -865,6 +1070,31 @@ export type PollData = {
   lastPollTime: Maybe<Scalars['BigInt']['output']>;
   queueName: Maybe<Scalars['String']['output']>;
   workerId: Maybe<Scalars['String']['output']>;
+};
+
+/** Entity representing capacity of a pool */
+export type PoolCapacityPayload = {
+  __typename?: 'PoolCapacityPayload';
+  freeCapacity: Scalars['String']['output'];
+  utilizedCapacity: Scalars['String']['output'];
+};
+
+/** Defines the type of pool */
+export type PoolType =
+  | 'allocating'
+  | 'set'
+  | 'singleton';
+
+/** Defines the type of the property */
+export type PropertyType = Node & {
+  __typename?: 'PropertyType';
+  FloatVal: Maybe<Scalars['Float']['output']>;
+  IntVal: Maybe<Scalars['Int']['output']>;
+  Mandatory: Maybe<Scalars['Boolean']['output']>;
+  Name: Scalars['String']['output'];
+  StringVal: Maybe<Scalars['String']['output']>;
+  Type: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
 };
 
 export type PtpDeviceDetails = {
@@ -905,6 +1135,7 @@ export type Query = {
   __typename?: 'Query';
   conductor: ConductorQuery;
   deviceInventory: DeviceInventoryQuery;
+  resourceManager: ResourceManagerQuery;
   scheduler: SchedulerQuery;
 };
 
@@ -919,6 +1150,98 @@ export type RerunWorkflowRequest_Input = {
 export type ResetConfigPayload = {
   __typename?: 'ResetConfigPayload';
   dataStore: DataStore;
+};
+
+/** Represents an allocated resource */
+export type Resource = Node & {
+  __typename?: 'Resource';
+  AlternativeId: Maybe<Scalars['Map']['output']>;
+  Description: Maybe<Scalars['String']['output']>;
+  NestedPool: Maybe<ResourcePool>;
+  ParentPool: ResourcePool;
+  Properties: Scalars['Map']['output'];
+  id: Scalars['ID']['output'];
+};
+
+/** A Relay-specific entity holding information about pagination */
+export type ResourceConnection = {
+  __typename?: 'ResourceConnection';
+  edges: Array<Maybe<ResourceEdge>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A Relay-specific entity that holds information about the requested pagination page */
+export type ResourceEdge = {
+  __typename?: 'ResourceEdge';
+  cursor: Scalars['Cursor']['output'];
+  node: Resource;
+};
+
+/** Alternative representation of identity of a resource (i.e. alternative to resource ID) */
+export type ResourceInput = {
+  Properties: Scalars['Map']['input'];
+  Status: Scalars['String']['input'];
+  UpdatedAt: Scalars['String']['input'];
+};
+
+/** A pool is an entity that contains allocated and free resources */
+export type ResourcePool = Node & {
+  __typename?: 'ResourcePool';
+  AllocationStrategy: Maybe<AllocationStrategy>;
+  Capacity: Maybe<PoolCapacityPayload>;
+  DealocationSafetyPeriod: Scalars['Int']['output'];
+  Name: Scalars['String']['output'];
+  ParentResource: Maybe<Resource>;
+  PoolProperties: Scalars['Map']['output'];
+  PoolType: PoolType;
+  ResourceType: ResourceType;
+  Resources: Array<Resource>;
+  Tags: Array<Tag>;
+  allocatedResources: Maybe<ResourceConnection>;
+  id: Scalars['ID']['output'];
+};
+
+
+/** A pool is an entity that contains allocated and free resources */
+export type ResourcePoolAllocatedResourcesArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ResourcePoolConnection = {
+  __typename?: 'ResourcePoolConnection';
+  edges: Array<Maybe<ResourcePoolEdge>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type ResourcePoolEdge = {
+  __typename?: 'ResourcePoolEdge';
+  cursor: Scalars['Cursor']['output'];
+  node: ResourcePool;
+};
+
+/** Convenience entity representing the identity of a pool in some calls */
+export type ResourcePoolInput = {
+  ResourcePoolID: Scalars['ID']['input'];
+  ResourcePoolName: Scalars['String']['input'];
+  poolProperties: Scalars['Map']['input'];
+};
+
+export type ResourcePoolOrderField =
+  | 'dealocationSafetyPeriod'
+  | 'name';
+
+/** Describes the properties of a resource */
+export type ResourceType = Node & {
+  __typename?: 'ResourceType';
+  Name: Scalars['String']['output'];
+  Pools: Array<ResourcePool>;
+  PropertyTypes: Array<PropertyType>;
+  id: Scalars['ID']['output'];
 };
 
 export type RetryLogic =
@@ -1024,6 +1347,11 @@ export type SortExecutedWorkflowsDirection =
   | 'asc'
   | 'desc';
 
+export type SortResourcePoolsInput = {
+  direction: OrderDirection;
+  field?: InputMaybe<ResourcePoolOrderField>;
+};
+
 export type SortTasksBy = {
   _fake?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1122,6 +1450,36 @@ export type SynceTopology = {
   __typename?: 'SynceTopology';
   edges: Array<GraphEdge>;
   nodes: Array<SynceGraphNode>;
+};
+
+/** Pools can be tagged for easier search */
+export type Tag = Node & {
+  __typename?: 'Tag';
+  Pools: Maybe<Array<Maybe<ResourcePool>>>;
+  Tag: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+};
+
+/** Helper entities for tag search */
+export type TagAnd = {
+  matchesAll: Array<Scalars['String']['input']>;
+};
+
+/** Helper entities for tag search */
+export type TagOr = {
+  matchesAny: Array<TagAnd>;
+};
+
+/** Input parameters for a call adding a tag to pool */
+export type TagPoolInput = {
+  poolId: Scalars['ID']['input'];
+  tagId: Scalars['ID']['input'];
+};
+
+/** Output of adding a specific tag to a pool */
+export type TagPoolPayload = {
+  __typename?: 'TagPoolPayload';
+  tag: Maybe<Tag>;
 };
 
 export type Task = {
@@ -1391,6 +1749,18 @@ export type UninstallDevicePayload = {
   device: Device;
 };
 
+/** Input parameters for a call removing a tag from pool */
+export type UntagPoolInput = {
+  poolId: Scalars['ID']['input'];
+  tagId: Scalars['ID']['input'];
+};
+
+/** Output of removing a specific tag from a pool */
+export type UntagPoolPayload = {
+  __typename?: 'UntagPoolPayload';
+  tag: Maybe<Tag>;
+};
+
 export type UpdateBlueprintInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   template?: InputMaybe<Scalars['String']['input']>;
@@ -1447,6 +1817,18 @@ export type UpdateGraphNodeCoordinatesPayload = {
   deviceNames: Array<Scalars['String']['output']>;
 };
 
+/** Input parameters updating the name of a resource-type */
+export type UpdateResourceTypeNameInput = {
+  resourceName: Scalars['String']['input'];
+  resourceTypeId: Scalars['ID']['input'];
+};
+
+/** Output of updating the name of a resource-type */
+export type UpdateResourceTypeNamePayload = {
+  __typename?: 'UpdateResourceTypeNamePayload';
+  resourceTypeId: Scalars['ID']['output'];
+};
+
 export type UpdateScheduleInput = {
   cronString?: InputMaybe<Scalars['String']['input']>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1456,6 +1838,18 @@ export type UpdateScheduleInput = {
   workflowContext?: InputMaybe<Scalars['String']['input']>;
   workflowName?: InputMaybe<Scalars['String']['input']>;
   workflowVersion?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Input parameters for updating an existing tag */
+export type UpdateTagInput = {
+  tagId: Scalars['ID']['input'];
+  tagText: Scalars['String']['input'];
+};
+
+/** Output of updating a tag */
+export type UpdateTagPayload = {
+  __typename?: 'UpdateTagPayload';
+  tag: Maybe<Tag>;
 };
 
 export type UpdateWorkflowDefinitionInput = {
@@ -1562,6 +1956,8 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
 export type WorkflowDefinitionConnection = {
   __typename?: 'WorkflowDefinitionConnection';
   edges: Array<WorkflowDefinitionEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type WorkflowDefinitionEdge = {
@@ -1764,342 +2160,90 @@ export type ZonesConnection = {
 
 export type ConductorMutation = {
   __typename?: 'conductorMutation';
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event`
-   * Add a new event handler.
-   *
-   */
+  /** Add a new event handler. */
   addEventHandler: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow`
-   * Create a new workflow definition
-   *
-   */
+  /** Create a new workflow definition */
   create: Maybe<Scalars['JSON']['output']>;
   createEventHandler: CreateEventHandlerPayload;
   createWorkflowDefinition: Maybe<WorkflowDefinitionPayload>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/decide/{args.workflowId}`
-   * Starts the decision task for a workflow
-   *
-   */
+  /** Starts the decision task for a workflow */
   decide: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/remove`
-   * Removes the workflow from the system
-   *
-   */
+  /** Removes the workflow from the system */
   delete: Maybe<Scalars['JSON']['output']>;
   deleteEventHandler: Scalars['Boolean']['output'];
   deleteWorkflowDefinition: DeleteWorkflowDefinitionPayload;
   editEventHandler: EditEventHandlerPayload;
   executeWorkflowByName: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.name}/correlated`
-   * Lists workflows for the given correlation id list
-   *
-   */
+  /** Lists workflows for the given correlation id list */
   getWorkflows: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/{args.taskId}/log`
-   * Log Task Execution Details
-   *
-   */
+  /** Log Task Execution Details */
   log: Maybe<Scalars['JSON']['output']>;
   pauseExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/pause`
-   * Pauses the workflow
-   *
-   */
+  /** Pauses the workflow */
   pauseWorkflow: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/pause`
-   * Pause the list of workflows
-   *
-   */
+  /** Pause the list of workflows */
   pauseWorkflow_1: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs`
-   * Update an existing task
-   *
-   */
+  /** Update an existing task */
   registerTaskDef: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs`
-   * Create new task definition(s)
-   *
-   */
+  /** Create new task definition(s) */
   registerTaskDef_1: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event/{args.name}`
-   * Remove an event handler
-   *
-   */
+  /** Remove an event handler */
   removeEventHandlerStatus: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/requeue/{args.taskType}`
-   * Requeue pending tasks
-   *
-   */
+  /** Requeue pending tasks */
   requeuePendingTask: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/sweep/requeue/{args.workflowId}`
-   * Queue up all the running workflows for sweep
-   *
-   */
+  /** Queue up all the running workflows for sweep */
   requeueSweep: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/rerun`
-   * Reruns the workflow from a specific task
-   *
-   */
+  /** Reruns the workflow from a specific task */
   rerun: Maybe<Scalars['String']['output']>;
   rerunExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/resetcallbacks`
-   * Resets callback times of all non-terminal SIMPLE tasks to 0
-   *
-   */
+  /** Resets callback times of all non-terminal SIMPLE tasks to 0 */
   resetWorkflow: Maybe<Scalars['Void']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/restart`
-   * Restarts a completed workflow
-   *
-   */
+  /** Restarts a completed workflow */
   restart: Maybe<Scalars['Void']['output']>;
   restartExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/restart`
-   * Restart the list of completed workflow
-   *
-   */
+  /** Restart the list of completed workflow */
   restart_1: Maybe<BulkResponse>;
   resumeExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/resume`
-   * Resumes the workflow
-   *
-   */
+  /** Resumes the workflow */
   resumeWorkflow: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/resume`
-   * Resume the list of workflows
-   *
-   */
+  /** Resume the list of workflows */
   resumeWorkflow_1: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/retry`
-   * Retries the last failed task
-   *
-   */
+  /** Retries the last failed task */
   retry: Maybe<Scalars['Void']['output']>;
   retryExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/retry`
-   * Retry the last failed task for each workflow from the list
-   *
-   */
+  /** Retry the last failed task for each workflow from the list */
   retry_1: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}/skiptask/{args.taskReferenceName}`
-   * Skips a given task from a current running workflow
-   *
-   */
+  /** Skips a given task from a current running workflow */
   skipTaskFromWorkflow: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow`
-   * Start a new workflow with StartWorkflowRequest, which allows task to be executed in a domain
-   *
-   */
+  /** Start a new workflow with StartWorkflowRequest, which allows task to be executed in a domain */
   startWorkflow: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.name}`
-   * Start a new workflow. Returns the ID of the workflow instance that can be later used for tracking
-   *
-   */
+  /** Start a new workflow. Returns the ID of the workflow instance that can be later used for tracking */
   startWorkflow_1: Maybe<Scalars['String']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/bulk/terminate`
-   * Terminate workflows execution
-   *
-   */
+  /** Terminate workflows execution */
   terminate: Maybe<BulkResponse>;
   terminateExecutedWorkflow: ActionWorkflowPayload;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}`
-   * Terminate workflow execution
-   *
-   */
+  /** Terminate workflow execution */
   terminate_1: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/test`
-   * Test workflow execution using mock data
-   *
-   */
+  /** Test workflow execution using mock data */
   testWorkflow: Maybe<ApiWorkflow>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs/{args.tasktype}`
-   * Remove a task definition
-   *
-   */
+  /** Remove a task definition */
   unregisterTaskDef: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `DELETE`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/{args.name}/{args.version}`
-   * Removes workflow definition. It does not remove workflows associated with the definition.
-   *
-   */
+  /** Removes workflow definition. It does not remove workflows associated with the definition. */
   unregisterWorkflowDef: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow`
-   * Create or update workflow definition
-   *
-   */
+  /** Create or update workflow definition */
   update: Maybe<BulkResponse>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/update/{args.workflowId}/task/{args.taskId}/{args.status}`
-   * Publish a message in queue to mark a wait task (by taskId) as completed.
-   *
-   */
+  /** Publish a message in queue to mark a wait task (by taskId) as completed. */
   updateByTaskId: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `PUT`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event`
-   * Update an existing event handler.
-   *
-   */
+  /** Update an existing event handler. */
   updateEventHandler: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks`
-   * Update a task
-   *
-   */
+  /** Update a task */
   updateTask: Maybe<Scalars['String']['output']>;
   updateWorkflowDefinition: Maybe<WorkflowDefinitionPayload>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/update/{args.workflowId}/{args.taskRefName}/{args.status}`
-   * Publish a message in queue to mark a wait task as completed.
-   *
-   */
+  /** Publish a message in queue to mark a wait task as completed. */
   update_1: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/validate`
-   * Validates a new workflow definition
-   *
-   */
+  /** Validates a new workflow definition */
   validate: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `POST`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/consistency/verifyAndRepair/{args.workflowId}`
-   * Verify and repair workflow consistency
-   *
-   */
+  /** Verify and repair workflow consistency */
   verifyAndRepairWorkflowConsistency: Maybe<Scalars['String']['output']>;
 };
 
@@ -2374,353 +2518,88 @@ export type ConductorMutationVerifyAndRepairWorkflowConsistencyArgs = {
 
 export type ConductorQuery = {
   __typename?: 'conductorQuery';
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/all`
-   * Get the details about each queue
-   *
-   */
+  /** Get the details about each queue */
   all: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/all/verbose`
-   * Get the details about each queue
-   *
-   */
+  /** Get the details about each queue */
   allVerbose: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/poll/batch/{args.tasktype}`
-   * Batch poll for a task of a certain type
-   *
-   */
+  /** Batch poll for a task of a certain type */
   batchPoll: Maybe<Array<Maybe<Task>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/health`
-   *
-   *
-   */
   doCheck: Maybe<HealthCheckStatus>;
   eventHandler: Maybe<EventHandler>;
   eventHandlers: EventHandlerConnection;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/{args.name}`
-   * Retrieves workflow definition along with blueprint
-   *
-   */
+  /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow`
-   * Retrieves all workflow definition along with blueprint
-   *
-   */
+  /** Retrieves all workflow definition along with blueprint */
   getAll: Maybe<Array<Maybe<WorkflowDef>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/config`
-   * Get all the configuration parameters
-   *
-   */
+  /** Get all the configuration parameters */
   getAllConfig: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/polldata/all`
-   * Get the last poll data for all task types
-   *
-   */
+  /** Get the last poll data for all task types */
   getAllPollData: Maybe<Array<Maybe<PollData>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/latest-versions`
-   * Returns only the latest version of all workflow definitions
-   *
-   */
+  /** Returns only the latest version of all workflow definitions */
   getAllWorkflowsWithLatestVersions: Maybe<Array<Maybe<WorkflowDef>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event`
-   * Get all the event handlers
-   *
-   */
+  /** Get all the event handlers */
   getEventHandlers: Maybe<Array<Maybe<ApiEventHandler>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/event/{args.event}`
-   * Get event handlers for a given event
-   *
-   */
+  /** Get event handlers for a given event */
   getEventHandlersForEvent: Maybe<Array<Maybe<ApiEventHandler>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/queues`
-   * Get registered queues
-   *
-   */
+  /** Get registered queues */
   getEventQueues: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.workflowId}`
-   * Gets the workflow by workflow id
-   *
-   */
+  /** Gets the workflow by workflow id */
   getExecutionStatus: Maybe<ApiWorkflow>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/external/postgres/{args.externalPayloadPath}`
-   * Get task or workflow by externalPayloadPath from External PostgreSQL Storage
-   *
-   */
+  /** Get task or workflow by externalPayloadPath from External PostgreSQL Storage */
   getExternalStorageData: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/externalstoragelocation`
-   * Get the uri and path of the external storage where the workflow payload is to be stored
-   *
-   */
+  /** Get the uri and path of the external storage where the workflow payload is to be stored */
   getExternalStorageLocation: Maybe<ExternalStorageLocation>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/externalstoragelocation`
-   * Get the external uri where the task payload is to be stored
-   *
-   */
+  /** Get the external uri where the task payload is to be stored */
   getExternalStorageLocation_1: Maybe<ExternalStorageLocation>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/polldata`
-   * Get the last poll data for a given task type
-   *
-   */
+  /** Get the last poll data for a given task type */
   getPollData: Maybe<Array<Maybe<PollData>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/running/{args.name}`
-   * Retrieve all the running workflows
-   *
-   */
+  /** Retrieve all the running workflows */
   getRunningWorkflow: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/{args.taskId}`
-   * Get task by Id
-   *
-   */
+  /** Get task by Id */
   getTask: Maybe<Task>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs/{args.tasktype}`
-   * Gets the task definition
-   *
-   */
+  /** Gets the task definition */
   getTaskDef: Maybe<TaskDef>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/taskdefs`
-   * Gets all task definition
-   *
-   */
+  /** Gets all task definition */
   getTaskDefs: Maybe<Array<Maybe<TaskDef>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/{args.taskId}/log`
-   * Get Task Execution Logs
-   *
-   */
+  /** Get Task Execution Logs */
   getTaskLogs: Maybe<Array<Maybe<TaskExecLog>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/family/{args.workflowId}`
-   * Gets the workflow by workflow id
-   *
-   */
+  /** Gets the workflow by workflow id */
   getWorkflowFamily: Maybe<Array<Maybe<ApiWorkflow>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/metadata/workflow/names-and-versions`
-   * Returns workflow names and versions only (no definition bodies)
-   *
-   */
+  /** Returns workflow names and versions only (no definition bodies) */
   getWorkflowNamesAndVersions: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/path/{args.workflowId}`
-   * Gets the workflow by workflow id
-   *
-   */
+  /** Gets the workflow by workflow id */
   getWorkflowPath: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/{args.name}/correlated/{args.correlationId}`
-   * Lists workflows for the given correlation id
-   *
-   */
+  /** Lists workflows for the given correlation id */
   getWorkflows_1: Maybe<Array<Maybe<ApiWorkflow>>>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/`
-   * Get Queue Names
-   *
-   */
+  /** Get Queue Names */
   names: Maybe<Scalars['JSON']['output']>;
   node: Maybe<Node>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/poll/{args.tasktype}`
-   * Poll for a task of a certain type
-   *
-   */
+  /** Poll for a task of a certain type */
   poll: Maybe<Task>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC.
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC. */
   search: Maybe<SearchResultWorkflowSummary>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search-v2`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC.
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC. */
   searchV2: Maybe<SearchResultWorkflow>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/search-v2`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   searchV2_1: Maybe<SearchResultTask>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search-by-tasks`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   searchWorkflowsByTasks: Maybe<SearchResultWorkflowSummary>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/workflow/search-by-tasks-v2`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   searchWorkflowsByTasksV2: Maybe<SearchResultWorkflow>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/search`
-   * use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC
-   *
-   */
+  /** use sort options as sort=<field>:ASC|DESC e.g. sort=name&sort=workflowId:DESC. If order is not specified, defaults to ASC */
   search_1: Maybe<SearchResultTaskSummary>;
   /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/sizes`
    * Deprecated. Please use /tasks/queue/size endpoint
-   *
    * @deprecated deprecated
    */
   size: Maybe<Scalars['JSON']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/queue/size`
-   * Get the queue length
-   *
-   */
+  /** Get the queue length */
   size_1: Maybe<Scalars['JSON']['output']>;
   taskDefinitions: TaskDefinitionConnection;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/tasks/queue/size`
-   * Get queue size for a task type.
-   *
-   */
+  /** Get queue size for a task type. */
   taskDepth: Maybe<Scalars['Int']['output']>;
-  /**
-   *
-   * >**Method**: `GET`
-   * >**Base URL**: `http://10.19.2.32:8080`
-   * >**Path**: `/api/admin/task/{args.tasktype}`
-   * Get the list of pending tasks for a given task type
-   *
-   */
+  /** Get the list of pending tasks for a given task type */
   view: Maybe<Array<Maybe<Task>>>;
   workflowDefinitions: WorkflowDefinitionConnection;
   workflowInstanceDetail: WorkflowInstanceDetail;
@@ -2945,7 +2824,11 @@ export type ConductorQueryViewArgs = {
 
 
 export type ConductorQueryWorkflowDefinitionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<WorkflowsFilterInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<WorkflowsOrderByInput>;
 };
 
@@ -3139,6 +3022,7 @@ export type DeviceInventoryQuery = {
   ptpPathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   ptpTopology: Maybe<PtpTopology>;
   shortestPath: Array<NetRoutingPathNode>;
+  syncePathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   synceTopology: Maybe<SynceTopology>;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
@@ -3218,6 +3102,11 @@ export type DeviceInventoryQueryPtpPathToGrandMasterArgs = {
 export type DeviceInventoryQueryShortestPathArgs = {
   from: Scalars['String']['input'];
   to: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQuerySyncePathToGrandMasterArgs = {
+  deviceFrom: Scalars['String']['input'];
 };
 
 
@@ -3365,6 +3254,306 @@ export type Query_Search_Results_Items_Status =
   | 'TERMINATED'
   | 'TIMED_OUT';
 
+export type ResourceManagerMutation = {
+  __typename?: 'resourceManagerMutation';
+  ClaimResource: Resource;
+  ClaimResourceWithAltId: Resource;
+  CreateAllocatingPool: CreateAllocatingPoolPayload;
+  CreateAllocationStrategy: CreateAllocationStrategyPayload;
+  CreateNestedAllocatingPool: CreateNestedAllocatingPoolPayload;
+  CreateNestedSetPool: CreateNestedSetPoolPayload;
+  CreateNestedSingletonPool: CreateNestedSingletonPoolPayload;
+  CreateResourceType: CreateResourceTypePayload;
+  CreateSetPool: CreateSetPoolPayload;
+  CreateSingletonPool: CreateSingletonPoolPayload;
+  CreateTag: CreateTagPayload;
+  DeleteAllocationStrategy: DeleteAllocationStrategyPayload;
+  DeleteResourcePool: DeleteResourcePoolPayload;
+  DeleteResourceType: DeleteResourceTypePayload;
+  DeleteTag: DeleteTagPayload;
+  FreeResource: Scalars['String']['output'];
+  TagPool: TagPoolPayload;
+  TestAllocationStrategy: Scalars['Map']['output'];
+  UntagPool: UntagPoolPayload;
+  UpdateResourceAltId: Resource;
+  UpdateResourceTypeName: UpdateResourceTypeNamePayload;
+  UpdateTag: UpdateTagPayload;
+};
+
+
+export type ResourceManagerMutationClaimResourceArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolId: Scalars['ID']['input'];
+  userInput: Scalars['Map']['input'];
+};
+
+
+export type ResourceManagerMutationClaimResourceWithAltIdArgs = {
+  alternativeId: Scalars['Map']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  poolId: Scalars['ID']['input'];
+  userInput: Scalars['Map']['input'];
+};
+
+
+export type ResourceManagerMutationCreateAllocatingPoolArgs = {
+  input?: InputMaybe<CreateAllocatingPoolInput>;
+};
+
+
+export type ResourceManagerMutationCreateAllocationStrategyArgs = {
+  input?: InputMaybe<CreateAllocationStrategyInput>;
+};
+
+
+export type ResourceManagerMutationCreateNestedAllocatingPoolArgs = {
+  input: CreateNestedAllocatingPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateNestedSetPoolArgs = {
+  input: CreateNestedSetPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateNestedSingletonPoolArgs = {
+  input: CreateNestedSingletonPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateResourceTypeArgs = {
+  input: CreateResourceTypeInput;
+};
+
+
+export type ResourceManagerMutationCreateSetPoolArgs = {
+  input: CreateSetPoolInput;
+};
+
+
+export type ResourceManagerMutationCreateSingletonPoolArgs = {
+  input?: InputMaybe<CreateSingletonPoolInput>;
+};
+
+
+export type ResourceManagerMutationCreateTagArgs = {
+  input: CreateTagInput;
+};
+
+
+export type ResourceManagerMutationDeleteAllocationStrategyArgs = {
+  input?: InputMaybe<DeleteAllocationStrategyInput>;
+};
+
+
+export type ResourceManagerMutationDeleteResourcePoolArgs = {
+  input: DeleteResourcePoolInput;
+};
+
+
+export type ResourceManagerMutationDeleteResourceTypeArgs = {
+  input: DeleteResourceTypeInput;
+};
+
+
+export type ResourceManagerMutationDeleteTagArgs = {
+  input: DeleteTagInput;
+};
+
+
+export type ResourceManagerMutationFreeResourceArgs = {
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerMutationTagPoolArgs = {
+  input: TagPoolInput;
+};
+
+
+export type ResourceManagerMutationTestAllocationStrategyArgs = {
+  allocationStrategyId: Scalars['ID']['input'];
+  currentResources: Array<ResourceInput>;
+  resourcePool: ResourcePoolInput;
+  userInput: Scalars['Map']['input'];
+};
+
+
+export type ResourceManagerMutationUntagPoolArgs = {
+  input: UntagPoolInput;
+};
+
+
+export type ResourceManagerMutationUpdateResourceAltIdArgs = {
+  alternativeId: Scalars['Map']['input'];
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerMutationUpdateResourceTypeNameArgs = {
+  input: UpdateResourceTypeNameInput;
+};
+
+
+export type ResourceManagerMutationUpdateTagArgs = {
+  input: UpdateTagInput;
+};
+
+export type ResourceManagerQuery = {
+  __typename?: 'resourceManagerQuery';
+  QueryAllocationStrategies: Array<AllocationStrategy>;
+  QueryAllocationStrategy: AllocationStrategy;
+  QueryEmptyResourcePools: ResourcePoolConnection;
+  QueryLeafResourcePools: ResourcePoolConnection;
+  QueryPoolCapacity: PoolCapacityPayload;
+  QueryPoolTypes: Array<PoolType>;
+  QueryRecentlyActiveResources: ResourceConnection;
+  QueryRequiredPoolProperties: Array<PropertyType>;
+  QueryResource: Resource;
+  QueryResourcePool: ResourcePool;
+  QueryResourcePoolHierarchyPath: Array<ResourcePool>;
+  QueryResourcePools: ResourcePoolConnection;
+  QueryResourceTypes: Array<ResourceType>;
+  QueryResources: ResourceConnection;
+  QueryResourcesByAltId: ResourceConnection;
+  QueryRootResourcePools: ResourcePoolConnection;
+  QueryTags: Array<Tag>;
+  SearchPoolsByTags: ResourcePoolConnection;
+  node: Maybe<Node>;
+};
+
+
+export type ResourceManagerQueryQueryAllocationStrategiesArgs = {
+  byName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryAllocationStrategyArgs = {
+  allocationStrategyId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryEmptyResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+};
+
+
+export type ResourceManagerQueryQueryLeafResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQueryQueryPoolCapacityArgs = {
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryRecentlyActiveResourcesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  fromDatetime: Scalars['String']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  toDatetime?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryRequiredPoolPropertiesArgs = {
+  allocationStrategyName: Scalars['String']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourceArgs = {
+  input: Scalars['Map']['input'];
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcePoolArgs = {
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcePoolHierarchyPathArgs = {
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQueryQueryResourceTypesArgs = {
+  byName?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryResourcesArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  poolId: Scalars['ID']['input'];
+};
+
+
+export type ResourceManagerQueryQueryResourcesByAltIdArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  input: Scalars['Map']['input'];
+  last?: InputMaybe<Scalars['Int']['input']>;
+  poolId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type ResourceManagerQueryQueryRootResourcePoolsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  filterByResources?: InputMaybe<Scalars['Map']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  resourceTypeId?: InputMaybe<Scalars['ID']['input']>;
+  sortBy?: InputMaybe<SortResourcePoolsInput>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQuerySearchPoolsByTagsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  tags?: InputMaybe<TagOr>;
+};
+
+
+export type ResourceManagerQueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
 export type SchedulerMutation = {
   __typename?: 'schedulerMutation';
   createSchedule: Schedule;
@@ -3493,7 +3682,7 @@ export type ExecutedWorkflowDetailQueryVariables = Exact<{
 }>;
 
 
-export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, originalId: string | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string, ownerEmail: string | null, restartable: boolean, tasksJson: any, hasSchedule: boolean, description: string | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutPolicy: TimeoutPolicy | null, timeoutSeconds: number | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
+export type ExecutedWorkflowDetailQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, originalId: string | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string, ownerEmail: string | null, restartable: boolean, tasksJson: any, hasSchedule: boolean, description: string | null, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutPolicy: TimeoutPolicy | null, timeoutSeconds: number | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null }> | null } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
 
 export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
   workflowId: Scalars['String']['input'];
@@ -3668,10 +3857,14 @@ export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', conductor
 export type WorkflowsQueryVariables = Exact<{
   filter?: InputMaybe<WorkflowsFilterInput>;
   orderBy?: InputMaybe<WorkflowsOrderByInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }> } } };
+export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
