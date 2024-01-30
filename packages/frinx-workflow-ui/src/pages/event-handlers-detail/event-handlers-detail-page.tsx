@@ -23,11 +23,13 @@ import {
   DeleteEventHandlerDetailMutationVariables,
   EditEventHandlerActionsMutation,
   EditEventHandlerActionsMutationVariables,
+  EventHandler,
   EventHandlerDetailQuery,
   EventHandlerDetailQueryVariables,
 } from '../../__generated__/graphql';
 import EventHandlersDetailActions from './event-handlers-detail-actions';
 import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
+import { isValueOfType } from '../../helpers/utils.helpers';
 
 type Props = {
   onEventHandlerEditClick: (id: string) => void;
@@ -36,36 +38,38 @@ type Props = {
 const EVENT_HANDLER_QUERY = gql`
   query EventHandlerDetail($id: ID!) {
     conductor {
-      eventHandler(id: $id) {
-        id
-        name
-        event
-        actions {
-          action
-          expandInlineJSON
-          completeTask {
-            workflowId
-            taskId
-            output
-            taskRefName
+      node(id: $id) {
+        ... on EventHandler {
+          id
+          name
+          event
+          actions {
+            action
+            expandInlineJSON
+            completeTask {
+              workflowId
+              taskId
+              output
+              taskRefName
+            }
+            failTask {
+              workflowId
+              taskId
+              output
+              taskRefName
+            }
+            startWorkflow {
+              name
+              version
+              input
+              correlationId
+              taskToDomain
+            }
           }
-          failTask {
-            workflowId
-            taskId
-            output
-            taskRefName
-          }
-          startWorkflow {
-            name
-            version
-            input
-            correlationId
-            taskToDomain
-          }
+          condition
+          evaluatorType
+          isActive
         }
-        condition
-        evaluatorType
-        isActive
       }
     }
   }
@@ -147,27 +151,34 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
   };
 
   const handleOnEventHandlerActionDelete = (
-    eventHandler: NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>,
+    eventHandler: NonNullable<EventHandlerDetailQuery['conductor']['node']>,
     actionIndex: number,
   ) => {
-    updateEventHandler(
-      {
-        input: {
-          id: eventHandler.id,
-          actions: eventHandler.actions
-            .filter((_, index) => index === actionIndex)
-            .map(removeTypenamesFromEventHandlerAction),
+    if (isValueOfType<EventHandler>('__typename', eventHandler)) {
+      updateEventHandler(
+        {
+          input: {
+            id: eventHandler.id,
+            actions: eventHandler.actions
+              .filter((_, index) => index === actionIndex)
+              .map(removeTypenamesFromEventHandlerAction),
+          },
         },
-      },
-      ctx,
-    );
+        ctx,
+      );
+    }
   };
 
   if (fetching) {
     return <Progress isIndeterminate size="xs" mt={-10} />;
   }
 
-  if (data == null || data.conductor.eventHandler == null || error != null) {
+  if (
+    data == null ||
+    data.conductor.node == null ||
+    error != null ||
+    data.conductor.node.__typename !== 'EventHandler'
+  ) {
     return (
       <Container maxWidth={1200} mx="auto">
         <Text>We could not find expected event handler. Try again later please.</Text>
@@ -175,7 +186,7 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     );
   }
 
-  const { eventHandler } = data.conductor;
+  const eventHandler = data.conductor.node;
   const editorComment =
     selectedConditionLang === 'python' ? '# condition was not defined' : '// condition was not defined';
 

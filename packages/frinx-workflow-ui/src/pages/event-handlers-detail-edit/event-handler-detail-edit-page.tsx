@@ -16,35 +16,37 @@ import {
 const GET_EVENT_HANDLER_QUERY = gql`
   query GetEventHandlerDetail($id: ID!) {
     conductor {
-      eventHandler(id: $id) {
-        name
-        event
-        condition
-        actions {
-          action
-          startWorkflow {
-            name
-            version
-            input
-            correlationId
-            taskToDomain
+      node(id: $id) {
+        ... on EventHandler {
+          name
+          event
+          condition
+          actions {
+            action
+            startWorkflow {
+              name
+              version
+              input
+              correlationId
+              taskToDomain
+            }
+            completeTask {
+              workflowId
+              taskId
+              output
+              taskRefName
+            }
+            failTask {
+              workflowId
+              taskId
+              output
+              taskRefName
+            }
+            expandInlineJSON
           }
-          completeTask {
-            workflowId
-            taskId
-            output
-            taskRefName
-          }
-          failTask {
-            workflowId
-            taskId
-            output
-            taskRefName
-          }
-          expandInlineJSON
+          isActive
+          evaluatorType
         }
-        isActive
-        evaluatorType
       }
     }
   }
@@ -110,7 +112,12 @@ const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
-  if (data == null || data.conductor.eventHandler == null || error != null) {
+  if (
+    data == null ||
+    data.conductor.node == null ||
+    error != null ||
+    data.conductor.node.__typename !== 'EventHandler'
+  ) {
     return (
       <Container maxWidth={1200}>
         <Text>We could not find event handler.</Text>
@@ -118,19 +125,21 @@ const EventHandlerDetailEditPage: VoidFunctionComponent = () => {
     );
   }
 
+  const eventHandler = data.conductor.node;
+
   return (
     <Container maxWidth={1200} mx="auto">
-      <Heading mb={5}>Edit {data.conductor.eventHandler.name}</Heading>
+      <Heading mb={5}>Edit {eventHandler.name}</Heading>
 
       <EventHandlerForm
         isEditing
         formValues={{
-          name: data.conductor.eventHandler.name,
-          event: data.conductor.eventHandler.event,
-          condition: data.conductor.eventHandler.condition,
-          evaluatorType: data.conductor.eventHandler.evaluatorType,
-          isActive: data.conductor.eventHandler.isActive,
-          actions: data.conductor.eventHandler.actions.map((action) => ({
+          name: eventHandler.name,
+          event: eventHandler.event,
+          condition: eventHandler.condition,
+          evaluatorType: eventHandler.evaluatorType,
+          isActive: eventHandler.isActive,
+          actions: eventHandler.actions.map((action) => ({
             id: uuid(),
             action: action?.action,
             expandInlineJSON: action?.expandInlineJSON,
