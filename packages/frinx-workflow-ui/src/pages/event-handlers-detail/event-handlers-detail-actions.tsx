@@ -2,12 +2,12 @@ import React, { Fragment, useState, VoidFunctionComponent } from 'react';
 import { Heading, useDisclosure } from '@chakra-ui/react';
 import { v4 as uuid } from 'uuid';
 import { ConfirmDeleteModal } from '@frinx/shared';
-import { EventHandlerDetailQuery } from '../../__generated__/graphql';
+import { EventHandlerAction, Maybe } from '../../__generated__/graphql';
 import EventHandlerDetailActionJsonModal from './event-handler-detail-action-json-modal';
 import { CompleteTaskAction, FailTaskAction, StartWorkflowAction } from './event-handlers-detail-actions-tasks';
 
 type Props = {
-  actions: NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>['actions'];
+  actions: Maybe<EventHandlerAction>[];
   onEventHandlerActionDelete: (actionIndex: number) => void;
 };
 
