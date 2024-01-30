@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 import {
   Button,
   Link as ChakraLink,
@@ -17,23 +17,26 @@ import {
   Th,
   Thead,
   Tr,
+  Switch,
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
-import { usePagination, Pagination, useNotifications } from '@frinx/shared';
+import { usePagination, Pagination, useNotifications, omitNullValue } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
+import { omit, truncate } from 'lodash';
 import {
   DeleteEventHandlerMutation,
   DeleteEventHandlerMutationVariables,
-  // EditEventHandlerInput,
+  EditEventHandlerInput,
   EventHandlersOrderByInput,
   GetEventHandlersQuery,
   GetEventHandlersQueryVariables,
   SortEventHandlersBy,
-  // UpdateEventHandlerMutation,
-  // UpdateEventHandlerMutationVariables,
+  UpdateEventHandlerMutation,
+  UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
+import { isValueOfType } from '../../helpers/utils.helpers';
 // import { omit } from 'lodash';
 
 const EVENT_HANDLERS_QUERY = gql`
@@ -79,13 +82,19 @@ const DELETE_EVENT_HANDLER_MUTATION = gql`
   }
 `;
 
-// const UPDATE_EVENT_HANDLER_MUTATION = gql`
-//   mutation UpdateEventHandler($input: EventHandler_Input!) {
-//     conductor {
-//       updateEventHandler(input: $input)
-//     }
-//   }
-// `;
+const UPDATE_EVENT_HANDLER_MUTATION = gql`
+  mutation UpdateEventHandler($input: EditEventHandlerInput!) {
+    conductor {
+      editEventHandler(input: $input) {
+        eventHandler {
+          id
+          name
+          event
+        }
+      }
+    }
+  }
+`;
 
 const EventHandlersListPage: FC = () => {
   const [eventHandlersFilter, setEventHandlersFilter] = useState<SearchEventHandlerValues | null>(null);
@@ -97,8 +106,7 @@ const EventHandlersListPage: FC = () => {
     }),
     [],
   );
-  // TODO: FIXME
-  const [{ fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
+  const [{ data, fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
     query: EVENT_HANDLERS_QUERY,
     context: ctx,
     variables: {
@@ -108,32 +116,12 @@ const EventHandlersListPage: FC = () => {
     },
   });
 
-  type Node = {
-    id: string;
-    name: string;
-    event: string;
-    evaluatorType: string;
-    actions: { action: string }[];
-  };
-  const data = {
-    conductor: {
-      eventHandlers: {
-        edges: [] as { node: Node }[],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-          endCursor: 'adsf',
-          startCursor: 'sadf',
-        },
-      },
-    },
-  };
   const [, deleteEventHandler] = useMutation<DeleteEventHandlerMutation, DeleteEventHandlerMutationVariables>(
     DELETE_EVENT_HANDLER_MUTATION,
   );
-  // const [, updateEventHandler] = useMutation<UpdateEventHandlerMutation, UpdateEventHandlerMutationVariables>(
-  //   UPDATE_EVENT_HANDLER_MUTATION,
-  // );
+  const [, updateEventHandler] = useMutation<UpdateEventHandlerMutation, UpdateEventHandlerMutationVariables>(
+    UPDATE_EVENT_HANDLER_MUTATION,
+  );
 
   const { addToastNotification } = useNotifications();
 
@@ -162,37 +150,41 @@ const EventHandlersListPage: FC = () => {
       });
   };
 
-  // const handleOnIsActiveClick = (e: ChangeEvent<HTMLInputElement>, eventHandler: EditEventHandlerInput) => {
-  //   const boolChecked = Boolean(e.target.checked);
+  const handleOnIsActiveClick = (e: ChangeEvent<HTMLInputElement>, eventHandler: EditEventHandlerInput) => {
+    const boolChecked = Boolean(e.target.checked);
+    const updatedEventHandler = omit(
+      {
+        ...eventHandler,
+        isActive: boolChecked,
+      },
+      ['__typename', 'name'],
+    );
 
-  //   const eventHandlerWithoutTypenames = {
-  //     ...eventHandler,
-  //     active: boolChecked,
-  //   };
+    if (isValueOfType<EditEventHandlerInput>('id', updatedEventHandler)) {
+      updateEventHandler(
+        {
+          input: updatedEventHandler,
+        },
+        ctx,
+      )
+        .then((response) => {
+          if (response.error != null) {
+            throw new Error(response.error.message);
+          }
 
-  //   updateEventHandler(
-  //     {
-  //       input: omit(eventHandlerWithoutTypenames, ['__typename']),
-  //     },
-  //     ctx,
-  //   )
-  //     .then((response) => {
-  //       if (response.error != null) {
-  //         throw new Error(response.error.message);
-  //       }
-
-  //       addToastNotification({
-  //         type: 'success',
-  //         content: 'Successfully updated event handler',
-  //       });
-  //     })
-  //     .catch((err) => {
-  //       addToastNotification({
-  //         content: err.message,
-  //         type: 'error',
-  //       });
-  //     });
-  // };
+          addToastNotification({
+            type: 'success',
+            content: 'Successfully updated event handler',
+          });
+        })
+        .catch((err) => {
+          addToastNotification({
+            content: err.message,
+            type: 'error',
+          });
+        });
+    }
+  };
 
   const handleSort = (sortKey: SortEventHandlersBy) => {
     return orderBy.direction === 'DESC'
@@ -217,20 +209,20 @@ const EventHandlersListPage: FC = () => {
         canDoSearch={!fetching}
         onSearchSubmit={setEventHandlersFilter}
       />
-      {fetching && <Progress isIndeterminate size="xs" mt={-10} />}
-      {(data == null || data.conductor.eventHandlers == null || error != null) && (
+      {fetching && <Progress isIndeterminate size="xs" mt={10} />}
+      {!fetching && (data == null || data.conductor.eventHandlers == null || error != null) && (
         <Text>We had a problem to load event handlers for you. Try again later please.</Text>
       )}
       {!fetching && data != null && data.conductor.eventHandlers != null && error == null && (
         <Table background="white">
           <Thead>
             <Tr>
-              {/* <Th cursor="pointer" onClick={() => handleSort('isActive')}>
+              <Th cursor="pointer" onClick={() => handleSort('isActive')}>
                 Is active
                 {orderBy.sortKey === 'isActive' && (
                   <Icon as={FeatherIcon} size={40} icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
                 )}
-              </Th> */}
+              </Th>
               <Th cursor="pointer" onClick={() => handleSort('name')}>
                 Name
                 {orderBy.sortKey === 'name' && (
@@ -262,26 +254,34 @@ const EventHandlersListPage: FC = () => {
             {data.conductor.eventHandlers.edges?.length !== 0 &&
               data.conductor.eventHandlers.edges.map(({ node }) => (
                 <Tr key={node.id}>
-                  {/* <Td>
-                    <Switch isChecked={node.isActive ?? false} onChange={(e) => handleOnIsActiveClick(e, node)} />
-                  </Td> */}
                   <Td>
-                    <ChakraLink color="blue.500" as={Link} to={`${node.event}/${node.name}`}>
-                      {node.name}
+                    <Switch
+                      isChecked={node.isActive ?? false}
+                      onChange={(e) =>
+                        handleOnIsActiveClick(e, {
+                          ...node,
+                          actions: node.actions.map((action) => omit(action, ['__typename'])).filter(omitNullValue),
+                        })
+                      }
+                    />
+                  </Td>
+                  <Td>
+                    <ChakraLink color="blue.500" as={Link} to={node.id} title={node.name}>
+                      {truncate(node.name, { length: 40 })}
                     </ChakraLink>
                   </Td>
-                  <Td>{node.event}</Td>
+                  <Td title={node.event}>{truncate(node.event, { length: 40 })}</Td>
                   <Td>{node.evaluatorType || 'not defined'}</Td>
                   <Td>{node.actions.map((action) => action?.action).join(', ')}</Td>
                   <Td>
                     <HStack spacing={2}>
-                      {/* <IconButton
+                      <IconButton
                         aria-label="edit event handler"
                         size="sm"
                         icon={<FeatherIcon icon="edit" size={12} />}
                         as={Link}
-                        to={`${node.event}/${node.name}/edit`}
-                      /> */}
+                        to={`${node.id}/edit`}
+                      />
                       <IconButton
                         aria-label="delete event handler"
                         size="sm"

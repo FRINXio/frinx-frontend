@@ -4,7 +4,7 @@ import { gql, useMutation } from 'urql';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '@frinx/shared';
 import EventHandlerForm, { FormValues } from '../../components/event-handler-form/event-handler-form';
-import {} from '../../__generated__/graphql';
+import { CreateEventHandlerMutation, CreateEventHandlerMutationVariables } from '../../__generated__/graphql';
 
 const CREATE_EVENT_HANDLER = gql`
   mutation CreateEventHandler($input: CreateEventHandlerInput!) {
@@ -23,8 +23,9 @@ const CREATE_EVENT_HANDLER = gql`
 const EventHandlersAddPage = () => {
   const navigate = useNavigate();
   const { addToastNotification } = useNotifications();
-  // TODO: FIXME
-  const [, createEventHandler] = useMutation<unknown>(CREATE_EVENT_HANDLER);
+  const [, createEventHandler] = useMutation<CreateEventHandlerMutation, CreateEventHandlerMutationVariables>(
+    CREATE_EVENT_HANDLER,
+  );
 
   const handleOnSubmit = (formValues: FormValues) => {
     createEventHandler({
@@ -36,16 +37,16 @@ const EventHandlersAddPage = () => {
           expandInlineJSON: action.expandInlineJSON,
           completeTask: {
             ...action.completeTask,
-            output: JSON.stringify(Object.fromEntries(action.completeTask?.output ?? [])),
+            output: Object.fromEntries(action.completeTask?.output ?? []),
           },
           failTask: {
             ...action.failTask,
-            output: JSON.stringify(Object.fromEntries(action.failTask?.output ?? [])),
+            output: Object.fromEntries(action.failTask?.output ?? []),
           },
           startWorkflow: {
             ...action.startWorkflow,
-            input: JSON.stringify(Object.fromEntries(action.startWorkflow?.input ?? [])),
-            taskToDomain: JSON.stringify(Object.fromEntries(action.startWorkflow?.taskToDomain ?? [])),
+            input: Object.fromEntries(action.startWorkflow?.input ?? []),
+            taskToDomain: Object.fromEntries(action.startWorkflow?.taskToDomain ?? []),
           },
         })),
         condition: formValues.condition,
