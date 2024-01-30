@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ConfirmDeleteModal, Editor, unwrap, useNotifications } from '@frinx/shared';
+import { ConfirmDeleteModal, Editor, omitNullValue, unwrap, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import {
   DeleteEventHandlerDetailMutation,
@@ -161,6 +161,7 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
             id: eventHandler.id,
             actions: eventHandler.actions
               .filter((_, index) => index === actionIndex)
+              .filter(omitNullValue)
               .map(removeTypenamesFromEventHandlerAction),
           },
         },

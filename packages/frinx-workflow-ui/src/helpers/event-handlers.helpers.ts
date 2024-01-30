@@ -1,10 +1,8 @@
 import { omit } from 'lodash';
 import { EventHandlerAction } from '../components/event-handler-form/event-handler-form';
-import { EventHandlerDetailQuery } from '../__generated__/graphql';
+import { EventHandlerAction as GraphqlEventHandlerAction } from '../__generated__/graphql';
 
-export function removeTypenamesFromEventHandlerAction(
-  action: NonNullable<EventHandlerDetailQuery['conductor']['eventHandler']>['actions'][0],
-) {
+export function removeTypenamesFromEventHandlerAction(action: GraphqlEventHandlerAction) {
   const newAction = omit(action, '__typename');
 
   return {
