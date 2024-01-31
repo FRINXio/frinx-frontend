@@ -4651,9 +4651,7 @@ export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: 
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];
   to: Scalars['String']['input'];
-}>;>>>>>>> story-new-graphql-proxy
-1806
-
+}>;
 
 
 export type ShortestPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', shortestPath: Array<{ __typename?: 'NetRoutingPathNode', weight: number | null, nodes: Array<{ __typename?: 'NetRoutingPathNodeInfo', weight: number | null, name: string | null }> }> } };
