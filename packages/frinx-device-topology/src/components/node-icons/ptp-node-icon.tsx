@@ -8,6 +8,8 @@ import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node
 import NodeInterface from './node-interface';
 
 type Props = {
+  showPtpDiffSynce: boolean;
+  ptpDiffSynceIds: string[];
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
   isFocused: boolean;
   isSelectedForGmPath: boolean;
@@ -26,6 +28,8 @@ const Text = chakra('text');
 
 const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
+  showPtpDiffSynce,
+  ptpDiffSynceIds,
   isFocused,
   isSelectedForGmPath,
   isGmPath,
@@ -57,7 +61,12 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <Circle r={`${circleDiameter / 2}px`} fill="gray.400" strokeWidth={1} stroke="gray.400" />
+        <Circle
+          r={`${circleDiameter / 2}px`}
+          fill={showPtpDiffSynce && ptpDiffSynceIds.includes(node.nodeId) ? 'red.600' : 'gray.400'}
+          strokeWidth={1}
+          stroke="gray.400"
+        />
       </G>
       <Text
         height={`${circleDiameter / 2}px`}

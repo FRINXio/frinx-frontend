@@ -1,5 +1,5 @@
-import { Box, Container, Flex, FormControl, FormLabel, Heading, Select } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import { Box, Container, Flex, FormControl, FormLabel, Heading, Select, Switch } from '@chakra-ui/react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
 import { setTopologyLayer } from '../../state.actions';
@@ -12,6 +12,7 @@ import SynceTopologyContainer from './synce/synce-topology.container';
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
+  const [showPtpDiffSynce, setShowPtpDiffSynce] = useState<boolean>(false);
   const { mode, topologyLayer } = state;
 
   return (
@@ -47,11 +48,24 @@ const Topology: VoidFunctionComponent = () => {
             </Box>
           </>
         )}
+        {topologyLayer === 'PTP' && (
+          <FormControl display="flex" flexDirection="column" justifyContent="space-between" alignItems="left">
+            <FormLabel htmlFor="email-alerts" mb="0">
+              Show PTP Diff Synce
+            </FormLabel>
+            <Switch
+              isChecked={showPtpDiffSynce}
+              onChange={() => setShowPtpDiffSynce((prev) => !prev)}
+              size="lg"
+              pb="32px"
+            />
+          </FormControl>
+        )}
       </Flex>
       <Box>
         {topologyLayer === 'LLDP' && <TopologyContainer />}
         {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
-        {topologyLayer === 'PTP' && <PtpTopologyContainer />}
+        {topologyLayer === 'PTP' && <PtpTopologyContainer showPtpDiffSynce={showPtpDiffSynce} />}
         {topologyLayer === 'Synchronous Ethernet' && <SynceTopologyContainer />}
       </Box>
     </Container>

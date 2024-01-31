@@ -7,9 +7,14 @@ import {
   GetGrandMasterPathQueryVariables,
   UpdatePtpPositionMutation,
   UpdatePtpPositionMutationVariables,
+  GetPtpDiffSynceQuery,
 } from '../../../__generated__/graphql';
 import { height, width, Position } from '../graph.helpers';
 import PtpTopologyGraph from './ptp-topology-graph';
+
+type Props = {
+  showPtpDiffSynce: boolean;
+};
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdatePtpPosition($input: UpdateGraphNodeCoordinatesInput!) {
@@ -29,27 +34,26 @@ const GET_GM_PATH = gql`
   }
 `;
 
-const PTP_DIFF_SYNCE = gql`
-  query PtPDiffSyncE{
-    ptpDiffSyncE {
-      edges {
-        node {
-          id
+const GET_PTP_DIFF_SYNCE = gql`
+  query GetPtpDiffSynce {
+    deviceInventory {
+      ptpDiffSynce {
+        edges {
+          node {
+            id
+          }
         }
       }
     }
   }
 `;
 
-const PtpTopologyContainer: VoidFunctionComponent = () => {
+const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ showPtpDiffSynce }) => {
   const client = useClient();
   const { dispatch, state } = useStateContext();
   const { selectedGmPathNodeId } = state;
 
-  const [{ data: ptpDiffSynce, error }] = useQuery<any, any>(PTP_DIFF_SYNCE);
-
-  
-
+  const [{ data: ptpDiffSynce }] = useQuery<GetPtpDiffSynceQuery>({ query: GET_PTP_DIFF_SYNCE });
   const [, updatePosition] = useMutation<UpdatePtpPositionMutation, UpdatePtpPositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
@@ -63,6 +67,10 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
       deviceFrom: selectedGmPathNodeId as string,
     },
     pause: selectedGmPathNodeId === null,
+  });
+
+  const ptpDiffSynceIds = ptpDiffSynce?.deviceInventory.ptpDiffSynce.edges.map((diff) => {
+    return diff.node.id;
   });
 
   useEffect(() => {
@@ -127,6 +135,8 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
 
   return (
     <PtpTopologyGraph
+      showPtpDiffSynce={showPtpDiffSynce}
+      ptpDiffSynceIds={ptpDiffSynceIds || []}
       onNodePositionUpdate={handleNodePositionUpdate}
       onGrandMasterPathSearch={handleSearchClick}
       isGrandMasterPathFetching={isGmPathFetching}
