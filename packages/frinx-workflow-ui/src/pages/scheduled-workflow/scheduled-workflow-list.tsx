@@ -23,14 +23,16 @@ import FeatherIcon from 'feather-icons-react';
 import {
   omitNullValue,
   useNotifications,
-  ScheduledWorkflow,
+  // ScheduledWorkflow,
   StatusType,
   ClientWorkflow,
   DescriptionJSON,
   jsonParse,
-  Pagination,
-  usePagination,
+  // Pagination,
+  // usePagination,
   CreateScheduledWorkflow,
+  // WorkflowDefinition,
+  // ClientWorkflowWithTasks,
 } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
@@ -38,10 +40,11 @@ import {
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
   SchedulesQuery,
+  // SchedulesQueryVariables,
   UpdateScheduleMutation,
   UpdateScheduleMutationVariables,
   WorkflowListQuery,
-  WorkflowListQueryVariables,
+  // WorkflowListQueryVariables,
 } from '../../__generated__/graphql';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
@@ -57,12 +60,18 @@ const WORKFLOWS_QUERY = gql`
             version
             createdAt
             updatedAt
+            updatedBy
+            createdBy
             hasSchedule
             inputParameters
             timeoutSeconds
             timeoutPolicy
             ownerEmail
             restartable
+            outputParameters {
+              key
+              value
+            }
           }
         }
       }
@@ -143,16 +152,18 @@ function ScheduledWorkflowList() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<CreateScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  // TODO: FIXME
+  // add paging
+  // const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
-  const [{ data: workflows }] = useQuery<WorkflowListQuery, WorkflowListQueryVariables>({
+  const [{ data: workflows }] = useQuery<WorkflowListQuery>({
     query: WORKFLOWS_QUERY,
   });
   const [{ data: scheduledWorkflows, fetching: isLoadingSchedules, error }] = useQuery<SchedulesQuery>({
     query: SCHEDULED_WORKFLOWS_QUERY,
-    variables: {
-      ...paginationArgs,
-    },
+    // variables: {
+    //   ...paginationArgs,
+    // },
   });
   const [, deleteSchedule] = useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(
     DELETE_SCHEDULE_MUTATION,
@@ -211,7 +222,7 @@ function ScheduledWorkflowList() {
     }
   };
 
-  const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
+  const handleDeleteBtnClick = (workflow: CreateScheduledWorkflow) => {
     deleteSchedule({ name: workflow.name }, context)
       .then((res) => {
         if (!res.data?.scheduler.deleteSchedule) {
@@ -246,6 +257,7 @@ function ScheduledWorkflowList() {
     return <div>{error?.message}</div>;
   }
 
+  // TODO: FIXME
   const schedules =
     scheduledWorkflows?.scheduler.schedules?.edges.filter(omitNullValue).map((edge) => {
       const node = edge?.node;
@@ -265,7 +277,7 @@ function ScheduledWorkflowList() {
     );
   }
 
-  const clientWorkflows: Omit<ClientWorkflow, 'outputParameters'>[] =
+  const clientWorkflows: ClientWorkflow[] =
     workflows?.conductor.workflowDefinitions.edges.map(({ node }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
       return {
@@ -363,12 +375,14 @@ function ScheduledWorkflowList() {
           </Tbody>
         )}
       </Table>
+      {/*
       <Pagination
         onPrevious={previousPage(scheduledWorkflows.scheduler.schedules?.pageInfo.startCursor)}
         onNext={nextPage(scheduledWorkflows.scheduler.schedules?.pageInfo.endCursor)}
         hasNextPage={scheduledWorkflows.scheduler.schedules?.pageInfo.hasNextPage ?? false}
         hasPreviousPage={scheduledWorkflows.scheduler.schedules?.pageInfo.hasPreviousPage ?? false}
       />
+      */}
     </Container>
   );
 }

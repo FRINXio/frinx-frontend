@@ -178,6 +178,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
               onChange={handleChange}
               value={values.name}
               readOnly={isEditing ?? false}
+              cursor={isEditing ? 'not-allowed' : 'auto'}
             />
             <FormErrorMessage>Name is required</FormErrorMessage>
           </FormControl>
@@ -190,6 +191,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
               onChange={handleChange}
               value={values.event}
               readOnly={isEditing ?? false}
+              cursor={isEditing ? 'not-allowed' : 'auto'}
             />
             <FormErrorMessage>Event is required</FormErrorMessage>
           </FormControl>

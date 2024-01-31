@@ -1,25 +1,18 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { GraphNodeWithDiff } from '../../helpers/topology-helpers';
-import { GraphNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import { GraphSynceNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
-import { GraphEdge } from '../../__generated__/graphql';
+import { GraphEdge, SynceGraphNode } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
-import {
-  getDeviceNodeTransformProperties,
-  getNodeBackgroundColor,
-  getNodeInterfaceGroups,
-  getNodeTextColor,
-} from './node-icon.helpers';
+import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node-icon.helpers';
 import NodeInterface from './node-interface';
 
 type Props = {
-  positions: PositionsWithGroupsMap<GraphNodeInterface>;
-  isSelected: boolean;
-  isCommon: boolean;
+  positions: PositionsWithGroupsMap<GraphSynceNodeInterface>;
   isFocused: boolean;
-  isSelectedForCommonSearch: boolean;
-  node: GraphNodeWithDiff;
+  isSelectedForGmPath: boolean;
+  isGmPath: boolean;
+  node: SynceGraphNode;
   topologyMode: TopologyMode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
@@ -31,12 +24,11 @@ const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
 
-const NodeIcon: VoidFunctionComponent<Props> = ({
+const SynceNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
-  isSelected,
-  isCommon,
-  isSelectedForCommonSearch,
+  isSelectedForGmPath,
+  isGmPath,
   node,
   topologyMode,
   onPointerDown,
@@ -44,10 +36,9 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   onPointerUp,
   selectedEdge,
 }) => {
-  const { device, change } = node;
-  const { x, y } = positions.nodes[node.device.name];
-  const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
-  const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device.deviceSize);
+  const { x, y } = positions.nodes[node.name];
+  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
+  const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
   return (
     <G
@@ -66,24 +57,19 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <Circle
-          r={`${circleDiameter / 2}px`}
-          fill={getNodeBackgroundColor({ isSelected, change })}
-          strokeWidth={1}
-          stroke={getNodeBackgroundColor({ isSelected, change })}
-        />
+        <Circle r={`${circleDiameter / 2}px`} fill="gray.400" strokeWidth={1} stroke="gray.400" />
       </G>
       <Text
         height={`${circleDiameter / 2}px`}
         transform="translate3d(35px, 5px, 0)"
         fontWeight="600"
         userSelect="none"
-        fill={getNodeTextColor(change)}
+        fill="black"
       >
-        {device.name}
+        {node.name}
       </Text>
       <NodeIconImage sizeTransform={sizeTransform} />
-      {isSelectedForCommonSearch && (
+      {isSelectedForGmPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
           fill="transparent"
@@ -92,13 +78,13 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
           stroke="red.300"
         />
       )}
-      {isCommon && (
+      {isGmPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
           fill="transparent"
           strokeWidth={3}
           strokeDasharray="15, 15"
-          stroke="green.300"
+          stroke="red.300"
         />
       )}
       <G>
@@ -108,7 +94,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
           const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
           return (
             <NodeInterface
-              key={`group-${group}`}
+              key={group}
               position={{
                 x: iPosition.x - x,
                 y: iPosition.y - y,
@@ -124,4 +110,4 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   );
 };
 
-export default NodeIcon;
+export default SynceNodeIcon;

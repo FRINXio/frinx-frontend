@@ -1,5 +1,6 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
-import { DeviceSize, PtpGraphNode } from '../../__generated__/graphql';
+import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
+import { DeviceSize, PtpGraphNode, SynceGraphNode } from '../../__generated__/graphql';
 
 export const width = 1248;
 export const height = 600;
@@ -72,6 +73,11 @@ export type BackupGraphNode = {
 };
 
 export type GraphPtpNodeInterface = {
+  id: string;
+  name: string;
+};
+
+export type GraphSynceNodeInterface = {
   id: string;
   name: string;
 };
@@ -334,7 +340,7 @@ export function isTargetingActiveNode<S extends { id: string; name: string }>(
   return targetNodeId === selectedNodeName && !!targetGroup?.interfaces.find((i) => i.id === edge.source.interface);
 }
 
-export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | null): string | null {
+export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null): string | null {
   if (node == null) {
     return null;
   }
@@ -344,6 +350,16 @@ export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | 
   return node.name;
 }
 
-export function ensureNodeHasDevice(value: GraphNode | GraphNetNode | PtpGraphNode | null): value is GraphNode {
+export function ensureNodeHasDevice(
+  value: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null,
+): value is GraphNode {
   return value != null && 'device' in value;
 }
+
+export const isGmPathPredicate = (gmPath: string[], edge: GraphEdgeWithDiff): boolean => {
+  const fromInterfaceIndex = gmPath.findIndex((deviceInterface) => deviceInterface === edge.source.interface);
+  if (fromInterfaceIndex === -1) {
+    return false;
+  }
+  return gmPath.includes(edge.target.interface, fromInterfaceIndex);
+};

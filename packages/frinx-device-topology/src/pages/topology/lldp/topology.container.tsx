@@ -117,7 +117,7 @@ const TopologyContainer: VoidFunctionComponent = () => {
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.addEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, [handleKeyDown, handleKeyUp]);
 

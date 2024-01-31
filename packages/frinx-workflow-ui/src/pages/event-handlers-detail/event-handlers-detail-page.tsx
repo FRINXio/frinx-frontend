@@ -16,88 +16,97 @@ import {
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ConfirmDeleteModal, Editor, unwrap, useNotifications } from '@frinx/shared';
+import { ConfirmDeleteModal, Editor, omitNullValue, unwrap, useNotifications } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import {
   DeleteEventHandlerDetailMutation,
   DeleteEventHandlerDetailMutationVariables,
   EditEventHandlerActionsMutation,
   EditEventHandlerActionsMutationVariables,
-  EventHandlerQuery,
-  EventHandlerQueryVariables,
+  EventHandler,
+  EventHandlerDetailQuery,
+  EventHandlerDetailQueryVariables,
 } from '../../__generated__/graphql';
 import EventHandlersDetailActions from './event-handlers-detail-actions';
 import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
+import { isValueOfType } from '../../helpers/utils.helpers';
 
 type Props = {
-  onEventHandlerEditClick: (event: string, name: string) => void;
+  onEventHandlerEditClick: (id: string) => void;
 };
 
-// const EVENT_HANDLER_QUERY = gql`
-//   query EventHandler($event: String!, $name: String!) {
-//     eventHandler(event: $event, name: $name) {
-//       id
-//       name
-//       event
-//       actions {
-//         action
-//         expandInlineJSON
-//         completeTask {
-//           workflowId
-//           taskId
-//           output
-//           taskRefName
-//         }
-//         failTask {
-//           workflowId
-//           taskId
-//           output
-//           taskRefName
-//         }
-//         startWorkflow {
-//           name
-//           version
-//           input
-//           correlationId
-//           taskToDomain
-//         }
-//       }
-//       condition
-//       evaluatorType
-//       isActive
-//     }
-//   }
-// `;
-//
-// const DELETE_EVENT_HANDLER_MUTATION = gql`
-//   mutation DeleteEventHandlerDetail($deleteEventHandlerId: String!) {
-//     deleteEventHandler(id: $deleteEventHandlerId) {
-//       isOk
-//     }
-//   }
-// `;
-//
-// const UPDATE_EVENT_HANDLER_MUTATION = gql`
-//   mutation EditEventHandlerActions($input: UpdateEventHandlerInput!, $name: String!, $event: String!) {
-//     updateEventHandler(input: $input, name: $name, event: $event) {
-//       id
-//       name
-//       event
-//     }
-//   }
-// `;
-//
+const EVENT_HANDLER_QUERY = gql`
+  query EventHandlerDetail($id: ID!) {
+    conductor {
+      node(id: $id) {
+        ... on EventHandler {
+          id
+          name
+          event
+          actions {
+            action
+            expandInlineJSON
+            completeTask {
+              workflowId
+              taskId
+              output
+              taskRefName
+            }
+            failTask {
+              workflowId
+              taskId
+              output
+              taskRefName
+            }
+            startWorkflow {
+              name
+              version
+              input
+              correlationId
+              taskToDomain
+            }
+          }
+          condition
+          evaluatorType
+          isActive
+        }
+      }
+    }
+  }
+`;
+
+const DELETE_EVENT_HANDLER_MUTATION = gql`
+  mutation DeleteEventHandlerDetail($deleteEventHandlerId: ID!) {
+    conductor {
+      deleteEventHandler(id: $deleteEventHandlerId)
+    }
+  }
+`;
+
+const UPDATE_EVENT_HANDLER_MUTATION = gql`
+  mutation EditEventHandlerActions($input: EditEventHandlerInput!) {
+    conductor {
+      editEventHandler(input: $input) {
+        eventHandler {
+          id
+          name
+          event
+        }
+      }
+    }
+  }
+`;
+
 const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerEditClick }) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const ctx = useMemo(() => ({ additionalTypenames: ['EventHandler'] }), []);
-  const { event, name } = useParams<{ event: string; name: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToastNotification } = useNotifications();
-  const [{ data, fetching, error }] = useQuery<EventHandlerQuery, EventHandlerQueryVariables>({
+  const [{ data, fetching, error }] = useQuery<EventHandlerDetailQuery, EventHandlerDetailQueryVariables>({
     query: EVENT_HANDLER_QUERY,
     variables: {
-      event: unwrap(event),
-      name: unwrap(name),
+      id: unwrap(id),
     },
   });
   const [, deleteEventHandler] = useMutation<
@@ -118,10 +127,10 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     setSelectedConditionLang('python');
   };
 
-  const handleOnEventHandlerDelete = (id: string) => {
+  const handleOnEventHandlerDelete = (eventHandlerId: string) => {
     deleteEventHandler(
       {
-        deleteEventHandlerId: id,
+        deleteEventHandlerId: eventHandlerId,
       },
       {
         additionalTypenames: ['EventHandler'],
@@ -131,7 +140,6 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
         if (response.error != null) {
           throw new Error(response.error.message);
         }
-
         navigate('/workflow-manager/event-handlers');
       })
       .catch((err) => {
@@ -143,28 +151,35 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
   };
 
   const handleOnEventHandlerActionDelete = (
-    eventHandler: NonNullable<EventHandlerQuery['eventHandler']>,
+    eventHandler: NonNullable<EventHandlerDetailQuery['conductor']['node']>,
     actionIndex: number,
   ) => {
-    updateEventHandler(
-      {
-        input: {
-          actions: eventHandler.actions
-            .filter((_, index) => index === actionIndex)
-            .map(removeTypenamesFromEventHandlerAction),
+    if (isValueOfType<EventHandler>('__typename', eventHandler)) {
+      updateEventHandler(
+        {
+          input: {
+            id: eventHandler.id,
+            actions: eventHandler.actions
+              .filter((_, index) => index === actionIndex)
+              .filter(omitNullValue)
+              .map(removeTypenamesFromEventHandlerAction),
+          },
         },
-        event: eventHandler.event,
-        name: eventHandler.name,
-      },
-      ctx,
-    );
+        ctx,
+      );
+    }
   };
 
   if (fetching) {
     return <Progress isIndeterminate size="xs" mt={-10} />;
   }
 
-  if (data == null || data.eventHandler == null || error != null) {
+  if (
+    data == null ||
+    data.conductor.node == null ||
+    error != null ||
+    data.conductor.node.__typename !== 'EventHandler'
+  ) {
     return (
       <Container maxWidth={1200} mx="auto">
         <Text>We could not find expected event handler. Try again later please.</Text>
@@ -172,7 +187,7 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
     );
   }
 
-  const { eventHandler } = data;
+  const eventHandler = data.conductor.node;
   const editorComment =
     selectedConditionLang === 'python' ? '# condition was not defined' : '// condition was not defined';
 
@@ -199,7 +214,7 @@ const EventHandlersDetailPage: VoidFunctionComponent<Props> = ({ onEventHandlerE
             <IconButton
               aria-label="edit event handler"
               icon={<FeatherIcon icon="edit" size={20} />}
-              onClick={() => onEventHandlerEditClick(eventHandler.event, eventHandler.name)}
+              onClick={() => onEventHandlerEditClick(eventHandler.id)}
             />
             <IconButton
               aria-label="delete event handler"

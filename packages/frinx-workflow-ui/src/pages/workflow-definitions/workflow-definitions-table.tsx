@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import { ClientWorkflowWithoutTasks, jsonParse } from '@frinx/shared';
+import { ClientWorkflow, ClientWorkflowWithTasks, jsonParse } from '@frinx/shared';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabel from '../../components/workflow-label';
 
@@ -30,7 +30,7 @@ type OrderBy = {
 };
 
 type Props = {
-  workflows: ClientWorkflowWithoutTasks[];
+  workflows: ClientWorkflowWithTasks[];
   onSort: () => void;
   orderBy: OrderBy;
   executeWorkflowModal: UseDisclosureReturn;
@@ -40,17 +40,14 @@ type Props = {
   scheduleWorkflowModal: UseDisclosureReturn;
   confirmDeleteModal: UseDisclosureReturn;
   onLabelClick: (label: string) => void;
-  setActiveWorkflow: (wf: ClientWorkflowWithoutTasks) => void;
+  setActiveWorkflow: (wf: ClientWorkflowWithTasks) => void;
 };
 
 function getLabelsFromJSON(description?: string): string[] {
   return jsonParse<{ labels: string[] }>(description)?.labels || [];
 }
 
-const Labels: VoidFunctionComponent<{ wf: ClientWorkflowWithoutTasks; onClick: (label: string) => void }> = ({
-  wf,
-  onClick,
-}) => {
+const Labels: VoidFunctionComponent<{ wf: ClientWorkflow; onClick: (label: string) => void }> = ({ wf, onClick }) => {
   const { description } = wf;
   const labelsDef = getLabelsFromJSON(description ?? undefined);
 
@@ -84,7 +81,7 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
   executeWorkflowModal,
   scheduleWorkflowModal,
 }) => {
-  const getDependencies = (workflow: ClientWorkflowWithoutTasks) => {
+  const getDependencies = (workflow: ClientWorkflow) => {
     const usedInWfs = workflows.filter((wf) => {
       const wfJSON = JSON.stringify(wf, null, 2);
       return wfJSON.includes(`"name": "${workflow.name}"`) && wf.name !== workflow.name;
