@@ -1,10 +1,8 @@
 import { omit } from 'lodash';
 import { EventHandlerAction } from '../components/event-handler-form/event-handler-form';
-import { EventHandlerQuery } from '../__generated__/graphql';
+import { EventHandlerAction as GraphqlEventHandlerAction } from '../__generated__/graphql';
 
-export function removeTypenamesFromEventHandlerAction(
-  action: NonNullable<EventHandlerQuery['eventHandler']>['actions'][0],
-) {
+export function removeTypenamesFromEventHandlerAction(action: GraphqlEventHandlerAction) {
   const newAction = omit(action, '__typename');
 
   return {
@@ -26,22 +24,22 @@ export function removeTypenamesFromActionTasks(action: EventHandlerAction) {
     completeTask: omit(
       {
         ...action.completeTask,
-        output: JSON.stringify(Object.fromEntries(action.completeTask?.output ?? [])),
+        output: Object.fromEntries(action.completeTask?.output ?? []),
       },
       ['__typename'],
     ),
     failTask: omit(
       {
         ...action.failTask,
-        output: JSON.stringify(Object.fromEntries(action.failTask?.output ?? [])),
+        output: Object.fromEntries(action.failTask?.output ?? []),
       },
       ['__typename'],
     ),
     startWorkflow: omit(
       {
         ...action.startWorkflow,
-        input: JSON.stringify(Object.fromEntries(action.startWorkflow?.input ?? [])),
-        taskToDomain: JSON.stringify(Object.fromEntries(action.startWorkflow?.taskToDomain ?? [])),
+        input: Object.fromEntries(action.startWorkflow?.input ?? []),
+        taskToDomain: Object.fromEntries(action.startWorkflow?.taskToDomain ?? []),
       },
       ['__typename'],
     ),

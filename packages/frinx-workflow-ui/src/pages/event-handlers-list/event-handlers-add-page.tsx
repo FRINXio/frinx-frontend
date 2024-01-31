@@ -37,16 +37,16 @@ const EventHandlersAddPage = () => {
           expandInlineJSON: action.expandInlineJSON,
           completeTask: {
             ...action.completeTask,
-            output: JSON.stringify(Object.fromEntries(action.completeTask?.output ?? [])),
+            output: Object.fromEntries(action.completeTask?.output ?? []),
           },
           failTask: {
             ...action.failTask,
-            output: JSON.stringify(Object.fromEntries(action.failTask?.output ?? [])),
+            output: Object.fromEntries(action.failTask?.output ?? []),
           },
           startWorkflow: {
             ...action.startWorkflow,
-            input: JSON.stringify(Object.fromEntries(action.startWorkflow?.input ?? [])),
-            taskToDomain: JSON.stringify(Object.fromEntries(action.startWorkflow?.taskToDomain ?? [])),
+            input: Object.fromEntries(action.startWorkflow?.input ?? []),
+            taskToDomain: Object.fromEntries(action.startWorkflow?.taskToDomain ?? []),
           },
         })),
         condition: formValues.condition,

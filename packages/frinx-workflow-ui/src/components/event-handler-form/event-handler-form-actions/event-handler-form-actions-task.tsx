@@ -33,7 +33,7 @@ enum ViewModeEnum {
 }
 
 const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values, onChange, onRemove }) => {
-  const [viewMode, setViewMode] = React.useState<ViewMode>(ViewModeEnum.ALL);
+  const [viewMode, setViewMode] = React.useState<ViewMode>(values.taskId ? ViewModeEnum.TASK_ONLY : ViewModeEnum.ALL);
 
   const handleOnTaskIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, taskId: event.target.value });

@@ -13,10 +13,10 @@ import {
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
-import { ClientWorkflowWithoutTasks } from '@frinx/shared';
+import { ClientWorkflow } from '@frinx/shared';
 
 type Props = {
-  workflow: ClientWorkflowWithoutTasks;
+  workflow: ClientWorkflow;
   onDeleteBtnClick: () => void;
   onDiagramBtnClick: () => void;
   onDefinitionBtnClick: () => void;

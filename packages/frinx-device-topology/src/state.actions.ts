@@ -9,6 +9,7 @@ import {
   PtpGraphNode,
   PtpTopologyQuery,
   PtpTopologyQueryVariables,
+  SynceGraphNode,
   SynceTopologyQuery,
   SynceTopologyQueryVariables,
   TopologyQuery,
@@ -33,7 +34,7 @@ export type PtpNodesEdgesPayload = {
 };
 
 export type SynceNodesEdgesPayload = {
-  nodes: PtpGraphNode[];
+  nodes: SynceGraphNode[];
   edges: GraphEdge[];
 };
 
@@ -164,16 +165,18 @@ export type StateAction =
   | { type: 'SET_GM_PATH_IDS'; nodeIds: string[] }
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
-      payload: PtpNodesEdgesPayload;
+      payload: SynceNodesEdgesPayload;
     }
   | {
       type: 'SET_SELECTED_SYNCE_NODE';
-      node: PtpGraphNode | null;
+      node: SynceGraphNode | null;
     }
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
-      payload: PtpNodesEdgesPayload;
-    };
+      payload: SynceNodesEdgesPayload;
+    }
+  | { type: 'PAN_TOPOLOGY'; panDelta: Position }
+  | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -305,6 +308,11 @@ const PTP_TOPOLOGY_QUERY = gql`
             id
             status
             name
+            details {
+              ptpStatus
+              adminOperStatus
+              ptsfUnusable
+            }
           }
           coordinates {
             x
@@ -317,6 +325,12 @@ const PTP_TOPOLOGY_QUERY = gql`
             clockId
             parentClockId
             gmClockId
+            clockClass
+            clockAccuracy
+            clockVariance
+            timeRecoveryStatus
+            globalPriority
+            userPriority
           }
           status
           labels
@@ -341,7 +355,7 @@ const PTP_TOPOLOGY_QUERY = gql`
 const SYNCE_TOPOLOGY_QUERY = gql`
   query SynceTopology {
     deviceInventory {
-      ptpTopology {
+      synceTopology {
         nodes {
           id
           nodeId
@@ -350,6 +364,11 @@ const SYNCE_TOPOLOGY_QUERY = gql`
             id
             status
             name
+            details {
+              ptpStatus
+              adminOperStatus
+              ptsfUnusable
+            }
           }
           coordinates {
             x
@@ -357,13 +376,8 @@ const SYNCE_TOPOLOGY_QUERY = gql`
           }
           status
           labels
-          ptpDeviceDetails {
-            clockType
-            domain
-            ptpProfile
-            clockId
-            parentClockId
-            gmClockId
+          synceDeviceDetails {
+            selectedForUse
           }
         }
         edges {
@@ -484,7 +498,7 @@ export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<St
       )
       .toPromise()
       .then((data) => {
-        const { nodes, edges } = data.data?.deviceInventory.ptpTopology ?? { nodes: [], edges: [] };
+        const { nodes, edges } = data.data?.deviceInventory.synceTopology ?? { nodes: [], edges: [] };
         dispatch(setSynceNodesAndEdges({ nodes, edges }));
       });
   };
@@ -638,7 +652,7 @@ export function setSelectedPtpNode(node: PtpGraphNode): StateAction {
   };
 }
 
-export function setSelectedSynceNode(node: PtpGraphNode): StateAction {
+export function setSelectedSynceNode(node: SynceGraphNode): StateAction {
   return {
     type: 'SET_SELECTED_SYNCE_NODE',
     node,
@@ -697,5 +711,19 @@ export function setGmPathIds(nodeIds: string[]): StateAction {
   return {
     type: 'SET_GM_PATH_IDS',
     nodeIds,
+  };
+}
+
+export function panTopology(panDelta: Position): StateAction {
+  return {
+    type: 'PAN_TOPOLOGY',
+    panDelta,
+  };
+}
+
+export function zoomTopology(zoomDelta: number): StateAction {
+  return {
+    type: 'ZOOM_TOPOLOGY',
+    zoomDelta,
   };
 }
