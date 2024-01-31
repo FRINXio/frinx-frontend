@@ -8,8 +8,8 @@ import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node
 import NodeInterface from './node-interface';
 
 type Props = {
-  showPtpDiffSynce: boolean;
-  ptpDiffSynceIds: string[];
+  showPtpDiffSynce?: boolean;
+  ptpDiffSynceIds?: string[];
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
   isFocused: boolean;
   isSelectedForGmPath: boolean;
@@ -63,7 +63,7 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
       <G>
         <Circle
           r={`${circleDiameter / 2}px`}
-          fill={showPtpDiffSynce && ptpDiffSynceIds.includes(node.nodeId) ? 'red.600' : 'gray.400'}
+          fill={showPtpDiffSynce && ptpDiffSynceIds?.includes(node.nodeId) ? 'red.600' : 'gray.400'}
           strokeWidth={1}
           stroke="gray.400"
         />
