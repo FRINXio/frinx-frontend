@@ -8,8 +8,8 @@ import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node
 import NodeInterface from './node-interface';
 
 type Props = {
-  isPtpDiffSynceShown?: boolean;
-  ptpDiffSynceIds?: string[];
+  isPtpDiffSynceShown: boolean;
+  ptpDiffSynceIds: string[];
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
   isFocused: boolean;
   isSelectedForGmPath: boolean;
