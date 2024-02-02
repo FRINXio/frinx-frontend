@@ -44,6 +44,8 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
+  const ptpDiffSynceNodeColor = showPtpDiffSynce && ptpDiffSynceIds?.includes(node.nodeId) ? 'red.200' : 'gray.400'
+
   return (
     <G
       cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}
@@ -63,9 +65,9 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
       <G>
         <Circle
           r={`${circleDiameter / 2}px`}
-          fill={showPtpDiffSynce && ptpDiffSynceIds?.includes(node.nodeId) ? 'red.600' : 'gray.400'}
+          fill={ptpDiffSynceNodeColor}
           strokeWidth={1}
-          stroke="gray.400"
+          stroke={ptpDiffSynceNodeColor}
         />
       </G>
       <Text
