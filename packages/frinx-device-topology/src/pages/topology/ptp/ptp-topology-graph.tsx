@@ -12,7 +12,7 @@ import { PtpGraphNode } from '../../../__generated__/graphql';
 
 type Props = {
   ptpDiffSynceIds: string[];
-  showPtpDiffSynce: boolean;
+  isPtpDiffSynceShown: boolean;
   isGrandMasterPathFetching: boolean;
   onNodePositionUpdate: (positions: { deviceName: string; position: Position }[]) => Promise<void>;
   onGrandMasterPathSearch: (nodeIds: string[]) => void;
@@ -20,7 +20,7 @@ type Props = {
 
 const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
   ptpDiffSynceIds,
-  showPtpDiffSynce,
+  isPtpDiffSynceShown,
   isGrandMasterPathFetching,
   onNodePositionUpdate,
   onGrandMasterPathSearch,
@@ -84,7 +84,7 @@ const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
         <Edges edgesWithDiff={edges} />
         <PtpNodes
-          showPtpDiffSynce={showPtpDiffSynce}
+          isPtpDiffSynceShown={isPtpDiffSynceShown}
           ptpDiffSynceIds={ptpDiffSynceIds}
           nodes={nodes}
           onNodePositionUpdate={handleNodePositionUpdate}

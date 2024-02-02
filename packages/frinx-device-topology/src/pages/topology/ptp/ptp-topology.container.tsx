@@ -13,7 +13,7 @@ import { height, width, Position } from '../graph.helpers';
 import PtpTopologyGraph from './ptp-topology-graph';
 
 type Props = {
-  showPtpDiffSynce: boolean;
+  isPtpDiffSynceShown: boolean;
 };
 
 const UPDATE_POSITION_MUTATION = gql`
@@ -48,7 +48,7 @@ const GET_PTP_DIFF_SYNCE = gql`
   }
 `;
 
-const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ showPtpDiffSynce }) => {
+const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShown }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
@@ -144,7 +144,7 @@ const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ showPtpDiffSynce }
 
   return (
     <PtpTopologyGraph
-      showPtpDiffSynce={showPtpDiffSynce}
+      isPtpDiffSynceShown={isPtpDiffSynceShown}
       ptpDiffSynceIds={ptpDiffSynceIds || []}
       onNodePositionUpdate={handleNodePositionUpdate}
       onGrandMasterPathSearch={handleSearchClick}

@@ -8,7 +8,7 @@ import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node
 import NodeInterface from './node-interface';
 
 type Props = {
-  showPtpDiffSynce?: boolean;
+  isPtpDiffSynceShown?: boolean;
   ptpDiffSynceIds?: string[];
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
   isFocused: boolean;
@@ -28,7 +28,7 @@ const Text = chakra('text');
 
 const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
-  showPtpDiffSynce,
+  isPtpDiffSynceShown,
   ptpDiffSynceIds,
   isFocused,
   isSelectedForGmPath,
@@ -44,7 +44,7 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
-  const ptpDiffSynceNodeColor = showPtpDiffSynce && ptpDiffSynceIds?.includes(node.nodeId) ? 'red.200' : 'gray.400'
+  const ptpDiffSynceNodeColor = isPtpDiffSynceShown && ptpDiffSynceIds?.includes(node.nodeId) ? 'red.200' : 'gray.400';
 
   return (
     <G

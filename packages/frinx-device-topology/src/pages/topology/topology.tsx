@@ -12,7 +12,7 @@ import SynceTopologyContainer from './synce/synce-topology.container';
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
-  const [showPtpDiffSynce, setShowPtpDiffSynce] = useState<boolean>(false);
+  const [isPtpDiffSynceShown, setIsPtpDiffSynceShown] = useState<boolean>(false);
   const { mode, topologyLayer } = state;
 
   return (
@@ -54,8 +54,8 @@ const Topology: VoidFunctionComponent = () => {
               Show PTP Diff Synce
             </FormLabel>
             <Switch
-              isChecked={showPtpDiffSynce}
-              onChange={() => setShowPtpDiffSynce((prev) => !prev)}
+              isChecked={isPtpDiffSynceShown}
+              onChange={() => setIsPtpDiffSynceShown((prev) => !prev)}
               size="lg"
               pb="32px"
             />
@@ -65,7 +65,7 @@ const Topology: VoidFunctionComponent = () => {
       <Box>
         {topologyLayer === 'LLDP' && <TopologyContainer />}
         {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
-        {topologyLayer === 'PTP' && <PtpTopologyContainer showPtpDiffSynce={showPtpDiffSynce} />}
+        {topologyLayer === 'PTP' && <PtpTopologyContainer isPtpDiffSynceShown={isPtpDiffSynceShown} />}
         {topologyLayer === 'Synchronous Ethernet' && <SynceTopologyContainer />}
       </Box>
     </Container>

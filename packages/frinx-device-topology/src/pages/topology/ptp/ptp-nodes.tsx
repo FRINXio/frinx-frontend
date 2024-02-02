@@ -15,7 +15,7 @@ type StatePosition = {
 type Props = {
   nodes: PtpGraphNode[];
   ptpDiffSynceIds: string[];
-  showPtpDiffSynce: boolean;
+  isPtpDiffSynceShown: boolean;
   onNodePositionUpdate: (deviceName: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
 };
@@ -25,7 +25,7 @@ const PtpNodes: VoidFunctionComponent<Props> = ({
   onNodePositionUpdate,
   onNodePositionUpdateFinish,
   ptpDiffSynceIds,
-  showPtpDiffSynce,
+  isPtpDiffSynceShown,
 }) => {
   const [isPointerDown, setIsPointerDown] = useState(false);
   const [isMoved, setIsMoved] = useState(false);
@@ -98,7 +98,7 @@ const PtpNodes: VoidFunctionComponent<Props> = ({
       {nodes.map((node) => (
         <PtpNodeIcon
           ptpDiffSynceIds={ptpDiffSynceIds}
-          showPtpDiffSynce={showPtpDiffSynce}
+          isPtpDiffSynceShown={isPtpDiffSynceShown}
           key={node.id}
           positions={{ nodes: ptpNodePositions, interfaceGroups: ptpInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
