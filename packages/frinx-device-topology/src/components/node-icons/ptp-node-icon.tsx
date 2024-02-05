@@ -8,6 +8,8 @@ import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node
 import NodeInterface from './node-interface';
 
 type Props = {
+  isPtpDiffSynceShown: boolean;
+  ptpDiffSynceIds: string[];
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
   isFocused: boolean;
   isSelectedForGmPath: boolean;
@@ -26,6 +28,8 @@ const Text = chakra('text');
 
 const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
+  isPtpDiffSynceShown,
+  ptpDiffSynceIds,
   isFocused,
   isSelectedForGmPath,
   isGmPath,
@@ -39,6 +43,8 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   const { x, y } = positions.nodes[node.name];
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
+
+  const ptpDiffSynceNodeColor = isPtpDiffSynceShown && ptpDiffSynceIds?.includes(node.nodeId) ? 'red.200' : 'gray.400';
 
   return (
     <G
@@ -57,7 +63,12 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <Circle r={`${circleDiameter / 2}px`} fill="gray.400" strokeWidth={1} stroke="gray.400" />
+        <Circle
+          r={`${circleDiameter / 2}px`}
+          fill={ptpDiffSynceNodeColor}
+          strokeWidth={1}
+          stroke={ptpDiffSynceNodeColor}
+        />
       </G>
       <Text
         height={`${circleDiameter / 2}px`}

@@ -7,9 +7,14 @@ import {
   GetGrandMasterPathQueryVariables,
   UpdatePtpPositionMutation,
   UpdatePtpPositionMutationVariables,
+  GetPtpDiffSynceQuery,
 } from '../../../__generated__/graphql';
 import { height, width, Position } from '../graph.helpers';
 import PtpTopologyGraph from './ptp-topology-graph';
+
+type Props = {
+  isPtpDiffSynceShown: boolean;
+};
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdatePtpPosition($input: UpdateGraphNodeCoordinatesInput!) {
@@ -29,12 +34,27 @@ const GET_GM_PATH = gql`
   }
 `;
 
-const PtpTopologyContainer: VoidFunctionComponent = () => {
+const GET_PTP_DIFF_SYNCE = gql`
+  query GetPtpDiffSynce {
+    deviceInventory {
+      ptpDiffSynce {
+        edges {
+          node {
+            id
+          }
+        }
+      }
+    }
+  }
+`;
+
+const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShown }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
   const { selectedGmPathNodeId } = state;
 
+  const [{ data: ptpDiffSynce }] = useQuery<GetPtpDiffSynceQuery>({ query: GET_PTP_DIFF_SYNCE });
   const [, updatePosition] = useMutation<UpdatePtpPositionMutation, UpdatePtpPositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
@@ -49,6 +69,10 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
       deviceFrom: selectedGmPathNodeId as string,
     },
     pause: selectedGmPathNodeId === null,
+  });
+
+  const ptpDiffSynceIds = ptpDiffSynce?.deviceInventory.ptpDiffSynce.edges.map((diff) => {
+    return diff.node.id;
   });
 
   useEffect(() => {
@@ -120,6 +144,8 @@ const PtpTopologyContainer: VoidFunctionComponent = () => {
 
   return (
     <PtpTopologyGraph
+      isPtpDiffSynceShown={isPtpDiffSynceShown}
+      ptpDiffSynceIds={ptpDiffSynceIds || []}
       onNodePositionUpdate={handleNodePositionUpdate}
       onGrandMasterPathSearch={handleSearchClick}
       isGrandMasterPathFetching={isGmPathFetching}
