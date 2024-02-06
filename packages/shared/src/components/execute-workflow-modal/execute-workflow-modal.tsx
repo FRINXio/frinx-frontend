@@ -19,8 +19,24 @@ import { jsonParse } from '../../helpers/workflow.helpers';
 import { useWorkflowInputsForm } from '../../hooks';
 import WorkflowInputsForm from '../workflow-inputs-form/workflow-inputs-form';
 
+type ModalWorkflow = {
+  correlationId: string;
+  description: string | undefined;
+  name: string;
+  version: number;
+  inputParameters: (string | null)[];
+  outputParameters: unknown;
+  restartable: boolean;
+  ownerEmail: string;
+  schemaVersion: number;
+  timeoutPolicy: string;
+  timeoutSeconds: unknown;
+  variables: unknown;
+  tasks: never[];
+};
+
 type Props = {
-  workflow: Workflow | ClientWorkflow;
+  workflow: Workflow | ClientWorkflow | ModalWorkflow;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (inputParameters: Record<string, unknown>) => Promise<string | void | null> | null;

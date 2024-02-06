@@ -19,7 +19,7 @@ const App: FC<Props> = ({ basename, isAuthEnabled }) => {
   return (
     <BrowserRouter basename={basename}>
       <Header isAuthEnabled={isAuthEnabled} />
-      <Box paddingTop={10} overflow="hidden">
+      <Box paddingY={10} overflow="hidden">
         <Routes>
           <Route path="/workflow-manager/*" element={<UniflowApp />} />
           <Route path="/gamma/*" element={<GammaApp />} />

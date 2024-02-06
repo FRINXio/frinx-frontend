@@ -5,11 +5,13 @@ import { gql, useQuery } from 'urql';
 import { getLocalDateFromUTC } from '@frinx/shared';
 import { setSelectedVersion } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
-import { VersionsQueryQuery, VersionsQueryQueryVariables } from '../../__generated__/graphql';
+import { VersionsQuery, VersionsQueryVariables } from '../../__generated__/graphql';
 
 const VERSIONS_QUERY = gql`
-  query VersionsQuery {
-    topologyVersions
+  query Versions {
+    deviceInventory {
+      topologyVersions
+    }
   }
 `;
 
@@ -17,10 +19,9 @@ const VersionSelect: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
   const { selectedVersion } = state;
 
-  const [{ data: versionsData, fetching: isFetchingVersions }] = useQuery<
-    VersionsQueryQuery,
-    VersionsQueryQueryVariables
-  >({ query: VERSIONS_QUERY });
+  const [{ data: versionsData, fetching: isFetchingVersions }] = useQuery<VersionsQuery, VersionsQueryVariables>({
+    query: VERSIONS_QUERY,
+  });
 
   const handleSelectVersionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.currentTarget;
@@ -31,7 +32,7 @@ const VersionSelect: VoidFunctionComponent = () => {
     return <Progress size="xs" isIndeterminate mt={-10} />;
   }
 
-  const versions = versionsData?.topologyVersions ?? [];
+  const versions = versionsData?.deviceInventory.topologyVersions ?? [];
 
   return (
     <>

@@ -3,12 +3,14 @@ import {
   convertTaskToExtendedTask,
   jsonParse,
   createEmptyWorkflow,
-  ExtendedTask,
   unwrap,
   useNotifications,
+  ExtendedTask,
   Task,
-  ClientWorkflow,
   DescriptionJSON,
+  ClientWorkflowWithTasks,
+  TimeoutPolicy,
+  TaskDefinition,
 } from '@frinx/shared';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -19,21 +21,24 @@ import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
 import {
-  DeleteWorkflowMutation,
-  DeleteWorkflowMutationVariables,
+  DeleteWorkflowDefinitionMutation,
+  DeleteWorkflowDefinitionMutationVariables,
+  ExecuteWorkflowByNameBuilderMutation,
+  ExecuteWorkflowByNameBuilderMutationVariables,
   UpdateWorkflowMutation,
   UpdateWorkflowMutationVariables,
-  WorkflowListQuery,
-  WorkflowQuery,
-  WorkflowQueryVariables,
+  WorkflowDefinitionListQuery,
+  WorkflowDefinitionListQueryVariables,
+  WorkflowDefinitionQuery,
+  WorkflowDefinitionQueryVariables,
 } from './__generated__/graphql';
 
 type Props = {
   onClose: () => void;
 };
 
-export const WorkflowFragment = gql`
-  fragment WorkflowFragment on Workflow {
+export const WorkflowDefinitionFragment = gql`
+  fragment WorkflowDefinitionFragment on WorkflowDefinition {
     id
     name
     description
@@ -42,13 +47,13 @@ export const WorkflowFragment = gql`
     updatedAt
     createdBy
     updatedBy
-    tasks
     hasSchedule
     inputParameters
     outputParameters {
       key
       value
     }
+    tasksJson
     restartable
     timeoutSeconds
     timeoutPolicy
@@ -57,66 +62,64 @@ export const WorkflowFragment = gql`
   }
 `;
 
-const WORKFLOW_DETAIL_QUERY = gql`
-  query Workflow($nodeId: ID!, $version: Int) {
-    workflow: node(id: $nodeId, version: $version) {
-      ...WorkflowFragment
+const WORKFLOW_DEFINITION_DETAIL_QUERY = gql`
+  query WorkflowDefinition($nodeId: ID!) {
+    conductor {
+      workflowDefinition: node(id: $nodeId) {
+        ...WorkflowDefinitionFragment
+      }
     }
   }
-  ${WorkflowFragment}
+  ${WorkflowDefinitionFragment}
 `;
 
-const WORKFLOW_LIST_QUERY = gql`
-  query WorkflowList($filter: FilterWorkflowsInput, $taskDefinitionsFilter: FilterTaskDefinitionsInput) {
-    workflows(filter: $filter) {
-      edges {
-        cursor
-        node {
-          ...WorkflowFragment
+const WORKFLOW_DEFINITIONS_LIST_QUERY = gql`
+  query WorkflowDefinitionList($filter: WorkflowsFilterInput, $taskDefinitionsFilter: FilterTaskDefinitionsInput) {
+    conductor {
+      workflowDefinitions(filter: $filter) {
+        edges {
+          cursor
+          node {
+            ...WorkflowDefinitionFragment
+          }
         }
       }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-      totalCount
-    }
-    taskDefinitions(filter: $taskDefinitionsFilter) {
-      edges {
-        node {
-          name
-          description
-          createdBy
-          retryCount
-          timeoutSeconds
-          timeoutPolicy
-          retryLogic
-          retryDelaySeconds
-          responseTimeoutSeconds
-          ownerEmail
-          inputKeys
+      taskDefinitions(filter: $taskDefinitionsFilter) {
+        edges {
+          node {
+            name
+            description
+            createdBy
+            retryCount
+            timeoutSeconds
+            retryLogic
+            retryDelaySeconds
+            responseTimeoutSeconds
+            ownerEmail
+            inputKeys
+            timeoutPolicy
+          }
         }
       }
     }
   }
-  ${WorkflowFragment}
+  ${WorkflowDefinitionFragment}
 `;
 
 const UPDATE_WORKFLOW_MUTATION = gql`
-  mutation UpdateWorkflow($updateWorkflowId: String!, $input: UpdateWorkflowInput!) {
-    updateWorkflow(id: $updateWorkflowId, input: $input) {
-      workflow {
-        createdBy
-        updatedAt
-        tasks
-        name
-        description
-        version
-        outputParameters {
-          key
-          value
+  mutation UpdateWorkflow($input: UpdateWorkflowDefinitionInput!) {
+    conductor {
+      updateWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          updatedAt
+          tasksJson
+          name
+          description
+          version
+          outputParameters {
+            key
+            value
+          }
         }
       }
     }
@@ -124,16 +127,20 @@ const UPDATE_WORKFLOW_MUTATION = gql`
 `;
 
 const EXECUTE_WORKFLOW_MUTATION = gql`
-  mutation ExecuteWorkflowByName($input: ExecuteWorkflowByName!) {
-    executeWorkflowByName(input: $input)
+  mutation ExecuteWorkflowByNameBuilder($input: ExecuteWorkflowByNameInput!) {
+    conductor {
+      executeWorkflowByName(input: $input)
+    }
   }
 `;
 
 const WORKFLOW_DELETE_MUTATION = gql`
-  mutation DeleteWorkflow($input: DeleteWorkflowInput!) {
-    deleteWorkflow(input: $input) {
-      workflow {
-        id
+  mutation DeleteWorkflowDefinition($input: DeleteWorkflowDefinitionInput!) {
+    conductor {
+      deleteWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          id
+        }
       }
     }
   }
@@ -147,14 +154,14 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     [],
   );
   const { workflowId, version } = useParams<{ workflowId: string; version: string }>();
-  const [workflow, setWorkflow] = useState<ClientWorkflow<ExtendedTask> | null>(null);
+  const [workflow, setWorkflow] = useState<ClientWorkflowWithTasks<ExtendedTask> | null>(null);
   const [workflowFilter, setWorkflowFilter] = useState<string>('');
   const [taskdefsFilter, setTaskdefsFilter] = useState<string>('');
 
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
-  const [{ data: workflowListData }] = useQuery<WorkflowListQuery>({
-    query: WORKFLOW_LIST_QUERY,
+  const [{ data: workflowListData }] = useQuery<WorkflowDefinitionListQuery, WorkflowDefinitionListQueryVariables>({
+    query: WORKFLOW_DEFINITIONS_LIST_QUERY,
     variables: {
       filter: { keyword: workflowFilter },
       taskDefinitionsFilter: {
@@ -163,8 +170,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     },
   });
 
-  const [{ data: workflowData }] = useQuery<WorkflowQuery, WorkflowQueryVariables>({
-    query: WORKFLOW_DETAIL_QUERY,
+  const [{ data: workflowData }] = useQuery<WorkflowDefinitionQuery, WorkflowDefinitionQueryVariables>({
+    query: WORKFLOW_DEFINITION_DETAIL_QUERY,
     variables: {
       nodeId: workflowId ?? '', // query with empty string nodeId wont be called, because query is paused in that case
     },
@@ -176,11 +183,14 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     UPDATE_WORKFLOW_MUTATION,
   );
 
-  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowDefinitionMutation, DeleteWorkflowDefinitionMutationVariables>(
     WORKFLOW_DELETE_MUTATION,
   );
 
-  const [, executeWorkflow] = useMutation(EXECUTE_WORKFLOW_MUTATION);
+  const [, executeWorkflow] = useMutation<
+    ExecuteWorkflowByNameBuilderMutation,
+    ExecuteWorkflowByNameBuilderMutationVariables
+  >(EXECUTE_WORKFLOW_MUTATION);
 
   const { addToastNotification } = useNotifications();
 
@@ -191,17 +201,14 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   }, [workflowId, version]);
 
   useEffect(() => {
-    if (workflowData?.workflow == null) {
+    if (workflowData?.conductor.workflowDefinition == null) {
       return;
     }
-
-    const { workflow: workflowDetail } = workflowData;
-
-    if (workflowDetail.__typename !== 'Workflow') {
+    const { workflowDefinition: workflowDetail } = workflowData.conductor;
+    if (workflowDetail.__typename !== 'WorkflowDefinition') {
       return;
     }
-
-    const tasks = jsonParse<Task[]>(workflowDetail.tasks);
+    const tasks = jsonParse<Task[]>(workflowDetail.tasksJson);
     const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
     const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -213,6 +220,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       tasks: extendedTasks,
       hasSchedule: workflowDetail.hasSchedule ?? false,
       outputParameters: workflowDetail.outputParameters,
+      timeoutSeconds: workflowDetail.timeoutSeconds ?? 0,
     });
   }, [workflowData]);
 
@@ -232,7 +240,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     fileReader.readAsText(file);
   };
 
-  const handleFileExport = (wf: ClientWorkflow) => {
+  const handleFileExport = (wf: ClientWorkflowWithTasks) => {
     const parsedWf = JSON.stringify(wf, null, 2);
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
@@ -240,13 +248,18 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     saveAs(file, `${wf.name}_v${wf.version}.json`);
   };
 
-  const handleWorkflowClone = async (wf: ClientWorkflow, wfName: string) => {
-    const { hasSchedule, id, createdAt, updatedAt, labels, ...wfData } = wf;
-    const updatedWorkflow = { ...wfData, name: wfName, tasks: JSON.stringify(wf.tasks) };
+  const handleWorkflowClone = async (wf: ClientWorkflowWithTasks, wfName: string) => {
+    const { hasSchedule, id, createdAt, updatedAt, labels, timeoutPolicy, ...wfData } = wf;
+    const updatedWorkflow = {
+      ...wfData,
+      name: wfName,
+      tasks: JSON.stringify(wf.tasks),
+      timeoutPolicy: (timeoutPolicy ?? undefined) as TimeoutPolicy,
+    };
     const result = await updateWorkflow({
-      updateWorkflowId: wf.id,
       input: {
-        workflow: updatedWorkflow,
+        id: '',
+        workflowDefinition: updatedWorkflow,
       },
     });
     if (result.data) {
@@ -292,7 +305,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
   };
 
-  const handleWorkflowChange = (editedWorkflow: ClientWorkflow<ExtendedTask>) => {
+  const handleWorkflowChange = (editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>) => {
     setWorkflow((wf) => ({
       ...unwrap(wf),
       ...editedWorkflow,
@@ -310,17 +323,20 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     setTaskdefsFilter(keyword);
   };
 
-  const clientWorkflowList: ClientWorkflow[] = workflowListData.workflows.edges.map((e) => {
-    const { node } = e;
-    const parsedTasks = jsonParse<Task[]>(node.tasks) ?? [];
-    const description = jsonParse<DescriptionJSON | null>(node.description);
-    return {
-      ...node,
-      labels: description?.labels || [],
-      tasks: parsedTasks,
-      hasSchedule: node.hasSchedule || false,
-    };
-  });
+  const clientWorkflowList: ClientWorkflowWithTasks[] = workflowListData.conductor.workflowDefinitions.edges.map(
+    (e) => {
+      const { node } = e;
+      const parsedTasks = jsonParse<Task[]>(node.tasksJson) ?? [];
+      const description = jsonParse<DescriptionJSON | null>(node.description);
+      return {
+        ...node,
+        labels: description?.labels || [],
+        tasks: parsedTasks,
+        hasSchedule: node.hasSchedule || false,
+        timeoutSeconds: node.timeoutSeconds ?? 0,
+      };
+    },
+  );
 
   if (shouldCreateWorkflow) {
     return (
@@ -350,7 +366,12 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     );
   }
 
-  const { taskDefinitions } = workflowListData;
+  const { taskDefinitions } = workflowListData.conductor;
+  // TODO: FIXME
+  const taskDefintionsWithPolicy: TaskDefinition[] = taskDefinitions.edges.map((td) => ({
+    ...td.node,
+    timeoutPolicy: null,
+  }));
 
   return workflow != null && taskDefinitions != null ? (
     <TaskActionsProvider>
@@ -363,7 +384,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
           workflow={workflow}
           onWorkflowChange={handleWorkflowChange}
           workflows={clientWorkflowList}
-          taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
+          // taskDefinitions={taskDefinitions.edges.map((e) => e.node)}
+          taskDefinitions={taskDefintionsWithPolicy}
           onFileImport={handleFileImport}
           onFileExport={handleFileExport}
           onWorkflowDelete={handleWorkflowDelete}

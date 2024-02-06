@@ -7,7 +7,6 @@ import {
   Heading,
   Icon,
   IconButton,
-  Progress,
   Table,
   Tbody,
   Td,
@@ -36,18 +35,20 @@ import TransactionDiffModal from './transaction-diff-modal';
 
 const TRANSACTIONS_QUERY = gql`
   query Transactions {
-    transactions {
-      transactionId
-      lastCommitTime
-      changes {
-        device {
-          id
-          name
-        }
-        diff {
-          path
-          dataBefore
-          dataAfter
+    deviceInventory {
+      transactions {
+        transactionId
+        lastCommitTime
+        changes {
+          device {
+            id
+            name
+          }
+          diff {
+            path
+            dataBefore
+            dataAfter
+          }
         }
       }
     }
@@ -55,27 +56,31 @@ const TRANSACTIONS_QUERY = gql`
 `;
 const REVERT_CHANGES_MUTATION = gql`
   mutation RevertChanges($transactionId: String!) {
-    revertChanges(transactionId: $transactionId) {
-      isOk
+    deviceInventory {
+      revertChanges(transactionId: $transactionId) {
+        isOk
+      }
     }
   }
 `;
 const CLOSE_TRANSACTION_MUTATION = gql`
   mutation CloseTransactionList($deviceId: String!, $transactionId: String!) {
-    closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
-      isOk
+    deviceInventory {
+      closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
+        isOk
+      }
     }
   }
 `;
 
 const TransactionList: VoidFunctionComponent = () => {
   const { addToastNotification } = useNotifications();
-  const [selectedTransaction, setSelectedTransaction] = useState<TransactionsQuery['transactions'][0] | null>(null);
-  const [{ data: transactionQData, fetching: isFetchingTransactions, error }] = useQuery<
-    TransactionsQuery,
-    TransactionsQueryVariables
-  >({
+  const [selectedTransaction, setSelectedTransaction] = useState<
+    TransactionsQuery['deviceInventory']['transactions'][0] | null
+  >(null);
+  const [{ data: transactionQData, error }] = useQuery<TransactionsQuery, TransactionsQueryVariables>({
     query: TRANSACTIONS_QUERY,
+    requestPolicy: 'network-only',
   });
   const [{ fetching: isMutationFetching }, revertChanges] = useMutation<
     RevertChangesMutation,
@@ -85,23 +90,14 @@ const TransactionList: VoidFunctionComponent = () => {
     CLOSE_TRANSACTION_MUTATION,
   );
 
-  if (isFetchingTransactions && transactionQData == null) {
-    return (
-      <Box position="relative">
-        <Box position="absolute" top={0} right={0} left={0}>
-          <Progress size="xs" isIndeterminate />
-        </Box>
-      </Box>
-    );
-  }
-
   if (transactionQData == null || error != null) {
     return null;
   }
+  const { transactions } = transactionQData.deviceInventory;
 
   const handleRevertBtnClick = (transactionId: string) => {
     revertChanges({ transactionId }, { additionalTypenames: ['Transaction'] }).then((res) => {
-      if (res.data?.revertChanges.isOk) {
+      if (res.data?.deviceInventory.revertChanges.isOk) {
         // we have to close current transaction to see reverted changes in UI
         const transactionData = getTransactionData();
         if (transactionData != null) {
@@ -117,7 +113,7 @@ const TransactionList: VoidFunctionComponent = () => {
           title: 'Success',
         });
       }
-      if (!res.data?.revertChanges.isOk || res.error != null) {
+      if (!res.data?.deviceInventory.revertChanges.isOk || res.error != null) {
         addToastNotification({
           type: 'error',
           content: 'There was an error reverting transaction',
@@ -159,11 +155,11 @@ const TransactionList: VoidFunctionComponent = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {transactionQData.transactions.map((transaction) => {
+              {transactions.map((transaction) => {
                 return (
                   <Tr key={transaction.transactionId}>
                     <Td>
-                      <Code>{transaction.transactionId}</Code>
+                      <Code paddingX={2}>{transaction.transactionId}</Code>
                     </Td>
                     <Td>
                       {format(

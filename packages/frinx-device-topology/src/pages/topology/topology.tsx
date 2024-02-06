@@ -1,15 +1,18 @@
-import { Box, Container, Flex, FormControl, FormLabel, Heading, Select } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import { Box, Container, Flex, FormControl, FormLabel, Heading, Select, Switch } from '@chakra-ui/react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
 import { setTopologyLayer } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { TopologyLayer } from '../../state.reducer';
-import NetTopologyContainer from './net-topology.container';
-import TopologyContainer from './topology.container';
+import NetTopologyContainer from './net/net-topology.container';
+import PtpTopologyContainer from './ptp/ptp-topology.container';
+import TopologyContainer from './lldp/topology.container';
+import SynceTopologyContainer from './synce/synce-topology.container';
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
+  const [isPtpDiffSynceShown, setIsPtpDiffSynceShown] = useState<boolean>(false);
   const { mode, topologyLayer } = state;
 
   return (
@@ -28,7 +31,7 @@ const Topology: VoidFunctionComponent = () => {
               dispatch(setTopologyLayer(event.target.value as TopologyLayer));
             }}
           >
-            {['LLDP', 'BGP-LS'].map((option) => (
+            {['LLDP', 'BGP-LS', 'PTP', 'Synchronous Ethernet'].map((option) => (
               <option value={option} key={option}>
                 {option}
               </option>
@@ -45,10 +48,25 @@ const Topology: VoidFunctionComponent = () => {
             </Box>
           </>
         )}
+        {topologyLayer === 'PTP' && (
+          <FormControl display="flex" flexDirection="column" justifyContent="space-between" alignItems="left">
+            <FormLabel htmlFor="email-alerts" mb="0">
+              Show PTP Diff Synce
+            </FormLabel>
+            <Switch
+              isChecked={isPtpDiffSynceShown}
+              onChange={() => setIsPtpDiffSynceShown((prev) => !prev)}
+              size="lg"
+              pb="32px"
+            />
+          </FormControl>
+        )}
       </Flex>
       <Box>
         {topologyLayer === 'LLDP' && <TopologyContainer />}
         {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
+        {topologyLayer === 'PTP' && <PtpTopologyContainer isPtpDiffSynceShown={isPtpDiffSynceShown} />}
+        {topologyLayer === 'Synchronous Ethernet' && <SynceTopologyContainer />}
       </Box>
     </Container>
   );

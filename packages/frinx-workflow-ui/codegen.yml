@@ -1,9 +1,8 @@
 overwrite: true
 schema:
-  - 'https://127.0.0.1:8001/graphql'
+  - 'http://127.0.0.1:5555/graphql'
 documents:
   - './src/**/*.tsx'
-  - './src/**/*.ts'
 generates:
   src/__generated__/graphql.ts:
     plugins:

@@ -8,11 +8,13 @@ import EditBlueprintForm, { FormValues } from './edit-blueprint-form';
 
 const BLUEPRINT_QUERY = gql`
   query Blueprint($id: ID!) {
-    blueprint: node(id: $id) {
-      id
-      ... on Blueprint {
-        name
-        template
+    deviceInventory {
+      blueprint: node(id: $id) {
+        id
+        ... on Blueprint {
+          name
+          template
+        }
       }
     }
   }
@@ -20,11 +22,13 @@ const BLUEPRINT_QUERY = gql`
 
 const UPDATE_BLUEPRINT_MUTATION = gql`
   mutation UpdateBlueprint($id: String!, $input: UpdateBlueprintInput!) {
-    updateBlueprint(id: $id, input: $input) {
-      blueprint {
-        id
-        name
-        template
+    deviceInventory {
+      updateBlueprint(id: $id, input: $input) {
+        blueprint {
+          id
+          name
+          template
+        }
       }
     }
   }
@@ -41,7 +45,7 @@ const EditBlueprintPage: FC<Props> = ({ onSuccess, onCancel }) => {
     UpdateBlueprintMutation,
     UpdateBlueprintMutationVariables
   >(UPDATE_BLUEPRINT_MUTATION);
-  const [{ data: blueprint, fetching: isLoadingBlueprint, error }] = useQuery({
+  const [{ data: blueprintData, fetching: isLoadingBlueprint, error }] = useQuery({
     query: BLUEPRINT_QUERY,
     variables: { id: blueprintId },
   });
@@ -72,21 +76,26 @@ const EditBlueprintPage: FC<Props> = ({ onSuccess, onCancel }) => {
     });
   };
 
-  if (isLoadingBlueprint && blueprint == null) {
+  if (isLoadingBlueprint && blueprintData == null) {
     return <Progress isIndeterminate mt={-10} size="xs" />;
   }
 
   if (!isLoadingBlueprint && error != null) {
     onCancel();
   }
+  const { blueprint } = blueprintData.deviceInventory;
+
+  if (blueprint == null) {
+    return null;
+  }
 
   return (
     <Container maxWidth={1280}>
       <Heading size="3xl" as="h2" mb={2}>
-        Edit {blueprint?.blueprint?.name}
+        Edit {blueprint.name}
       </Heading>
       <Box background="white" boxShadow="base" px={4} py={2}>
-        <EditBlueprintForm onSubmit={handleSubmit} onCancel={onCancel} initialValues={blueprint?.blueprint} />
+        <EditBlueprintForm onSubmit={handleSubmit} onCancel={onCancel} initialValues={blueprint} />
       </Box>
     </Container>
   );

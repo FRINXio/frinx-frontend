@@ -30,7 +30,6 @@ import {
   ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
   CreateScheduledWorkflow,
-  EditScheduledWorkflow,
   ExecuteWorkflowModalFormInput,
 } from '@frinx/shared';
 import { useFormik } from 'formik';
@@ -42,11 +41,11 @@ const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
 
 type Props = {
-  scheduledWorkflow: EditScheduledWorkflow;
+  scheduledWorkflow: CreateScheduledWorkflow;
   workflow: ClientWorkflow;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (workflow: EditScheduledWorkflow) => void;
+  onSubmit: (workflow: CreateScheduledWorkflow) => void;
 };
 
 const resetDateFormat = (dateTime: string | undefined): string => {
@@ -94,21 +93,22 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
         : getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
       name: scheduledWorkflow?.name || '',
       cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
-      isEnabled: scheduledWorkflow?.isEnabled ?? false,
-      performFromDate: scheduledWorkflow?.performFromDate && resetDateFormat(scheduledWorkflow?.performFromDate),
-      performTillDate: scheduledWorkflow?.performFromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
+      enabled: scheduledWorkflow?.enabled ?? false,
+      fromDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.fromDate),
+      // TODO: FIXME
+      // performTillDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
     },
     onSubmit: (formValues) => {
       const formattedValues = {
         ...formValues,
-        id: scheduledWorkflow?.id,
+        id: scheduledWorkflow?.name,
         cronString: formValues.cronString || DEFAULT_CRON_STRING,
-        ...(formValues.performFromDate && {
-          performFromDate: moment(formValues.performFromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        ...(formValues.fromDate && {
+          performFromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
-        ...(formValues.performTillDate && {
-          performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-        }),
+        // ...(formValues.performTillDate && {
+        //   performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        // }),
         ...(formValues.workflowContext && {
           workflowContext: formValues.workflowContext,
         }),
@@ -155,19 +155,19 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
           </FormControl>
 
           <HStack my={5}>
-            <FormControl isInvalid={errors.performFromDate != null}>
+            <FormControl isInvalid={errors.fromDate != null}>
               <FormLabel>From</FormLabel>
               <Input
-                value={values.performFromDate}
+                value={values.fromDate}
                 onChange={handleChange}
                 name="performFromDate"
                 placeholder="Enter from date"
                 type="datetime-local"
               />
-              <FormErrorMessage>{errors.performFromDate}</FormErrorMessage>
+              <FormErrorMessage>{errors.fromDate}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={errors.performTillDate != null}>
+            {/* <FormControl isInvalid={errors.performTillDate != null}>
               <FormLabel>To</FormLabel>
               <Input
                 value={values.performTillDate}
@@ -178,15 +178,16 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               />
               <FormErrorMessage>{errors.performTillDate}</FormErrorMessage>
             </FormControl>
+            */}
           </HStack>
 
           <HStack my={5} alignItems="flex-start">
-            <FormControl isInvalid={errors.isEnabled != null} isRequired>
+            <FormControl isInvalid={errors.enabled != null} isRequired>
               <FormLabel>Enabled</FormLabel>
-              <Checkbox onChange={handleChange} name="isEnabled" isChecked={values.isEnabled}>
+              <Checkbox onChange={handleChange} name="isEnabled" isChecked={values.enabled}>
                 Enabled
               </Checkbox>
-              <FormErrorMessage>{errors.isEnabled}</FormErrorMessage>
+              <FormErrorMessage>{errors.enabled}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors.cronString != null} isRequired>

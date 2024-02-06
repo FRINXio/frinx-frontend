@@ -1,4 +1,4 @@
-import { Box, Container, Heading, Progress } from '@chakra-ui/react';
+import { Box, Container, Heading } from '@chakra-ui/react';
 import { useNotifications } from '@frinx/shared';
 import React, { FC, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -21,14 +21,16 @@ import CreateDeviceForm from './create-device-form';
 
 const ADD_DEVICE_MUTATION = gql`
   mutation AddDevice($input: AddDeviceInput!) {
-    addDevice(input: $input) {
-      device {
-        id
-        name
-        isInstalled
-        zone {
+    deviceInventory {
+      addDevice(input: $input) {
+        device {
           id
           name
+          isInstalled
+          zone {
+            id
+            name
+          }
         }
       }
     }
@@ -36,11 +38,13 @@ const ADD_DEVICE_MUTATION = gql`
 `;
 const ZONES_QUERY = gql`
   query Zones {
-    zones {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      zones {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -48,12 +52,14 @@ const ZONES_QUERY = gql`
 `;
 const BLUEPRINTS_QUERY = gql`
   query DeviceBlueprints {
-    blueprints {
-      edges {
-        node {
-          id
-          name
-          template
+    deviceInventory {
+      blueprints {
+        edges {
+          node {
+            id
+            name
+            template
+          }
         }
       }
     }
@@ -62,12 +68,14 @@ const BLUEPRINTS_QUERY = gql`
 
 const CREATE_LABEL = gql`
   mutation CreateLabel($input: CreateLabelInput!) {
-    newLabel: createLabel(input: $input) {
-      label {
-        id
-        name
-        createdAt
-        updatedAt
+    deviceInventory {
+      newLabel: createLabel(input: $input) {
+        label {
+          id
+          name
+          createdAt
+          updatedAt
+        }
       }
     }
   }
@@ -75,11 +83,13 @@ const CREATE_LABEL = gql`
 
 const LABELS_QUERY = gql`
   query Labels {
-    labels {
-      edges {
-        node {
-          id
-          name
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
         }
       }
     }
@@ -114,13 +124,11 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   const { addToastNotification } = useNotifications();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
-  const [{ data: labelsData, fetching: isFetchingLabels }] = useQuery<LabelsQuery, LabelsQueryVariables>({
+  const [{ data: labelsData }] = useQuery<LabelsQuery, LabelsQueryVariables>({
     query: LABELS_QUERY,
   });
-  const [{ data: zonesData, fetching: isFetchingZones, error: zonesError }] = useQuery<ZonesQuery, ZonesQueryVariables>(
-    { query: ZONES_QUERY },
-  );
-  const [{ data: blueprintsData, fetching: isFetchingBlueprints, error: blueprintsError }] = useQuery<
+  const [{ data: zonesData, error: zonesError }] = useQuery<ZonesQuery, ZonesQueryVariables>({ query: ZONES_QUERY });
+  const [{ data: blueprintsData, error: blueprintsError }] = useQuery<
     DeviceBlueprintsQuery,
     DeviceBlueprintsQueryVariables
   >({
@@ -129,7 +137,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
 
   const handleOnCreateLabel = async (labelName: string): Promise<Label | null> => {
     const result = await createLabel({ input: { name: labelName } });
-    return result.data?.newLabel.label ?? null;
+    return result.data?.deviceInventory.newLabel.label ?? null;
   };
 
   const handleSubmit = (values: FormValues) => {
@@ -145,7 +153,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
           error?.message ===
           '[GraphQL] There is a unique constraint violation, a new device cannot be added with this name.'
         ) {
-          setDeviceNameError('Device with this name alredy exists. Please select different name.');
+          setDeviceNameError('Device with this name alredy exists. Please enter a different name.');
         }
         if (error != null) {
           throw new Error('Problem with device addition');
@@ -160,25 +168,17 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
       .finally(() => setIsSubmitting(false));
   };
 
-  if (isFetchingZones || isFetchingLabels) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
-  }
+  const labels = labelsData?.deviceInventory.labels.edges ?? [];
 
-  const labels = labelsData?.labels.edges ?? [];
-
-  const zones = zonesData?.zones.edges ?? [];
-  const blueprints = blueprintsData?.blueprints.edges ?? [];
-
-  if (isFetchingZones && isFetchingBlueprints) {
-    return null;
-  }
+  const zones = zonesData?.deviceInventory.zones.edges ?? [];
+  const blueprints = blueprintsData?.deviceInventory.blueprints.edges ?? [];
 
   if (zonesError != null || blueprintsError != null) {
     return null;
   }
 
   return (
-    <Container maxWidth={1280}>
+    <Container maxWidth="container.xl">
       <Heading as="h1" size="xl" marginBottom={6}>
         Add device
       </Heading>

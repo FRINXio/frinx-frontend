@@ -1,9 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Button,
   Heading,
   Box,
-  ButtonGroup,
   Stack,
   FormControl,
   Switch,
@@ -18,50 +16,63 @@ import {
   useDisclosure,
   Progress,
   Container,
+  Flex,
+  IconButton,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import {
   omitNullValue,
   useNotifications,
-  ScheduledWorkflow,
+  // ScheduledWorkflow,
   StatusType,
   ClientWorkflow,
   DescriptionJSON,
   jsonParse,
-  Task,
-  EditScheduledWorkflow,
-  Pagination,
-  usePagination,
+  // Pagination,
+  // usePagination,
+  CreateScheduledWorkflow,
+  // WorkflowDefinition,
+  // ClientWorkflowWithTasks,
 } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
 import {
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
-  EditWorkflowScheduleMutation,
-  EditWorkflowScheduleMutationVariables,
   SchedulesQuery,
-  WorkflowsQuery,
-  WorkflowsQueryVariables,
+  // SchedulesQueryVariables,
+  UpdateScheduleMutation,
+  UpdateScheduleMutationVariables,
+  WorkflowListQuery,
+  // WorkflowListQueryVariables,
 } from '../../__generated__/graphql';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
 const WORKFLOWS_QUERY = gql`
   query WorkflowList {
-    workflows {
-      edges {
-        node {
-          id
-          name
-          description
-          version
-          createdAt
-          updatedAt
-          createdBy
-          updatedBy
-          tasks
-          hasSchedule
-          inputParameters
+    conductor {
+      workflowDefinitions {
+        edges {
+          node {
+            id
+            name
+            description
+            version
+            createdAt
+            updatedAt
+            updatedBy
+            createdBy
+            hasSchedule
+            inputParameters
+            timeoutSeconds
+            timeoutPolicy
+            ownerEmail
+            restartable
+            outputParameters {
+              key
+              value
+            }
+          }
         }
       }
     }
@@ -70,90 +81,109 @@ const WORKFLOWS_QUERY = gql`
 
 const SCHEDULED_WORKFLOWS_QUERY = gql`
   query Schedules {
-    schedules {
-      edges {
-        node {
-          id
-          name
-          workflowName
-          workflowVersion
-          cronString
-          workflowContext
-          isEnabled
-          performFromDate
-          performTillDate
-          parallelRuns
-          status
+    scheduler {
+      schedules {
+        edges {
+          node {
+            name
+            workflowName
+            workflowVersion
+            cronString
+            workflowContext
+            enabled
+            fromDate
+            toDate
+            parallelRuns
+            status
+          }
         }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+        totalCount
       }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
-      }
-      totalCount
     }
   }
 `;
 
 const DELETE_SCHEDULE_MUTATION = gql`
-  mutation DeleteSchedule($deleteScheduleId: String!) {
-    deleteSchedule(id: $deleteScheduleId) {
-      isOk
+  mutation DeleteSchedule($name: String!) {
+    scheduler {
+      deleteSchedule(name: $name)
     }
   }
 `;
 
 const UPDATE_SCHEDULE_MUTATION = gql`
-  mutation EditWorkflowSchedule($input: EditWorkflowScheduleInput!, $editWorkflowScheduleId: String!) {
-    editWorkflowSchedule(input: $input, id: $editWorkflowScheduleId) {
-      name
-      workflowName
-      workflowVersion
-      cronString
-      workflowContext
-      isEnabled
-      performFromDate
-      performTillDate
-      parallelRuns
+  mutation UpdateSchedule($name: String!, $input: UpdateScheduleInput!) {
+    scheduler {
+      updateSchedule(name: $name, input: $input) {
+        name
+        workflowName
+        workflowVersion
+        cronString
+        workflowContext
+        enabled
+        fromDate
+        toDate
+        parallelRuns
+      }
     }
   }
 `;
+function getStatusTagColor(status: StatusType) {
+  switch (status) {
+    case 'COMPLETED':
+      return 'green';
+    case 'RUNNING':
+      return 'cyan';
+    case 'FAILED':
+      return 'red';
+    default:
+      return null;
+  }
+}
 
 function ScheduledWorkflowList() {
   const context = useMemo(() => ({ additionalTypenames: ['Schedule'] }), []);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<EditScheduledWorkflow | null>();
+  const [selectedWorkflow, setSelectedWorkflow] = useState<CreateScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  // TODO: FIXME
+  // add paging
+  // const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
-  const [{ data: workflows }] = useQuery<WorkflowsQuery, WorkflowsQueryVariables>({
+  const [{ data: workflows }] = useQuery<WorkflowListQuery>({
     query: WORKFLOWS_QUERY,
   });
   const [{ data: scheduledWorkflows, fetching: isLoadingSchedules, error }] = useQuery<SchedulesQuery>({
     query: SCHEDULED_WORKFLOWS_QUERY,
-    variables: {
-      ...paginationArgs,
-    },
+    // variables: {
+    //   ...paginationArgs,
+    // },
   });
-  const [, onDelete] = useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(DELETE_SCHEDULE_MUTATION);
-  const [, onUpdate] = useMutation<EditWorkflowScheduleMutation, EditWorkflowScheduleMutationVariables>(
+  const [, deleteSchedule] = useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(
+    DELETE_SCHEDULE_MUTATION,
+  );
+  const [, updateSchedule] = useMutation<UpdateScheduleMutation, UpdateScheduleMutationVariables>(
     UPDATE_SCHEDULE_MUTATION,
   );
 
-  const onEdit = (workflow: EditScheduledWorkflow) => {
+  const handleOnEditClick = (workflow: CreateScheduledWorkflow) => {
     setSelectedWorkflow(workflow);
     onOpen();
   };
 
-  const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: EditScheduledWorkflow) => {
-    const { cronString, isEnabled, performFromDate, performTillDate, workflowContext } = scheduledWf;
+  const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: CreateScheduledWorkflow) => {
+    const { cronString, enabled, fromDate, toDate, workflowContext } = scheduledWf;
     const input = {
       cronString,
-      isEnabled,
-      performFromDate,
-      performTillDate,
+      enabled,
+      fromDate: fromDate !== '' ? fromDate : null,
+      toDate: toDate !== '' ? toDate : null,
       workflowContext: JSON.stringify(workflowContext),
       workflowName,
       workflowVersion,
@@ -165,16 +195,16 @@ function ScheduledWorkflowList() {
         type: 'error',
       });
     } else {
-      onUpdate({ input, editWorkflowScheduleId: scheduledWf.id })
+      updateSchedule({ input, name: scheduledWf.name })
         .then((res) => {
-          if (!res.data?.editWorkflowSchedule) {
+          if (!res.data?.scheduler.updateSchedule) {
             addToastNotification({
               type: 'error',
               title: 'Error',
               content: res.error?.message,
             });
           }
-          if (res.data?.editWorkflowSchedule || !res.error) {
+          if (res.data?.scheduler.updateSchedule || !res.error) {
             addToastNotification({
               content: 'Schedule successfully updated',
               title: 'Success',
@@ -192,17 +222,17 @@ function ScheduledWorkflowList() {
     }
   };
 
-  const handleDeleteBtnClick = (workflow: ScheduledWorkflow) => {
-    onDelete({ deleteScheduleId: workflow.id }, context)
+  const handleDeleteBtnClick = (workflow: CreateScheduledWorkflow) => {
+    deleteSchedule({ name: workflow.name }, context)
       .then((res) => {
-        if (!res.data?.deleteSchedule?.isOk) {
+        if (!res.data?.scheduler.deleteSchedule) {
           addToastNotification({
             type: 'error',
             title: 'Error',
             content: res.error?.message,
           });
         }
-        if (res.data?.deleteSchedule?.isOk || !res.error) {
+        if (res.data?.scheduler.deleteSchedule || !res.error) {
           addToastNotification({
             content: 'Deleted successfuly',
             title: 'Success',
@@ -219,19 +249,6 @@ function ScheduledWorkflowList() {
       });
   };
 
-  function getStatusTagColor(status: StatusType) {
-    switch (status) {
-      case 'COMPLETED':
-        return 'green';
-      case 'RUNNING':
-        return 'cyan';
-      case 'FAILED':
-        return 'red';
-      default:
-        return null;
-    }
-  }
-
   if (isLoadingSchedules) {
     return <Progress isIndeterminate size="xs" marginTop={-10} />;
   }
@@ -240,8 +257,9 @@ function ScheduledWorkflowList() {
     return <div>{error?.message}</div>;
   }
 
+  // TODO: FIXME
   const schedules =
-    scheduledWorkflows?.schedules.edges.filter(omitNullValue).map((edge) => {
+    scheduledWorkflows?.scheduler.schedules?.edges.filter(omitNullValue).map((edge) => {
       const node = edge?.node;
       const workflowContext = JSON.parse(node?.workflowContext || '{}');
       return { ...node, workflowContext };
@@ -260,21 +278,25 @@ function ScheduledWorkflowList() {
   }
 
   const clientWorkflows: ClientWorkflow[] =
-    workflows?.workflows.edges.map(({ node }) => {
+    workflows?.conductor.workflowDefinitions.edges.map(({ node }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
-      const tasks = jsonParse<Task[]>(node.tasks) ?? [];
       return {
         ...node,
         labels: parsedLabels,
-        tasks,
         hasSchedule: node.hasSchedule ?? false,
+        timeoutSeconds: node.timeoutSeconds ?? 0,
       };
     }) ?? [];
 
   const selectedClientWorkflow = clientWorkflows.find((wf) => wf.name === selectedWorkflow?.workflowName);
 
   return (
-    <Container maxWidth={1200} mx="auto">
+    <Container maxWidth="container.xl" mx="auto">
+      <Flex justify="space-between" align="center" marginBottom={6}>
+        <Heading as="h1" size="xl">
+          Scheduled workflows
+        </Heading>
+      </Flex>
       {selectedWorkflow != null && selectedClientWorkflow != null && (
         <EditScheduleWorkflowModal
           workflow={selectedClientWorkflow}
@@ -291,92 +313,76 @@ function ScheduledWorkflowList() {
         <Thead>
           <Tr>
             <Th>Active</Th>
-            <Th>Name/Version</Th>
+            <Th>Name</Th>
             <Th>Last Status</Th>
             <Th>Cron expression</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>
         {!sortedSchedules.length ? null : (
-          <>
-            <Tbody>
-              {sortedSchedules.map((item) => (
-                <Tr key={item.id} role="group">
-                  <Td>
-                    <FormControl display="flex" alignItems="center">
-                      <Switch
-                        isChecked={item.isEnabled ?? false}
-                        onChange={() => {
-                          const editedWorkflow = {
-                            ...item,
-                            isEnabled: !item.isEnabled,
-                          };
-                          handleWorkflowUpdate(editedWorkflow);
-                          setSelectedWorkflow(null);
-                        }}
-                      />
-                    </FormControl>
-                  </Td>
-                  <Td>
-                    <Heading as="h6" size="xs">
-                      {item.name}
-                    </Heading>
-                  </Td>
-                  <Td>
-                    <Tag colorScheme={getStatusTagColor(item.status || 'UNKNOWN') ?? ''}>{item.status || '-'}</Tag>
-                  </Td>
-                  <Td>
-                    <Code>{item.cronString}</Code>
-                  </Td>
-                  <Td>
-                    <Stack direction="row" spacing={4}>
-                      <ButtonGroup>
-                        <Button
-                          colorScheme="red"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            handleDeleteBtnClick(item);
-                          }}
-                        >
-                          <Box as="span" flexShrink={0} alignSelf="center">
-                            <Box
-                              as={FeatherIcon}
-                              size="1em"
-                              icon="trash-2"
-                              flexShrink={0}
-                              lineHeight={4}
-                              verticalAlign="middle"
-                            />
-                          </Box>
-                        </Button>
-                        <Button colorScheme="black" size="sm" variant="outline" onClick={() => onEdit(item)}>
-                          <Box as="span" flexShrink={0} alignSelf="center">
-                            <Box
-                              as={FeatherIcon}
-                              size="1em"
-                              icon="edit"
-                              flexShrink={0}
-                              lineHeight={4}
-                              verticalAlign="middle"
-                            />
-                          </Box>
-                        </Button>
-                      </ButtonGroup>
-                    </Stack>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-            <Pagination
-              onPrevious={previousPage(scheduledWorkflows.schedules.pageInfo.startCursor)}
-              onNext={nextPage(scheduledWorkflows.schedules.pageInfo.endCursor)}
-              hasNextPage={scheduledWorkflows.schedules.pageInfo.hasNextPage}
-              hasPreviousPage={scheduledWorkflows.schedules.pageInfo.hasPreviousPage}
-            />
-          </>
+          <Tbody>
+            {sortedSchedules.map((item) => (
+              <Tr key={item.name} role="group">
+                <Td>
+                  <FormControl display="flex" alignItems="center">
+                    <Switch
+                      isChecked={item.enabled ?? false}
+                      onChange={() => {
+                        const editedWorkflow = {
+                          ...item,
+                          enabled: !item.enabled,
+                        };
+                        handleWorkflowUpdate(editedWorkflow);
+                        setSelectedWorkflow(null);
+                      }}
+                    />
+                  </FormControl>
+                </Td>
+                <Td>
+                  <Heading as="h6" size="xs">
+                    {item.name}
+                  </Heading>
+                </Td>
+                <Td>
+                  <Tag colorScheme={getStatusTagColor(item.status || 'UNKNOWN') ?? ''}>{item.status || '-'}</Tag>
+                </Td>
+                <Td>
+                  <Code>{item.cronString}</Code>
+                </Td>
+                <Td>
+                  <Stack direction="row" spacing={2}>
+                    <IconButton
+                      aria-label="edit scheduled workflow"
+                      size="sm"
+                      onClick={() => {
+                        handleOnEditClick(item);
+                      }}
+                      icon={<FeatherIcon size={12} icon="edit" />}
+                    />
+                    <IconButton
+                      aria-label="remove scheduled workflow"
+                      icon={<FeatherIcon size={12} icon="trash-2" />}
+                      colorScheme="red"
+                      size="sm"
+                      onClick={() => {
+                        handleDeleteBtnClick(item);
+                      }}
+                    />
+                  </Stack>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
         )}
       </Table>
+      {/*
+      <Pagination
+        onPrevious={previousPage(scheduledWorkflows.scheduler.schedules?.pageInfo.startCursor)}
+        onNext={nextPage(scheduledWorkflows.scheduler.schedules?.pageInfo.endCursor)}
+        hasNextPage={scheduledWorkflows.scheduler.schedules?.pageInfo.hasNextPage ?? false}
+        hasPreviousPage={scheduledWorkflows.scheduler.schedules?.pageInfo.hasPreviousPage ?? false}
+      />
+      */}
     </Container>
   );
 }

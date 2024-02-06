@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading, Progress, useDisclosure } from '@chakra-ui/react';
+import { Box, Button, Container, Flex, Heading, useDisclosure } from '@chakra-ui/react';
 import { useNotifications, unwrap } from '@frinx/shared';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
@@ -32,10 +32,12 @@ import DiffOutputModal from './diff-output-modal';
 
 const DEVICE_NAME_QUERY = gql`
   query deviceName($deviceId: ID!) {
-    node(id: $deviceId) {
-      ... on Device {
-        id
-        name
+    deviceInventory {
+      node(id: $deviceId) {
+        ... on Device {
+          id
+          name
+        }
       }
     }
   }
@@ -43,12 +45,14 @@ const DEVICE_NAME_QUERY = gql`
 
 const DATA_STORE_QUERY = gql`
   query dataStore($deviceId: String!, $transactionId: String!) {
-    dataStore(deviceId: $deviceId, transactionId: $transactionId) {
-      config
-      operational
-      snapshots {
-        name
-        createdAt
+    deviceInventory {
+      dataStore(deviceId: $deviceId, transactionId: $transactionId) {
+        config
+        operational
+        snapshots {
+          name
+          createdAt
+        }
       }
     }
   }
@@ -56,10 +60,12 @@ const DATA_STORE_QUERY = gql`
 
 const UPDATE_DATA_STORE_MUTATION = gql`
   mutation updateDataStore($deviceId: String!, $transactionId: String!, $input: UpdateDataStoreInput!) {
-    updateDataStore(deviceId: $deviceId, transactionId: $transactionId, input: $input) {
-      dataStore {
-        config
-        operational
+    deviceInventory {
+      updateDataStore(deviceId: $deviceId, transactionId: $transactionId, input: $input) {
+        dataStore {
+          config
+          operational
+        }
       }
     }
   }
@@ -67,10 +73,12 @@ const UPDATE_DATA_STORE_MUTATION = gql`
 
 const COMMIT_DATA_STORE_MUTATION = gql`
   mutation commitDataStoreConfig($transactionId: String!, $input: CommitConfigInput!) {
-    commitConfig(transactionId: $transactionId, input: $input) {
-      output {
-        configuration
-        message
+    deviceInventory {
+      commitConfig(transactionId: $transactionId, input: $input) {
+        output {
+          configuration
+          message
+        }
       }
     }
   }
@@ -78,10 +86,12 @@ const COMMIT_DATA_STORE_MUTATION = gql`
 
 const RESET_CONFIG_MUTATION = gql`
   mutation resetConfig($deviceId: String!, $transactionId: String!) {
-    resetConfig(deviceId: $deviceId, transactionId: $transactionId) {
-      dataStore {
-        config
-        operational
+    deviceInventory {
+      resetConfig(deviceId: $deviceId, transactionId: $transactionId) {
+        dataStore {
+          config
+          operational
+        }
       }
     }
   }
@@ -89,9 +99,11 @@ const RESET_CONFIG_MUTATION = gql`
 
 const ADD_SNAPSHOT_MUTATION = gql`
   mutation addSnapshot($transactionId: String!, $input: AddSnapshotInput!) {
-    addSnapshot(transactionId: $transactionId, input: $input) {
-      snapshot {
-        name
+    deviceInventory {
+      addSnapshot(transactionId: $transactionId, input: $input) {
+        snapshot {
+          name
+        }
       }
     }
   }
@@ -99,18 +111,22 @@ const ADD_SNAPSHOT_MUTATION = gql`
 
 const APPLY_SNAPSHOT_MUTATION = gql`
   mutation applySnapshot($transactionId: String!, $input: ApplySnapshotInput!) {
-    applySnapshot(transactionId: $transactionId, input: $input) {
-      isOk
-      output
+    deviceInventory {
+      applySnapshot(transactionId: $transactionId, input: $input) {
+        isOk
+        output
+      }
     }
   }
 `;
 
 const SYNC_FROM_NETWORK_MUTATION = gql`
   mutation syncFromNetwork($deviceId: String!, $transactionId: String!) {
-    syncFromNetwork(deviceId: $deviceId, transactionId: $transactionId) {
-      dataStore {
-        operational
+    deviceInventory {
+      syncFromNetwork(deviceId: $deviceId, transactionId: $transactionId) {
+        dataStore {
+          operational
+        }
       }
     }
   }
@@ -118,9 +134,11 @@ const SYNC_FROM_NETWORK_MUTATION = gql`
 
 const DELETE_SNAPSHOT_MUTATION = gql`
   mutation deleteSnapshot($input: DeleteSnapshotInput!) {
-    deleteSnapshot(input: $input) {
-      snapshot {
-        name
+    deviceInventory {
+      deleteSnapshot(input: $input) {
+        snapshot {
+          name
+        }
       }
     }
   }
@@ -129,10 +147,7 @@ const DELETE_SNAPSHOT_MUTATION = gql`
 const DeviceConfig: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Transaction'] }), []);
   const { deviceId } = useParams<{ deviceId: string }>();
-  const [{ data: deviceData, fetching: isFetchingDevice, error: deviceError }] = useQuery<
-    DeviceNameQuery,
-    DeviceNameQueryVariables
-  >({
+  const [{ data: deviceData, error: deviceError }] = useQuery<DeviceNameQuery, DeviceNameQueryVariables>({
     query: DEVICE_NAME_QUERY,
     variables: { deviceId: unwrap(deviceId) },
   });
@@ -186,13 +201,13 @@ const DeviceConfig: VoidFunctionComponent = () => {
   }, [error]);
 
   useEffect(() => {
-    if (data != null && data.dataStore != null) {
-      setConfig(JSON.stringify(JSON.parse(data.dataStore.config ?? ''), null, 2));
+    if (data != null && data.deviceInventory.dataStore != null) {
+      setConfig(JSON.stringify(JSON.parse(data.deviceInventory.dataStore.config ?? ''), null, 2));
     }
   }, [data]);
 
   useEffect(() => {
-    setCommitConfigData(commitData?.commitConfig.output.configuration ?? null);
+    setCommitConfigData(commitData?.deviceInventory.commitConfig.output.configuration ?? null);
   }, [commitData]);
 
   if (transactionId == null) {
@@ -378,7 +393,7 @@ const DeviceConfig: VoidFunctionComponent = () => {
       });
     }
 
-    if (responseData?.deleteSnapshot != null) {
+    if (responseData?.deviceInventory.deleteSnapshot != null) {
       addToastNotification({
         type: 'success',
         title: 'Success',
@@ -387,25 +402,15 @@ const DeviceConfig: VoidFunctionComponent = () => {
     }
   };
 
-  const isInitialLoading = fetching && data == null;
-
-  if (isInitialLoading) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
-  }
-
-  if (isFetchingDevice) {
-    return <Progress size="xs" isIndeterminate mt={-10} />;
-  }
-
   if (deviceData == null || deviceError) {
     return null;
   }
 
-  if (deviceData.node?.__typename !== 'Device') {
+  if (deviceData.deviceInventory.node?.__typename !== 'Device') {
     return null;
   }
 
-  const { name } = deviceData.node;
+  const { name } = deviceData.deviceInventory.node;
 
   if (hasTransactionError) {
     return (
@@ -446,7 +451,7 @@ const DeviceConfig: VoidFunctionComponent = () => {
     return <div>{error.message}</div>;
   }
 
-  const snapshots = data?.dataStore?.snapshots ?? [];
+  const snapshots = data?.deviceInventory.dataStore?.snapshots ?? [];
 
   return (
     <>
@@ -488,7 +493,7 @@ const DeviceConfig: VoidFunctionComponent = () => {
         <Box background="white" padding={4}>
           <DeviceConfigEditors
             config={config ?? ''}
-            operational={JSON.stringify(JSON.parse(data?.dataStore?.operational ?? ''), null, 2)}
+            operational={JSON.stringify(JSON.parse(data?.deviceInventory.dataStore?.operational ?? ''), null, 2)}
             onConfigChange={(cfg) => {
               setConfig(cfg);
             }}

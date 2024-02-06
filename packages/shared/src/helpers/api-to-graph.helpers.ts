@@ -379,6 +379,7 @@ export function getElementsFromWorkflow(
   tasks: ExtendedTask[],
   isReadOnly: boolean,
 ): { nodes: Node<NodeData>[]; edges: Edge[] } {
+  // console.log(tasks);
   const nodes = createAllNodes(tasks, isReadOnly);
   const edges = createAllEdges(tasks);
   return { nodes, edges };

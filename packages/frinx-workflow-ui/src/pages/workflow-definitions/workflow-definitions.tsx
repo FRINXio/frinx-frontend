@@ -1,15 +1,14 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow, Task, useNotifications, Pagination, usePagination } from '@frinx/shared';
+import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks, Task, Pagination, usePagination } from '@frinx/shared';
 import { debounce } from 'lodash';
-import React, { useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
+import WorkflowListHeader from '../../components/workflow-list-header';
 import {
   DeleteWorkflowMutation,
   DeleteWorkflowMutationVariables,
-  UpdateWorkflowMutation,
-  UpdateWorkflowMutationVariables,
-  WorkflowLabelsQuery,
   WorkflowsQuery,
+  WorkflowsQueryVariables,
 } from '../../__generated__/graphql';
 import WorkflowDefinitionsHeader from './workflow-definitions-header';
 import WorkflowDefinitionsModals from './workflow-definitions-modals';
@@ -19,51 +18,60 @@ type OrderBy = {
   sortKey: 'name';
   direction: 'ASC' | 'DESC';
 };
-
 type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
-  keyword: string[] | null;
+  keyword: string | null;
   labels: string[] | [];
 };
 
 const WORKFLOWS_QUERY = gql`
   query Workflows(
+    $filter: WorkflowsFilterInput
+    $orderBy: WorkflowsOrderByInput
     $first: Int
     $after: String
     $last: Int
     $before: String
-    $filter: FilterWorkflowsInput
-    $orderBy: WorkflowsOrderByInput!
   ) {
-    workflows(first: $first, after: $after, last: $last, before: $before, filter: $filter, orderBy: $orderBy) {
-      edges {
-        node {
-          id
-          name
-          description
-          version
-          createdAt
-          updatedAt
-          createdBy
-          updatedBy
-          tasks
-          hasSchedule
-          inputParameters
-          outputParameters {
-            key
-            value
+    conductor {
+      workflowDefinitions(
+        filter: $filter
+        orderBy: $orderBy
+        first: $first
+        after: $after
+        last: $last
+        before: $before
+      ) {
+        edges {
+          node {
+            id
+            name
+            description
+            version
+            createdAt
+            updatedAt
+            createdBy
+            updatedBy
+            inputParameters
+            outputParameters {
+              key
+              value
+            }
+            timeoutSeconds
+            restartable
+            variables
+            timeoutPolicy
+            ownerEmail
+            tasksJson
           }
-          restartable
-          timeoutSeconds
-          timeoutPolicy
         }
-      }
-      totalCount
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        hasPreviousPage
+        totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
       }
     }
   }
@@ -71,31 +79,25 @@ const WORKFLOWS_QUERY = gql`
 
 const WORKFLOW_LABELS_QUERY = gql`
   query WorkflowLabels {
-    workflowLabels
+    conductor {
+      workflowLabels
+    }
   }
 `;
 
 const WORKFLOW_DELETE_MUTATION = gql`
-  mutation DeleteWorkflow($input: DeleteWorkflowInput!) {
-    deleteWorkflow(input: $input) {
-      workflow {
-        id
-      }
+  mutation DeleteWorkflow($name: String!, $version: Int!) {
+    conductor {
+      unregisterWorkflowDef(name: $name, version: $version)
     }
   }
 `;
 
-const UPDATE_WORKFLOW_MUTATION = gql`
-  mutation UpdateWorkflow($updateWorkflowId: String!, $input: UpdateWorkflowInput!) {
-    updateWorkflow(id: $updateWorkflowId, input: $input) {
-      workflow {
-        id
-      }
-    }
-  }
-`;
+type Props = {
+  onImportSuccess: () => void;
+};
 
-const WorkflowDefinitions = () => {
+const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const context = useMemo(() => ({ additionalTypenames: ['DeleteWorkflow'] }), []);
   const [keywords, setKeywords] = useState('');
   // TODO: FD-493 this is redundant because we can use the labels from filter state
@@ -104,9 +106,7 @@ const WorkflowDefinitions = () => {
     labels: [],
   });
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'name', direction: 'ASC' });
-  const [activeWf, setActiveWf] = useState<ClientWorkflow>();
-  const { addToastNotification } = useNotifications();
-
+  const [activeWf, setActiveWf] = useState<ClientWorkflowWithTasks>();
   const definitionModal = useDisclosure();
   const diagramModal = useDisclosure();
   const dependencyModal = useDisclosure();
@@ -114,30 +114,24 @@ const WorkflowDefinitions = () => {
   const inputParametersModal = useDisclosure();
   const confirmDeleteModal = useDisclosure();
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
-
-  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] =
-    useQuery<WorkflowsQuery>({
-      query: WORKFLOWS_QUERY,
-      variables: {
-        ...paginationArgs,
-        filter,
-        orderBy,
-      },
-      context,
-    });
-
-  const [{ data: labelsData }] = useQuery<WorkflowLabelsQuery>({
+  const [{ data: workflowsData, fetching: isLoadingWorkflowDefinitions, error: workflowDefinitionsError }] = useQuery<
+    WorkflowsQuery,
+    WorkflowsQueryVariables
+  >({
+    query: WORKFLOWS_QUERY,
+    variables: {
+      filter,
+      orderBy,
+      ...paginationArgs,
+    },
+    context,
+  });
+  const [{ data: labelsData }] = useQuery({
     query: WORKFLOW_LABELS_QUERY,
   });
-
   const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
     WORKFLOW_DELETE_MUTATION,
   );
-
-  const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
-    UPDATE_WORKFLOW_MUTATION,
-  );
-
   const debouncedKeywordFilter = useMemo(
     () =>
       debounce((value) => {
@@ -148,66 +142,22 @@ const WorkflowDefinitions = () => {
 
   const handleDeleteWorkflow = async (workflow: ClientWorkflow) => {
     const { name, version } = workflow;
-    await deleteWorkflow({
-      input: {
+    await deleteWorkflow(
+      {
         name,
-        version: version || 1,
-      },
-    });
-  };
-
-  const handleOnFavouriteClick = (workflow: ClientWorkflow) => {
-    const wfDescription = jsonParse<DescriptionJSON>(workflow.description);
-    const hasLabels = wfDescription != null && wfDescription?.labels != null && wfDescription.labels.length > 0;
-    const isFavourite = wfDescription?.labels?.includes('favourite');
-
-    updateWorkflow(
-      {
-        updateWorkflowId: workflow.id,
-        input: {
-          workflow: {
-            name: workflow.name,
-            tasks: JSON.stringify(workflow.tasks),
-            timeoutSeconds: workflow.timeoutSeconds,
-            description: JSON.stringify({
-              description: workflow.description,
-              ...(hasLabels && {
-                labels: isFavourite
-                  ? wfDescription.labels.filter((l) => l !== 'FAVOURITE')
-                  : [...wfDescription.labels, 'FAVOURITE'],
-              }),
-              ...(!hasLabels && { labels: ['FAVOURITE'] }),
-            }),
-          },
-        },
+        version: Number(version) || 1,
       },
       {
-        additionalTypenames: ['Workflow', 'WorkflowConnection'],
+        additionalTypenames: ['WorkflowDefinition', 'WorkflowDefinitionConnection'],
       },
-    )
-      .then((r) => {
-        if (r.error != null) {
-          throw r.error;
-        }
-        addToastNotification({
-          title: 'Success',
-          content: 'Workflow added to favourites',
-          type: 'success',
-        });
-      })
-      .catch(() => {
-        addToastNotification({
-          title: 'Error',
-          content: 'Workflow could not be added to favourites',
-          type: 'error',
-        });
-      });
+    );
   };
 
-  const onSort = () => {
-    return orderBy.direction === 'DESC'
-      ? setOrderBy({ ...orderBy, direction: 'ASC' })
-      : setOrderBy({ ...orderBy, direction: 'DESC' });
+  const handleSort = () => {
+    setOrderBy((prev) => ({
+      ...prev,
+      direction: prev.direction === 'DESC' ? 'ASC' : 'DESC',
+    }));
   };
 
   if (isLoadingWorkflowDefinitions) {
@@ -222,21 +172,22 @@ const WorkflowDefinitions = () => {
     return <Text>We are sorry, but something went wrong when we were loading workflow definitions.</Text>;
   }
 
-  const workflows: ClientWorkflow[] =
-    workflowsData?.workflows.edges.map((e) => {
-      const { node } = e;
-      const parsedLabels = jsonParse<DescriptionJSON>(e.node.description)?.labels ?? [];
-      const tasks = jsonParse<Task[]>(e.node.tasks) ?? [];
+  const workflows: ClientWorkflowWithTasks[] =
+    workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
+      const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
+      const tasks = jsonParse<Task[]>(w.tasksJson) ?? [];
       return {
-        ...node,
+        ...w,
+        timeoutSeconds: w.timeoutSeconds ?? 0,
         labels: parsedLabels,
+        hasSchedule: false,
         tasks,
-        hasSchedule: node.hasSchedule ?? false,
       };
     }) ?? [];
 
   return (
-    <Container maxWidth={1280} mx="auto">
+    <Container maxWidth="container.xl" mx="auto">
+      <WorkflowListHeader onImportSuccess={onImportSuccess} />
       <WorkflowDefinitionsModals
         confirmDeleteModal={confirmDeleteModal}
         definitionModal={definitionModal}
@@ -249,7 +200,7 @@ const WorkflowDefinitions = () => {
         workflows={workflows}
       />
       <WorkflowDefinitionsHeader
-        allLabels={labelsData?.workflowLabels ?? []}
+        allLabels={labelsData?.conductor.workflowLabels ?? []}
         keywords={keywords}
         onKeywordsChange={(value) => {
           setKeywords(value);
@@ -273,7 +224,7 @@ const WorkflowDefinitions = () => {
       />
       <WorkflowDefinitionsTable
         workflows={workflows}
-        onSort={onSort}
+        onSort={handleSort}
         orderBy={orderBy}
         definitionModal={definitionModal}
         diagramModal={diagramModal}
@@ -282,18 +233,16 @@ const WorkflowDefinitions = () => {
         scheduleWorkflowModal={schedulingModal}
         confirmDeleteModal={confirmDeleteModal}
         setActiveWorkflow={setActiveWf}
-        onFavoriteClick={handleOnFavouriteClick}
         onLabelClick={(label) => {
           setFilter({ ...filter, labels: [...new Set([...filter.labels, label])] });
         }}
-        allLabels={labelsData?.workflowLabels ?? []}
       />
       {workflowsData && (
         <Pagination
-          onPrevious={previousPage(workflowsData.workflows.pageInfo.startCursor)}
-          onNext={nextPage(workflowsData.workflows.pageInfo.endCursor)}
-          hasNextPage={workflowsData.workflows.pageInfo.hasNextPage}
-          hasPreviousPage={workflowsData.workflows.pageInfo.hasPreviousPage}
+          onPrevious={previousPage(workflowsData.conductor.workflowDefinitions.pageInfo.startCursor)}
+          onNext={nextPage(workflowsData.conductor.workflowDefinitions.pageInfo.endCursor)}
+          hasNextPage={workflowsData.conductor.workflowDefinitions.pageInfo.hasNextPage}
+          hasPreviousPage={workflowsData.conductor.workflowDefinitions.pageInfo.hasPreviousPage}
         />
       )}
     </Container>

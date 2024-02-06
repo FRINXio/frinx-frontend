@@ -2,11 +2,9 @@ import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { useConfig } from './config.provider';
 
-type DeviceTopologyComponents = typeof import('@frinx/device-topology');
-
 const DeviceTopologyApp: FC = () => {
   const { inventoryApiURL } = useConfig();
-  const [components, setComponents] = useState<DeviceTopologyComponents | null>(null);
+  const [components, setComponents] = useState<typeof import('@frinx/device-topology') | null>(null);
 
   useEffect(() => {
     import('@frinx/device-topology').then((mod) => {

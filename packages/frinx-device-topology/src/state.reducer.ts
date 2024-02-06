@@ -9,12 +9,26 @@ import {
   GraphNetNode,
   GraphNode,
   GraphNodeInterface,
+  GraphPtpNodeInterface,
+  GraphSynceNodeInterface,
   Position,
   PositionGroupsMap,
+  width as topologyWidth,
+  height as topologyHeight,
 } from './pages/topology/graph.helpers';
+import {
+  identity,
+  Matrix,
+  translate,
+  multiplyMatrices,
+  getMidPoint,
+  scale,
+  getZoomLevel,
+} from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
+import { PtpGraphNode, SynceGraphNode } from './__generated__/graphql';
 
-export type TopologyLayer = 'LLDP' | 'BGP-LS';
+export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -25,6 +39,12 @@ export type ShortestPathInfo = {
 };
 export type ShortestPath = ShortestPathInfo[];
 
+// We need to limit zoomLevel to reasonable numbers,
+// these were picked as a good start.
+// (Safari on Mac should have lower MAX, but we will stick with it for now)
+const MIN_ZOOM_LEVEL = 0.01;
+const MAX_ZOOM_LEVEL = 20;
+
 export type State = {
   topologyLayer: TopologyLayer;
   mode: TopologyMode;
@@ -32,7 +52,7 @@ export type State = {
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
-  selectedNode: (GraphNode | GraphNetNode) | null;
+  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -48,7 +68,20 @@ export type State = {
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
+  ptpNodes: PtpGraphNode[];
+  ptpEdges: GraphEdgeWithDiff[];
+  ptpNodePositions: Record<string, Position>;
+  ptpInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
   isWeightVisible: boolean;
+  unconfirmedSelectedGmPathNodeId: string | null;
+  selectedGmPathNodeId: string | null;
+  gmPathIds: string[];
+  synceNodes: SynceGraphNode[];
+  synceEdges: GraphEdgeWithDiff[];
+  synceNodePositions: Record<string, Position>;
+  synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
+  transform: Matrix;
+  // isMouseDown: boolean;
 };
 
 export const initialState: State = {
@@ -74,7 +107,20 @@ export const initialState: State = {
   netEdges: [],
   netNodePositions: {},
   netInterfaceGroupPositions: {},
+  ptpNodes: [],
+  ptpEdges: [],
+  ptpNodePositions: {},
+  ptpInterfaceGroupPositions: {},
   isWeightVisible: false,
+  unconfirmedSelectedGmPathNodeId: null,
+  selectedGmPathNodeId: null,
+  gmPathIds: [],
+  synceNodes: [],
+  synceEdges: [],
+  synceNodePositions: {},
+  synceInterfaceGroupPositions: {},
+  transform: identity(),
+  // isMouseDown: false,
 };
 
 export function stateReducer(state: State, action: StateAction): State {
@@ -102,6 +148,32 @@ export function stateReducer(state: State, action: StateAction): State {
           },
           (n) => n.device.name,
           (n) => n.device.deviceSize,
+        );
+        return acc;
+      }
+      case 'UPDATE_PTP_NODE_POSITION': {
+        acc.ptpNodePositions[action.nodeId] = action.position;
+        acc.ptpInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+          {
+            nodes: acc.ptpNodes,
+            edges: acc.ptpEdges,
+            positionMap: acc.ptpNodePositions,
+          },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        return acc;
+      }
+      case 'UPDATE_SYNCE_NODE_POSITION': {
+        acc.synceNodePositions[action.nodeId] = action.position;
+        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, SynceGraphNode>(
+          {
+            nodes: acc.synceNodes,
+            edges: acc.synceEdges,
+            positionMap: acc.synceNodePositions,
+          },
+          (n) => n.name,
+          () => 'MEDIUM',
         );
         return acc;
       }
@@ -187,6 +259,24 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.selectedAlternativeShortestPathIndex = action.alternativePathIndex;
         return acc;
       }
+      case 'SET_UNCONFIRMED_GM_NODE_ID': {
+        acc.unconfirmedSelectedGmPathNodeId = action.nodeId;
+        return acc;
+      }
+      case 'FIND_GM_PATH': {
+        acc.selectedGmPathNodeId = state.unconfirmedSelectedGmPathNodeId;
+        return acc;
+      }
+      case 'CLEAR_GM_PATH': {
+        acc.unconfirmedSelectedGmPathNodeId = null;
+        acc.selectedGmPathNodeId = null;
+        acc.gmPathIds = [];
+        return acc;
+      }
+      case 'SET_GM_PATH_IDS': {
+        acc.gmPathIds = action.nodeIds;
+        return acc;
+      }
       case 'SET_MODE': {
         acc.mode = action.mode;
         return acc;
@@ -214,11 +304,40 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.netInterfaceGroupPositions = positionMap.interfaceGroups;
         return acc;
       }
+      case 'SET_PTP_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.ptpNodes = nodes;
+        acc.ptpEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.ptpNodePositions = positionMap.nodes;
+        acc.ptpInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_SYNCE_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GraphSynceNodeInterface, SynceGraphNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.synceNodes = nodes;
+        acc.synceEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.synceNodePositions = positionMap.nodes;
+        acc.synceInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_TOPOLOGY_LAYER': {
         acc.topologyLayer = action.layer;
         acc.selectedEdge = null;
         acc.selectedNode = null;
         acc.connectedNodeIds = [];
+        acc.gmPathIds = [];
+        acc.selectedGmPathNodeId = null;
+        acc.unconfirmedSelectedGmPathNodeId = null;
         return acc;
       }
       case 'SET_SELECTED_NET_NODE': {
@@ -235,8 +354,61 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.connectedNodeIds = connectedNodeIds;
         return acc;
       }
+      case 'SET_SELECTED_PTP_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.ptpEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_SYNCE_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.synceEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
       case 'SET_WEIGHT_VISIBILITY': {
         acc.isWeightVisible = action.isVisible;
+        return acc;
+      }
+      case 'PAN_TOPOLOGY': {
+        const currentTransform = state.transform;
+        const xform = translate(action.panDelta.x, action.panDelta.y);
+        acc.transform = multiplyMatrices(xform, currentTransform);
+        return acc;
+      }
+      case 'ZOOM_TOPOLOGY': {
+        const currentTransform = state.transform;
+        const dimensions = {
+          width: topologyWidth,
+          height: topologyHeight,
+        };
+        const mid = getMidPoint(dimensions, state.transform);
+        const xform = multiplyMatrices(translate(mid.x, mid.y), scale(action.zoomDelta), translate(-mid.x, -mid.y));
+        const finalTransform = multiplyMatrices(xform, currentTransform);
+
+        // We will limit zoomlevel to a reasonable number
+        const zoomLevel = getZoomLevel(finalTransform);
+        if (zoomLevel < MIN_ZOOM_LEVEL || zoomLevel > MAX_ZOOM_LEVEL) {
+          return acc;
+        }
+
+        acc.transform = finalTransform;
         return acc;
       }
       default:

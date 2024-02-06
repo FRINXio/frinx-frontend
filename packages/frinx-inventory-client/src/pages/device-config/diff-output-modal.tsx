@@ -19,20 +19,22 @@ import { CalculatedDiffQuery, CalculatedDiffQueryVariables, CalculatedDiffResult
 
 const CALCULATED_DIFF_QUERY = gql`
   query calculatedDiff($deviceId: String!, $transactionId: String!) {
-    calculatedDiff(deviceId: $deviceId, transactionId: $transactionId) {
-      result {
-        createdData {
-          path
-          data
-        }
-        deletedData {
-          path
-          data
-        }
-        updatedData {
-          path
-          actualData
-          intendedData
+    deviceInventory {
+      calculatedDiff(deviceId: $deviceId, transactionId: $transactionId) {
+        result {
+          createdData {
+            path
+            data
+          }
+          deletedData {
+            path
+            data
+          }
+          updatedData {
+            path
+            actualData
+            intendedData
+          }
         }
       }
     }
@@ -77,7 +79,7 @@ type Props = {
 };
 
 const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, transactionId }) => {
-  const [{ data, fetching, error }] = useQuery<CalculatedDiffQuery, CalculatedDiffQueryVariables>({
+  const [{ data, error }] = useQuery<CalculatedDiffQuery, CalculatedDiffQueryVariables>({
     query: CALCULATED_DIFF_QUERY,
     variables: {
       deviceId,
@@ -86,15 +88,15 @@ const DiffOutputModal: VoidFunctionComponent<Props> = ({ onClose, deviceId, tran
     requestPolicy: 'network-only',
   });
 
-  if (fetching || error != null) {
+  if (error != null) {
     return null;
   }
 
-  if (data?.calculatedDiff == null) {
+  if (data?.deviceInventory.calculatedDiff == null) {
     return null;
   }
 
-  const { result } = data.calculatedDiff;
+  const { result } = data.deviceInventory.calculatedDiff;
   const { updatedData, ...rest } = result;
 
   return (

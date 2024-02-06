@@ -5,7 +5,7 @@ import SearchByLabelInput from '../../components/search-by-label-input';
 import { LabelsQuery } from '../../__generated__/graphql';
 
 type Props = {
-  labels: LabelsQuery['labels']['edges'];
+  labels: LabelsQuery['deviceInventory']['labels']['edges'];
   selectedLabels: Item[];
   isCreationDisabled?: boolean;
   onSelectionChange: (labels?: Item[]) => void;

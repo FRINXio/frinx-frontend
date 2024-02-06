@@ -2,14 +2,39 @@ import { utcToZonedTime } from 'date-fns-tz';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
-import { Workflow, ExtendedTask, ClientWorkflow, Task, SubworkflowTask } from './workflow-api.types';
+import {
+  Workflow,
+  ExtendedTask,
+  ClientWorkflow,
+  Task,
+  SubworkflowTask,
+  ClientWorkflowWithTasks,
+} from './workflow-api.types';
 
 export type InputParameter = Record<
   string,
   { value: string; description: string; type: string; options?: string[] | null }
 >;
 
-export const getDynamicInputParametersFromWorkflow = (workflow?: Workflow | ClientWorkflow | null): string[] => {
+type ModalWorkflow = {
+  correlationId: string;
+  description: string | undefined;
+  name: string;
+  version: number;
+  inputParameters: (string | null)[];
+  outputParameters: unknown;
+  restartable: boolean;
+  ownerEmail: string;
+  schemaVersion: number;
+  timeoutPolicy: string;
+  timeoutSeconds: unknown;
+  variables: unknown;
+  tasks: never[];
+};
+
+export const getDynamicInputParametersFromWorkflow = (
+  workflow?: ModalWorkflow | Workflow | ClientWorkflowWithTasks | ClientWorkflow | null,
+): string[] => {
   const REGEX = /workflow\.input\.([a-zA-Z0-9-_]+)/gim;
   const stringifiedWorkflow = JSON.stringify(workflow || {});
   const match = stringifiedWorkflow.match(REGEX)?.map((path) => path.replace('workflow.input.', ''));
@@ -30,12 +55,13 @@ export const jsonParse = <T = { description: string }>(json?: string | null): T 
   }
 };
 
-export function parseInputParameters(inputParameters?: string[] | null): InputParameter | null {
+export function parseInputParameters(inputParameters?: (string | null)[] | null): InputParameter | null {
   if (inputParameters == null || inputParameters.length === 0) {
     return null;
   }
 
   const parsedInputParameters: InputParameter[] = inputParameters
+    .filter(omitNullValue)
     .map((v) => jsonParse<InputParameter>(v))
     .filter(omitNullValue);
 
@@ -52,7 +78,7 @@ export function parseInputParameters(inputParameters?: string[] | null): InputPa
   }, {});
 }
 
-export function isWorkflowNameAvailable(workflows: ClientWorkflow[], name: string): boolean {
+export function isWorkflowNameAvailable(workflows: ClientWorkflowWithTasks[], name: string): boolean {
   return workflows.every((wf) => wf.name !== name);
 }
 
@@ -96,46 +122,26 @@ export function convertWorkflow(wf: Workflow): Workflow<ExtendedTask> {
   };
 }
 
-export function createEmptyWorkflow(): Pick<
-  ClientWorkflow<ExtendedTask>,
-  | 'id'
-  | 'name'
-  | 'description'
-  | 'version'
-  | 'createdAt'
-  | 'createdBy'
-  | 'updatedAt'
-  | 'updatedBy'
-  | 'hasSchedule'
-  | 'tasks'
-  | 'inputParameters'
-  | 'labels'
-  // | 'ownerEmail'
-  | 'restartable'
-  | 'timeoutPolicy'
-  | 'timeoutSeconds'
-  | 'outputParameters'
-  // | 'variables'
-> {
+export function createEmptyWorkflow(): ClientWorkflow & { tasks: ExtendedTask[] } {
   return {
     id: '',
     name: '',
     description: '',
     version: 1,
     createdAt: null,
-    createdBy: null,
     updatedAt: null,
-    updatedBy: null,
     hasSchedule: false,
     tasks: [],
     inputParameters: [],
     labels: [],
-    // ownerEmail: '',
-    restartable: true,
-    timeoutPolicy: 'ALERT_ONLY',
     timeoutSeconds: 0,
     outputParameters: [],
-    // variables: {},
+    restartable: false,
+    ownerEmail: '',
+    schemaVersion: 2,
+    timeoutPolicy: 'RETRY',
+    createdBy: '',
+    updatedBy: '',
   };
 }
 

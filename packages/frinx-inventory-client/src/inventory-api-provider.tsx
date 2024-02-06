@@ -19,6 +19,7 @@ const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
+      suspense: true,
       exchanges: [
         cacheExchange,
         fetchExchange,

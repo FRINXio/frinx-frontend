@@ -1,8 +1,11 @@
 import { Change } from '../../helpers/topology-helpers';
 
-export function getEdgeColor(change: Change, isUnknown: boolean, isShortestPath: boolean): string {
+export function getEdgeColor(change: Change, isUnknown: boolean, isShortestPath: boolean, isGmpath: boolean): string {
   if (isShortestPath) {
     return 'blue.400';
+  }
+  if (isGmpath) {
+    return 'red.400';
   }
   if (isUnknown) {
     if (change === 'DELETED') {

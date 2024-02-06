@@ -7,7 +7,7 @@ import { FormValues } from './create-pool-form';
 
 type Props = {
   onChange: (values: { key: string; type: string; value: string | number }) => void;
-  customPoolProperties?: RequiredPoolPropertiesQuery['QueryRequiredPoolProperties'];
+  customPoolProperties?: RequiredPoolPropertiesQuery['resourceManager']['QueryRequiredPoolProperties'];
   formValues: FormValues;
   poolPropertyErrors?: string | string[] | FormikErrors<Record<string, string>>;
   isLoadingPoolProperties: boolean;
