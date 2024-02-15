@@ -1,4 +1,5 @@
 import { utcToZonedTime } from 'date-fns-tz';
+import { omit } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { omitNullValue } from './omit-null-value';
 import { getTaskLabel } from './task.helpers';
@@ -155,4 +156,30 @@ export function isTaskWithInputParameters(task: Task): task is SubworkflowTask {
   }
 
   return false;
+}
+
+export function isValueOfType<T>(propertyName: string, obj?: unknown | null): obj is T {
+  if (obj == null) {
+    return false;
+  }
+
+  return Object.keys(obj).includes(propertyName);
+}
+
+export function removeGraphqlSpecsFromWorkflow(workflow?: ClientWorkflowWithTasks | ClientWorkflow | null) {
+  if (workflow == null) {
+    return null;
+  }
+
+  if (isValueOfType<ClientWorkflowWithTasks>('tasks', workflow)) {
+    const workflowTasksWithoutGraphqlSpecs = workflow?.tasks.map((task) => omit(task, ['id', '__typename']));
+
+    return {
+      ...omit(workflow, ['id', '__typename']),
+      tasks: workflowTasksWithoutGraphqlSpecs,
+      tasksJson: JSON.stringify(workflowTasksWithoutGraphqlSpecs),
+    };
+  }
+
+  return omit(workflow, ['id', '__typename']);
 }

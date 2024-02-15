@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ConfirmDeleteModal, Editor, omitNullValue, unwrap, useNotifications } from '@frinx/shared';
+import { ConfirmDeleteModal, Editor, omitNullValue, unwrap, useNotifications, isValueOfType } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import {
   DeleteEventHandlerDetailMutation,
@@ -29,7 +29,6 @@ import {
 } from '../../__generated__/graphql';
 import EventHandlersDetailActions from './event-handlers-detail-actions';
 import { removeTypenamesFromEventHandlerAction } from '../../helpers/event-handlers.helpers';
-import { isValueOfType } from '../../helpers/utils.helpers';
 
 type Props = {
   onEventHandlerEditClick: (id: string) => void;

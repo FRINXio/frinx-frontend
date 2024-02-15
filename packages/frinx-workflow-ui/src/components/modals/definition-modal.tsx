@@ -9,8 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { ClientWorkflowWithTasks, Editor } from '@frinx/shared';
-import { omit } from 'lodash';
+import { ClientWorkflowWithTasks, Editor, removeGraphqlSpecsFromWorkflow } from '@frinx/shared';
 
 type ModalProps = {
   isOpen: boolean;
@@ -19,13 +18,6 @@ type ModalProps = {
 };
 
 const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => {
-  const workflowTasksWithoutGraphqlSpecs = workflow?.tasks.map((task) => omit(task, ['id', '__typename']));
-  const workflowWithoutGraphqlSpecs = {
-    ...omit(workflow, ['id', '__typename']),
-    tasks: workflowTasksWithoutGraphqlSpecs,
-    tasksJson: JSON.stringify(workflowTasksWithoutGraphqlSpecs),
-  };
-
   return (
     <Modal size="3xl" scrollBehavior="inside" isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
@@ -33,7 +25,7 @@ const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, w
       <ModalContent>
         <ModalHeader>{workflow?.name}</ModalHeader>
         <ModalBody>
-          <Editor defaultValue={JSON.stringify(workflowWithoutGraphqlSpecs, null, 2)} width="100%" />
+          <Editor defaultValue={JSON.stringify(removeGraphqlSpecsFromWorkflow(workflow), null, 2)} width="100%" />
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="gray" onClick={onClose}>
