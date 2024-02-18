@@ -189,9 +189,13 @@ const TOPOLOGY_QUERY = gql`
       topology(filter: { labels: $labels }) {
         nodes {
           id
+          name
           device {
             id
             name
+            isInstalled
+            createdAt
+            serviceState
             deviceSize
           }
           deviceType

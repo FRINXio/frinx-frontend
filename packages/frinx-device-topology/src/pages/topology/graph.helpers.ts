@@ -18,6 +18,9 @@ export type Device = {
   id: string;
   name: string;
   deviceSize: DeviceSize;
+  isInstalled: boolean;
+  createdAt: string;
+  serviceState: string;
 };
 
 export type GraphNodeInterface = {
@@ -27,7 +30,8 @@ export type GraphNodeInterface = {
 };
 export type GraphNode = {
   id: string;
-  device: Device;
+  name: string;
+  device: Device | null;
   deviceType: string | null;
   softwareVersion: string | null;
   interfaces: GraphNodeInterface[];
@@ -345,6 +349,9 @@ export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | 
     return null;
   }
   if ('device' in node) {
+    if (!node.device) {
+      return null;
+    }
     return node.device.name;
   }
   return node.name;

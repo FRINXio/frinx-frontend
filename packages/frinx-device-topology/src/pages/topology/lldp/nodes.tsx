@@ -39,9 +39,9 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
 
   const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: GraphNode) => {
     if (mode === 'COMMON_NODES') {
-      const newUnconfirmedSelectedNodeIds = unconfirmedSelectedNodeIds.includes(node.device.name)
-        ? unconfirmedSelectedNodeIds.filter((id) => id !== node.device.name)
-        : [...unconfirmedSelectedNodeIds, node.device.name];
+      const newUnconfirmedSelectedNodeIds = unconfirmedSelectedNodeIds.includes(node.name)
+        ? unconfirmedSelectedNodeIds.filter((id) => id !== node.name)
+        : [...unconfirmedSelectedNodeIds, node.name];
       dispatch(setUnconfirmedSelectedNodeIdsToFindCommonNode(newUnconfirmedSelectedNodeIds));
     } else {
       setIsPointerDown(true);
@@ -52,7 +52,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
       const y = event.clientY - bbox.top;
       element.setPointerCapture(event.pointerId);
       setPosition({
-        nodeId: node.device.name,
+        nodeId: node.name,
         isActive: true,
         offset: {
           x,
@@ -108,10 +108,10 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
             handlePointerUp(node);
           }}
           positions={{ nodes: nodePositions, interfaceGroups: interfaceGroupPositions }}
-          isFocused={connectedNodeIds.includes(node.device.name)}
-          isSelected={ensureNodeHasDevice(selectedNode) && selectedNode.device.id === node.device.id}
-          isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.device.name)}
-          isCommon={commonNodeIds.includes(node.device.name)}
+          isFocused={connectedNodeIds.includes(node.name)}
+          isSelected={ensureNodeHasDevice(selectedNode) && selectedNode.id === node.id}
+          isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}
+          isCommon={commonNodeIds.includes(node.name)}
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}

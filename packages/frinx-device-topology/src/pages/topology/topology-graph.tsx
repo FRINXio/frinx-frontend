@@ -115,8 +115,8 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
     if (timeoutRef.current != null) {
       clearTimeout(timeoutRef.current);
     }
-    const node = unwrap(nodes.find((n) => n.device.name === deviceName));
-    lastPositionRef.current = { deviceName: node.device.name, position };
+    const node = unwrap(nodes.find((n) => n.name === deviceName));
+    lastPositionRef.current = { deviceName: node.name, position };
     dispatch(updateNodePosition(deviceName, position));
   };
 
@@ -181,7 +181,9 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
           boxShadow="md"
         >
           <DeviceInfoPanel
-            deviceId={selectedNode.device.id}
+            // deviceId={selectedNode.device?.id ?? null}
+            name={selectedNode.name}
+            device={selectedNode.device}
             onClose={handleInfoPanelClose}
             deviceType={selectedNode.deviceType}
             softwareVersion={selectedNode.softwareVersion}

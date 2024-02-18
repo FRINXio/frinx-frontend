@@ -129,8 +129,8 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_NODES_AND_EDGES': {
         const positionsMap = getDefaultPositionsMap<GraphNodeInterface, GraphNode>(
           { nodes: action.payload.nodes, edges: action.payload.edges },
-          (n) => n.device.name,
-          (n) => n.device.deviceSize,
+          (n) => n.name,
+          (n) => n.device?.deviceSize ?? 'MEDIUM',
         );
         acc.nodes = action.payload.nodes.map((n) => ({ ...n, change: 'NONE' }));
         acc.edges = action.payload.edges.map((e) => ({ ...e, change: 'NONE' }));
@@ -146,8 +146,8 @@ export function stateReducer(state: State, action: StateAction): State {
             edges: acc.edges,
             positionMap: acc.nodePositions,
           },
-          (n) => n.device.name,
-          (n) => n.device.deviceSize,
+          (n) => n.name,
+          (n) => n.device?.deviceSize ?? 'MEDIUM',
         );
         return acc;
       }
@@ -183,7 +183,7 @@ export function stateReducer(state: State, action: StateAction): State {
         }
         acc.selectedNode = action.node;
         const connectedEdges = acc.edges.filter(
-          (e) => action.node?.device.name === e.source.nodeId || action.node?.device.name === e.target.nodeId,
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
         );
         const connectedNodeIds = [
           ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
@@ -213,8 +213,8 @@ export function stateReducer(state: State, action: StateAction): State {
         const allEdges = getEdgesWithDiff(acc.edges, action.payload.edges);
         const positionsMap = getDefaultPositionsMap<GraphNodeInterface, GraphNode>(
           { nodes: allNodes, edges: allEdges },
-          (n) => n.device.name,
-          (n) => n.device.deviceSize,
+          (n) => n.name,
+          (n) => n.device?.deviceSize ?? 'MEDIUM',
         );
         acc.nodes = allNodes;
         acc.edges = allEdges;

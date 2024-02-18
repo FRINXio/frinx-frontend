@@ -1,74 +1,35 @@
-import { Badge, Box, Button, Flex, Heading, HStack, Icon, Spinner, Text } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Heading, HStack, Icon, Text } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { gql, useQuery } from 'urql';
 import { getLocalDateFromUTC } from '@frinx/shared';
-import { DeviceQuery, DeviceQueryVariables } from '../../__generated__/graphql';
-
-const DEVICE_QUERY = gql`
-  query Device($id: ID!) {
-    deviceInventory {
-      node(id: $id) {
-        ... on Device {
-          id
-          name
-          isInstalled
-          createdAt
-          serviceState
-        }
-      }
-    }
-  }
-`;
+import { Device } from '../../pages/topology/graph.helpers';
 
 type Props = {
-  deviceId: string;
+  name: string;
+  device: Device | null;
   onClose: () => void;
   deviceType: string | null;
   softwareVersion: string | null;
 };
 
-const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose, deviceType, softwareVersion }) => {
-  const [{ data, fetching, error }] = useQuery<DeviceQuery, DeviceQueryVariables>({
-    query: DEVICE_QUERY,
-    variables: { id: deviceId },
-  });
-
-  if (fetching) {
-    return (
-      <Box>
-        <Spinner />
-      </Box>
-    );
-  }
-  if (error || data == null) {
-    return null;
-  }
-  const { node } = data.deviceInventory;
-
-  if (node == null) {
-    return null;
-  }
-
-  if (node.__typename !== 'Device') {
-    return null;
-  }
-
-  const localDate = getLocalDateFromUTC(node.createdAt);
+const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ name, device, onClose, deviceType, softwareVersion }) => {
+  const localDate = device ? getLocalDateFromUTC(device.createdAt) : null;
 
   return (
     <Box>
       <Flex alignItems="center">
         <Heading as="h3" size="sm">
-          {node.name}
+          {name}
         </Heading>
-        <Badge marginLeft="auto">{node.serviceState}</Badge>
+        {device?.serviceState && <Badge marginLeft="auto">{device.serviceState}</Badge>}
       </Flex>
-      <Text as="span" fontSize="xs" color="gray.700">
-        {format(localDate, 'dd/MM/yyyy, k:mm')}
-      </Text>
+      {localDate && (
+        <Text as="span" fontSize="xs" color="gray.700">
+          {format(localDate, 'dd/MM/yyyy, k:mm')}
+        </Text>
+      )}
       <Flex marginTop={2} justifyContent="space-between">
         {deviceType != null && (
           <Box flex={1}>
@@ -88,15 +49,17 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ deviceId, onClose, devi
         )}
       </Flex>
       <HStack spacing={2} marginTop={4}>
-        <Button
-          as={Link}
-          to={`/inventory/${node.id}/edit`}
-          size="sm"
-          colorScheme="blue"
-          leftIcon={<Icon as={FeatherIcon} icon="settings" size={20} />}
-        >
-          Config
-        </Button>
+        {device && (
+          <Button
+            as={Link}
+            to={`/inventory/${device.id}/edit`}
+            size="sm"
+            colorScheme="blue"
+            leftIcon={<Icon as={FeatherIcon} icon="settings" size={20} />}
+          >
+            Config
+          </Button>
+        )}
         <Button size="sm" onClick={onClose}>
           Close
         </Button>
