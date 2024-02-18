@@ -9,8 +9,6 @@ import {
   CreateScheduleMutationVariables,
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
-  // ScheduleWorkflowMutation,
-  // ScheduleWorkflowMutationVariables,
 } from '../../__generated__/graphql';
 
 type Props = {

@@ -11,35 +11,90 @@ import {
 } from '../../__generated__/graphql';
 import ExpectedProperties, { ExpectedProperty } from '../../components/expected-properties-form';
 
-function getDefaultInvokeScript(lang: 'js' | 'py'): string {
-  if (lang === 'js') {
-    return `function invoke() {
-    log(JSON.stringify({ respool: resourcePool.ResourcePoolName, currentRes: currentResources }));
-    return { vlan: userInput.desiredVlan };
-}`;
-  } else {
-    return `def invoke():
-  log(JSON.stringify({ 'respool': resourcePool.ResourcePoolName, 'currentRes': currentResources }))
-  return { 'vlan': userInput.desiredVlan }`;
+function getDefaultInvokeScript(lang: AllocationStrategyLang): string {
+  switch (lang) {
+    case 'go':
+      return `
+      package main
+
+      import (
+          "encoding/json"
+          "fmt"
+      )
+
+      type LogMessage struct {
+        Respool     string \`json:"respool"\`
+        CurrentRes  string \`json:"currentRes"\`
+      }
+
+      func logMessage(msg LogMessage) {
+          data, err := json.Marshal(msg)
+          if err != nil {
+              // Handle error (e.g., log it or return an error)
+          }
+          fmt.Println(string(data)) // Or use your preferred logging library/mechanism
+      }
+    
+      type Result struct {
+        Vlan int \`json:"vlan"\`
+      }
+
+      func Invoke() Result {
+        msg := LogMessage{
+            Respool:     resourcePool.ResourcePoolName,
+            CurrentRes:  currentResources,
+        }
+        logMessage(msg) // Log the message
+    
+        return Result{
+            Vlan: userInput.desiredVlan,
+        }
+      }
+      `;
+    case 'js':
+      return `function invoke() {
+          log(JSON.stringify({ respool: resourcePool.ResourcePoolName, currentRes: currentResources }));
+          return { vlan: userInput.desiredVlan };
+      }`;
+    default:
+      return `def invoke():
+        log(JSON.stringify({ 'respool': resourcePool.ResourcePoolName, 'currentRes': currentResources }))
+        return { 'vlan': userInput.desiredVlan }`;
   }
 }
 
-function getDefaultCapacityScript(lang: 'js' | 'py'): string {
-  if (lang === 'js') {
-    return `function capacity() {
+function getDefaultCapacityScript(lang: AllocationStrategyLang): string {
+  switch (lang) {
+    case 'go':
+      return `package main
+
+      type Capacity struct {
+          free    int
+          utilized int
+      }
+      
+      func Capacity() Capacity {
+          // Replace this with your actual logic for calculating capacity
+          free := 0  // Example values for demonstration
+          utilized := 0
+      
+          return Capacity{free, utilized} // Return a Capacity struct
+      }`;
+    case 'py':
+      return `def capacity():
+      # here will be your code, that will calculate capacity of the resource pool
+      
+      # this function needs to return free and utilized capacity of the resource pool
+      # e.g. next example returns 0 for both free and utilized capacity
+      return { 'free': 0, 'utilized': 0 }`;
+    default:
+      return `function capacity() {
       // here will be your code, that will calculate capacity of the resource pool
     
       // this function needs to return free and utilized capacity of the resource pool
       // e.g. next example returns 0 for both free and utilized capacity
       return { free: 0, utilized: 0 };
-}`;
-  } else {
-    return `def capacity():
-    # here will be your code, that will calculate capacity of the resource pool
-    
-    # this function needs to return free and utilized capacity of the resource pool
-    # e.g. next example returns 0 for both free and utilized capacity
-    return { 'free': 0, 'utilized': 0 }`;
+    }`;
   }
 }
 
@@ -163,6 +218,17 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.lang, setFieldValue, getDefaultInvokeScript, getDefaultCapacityScript]);
 
+  const handleSelectedLanguage = (language: AllocationStrategyLang) => {
+    switch (language) {
+      case 'js':
+        return 'javascript';
+      case 'py':
+        return 'python';
+      default:
+        return 'go';
+    }
+  };
+
   type FormErrors = typeof errors &
     FormikErrors<{ expectedPoolPropertyTypesDuplicatedKeys?: string; resourceTypePropertiesDuplicatedKeys?: string }>;
   const formErrors: FormErrors = errors;
@@ -211,6 +277,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
         >
           <option value="js">Javascript</option>
           <option value="py">Python</option>
+          <option value="go">Go</option>
         </Select>
       </FormControl>
 
@@ -221,7 +288,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
         <Editor
           height="200px"
           width="100%"
-          language={values.lang === 'js' ? 'javascript' : 'python'}
+          language={handleSelectedLanguage(values.lang)}
           value={values.capacityScript}
           onChange={(value) => {
             setFieldValue('capacityScript', value);
@@ -240,7 +307,7 @@ const CreateStrategyForm: VoidFunctionComponent<Props> = ({ onFormSubmit, onForm
         <Editor
           height="200px"
           width="100%"
-          language={values.lang === 'js' ? 'javascript' : 'python'}
+          language={handleSelectedLanguage(values.lang)}
           value={values.invokeScript}
           onChange={(value) => {
             setFieldValue('invokeScript', value);
