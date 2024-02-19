@@ -44,10 +44,10 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
   onPointerUp,
   selectedEdge,
 }) => {
-  const { device, change } = node;
-  const { x, y } = positions.nodes[node.device.name];
-  const interfaceGroups = getNodeInterfaceGroups(device.name, positions.interfaceGroups);
-  const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device.deviceSize);
+  const { change } = node;
+  const { x, y } = positions.nodes[node.name];
+  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
+  const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device?.deviceSize ?? 'MEDIUM');
 
   return (
     <G
@@ -80,7 +80,7 @@ const NodeIcon: VoidFunctionComponent<Props> = ({
         userSelect="none"
         fill={getNodeTextColor(change)}
       >
-        {device.name}
+        {node.name}
       </Text>
       <NodeIconImage sizeTransform={sizeTransform} />
       {isSelectedForCommonSearch && (
