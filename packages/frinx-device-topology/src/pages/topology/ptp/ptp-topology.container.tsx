@@ -54,7 +54,12 @@ const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShow
   const { dispatch, state } = useStateContext();
   const { selectedGmPathNodeId } = state;
 
-  const [{ data: ptpDiffSynce }] = useQuery<GetPtpDiffSynceQuery>({ query: GET_PTP_DIFF_SYNCE });
+  const [{ data: ptpDiffSynce }] = useQuery<GetPtpDiffSynceQuery>({
+    query: GET_PTP_DIFF_SYNCE,
+    requestPolicy: 'network-only',
+    pause: !isPtpDiffSynceShown,
+  });
+
   const [, updatePosition] = useMutation<UpdatePtpPositionMutation, UpdatePtpPositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );

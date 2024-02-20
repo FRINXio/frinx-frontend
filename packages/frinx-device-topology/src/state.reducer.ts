@@ -73,6 +73,7 @@ export type State = {
   ptpNodePositions: Record<string, Position>;
   ptpInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
   isWeightVisible: boolean;
+  isSynceDiffVisible: boolean;
   unconfirmedSelectedGmPathNodeId: string | null;
   selectedGmPathNodeId: string | null;
   gmPathIds: string[];
@@ -112,6 +113,7 @@ export const initialState: State = {
   ptpNodePositions: {},
   ptpInterfaceGroupPositions: {},
   isWeightVisible: false,
+  isSynceDiffVisible: false,
   unconfirmedSelectedGmPathNodeId: null,
   selectedGmPathNodeId: null,
   gmPathIds: [],
@@ -384,6 +386,10 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_WEIGHT_VISIBILITY': {
         acc.isWeightVisible = action.isVisible;
+        return acc;
+      }
+      case 'SET_SYNCE_DIFF_VISIBILITY': {
+        acc.isSynceDiffVisible = action.isVisible;
         return acc;
       }
       case 'PAN_TOPOLOGY': {
