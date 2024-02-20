@@ -175,6 +175,10 @@ export type StateAction =
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
     }
+  | {
+      type: 'SET_SYNCE_DIFF_VISIBILITY';
+      isVisible: boolean;
+    }
   | { type: 'PAN_TOPOLOGY'; panDelta: Position }
   | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number };
 
@@ -688,6 +692,13 @@ export function setSelectedAlternativePath(alternativePathIndex: number): StateA
 export function setWeightVisibility(isVisible: boolean): StateAction {
   return {
     type: 'SET_WEIGHT_VISIBILITY',
+    isVisible,
+  };
+}
+
+export function setSynceDiffVisibility(isVisible: boolean): StateAction {
+  return {
+    type: 'SET_SYNCE_DIFF_VISIBILITY',
     isVisible,
   };
 }
