@@ -1,6 +1,6 @@
 import { Container, Flex, FormControl, FormLabel, Heading, Progress, Switch, Text } from '@chakra-ui/react';
 import { useNotifications, Pagination, omitNullValue } from '@frinx/shared';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { gql, useQuery } from 'urql';
 import { makeURLSearchParamsFromObject } from '../../helpers/utils.helpers';
@@ -60,7 +60,7 @@ const ExecutedWorkflows = () => {
   const [currentStartOfPage, setCurrentStartOfPage] = useState(0);
   const [orderBy, setOrderBy] = useState<OrderBy>({ sortKey: 'startTime', direction: 'desc' });
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
-  const [{ data, fetching: isLoadingWorkflows, error }] = useQuery<
+  const [{ data, fetching: isLoadingWorkflows, error }, reexecuteQuery] = useQuery<
     ExecutedWorkflowsQuery,
     ExecutedWorkflowsQueryVariables
   >({
@@ -76,6 +76,31 @@ const ExecutedWorkflows = () => {
     requestPolicy: 'cache-and-network',
     context: ctx,
   });
+
+  useEffect(() => {
+    const executedWorkflows = data?.conductor.executedWorkflows?.edges;
+    let reexecuteQueryInterval: NodeJS.Timeout | null = null;
+
+    if (executedWorkflows?.every((ew) => ew.node.status !== 'RUNNING')) {
+      if (reexecuteQueryInterval) {
+        clearInterval(reexecuteQueryInterval);
+      }
+    }
+
+    if (executedWorkflows?.some((ew) => ew.node.status === 'RUNNING')) {
+      reexecuteQueryInterval = setInterval(() => {
+        reexecuteQuery({
+          suspense: true,
+        });
+      }, 10000);
+    }
+
+    return () => {
+      if (reexecuteQueryInterval) {
+        clearInterval(reexecuteQueryInterval);
+      }
+    };
+  }, [data?.conductor.executedWorkflows?.edges, reexecuteQuery]);
 
   const handleOnWorkflowSelect = (workflowId: string | null) => {
     if (workflowId == null) {

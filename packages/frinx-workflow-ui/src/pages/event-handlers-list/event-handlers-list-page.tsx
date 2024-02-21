@@ -20,7 +20,7 @@ import {
   Switch,
 } from '@chakra-ui/react';
 import { gql, useMutation, useQuery } from 'urql';
-import { usePagination, Pagination, useNotifications, omitNullValue } from '@frinx/shared';
+import { usePagination, Pagination, useNotifications, omitNullValue, isValueOfType } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import { Link } from 'react-router-dom';
 import { omit, truncate } from 'lodash';
@@ -36,8 +36,6 @@ import {
   UpdateEventHandlerMutationVariables,
 } from '../../__generated__/graphql';
 import EventHandlersListSearchbox, { SearchEventHandlerValues } from './event-handlers-list-searchbox';
-import { isValueOfType } from '../../helpers/utils.helpers';
-// import { omit } from 'lodash';
 
 const EVENT_HANDLERS_QUERY = gql`
   query GetEventHandlers(

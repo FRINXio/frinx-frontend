@@ -56,10 +56,15 @@ export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGra
       const { id, name, interfaces, coordinates } = n;
       return {
         id,
+        name,
         device: {
           id: uuid(),
           deviceSize: 'MEDIUM' as const,
           name,
+          // below are some fake data
+          isInstalled: false,
+          createdAt: '1970-01-01',
+          serviceState: 'PLANNING',
         },
         deviceType: null,
         softwareVersion: null,

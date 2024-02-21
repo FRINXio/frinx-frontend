@@ -9,30 +9,32 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { ClientWorkflow, Editor } from '@frinx/shared';
+import { ClientWorkflowWithTasks, Editor, removeGraphqlSpecsFromWorkflow } from '@frinx/shared';
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  workflow?: ClientWorkflow;
+  workflow?: ClientWorkflowWithTasks;
 };
 
-const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => (
-  <Modal size="3xl" scrollBehavior="inside" isOpen={isOpen} onClose={onClose} isCentered>
-    <ModalOverlay />
-    <ModalCloseButton />
-    <ModalContent>
-      <ModalHeader>{workflow?.name}</ModalHeader>
-      <ModalBody>
-        <Editor defaultValue={JSON.stringify(workflow, null, 2)} width="100%" />
-      </ModalBody>
-      <ModalFooter>
-        <Button colorScheme="gray" onClick={onClose}>
-          Close
-        </Button>
-      </ModalFooter>
-    </ModalContent>
-  </Modal>
-);
+const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, workflow }) => {
+  return (
+    <Modal size="3xl" scrollBehavior="inside" isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay />
+      <ModalCloseButton />
+      <ModalContent>
+        <ModalHeader>{workflow?.name}</ModalHeader>
+        <ModalBody>
+          <Editor defaultValue={JSON.stringify(removeGraphqlSpecsFromWorkflow(workflow), null, 2)} width="100%" />
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" onClick={onClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
 
 export default DefinitionModal;

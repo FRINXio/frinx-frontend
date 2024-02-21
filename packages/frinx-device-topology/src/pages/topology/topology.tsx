@@ -1,8 +1,8 @@
 import { Box, Container, Flex, FormControl, FormLabel, Heading, Select, Switch } from '@chakra-ui/react';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
-import { setTopologyLayer } from '../../state.actions';
+import { setSynceDiffVisibility, setTopologyLayer } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { TopologyLayer } from '../../state.reducer';
 import NetTopologyContainer from './net/net-topology.container';
@@ -12,8 +12,7 @@ import SynceTopologyContainer from './synce/synce-topology.container';
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
-  const [isPtpDiffSynceShown, setIsPtpDiffSynceShown] = useState<boolean>(false);
-  const { mode, topologyLayer } = state;
+  const { mode, topologyLayer, isSynceDiffVisible } = state;
 
   return (
     <Container maxWidth={1280} cursor={mode === 'NORMAL' ? 'default' : 'not-allowed'}>
@@ -54,8 +53,8 @@ const Topology: VoidFunctionComponent = () => {
               Show PTP Diff Synce
             </FormLabel>
             <Switch
-              isChecked={isPtpDiffSynceShown}
-              onChange={() => setIsPtpDiffSynceShown((prev) => !prev)}
+              isChecked={isSynceDiffVisible}
+              onChange={() => dispatch(setSynceDiffVisibility(!isSynceDiffVisible))}
               size="lg"
               pb="32px"
             />
@@ -65,7 +64,7 @@ const Topology: VoidFunctionComponent = () => {
       <Box>
         {topologyLayer === 'LLDP' && <TopologyContainer />}
         {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
-        {topologyLayer === 'PTP' && <PtpTopologyContainer isPtpDiffSynceShown={isPtpDiffSynceShown} />}
+        {topologyLayer === 'PTP' && <PtpTopologyContainer isPtpDiffSynceShown={isSynceDiffVisible} />}
         {topologyLayer === 'Synchronous Ethernet' && <SynceTopologyContainer />}
       </Box>
     </Container>

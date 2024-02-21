@@ -860,10 +860,11 @@ export type GraphEdgeStatus =
 export type GraphNode = BaseGraphNode & {
   __typename?: 'GraphNode';
   coordinates: GraphNodeCoordinates;
-  device: Device;
+  device: Maybe<Device>;
   deviceType: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   interfaces: Array<GraphNodeInterface>;
+  name: Scalars['String']['output'];
   softwareVersion: Maybe<Scalars['String']['output']>;
 };
 
@@ -3722,7 +3723,7 @@ export type TopologyQueryVariables = Exact<{
 }>;
 
 
-export type TopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, deviceType: string | null, softwareVersion: string | null, device: { __typename?: 'Device', id: string, name: string, deviceSize: DeviceSize }, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type TopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, name: string, deviceType: string | null, softwareVersion: string | null, device: { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState, deviceSize: DeviceSize } | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 

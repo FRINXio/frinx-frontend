@@ -10,8 +10,7 @@ import {
   Button,
   Box,
 } from '@chakra-ui/react';
-import { ClientWorkflowWithTasks, Editor, ExtendedTask } from '@frinx/shared';
-import { omit } from 'lodash';
+import { ClientWorkflowWithTasks, Editor, ExtendedTask, removeGraphqlSpecsFromWorkflow } from '@frinx/shared';
 
 type Props = {
   isOpen: boolean;
@@ -22,7 +21,13 @@ type Props = {
 };
 
 const parseWorkflow = (workflow: ClientWorkflowWithTasks<ExtendedTask>) => {
-  const { name, description, ...rest } = omit(workflow, ['__typename']);
+  const clientWorkflow = removeGraphqlSpecsFromWorkflow(workflow);
+
+  if (clientWorkflow == null) {
+    return '';
+  }
+
+  const { name, description, ...rest } = clientWorkflow;
   return JSON.stringify(
     {
       description,

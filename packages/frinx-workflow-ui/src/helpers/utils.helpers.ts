@@ -45,14 +45,6 @@ export function flattenObject<T extends object>(obj: T, prefix = ''): Record<str
   );
 }
 
-export function isValueOfType<T>(propertyName: string, obj?: unknown | null): obj is T {
-  if (obj == null) {
-    return false;
-  }
-
-  return Object.keys(obj).includes(propertyName);
-}
-
 export function makeArrayFromValue<T>(value?: T | T[] | null): T[] {
   if (Array.isArray(value)) {
     return value;

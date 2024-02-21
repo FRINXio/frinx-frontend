@@ -175,6 +175,10 @@ export type StateAction =
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
     }
+  | {
+      type: 'SET_SYNCE_DIFF_VISIBILITY';
+      isVisible: boolean;
+    }
   | { type: 'PAN_TOPOLOGY'; panDelta: Position }
   | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number };
 
@@ -189,9 +193,13 @@ const TOPOLOGY_QUERY = gql`
       topology(filter: { labels: $labels }) {
         nodes {
           id
+          name
           device {
             id
             name
+            isInstalled
+            createdAt
+            serviceState
             deviceSize
           }
           deviceType
@@ -692,6 +700,13 @@ export function setSelectedAlternativePath(alternativePathIndex: number): StateA
 export function setWeightVisibility(isVisible: boolean): StateAction {
   return {
     type: 'SET_WEIGHT_VISIBILITY',
+    isVisible,
+  };
+}
+
+export function setSynceDiffVisibility(isVisible: boolean): StateAction {
+  return {
+    type: 'SET_SYNCE_DIFF_VISIBILITY',
     isVisible,
   };
 }
