@@ -88,11 +88,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
       {isShowingAdditionalInfo &&
         interfaces.map((i) => {
           return (
-            <DeviceInfoPanelAdditionalInfo
-              key={i?.id}
-              interfaceName={i?.name}
-              additionalInfo={i?.interface ?? {}}
-            />
+            <DeviceInfoPanelAdditionalInfo key={i?.id} interfaceName={i?.name} additionalInfo={i?.interface ?? {}} />
           );
         })}
     </HStack>
