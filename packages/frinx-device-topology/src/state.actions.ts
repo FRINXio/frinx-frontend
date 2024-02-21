@@ -362,12 +362,20 @@ const SYNCE_TOPOLOGY_QUERY = gql`
           name
           interfaces {
             id
-            status
             name
-            details {
-              ptpStatus
-              adminOperStatus
-              ptsfUnusable
+            status
+            synceDevice {
+              synceDeviceInterfaces {
+                id
+                name
+                interface {
+                  synceEnabled
+                  rxQualityLevel
+                  qualifiedForUse
+                  notQualifiedDueTo
+                  notSelectedDueTo
+                }
+              }
             }
           }
           coordinates {

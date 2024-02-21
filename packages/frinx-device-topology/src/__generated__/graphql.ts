@@ -118,6 +118,7 @@ export type AllocationStrategy = Node & {
 
 /** Supported languages for allocation strategy scripts */
 export type AllocationStrategyLang =
+  | 'go'
   | 'js'
   | 'py';
 
@@ -893,6 +894,14 @@ export type GraphNodeInterfaceDetails = {
   ptsfUnusable: Maybe<Scalars['String']['output']>;
 };
 
+export type GraphSynceNodeInterface = {
+  __typename?: 'GraphSynceNodeInterface';
+  details: Maybe<SynceDeviceInterfaces>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
 export type GraphVersionEdge = {
   __typename?: 'GraphVersionEdge';
   id: Scalars['ID']['output'];
@@ -938,6 +947,23 @@ export type HealthCheckStatus = {
 export type InstallDevicePayload = {
   __typename?: 'InstallDevicePayload';
   device: Device;
+};
+
+export type Interface = {
+  __typename?: 'Interface';
+  notQualifiedDueTo: Maybe<Scalars['String']['output']>;
+  notSelectedDueTo: Maybe<Scalars['String']['output']>;
+  qualifiedForUse: Maybe<Scalars['String']['output']>;
+  rxQualityLevel: Maybe<Scalars['String']['output']>;
+  synceEnabled: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type Interfaces = {
+  __typename?: 'Interfaces';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+  synceDevice: SynceDevice;
 };
 
 export type IsOkResponse = {
@@ -1444,6 +1470,11 @@ export type SyncFromNetworkPayload = {
   dataStore: Maybe<DataStore>;
 };
 
+export type SynceDevice = {
+  __typename?: 'SynceDevice';
+  synceDeviceInterfaces: Array<Maybe<SynceDeviceInterfaces>>;
+};
+
 export type SynceDeviceDetails = {
   __typename?: 'SynceDeviceDetails';
   selectedForUse: Maybe<Scalars['String']['output']>;
@@ -1453,7 +1484,7 @@ export type SynceGraphNode = {
   __typename?: 'SynceGraphNode';
   coordinates: GraphNodeCoordinates;
   id: Scalars['ID']['output'];
-  interfaces: Array<GraphNodeInterface>;
+  interfaces: Array<Interfaces>;
   labels: Maybe<Array<Scalars['String']['output']>>;
   name: Scalars['String']['output'];
   nodeId: Scalars['String']['output'];
@@ -3607,6 +3638,13 @@ export type SchedulerQuerySchedulesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type SynceDeviceInterfaces = {
+  __typename?: 'synceDeviceInterfaces';
+  id: Scalars['String']['output'];
+  interface: Interface;
+  name: Scalars['String']['output'];
+};
+
 export type DeviceQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -3706,4 +3744,4 @@ export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __type
 export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'GraphNodeInterfaceDetails', ptpStatus: string | null, adminOperStatus: string | null, ptsfUnusable: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'Interfaces', id: string, name: string, status: GraphEdgeStatus, synceDevice: { __typename?: 'SynceDevice', synceDeviceInterfaces: Array<{ __typename?: 'synceDeviceInterfaces', id: string, name: string, interface: { __typename?: 'Interface', synceEnabled: boolean | null, rxQualityLevel: string | null, qualifiedForUse: string | null, notQualifiedDueTo: string | null, notSelectedDueTo: string | null } } | null> } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
