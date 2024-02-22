@@ -181,7 +181,6 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
           boxShadow="md"
         >
           <DeviceInfoPanel
-            // deviceId={selectedNode.device?.id ?? null}
             name={selectedNode.name}
             device={selectedNode.device}
             onClose={handleInfoPanelClose}

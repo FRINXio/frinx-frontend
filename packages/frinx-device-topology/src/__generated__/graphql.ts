@@ -3609,13 +3609,6 @@ export type SchedulerQuerySchedulesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type DeviceQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
-
 export type DeviceLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
