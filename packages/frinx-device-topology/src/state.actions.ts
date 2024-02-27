@@ -372,17 +372,15 @@ const SYNCE_TOPOLOGY_QUERY = gql`
             id
             name
             status
-            synceDevice {
-              synceDeviceInterfaces {
-                id
-                name
-                interface {
-                  synceEnabled
-                  rxQualityLevel
-                  qualifiedForUse
-                  notQualifiedDueTo
-                  notSelectedDueTo
-                }
+            interface {
+              id
+              name
+              details {
+                synceEnabled
+                rxQualityLevel
+                qualifiedForUse
+                notQualifiedDueTo
+                notSelectedDueTo
               }
             }
           }

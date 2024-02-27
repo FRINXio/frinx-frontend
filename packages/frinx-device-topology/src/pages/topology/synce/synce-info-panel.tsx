@@ -18,7 +18,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const { synceEdges } = state;
   const { synceDeviceDetails: details } = node;
 
-  const interfaces = node.interfaces[0].synceDevice.synceDeviceInterfaces;
+  const interfaces = node.interfaces[0];
 
   const handleInterfaceClick = (deviceInterface: GraphNodeInterface) => {
     const [edge] = synceEdges.filter((e) => e.id.startsWith(deviceInterface.id));
@@ -27,8 +27,6 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
     }
     dispatch(setSelectedEdge(edge));
   };
-
-  const { synceDevice, ...deviceInterface } = node.interfaces[0];
 
   return (
     <HStack
@@ -63,7 +61,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
           </Heading>
 
           <Box key={`device-interface-${node.id}`}>
-            <Button as={Link} onClick={() => handleInterfaceClick(deviceInterface)}>
+            <Button as={Link} onClick={() => handleInterfaceClick(node.interfaces[0])}>
               {node.interfaces[0].name}
             </Button>
           </Box>
@@ -86,9 +84,9 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
         </HStack>
       </Box>
       {isShowingAdditionalInfo &&
-        interfaces.map((i) => {
+        interfaces.interface.map((i) => {
           return (
-            <DeviceInfoPanelAdditionalInfo key={i?.id} interfaceName={i?.name} additionalInfo={i?.interface ?? {}} />
+            <DeviceInfoPanelAdditionalInfo key={i?.id} interfaceName={i?.name} additionalInfo={i?.details ?? {}} />
           );
         })}
     </HStack>
