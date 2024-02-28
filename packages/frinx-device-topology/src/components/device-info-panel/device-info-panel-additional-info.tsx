@@ -26,7 +26,7 @@ const DeviceInfoPanelAdditionalInfo: VoidFunctionComponent<Props> = ({ additiona
         </Heading>
       )}
       {detailsWithoutTypename.map(([key, value]) => (
-        <Box>
+        <Box key={key}>
           <Heading as="h4" fontSize="xs">
             {key}
           </Heading>
