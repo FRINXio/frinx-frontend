@@ -2,7 +2,7 @@ import { Heading, VStack, Text, Box } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
-  additionalInfo: Record<string, string | number | boolean | null> | Record<string, never>;
+  additionalInfo: Record<string, string | number | boolean | null>;
 };
 
 function camelCaseToSentence(value: string) {
