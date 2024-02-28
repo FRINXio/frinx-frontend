@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Divider, Flex, Heading, HStack } from '@chakra-ui/react';
+import { Badge, Box, Button, Divider, Flex, Heading, HStack, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { SynceGraphNode } from '../../../__generated__/graphql';
@@ -60,11 +60,30 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             Interfaces
           </Heading>
 
-          <Box key={`device-interface-${node.id}`}>
-            <Button as={Link} onClick={() => handleInterfaceClick(node.interfaces[0])}>
-              {node.interfaces[0].name}
-            </Button>
-          </Box>
+          {interfaces.map((i) => {
+            return (
+              <Box key={`device-interface-${i.id}`} my={2}>
+                <Button as={Link} onClick={() => handleInterfaceClick(i)}>
+                  {i.name}
+                </Button>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>Not qualified due to:</strong> {i.details?.notQualifiedDueTo}
+                </Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>Not selected due to:</strong> {i.details?.notSelectedDueTo}
+                </Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>Qualified for use:</strong> {i.details?.qualifiedForUse}
+                </Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>Rx quality level:</strong> {i.details?.rxQualityLevel}
+                </Text>
+                <Text fontSize="xs" textColor="GrayText">
+                  <strong>Synce enabled:</strong> {i.details?.synceEnabled?.toString()}
+                </Text>
+              </Box>
+            );
+          })}
         </Box>
         <Button
           marginTop={4}
@@ -83,12 +102,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
           </Button>
         </HStack>
       </Box>
-      {isShowingAdditionalInfo &&
-        interfaces.map((i) => {
-          return (
-            <DeviceInfoPanelAdditionalInfo key={i?.id} interfaceName={i?.name} additionalInfo={i?.details ?? {}} />
-          );
-        })}
+      {isShowingAdditionalInfo && <DeviceInfoPanelAdditionalInfo additionalInfo={details} />}
     </HStack>
   );
 };

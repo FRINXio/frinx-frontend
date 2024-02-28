@@ -3,14 +3,13 @@ import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
   additionalInfo: Record<string, string | number | boolean | null> | Record<string, never>;
-  interfaceName?: string;
 };
 
 function camelCaseToSentence(value: string) {
   return value.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
 }
 
-const DeviceInfoPanelAdditionalInfo: VoidFunctionComponent<Props> = ({ additionalInfo, interfaceName }) => {
+const DeviceInfoPanelAdditionalInfo: VoidFunctionComponent<Props> = ({ additionalInfo }) => {
   const details: [string, string | number | boolean | null][] = Object.entries(additionalInfo).map(([key, value]) => [
     camelCaseToSentence(key),
     value,
@@ -20,11 +19,6 @@ const DeviceInfoPanelAdditionalInfo: VoidFunctionComponent<Props> = ({ additiona
 
   return (
     <VStack h="350px" overflow="auto" spacing={2} align="flex-start" mx={5}>
-      {interfaceName && (
-        <Heading as="h3" fontSize="m">
-          {interfaceName}
-        </Heading>
-      )}
       {detailsWithoutTypename.map(([key, value]) => (
         <Box key={key}>
           <Heading as="h4" fontSize="xs">
