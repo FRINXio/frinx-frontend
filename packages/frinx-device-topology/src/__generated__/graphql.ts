@@ -895,14 +895,6 @@ export type GraphNodeInterfaceDetails = {
   ptsfUnusable: Maybe<Scalars['String']['output']>;
 };
 
-export type GraphSynceNodeInterface = {
-  __typename?: 'GraphSynceNodeInterface';
-  id: Scalars['String']['output'];
-  interface: Array<Maybe<SynceNodeInterface>>;
-  name: Scalars['String']['output'];
-  status: GraphEdgeStatus;
-};
-
 export type GraphVersionEdge = {
   __typename?: 'GraphVersionEdge';
   id: Scalars['ID']['output'];
@@ -1463,12 +1455,20 @@ export type SynceGraphNode = {
   __typename?: 'SynceGraphNode';
   coordinates: GraphNodeCoordinates;
   id: Scalars['ID']['output'];
-  interfaces: Array<GraphSynceNodeInterface>;
+  interfaces: Array<SynceGraphNodeInterface>;
   labels: Maybe<Array<Scalars['String']['output']>>;
   name: Scalars['String']['output'];
   nodeId: Scalars['String']['output'];
   status: GraphEdgeStatus;
   synceDeviceDetails: SynceDeviceDetails;
+};
+
+export type SynceGraphNodeInterface = {
+  __typename?: 'SynceGraphNodeInterface';
+  details: Maybe<SynceGraphNodeInterfaceDetails>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
 };
 
 export type SynceGraphNodeInterfaceDetails = {
@@ -1478,13 +1478,6 @@ export type SynceGraphNodeInterfaceDetails = {
   qualifiedForUse: Maybe<Scalars['String']['output']>;
   rxQualityLevel: Maybe<Scalars['String']['output']>;
   synceEnabled: Maybe<Scalars['Boolean']['output']>;
-};
-
-export type SynceNodeInterface = {
-  __typename?: 'SynceNodeInterface';
-  details: SynceGraphNodeInterfaceDetails;
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
 };
 
 export type SynceTopology = {
@@ -3725,4 +3718,4 @@ export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __type
 export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphSynceNodeInterface', id: string, name: string, status: GraphEdgeStatus, interface: Array<{ __typename?: 'SynceNodeInterface', id: string, name: string, details: { __typename?: 'SynceGraphNodeInterfaceDetails', synceEnabled: boolean | null, rxQualityLevel: string | null, qualifiedForUse: string | null, notQualifiedDueTo: string | null, notSelectedDueTo: string | null } } | null> }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'SynceGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus, details: { __typename?: 'SynceGraphNodeInterfaceDetails', synceEnabled: boolean | null, rxQualityLevel: string | null, qualifiedForUse: string | null, notQualifiedDueTo: string | null, notSelectedDueTo: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };

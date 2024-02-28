@@ -18,7 +18,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const { synceEdges } = state;
   const { synceDeviceDetails: details } = node;
 
-  const interfaces = node.interfaces[0];
+  const { interfaces } = node;
 
   const handleInterfaceClick = (deviceInterface: GraphNodeInterface) => {
     const [edge] = synceEdges.filter((e) => e.id.startsWith(deviceInterface.id));
@@ -84,7 +84,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
         </HStack>
       </Box>
       {isShowingAdditionalInfo &&
-        interfaces.interface.map((i) => {
+        interfaces.map((i) => {
           return (
             <DeviceInfoPanelAdditionalInfo key={i?.id} interfaceName={i?.name} additionalInfo={i?.details ?? {}} />
           );

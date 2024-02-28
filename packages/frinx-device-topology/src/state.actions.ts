@@ -372,16 +372,12 @@ const SYNCE_TOPOLOGY_QUERY = gql`
             id
             name
             status
-            interface {
-              id
-              name
-              details {
-                synceEnabled
-                rxQualityLevel
-                qualifiedForUse
-                notQualifiedDueTo
-                notSelectedDueTo
-              }
+            details {
+              synceEnabled
+              rxQualityLevel
+              qualifiedForUse
+              notQualifiedDueTo
+              notSelectedDueTo
             }
           }
           coordinates {
