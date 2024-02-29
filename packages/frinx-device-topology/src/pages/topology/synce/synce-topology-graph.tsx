@@ -79,21 +79,7 @@ const SynceTopologyGraph: VoidFunctionComponent<Props> = ({
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
       </svg>
-      {selectedNode != null && (
-        <Box
-          position="absolute"
-          top={2}
-          right={2}
-          background="white"
-          borderRadius="md"
-          paddingX={4}
-          paddingY={6}
-          width={60}
-          boxShadow="md"
-        >
-          <SynceInfoPanel node={selectedNode as SynceGraphNode} onClose={handleInfoPanelClose} />
-        </Box>
-      )}
+      {selectedNode != null && <SynceInfoPanel node={selectedNode as SynceGraphNode} onClose={handleInfoPanelClose} />}
       {unconfirmedSelectedGmPathNodeId && (
         <Box position="absolute" top={2} left="2" background="transparent">
           <Button onClick={handleClearGmPath} marginRight={2}>
