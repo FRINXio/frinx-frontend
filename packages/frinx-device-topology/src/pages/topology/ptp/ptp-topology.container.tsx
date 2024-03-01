@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
-import { findGmPath, getPtpNodesAndEdges, setGmPathIds, setMode } from '../../../state.actions';
+import {
+  findGmPath,
+  getPtpBackupNodesAndEdges,
+  getPtpNodesAndEdges,
+  setGmPathIds,
+  setMode,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
   GetGrandMasterPathQuery,
@@ -89,15 +95,24 @@ const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShow
   }, [dispatch, gmPathData]);
 
   useEffect(() => {
-    intervalRef.current = window.setInterval(() => {
+    if (state.selectedVersion == null) {
+      intervalRef.current = window.setInterval(() => {
+        dispatch(getPtpNodesAndEdges(client));
+      }, 10000);
       dispatch(getPtpNodesAndEdges(client));
-    }, 10000);
-    dispatch(getPtpNodesAndEdges(client));
+    }
 
     return () => {
       window.clearInterval(intervalRef.current);
     };
-  }, [client, dispatch]);
+  }, [client, dispatch, state.selectedVersion, state.topologyLayer]);
+
+  useEffect(() => {
+    if (state.selectedVersion != null) {
+      window.clearInterval(intervalRef.current);
+      dispatch(getPtpBackupNodesAndEdges(client, state.selectedVersion));
+    }
+  }, [client, dispatch, state.selectedVersion]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
     const coordinates = [

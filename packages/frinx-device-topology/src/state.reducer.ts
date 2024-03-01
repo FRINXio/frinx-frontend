@@ -1,6 +1,13 @@
 import { omitNullValue } from '@frinx/shared';
 import { produce } from 'immer';
-import { getEdgesWithDiff, getNodesWithDiff, GraphEdgeWithDiff, GraphNodeWithDiff } from './helpers/topology-helpers';
+import {
+  getEdgesWithDiff,
+  getNodesWithDiff,
+  GraphEdgeWithDiff,
+  GraphNodeWithDiff,
+  getSynceNodesWithDiff,
+  getPtpNodesWithDiff,
+} from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
   getInterfacesPositions,
@@ -26,7 +33,7 @@ import {
   getZoomLevel,
 } from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
-import { PtpGraphNode, SynceGraphNode } from './__generated__/graphql';
+import { PtpGraphNode, SynceGraphNode, SynceGraphNodeInterface } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
@@ -222,6 +229,34 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.edges = allEdges;
         acc.nodePositions = positionsMap.nodes;
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_PTP_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getPtpNodesWithDiff(acc.ptpNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.ptpEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphNodeInterface, PtpGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.ptpNodes = allNodes;
+        acc.ptpEdges = allEdges;
+        acc.ptpNodePositions = positionsMap.nodes;
+        acc.ptpInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_SYNCE_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getSynceNodesWithDiff(acc.synceNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.synceEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<SynceGraphNodeInterface, SynceGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.synceNodes = allNodes;
+        acc.synceEdges = allEdges;
+        acc.synceNodePositions = positionsMap.nodes;
+        acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
       case 'SET_UNCONFIRMED_NODE_IDS_TO_FIND_COMMON': {

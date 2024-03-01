@@ -2,7 +2,7 @@ import { Box, Container, Flex, FormControl, FormLabel, Heading, Select, Switch }
 import React, { VoidFunctionComponent } from 'react';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
-import { setSynceDiffVisibility, setTopologyLayer } from '../../state.actions';
+import { setSelectedVersion, setSynceDiffVisibility, setTopologyLayer } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { TopologyLayer } from '../../state.reducer';
 import NetTopologyContainer from './net/net-topology.container';
@@ -37,24 +37,30 @@ const Topology: VoidFunctionComponent = () => {
             ))}
           </Select>
         </FormControl>
+        {(topologyLayer === 'LLDP' || topologyLayer === 'PTP' || topologyLayer === 'Synchronous Ethernet') && (
+          <Box flex={1}>
+            <VersionSelect />
+          </Box>
+        )}
         {topologyLayer === 'LLDP' && (
-          <>
-            <Box flex={1}>
-              <VersionSelect />
-            </Box>
-            <Box flex={1}>
-              <LabelsFilter />
-            </Box>
-          </>
+          <Box flex={1}>
+            <LabelsFilter />
+          </Box>
         )}
         {topologyLayer === 'PTP' && (
-          <FormControl display="flex" flexDirection="column" justifyContent="space-between" alignItems="left">
+          <FormControl flex={1}>
             <FormLabel htmlFor="email-alerts" mb="0">
               Show PTP Diff Synce
             </FormLabel>
             <Switch
               isChecked={isSynceDiffVisible}
-              onChange={() => dispatch(setSynceDiffVisibility(!isSynceDiffVisible))}
+              onChange={() => {
+                if (isSynceDiffVisible) {
+                  dispatch(setSelectedVersion(null));
+                }
+
+                dispatch(setSynceDiffVisibility(!isSynceDiffVisible));
+              }}
               size="lg"
               pb="32px"
             />

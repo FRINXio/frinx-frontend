@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
-import { findGmPath, getSynceNodesAndEdges, setGmPathIds, setMode } from '../../../state.actions';
+import {
+  findGmPath,
+  getSynceBackupNodesAndEdges,
+  getSynceNodesAndEdges,
+  setGmPathIds,
+  setMode,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
   GetSynceGrandMasterPathQuery,
@@ -33,7 +39,7 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
-  const { topologyLayer, selectedGmPathNodeId } = state;
+  const { topologyLayer, selectedGmPathNodeId, selectedVersion } = state;
 
   const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
@@ -60,15 +66,24 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
   }, [dispatch, gmPathData]);
 
   useEffect(() => {
-    intervalRef.current = window.setInterval(() => {
+    if (selectedVersion == null) {
+      intervalRef.current = window.setInterval(() => {
+        dispatch(getSynceNodesAndEdges(client));
+      }, 10000);
       dispatch(getSynceNodesAndEdges(client));
-    }, 10000);
-    dispatch(getSynceNodesAndEdges(client));
+    }
 
     return () => {
       window.clearInterval(intervalRef.current);
     };
-  }, [client, dispatch, topologyLayer]);
+  }, [client, dispatch, topologyLayer, selectedVersion]);
+
+  useEffect(() => {
+    if (selectedVersion != null) {
+      window.clearInterval(intervalRef.current);
+      dispatch(getSynceBackupNodesAndEdges(client, selectedVersion));
+    }
+  }, [client, dispatch, selectedVersion]);
 
   const handleNodePositionUpdate = async (positions: { deviceName: string; position: Position }[]) => {
     const coordinates = [
