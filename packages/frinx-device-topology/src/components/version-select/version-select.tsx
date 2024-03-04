@@ -38,7 +38,7 @@ const VersionSelect: VoidFunctionComponent = () => {
   return (
     <>
       <FormLabel marginBottom={4}>Compare current topology with:</FormLabel>
-      <Select value={selectedVersion || undefined} onChange={handleSelectVersionChange} background="white">
+      <Select value={selectedVersion ?? 'none'} onChange={handleSelectVersionChange} background="white">
         <option value="none">None</option>
         {versions.map((v) => (
           <option key={`version-${v}`} value={v}>

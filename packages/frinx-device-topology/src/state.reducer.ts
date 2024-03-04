@@ -375,6 +375,7 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.gmPathIds = [];
         acc.selectedGmPathNodeId = null;
         acc.unconfirmedSelectedGmPathNodeId = null;
+        acc.selectedVersion = null;
         return acc;
       }
       case 'SET_SELECTED_NET_NODE': {
