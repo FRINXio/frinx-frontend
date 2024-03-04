@@ -448,8 +448,8 @@ const SYNCE_TOPOLOGY_QUERY = gql`
           name
           interfaces {
             id
-            status
             name
+            status
             details {
               synceEnabled
               rxQualityLevel

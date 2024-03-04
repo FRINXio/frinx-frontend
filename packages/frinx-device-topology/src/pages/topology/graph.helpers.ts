@@ -120,10 +120,6 @@ export type UpdateInterfacePositionParams<
   positionMap: Record<string, Position>;
 };
 
-function getGroupName(sourceNodeName: string, targetNodeName: string): string {
-  return [sourceNodeName, targetNodeName].join(',');
-}
-
 export function getDeviceSizeDiameter(deviceSize: DeviceSize): number {
   switch (deviceSize) {
     case 'LARGE':
@@ -137,67 +133,48 @@ export function getDeviceSizeDiameter(deviceSize: DeviceSize): number {
 
 export function getInterfacesPositions<
   S extends { id: string; name: string },
-  T extends { coordinates: Position; interfaces: S[] },
+  T extends { name: string; coordinates: Position; interfaces: S[] },
 >(
   { nodes, edges, positionMap }: UpdateInterfacePositionParams<S, T>,
-  getNodeName: (node: T) => string,
   getDeviceSize: (node: T) => DeviceSize,
 ): PositionGroupsMap<S> {
+  const nodesMap = new Map(nodes.map((n) => [n.name, n]));
   const allInterfaces = nodes.map((n) => n.interfaces).flat();
-  return allInterfaces.reduce((acc: PositionGroupsMap<S>, curr) => {
-    const target =
-      edges.find((e) => e.source.interface === curr.id)?.target ??
-      edges.find((e) => e.target.interface === curr.id)?.source;
+  const result = allInterfaces.reduce((acc: PositionGroupsMap<S>, curr) => {
+    const targets = edges.filter((e) => e.source.interface === curr.id);
 
-    // if interface does not have defined connections, we will not display it
-    // because we cannot count angle to properly display it
-    // we should be able to display info about not connected interface somewhere in UI
-    // for example when you click on particular node
-    if (!target) {
-      const node: T = unwrap(nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id)));
-      const x = 0;
-      const y = getDeviceSizeDiameter(getDeviceSize(node));
-      const sourceNode = unwrap(nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id)));
-      const groupName = getGroupName(getNodeName(sourceNode), getNodeName(sourceNode));
+    // we traverse trough all edges that is current interface is targeting
+    // and create position group for those
+    const changedGroups: PositionGroupsMap<S> = targets.reduce((groupsAcc: PositionGroupsMap<S>, edge) => {
+      const groupName = `${edge.source.nodeId},${edge.target.nodeId}`;
+      const pos1 = positionMap[edge.source.nodeId];
+      const pos2 = positionMap[edge.target.nodeId];
+
+      // we cant rely on consistent data
+      // for example when filtering nodes, we cant be sure if all edges have exisitng nodes
+      // even if we do so on server
+      if (!pos1 || !pos2) {
+        return groupsAcc;
+      }
+
+      const angle = getAngleBetweenPoints(pos1, pos2);
+      const nodeDiameter = getDeviceSizeDiameter(getDeviceSize(unwrap(nodesMap.get(edge.source.nodeId))));
+      const y = nodeDiameter * Math.sin(angle);
+      const x = nodeDiameter * Math.cos(angle);
       const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
-
       return {
-        ...acc,
+        ...groupsAcc,
         [groupName]: {
-          position: { x: positionMap[getNodeName(node)].x + x, y: positionMap[getNodeName(node)].y + y },
+          position: { x: pos1.x + x, y: pos1.y + y },
           interfaces: newInterfaces,
         },
       };
-    }
+    }, {});
 
-    const sourceNode = nodes.find((n) => !!n.interfaces.find((i) => i.id === curr.id));
-    const targetNode = nodes.find((n) => !!n.interfaces.find((i) => i.id === target.interface));
-
-    // we cant rely on consistent data
-    // for example when filtering nodes, we cant be sure if all edges have exisitng nodes
-    // even if we do so on server
-    if (!sourceNode || !targetNode) {
-      return {
-        ...acc,
-      };
-    }
-    const groupName = getGroupName(getNodeName(sourceNode), getNodeName(targetNode));
-    const newInterfaces = acc[groupName] ? [...acc[groupName].interfaces, curr] : [curr];
-
-    const pos1 = positionMap[getNodeName(sourceNode)];
-    const pos2 = positionMap[getNodeName(targetNode)];
-    const angle = getAngleBetweenPoints(pos1, pos2);
-    const nodeDiameter = getDeviceSizeDiameter(getDeviceSize(sourceNode));
-    const y = nodeDiameter * Math.sin(angle);
-    const x = nodeDiameter * Math.cos(angle);
-    return {
-      ...acc,
-      [groupName]: {
-        position: { x: pos1.x + x, y: pos1.y + y },
-        interfaces: newInterfaces,
-      },
-    };
+    return { ...acc, ...changedGroups };
   }, {});
+
+  return result;
 }
 
 export type NodesEdgesParam<T extends { coordinates: Position }> = {
@@ -207,7 +184,7 @@ export type NodesEdgesParam<T extends { coordinates: Position }> = {
 
 export function getDefaultPositionsMap<
   S extends { id: string; name: string },
-  T extends { coordinates: Position; interfaces: S[] },
+  T extends { name: string; coordinates: Position; interfaces: S[] },
 >(
   { nodes, edges }: NodesEdgesParam<T>,
   getNodeName: (node: T) => string,
@@ -225,7 +202,7 @@ export function getDefaultPositionsMap<
   );
   return {
     nodes: nodesMap,
-    interfaceGroups: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }, getNodeName, getDeviceSize),
+    interfaceGroups: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }, getDeviceSize),
   };
 }
 
@@ -350,7 +327,7 @@ export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | 
   }
   if ('device' in node) {
     if (!node.device) {
-      return null;
+      return node.name;
     }
     return node.device.name;
   }
