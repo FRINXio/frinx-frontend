@@ -7,6 +7,8 @@ import {
   GraphNodeWithDiff,
   getSynceNodesWithDiff,
   getPtpNodesWithDiff,
+  PtpGraphNodeWithDiff,
+  SynceGraphNodeWithDiff,
 } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
@@ -75,7 +77,7 @@ export type State = {
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
-  ptpNodes: PtpGraphNode[];
+  ptpNodes: PtpGraphNodeWithDiff[];
   ptpEdges: GraphEdgeWithDiff[];
   ptpNodePositions: Record<string, Position>;
   ptpInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
@@ -84,7 +86,7 @@ export type State = {
   unconfirmedSelectedGmPathNodeId: string | null;
   selectedGmPathNodeId: string | null;
   gmPathIds: string[];
-  synceNodes: SynceGraphNode[];
+  synceNodes: SynceGraphNodeWithDiff[];
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
@@ -345,7 +347,7 @@ export function stateReducer(state: State, action: StateAction): State {
           (n) => n.name,
           () => 'MEDIUM',
         );
-        acc.ptpNodes = nodes;
+        acc.ptpNodes = nodes.map((n) => ({ ...n, change: 'NONE' }));
         acc.ptpEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.ptpNodePositions = positionMap.nodes;
         acc.ptpInterfaceGroupPositions = positionMap.interfaceGroups;
@@ -358,7 +360,7 @@ export function stateReducer(state: State, action: StateAction): State {
           (n) => n.name,
           () => 'MEDIUM',
         );
-        acc.synceNodes = nodes;
+        acc.synceNodes = nodes.map((n) => ({ ...n, change: 'NONE' }));
         acc.synceEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.synceNodePositions = positionMap.nodes;
         acc.synceInterfaceGroupPositions = positionMap.interfaceGroups;
