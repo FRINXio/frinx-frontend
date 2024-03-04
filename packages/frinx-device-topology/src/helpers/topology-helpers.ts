@@ -110,3 +110,8 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
     });
   return [...currentEdgesWithDiff, ...deletedBackupEdgesWithDiff];
 }
+
+// we count number of device gm path response excluding device itself
+export function getGmPathHopsCount(gmPathIds: string[], devicePrefix: 'PtpDevice' | 'SynceDevice'): number {
+  return gmPathIds.filter((id) => id.startsWith(devicePrefix)).length - 1;
+}

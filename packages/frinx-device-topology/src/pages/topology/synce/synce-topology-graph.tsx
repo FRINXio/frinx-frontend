@@ -1,4 +1,4 @@
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Text } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
 import { clearGmPathSearch, setSelectedNode, updateSynceNodePosition } from '../../../state.actions';
@@ -9,6 +9,7 @@ import BackgroundSvg from '../img/background.svg';
 import SynceNodes from './synce-nodes';
 import { SynceGraphNode } from '../../../__generated__/graphql';
 import SynceInfoPanel from './synce-info-panel';
+import { getGmPathHopsCount } from '../../../helpers/topology-helpers';
 
 type Props = {
   isGrandMasterPathFetching: boolean;
@@ -28,6 +29,7 @@ const SynceTopologyGraph: VoidFunctionComponent<Props> = ({
   const {
     synceEdges: edges,
     synceNodes: nodes,
+    gmPathIds,
     selectedNode,
     unconfirmedSelectedNodeIds,
     unconfirmedSelectedGmPathNodeId,
@@ -82,12 +84,17 @@ const SynceTopologyGraph: VoidFunctionComponent<Props> = ({
       {selectedNode != null && <SynceInfoPanel node={selectedNode as SynceGraphNode} onClose={handleInfoPanelClose} />}
       {unconfirmedSelectedGmPathNodeId && (
         <Box position="absolute" top={2} left="2" background="transparent">
-          <Button onClick={handleClearGmPath} marginRight={2}>
-            Clear GM path
-          </Button>
-          <Button onClick={handleSearchClick} isDisabled={isGrandMasterPathFetching} marginRight={2}>
-            Find GM path
-          </Button>
+          <Box display="flex" alignItems="center">
+            <Button onClick={handleClearGmPath} marginRight={2}>
+              Clear GM path
+            </Button>
+            <Button onClick={handleSearchClick} isDisabled={isGrandMasterPathFetching} marginRight={2}>
+              Find GM path
+            </Button>
+            {gmPathIds.length > 0 && (
+              <Text fontWeight="600">Number of hops: {getGmPathHopsCount(gmPathIds, 'SynceDevice')}</Text>
+            )}
+          </Box>
         </Box>
       )}
     </Box>

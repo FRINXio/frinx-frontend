@@ -1,4 +1,4 @@
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Text } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
 import PtpInfoPanel from './ptp-info-panel';
@@ -9,6 +9,7 @@ import { height, Position, width } from '../graph.helpers';
 import BackgroundSvg from '../img/background.svg';
 import PtpNodes from './ptp-nodes';
 import { PtpGraphNode } from '../../../__generated__/graphql';
+import { getGmPathHopsCount } from '../../../helpers/topology-helpers';
 
 type Props = {
   ptpDiffSynceIds: string[];
@@ -33,6 +34,7 @@ const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
     ptpEdges: edges,
     ptpNodes: nodes,
     selectedNode,
+    gmPathIds,
     unconfirmedSelectedNodeIds,
     unconfirmedSelectedGmPathNodeId,
   } = state;
@@ -94,12 +96,17 @@ const PtpTopologyGraph: VoidFunctionComponent<Props> = ({
       {selectedNode != null && <PtpInfoPanel node={selectedNode as PtpGraphNode} onClose={handleInfoPanelClose} />}
       {unconfirmedSelectedGmPathNodeId && (
         <Box position="absolute" top={2} left="2" background="transparent">
-          <Button onClick={handleClearGmPath} marginRight={2}>
-            Clear GM path
-          </Button>
-          <Button onClick={handleSearchClick} isDisabled={isGrandMasterPathFetching} marginRight={2}>
-            Find GM path
-          </Button>
+          <Box display="flex" alignItems="center">
+            <Button onClick={handleClearGmPath} marginRight={2}>
+              Clear GM path
+            </Button>
+            <Button onClick={handleSearchClick} isDisabled={isGrandMasterPathFetching} marginRight={2}>
+              Find GM path
+            </Button>
+            {gmPathIds.length > 0 && (
+              <Text fontWeight="600">Number of hops: {getGmPathHopsCount(gmPathIds, 'PtpDevice')}</Text>
+            )}
+          </Box>
         </Box>
       )}
     </Box>
