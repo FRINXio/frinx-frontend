@@ -13,6 +13,8 @@ import {
   GraphSynceNodeInterface,
   Position,
   PositionGroupsMap,
+  PtpGraphNode,
+  SynceGraphNode,
   width as topologyWidth,
   height as topologyHeight,
 } from './pages/topology/graph.helpers';
@@ -26,7 +28,6 @@ import {
   getZoomLevel,
 } from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
-import { PtpGraphNode, SynceGraphNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
@@ -154,7 +155,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'UPDATE_PTP_NODE_POSITION': {
         acc.ptpNodePositions[action.nodeId] = action.position;
-        acc.ptpInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+        acc.ptpInterfaceGroupPositions = getInterfacesPositions<GraphPtpNodeInterface, PtpGraphNode>(
           {
             nodes: acc.ptpNodes,
             edges: acc.ptpEdges,
@@ -166,7 +167,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'UPDATE_SYNCE_NODE_POSITION': {
         acc.synceNodePositions[action.nodeId] = action.position;
-        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, SynceGraphNode>(
+        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphSynceNodeInterface, SynceGraphNode>(
           {
             nodes: acc.synceNodes,
             edges: acc.synceEdges,
@@ -310,6 +311,10 @@ export function stateReducer(state: State, action: StateAction): State {
           (n) => n.name,
           () => 'MEDIUM',
         );
+        // acc.ptpNodes = nodes.map((n) => ({
+        //   ...n,
+        //   // labels: n.labels ?? [],
+        // }));
         acc.ptpNodes = nodes;
         acc.ptpEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.ptpNodePositions = positionMap.nodes;

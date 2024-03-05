@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
-import { BackupGraphNode, GraphEdge, GraphNode } from '../pages/topology/graph.helpers';
-import { PtpGraphNode } from '../__generated__/graphql';
+import { BackupGraphNode, GraphEdge, GraphNode, PtpGraphNode } from '../pages/topology/graph.helpers';
+// import { PtpGraphNode } from '../__generated__/graphql';
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -120,5 +120,5 @@ export function getGmPathHopsCount(gmPathIds: string[], devicePrefix: 'PtpDevice
 // ptp profile should be same all over the ptp nodes,
 // so we grab that info from the first one
 export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
-  return ptpNodes.at(0)?.ptpDeviceDetails.ptpProfile ?? null;
+  return ptpNodes.at(0)?.details.ptpProfile ?? null;
 }

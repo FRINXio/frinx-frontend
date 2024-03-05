@@ -1,10 +1,9 @@
-import { Badge, Box, Button, Divider, Flex, Heading, HStack, Text } from '@chakra-ui/react';
-import React, { VoidFunctionComponent } from 'react';
+import { Badge, Box, Button, Divider, Flex, Heading, HStack } from '@chakra-ui/react';
+import React, { VoidFunctionComponent, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PtpGraphNode } from '../../../__generated__/graphql';
 import { setSelectedEdge } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { GraphNodeInterface } from '../graph.helpers';
+import { PtpGraphNode, GraphPtpNodeInterface, normalizeNodeInterfaceData } from '../graph.helpers';
 import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
 
 type Props = {
@@ -13,17 +12,24 @@ type Props = {
 };
 
 const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
-  const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = React.useState(false);
+  const [activeInterface, setActiveInterface] = useState<GraphPtpNodeInterface | null>(null);
+  const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = useState(false);
   const { state, dispatch } = useStateContext();
   const { ptpEdges } = state;
-  const { ptpDeviceDetails: details, interfaces } = node;
+  const { details, interfaces } = node;
 
-  const handleInterfaceClick = (deviceInterface: GraphNodeInterface) => {
+  const handleInterfaceClick = (deviceInterface: GraphPtpNodeInterface) => {
     const [edge] = ptpEdges.filter((e) => e.id.startsWith(deviceInterface.id));
     if (!edge) {
       return;
     }
     dispatch(setSelectedEdge(edge));
+    setActiveInterface(deviceInterface);
+  };
+
+  const handleClose = () => {
+    onClose();
+    setActiveInterface(null);
   };
 
   return (
@@ -66,21 +72,9 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
           {interfaces.map((i) => {
             return (
               <Box key={`device-interface-${i.id}`} my={2}>
-                <Button as={Link} onClick={() => handleInterfaceClick(i)}>
+                <Button as={Link} onClick={() => handleInterfaceClick(i)} variant="link">
                   {i.name}
                 </Button>
-                <Text fontSize="xs" textColor="GrayText">
-                  <strong>Status:</strong> {i.status}
-                </Text>
-                <Text fontSize="xs" textColor="GrayText">
-                  <strong>Admin op. status:</strong> {i.details?.adminOperStatus}
-                </Text>
-                <Text fontSize="xs" textColor="GrayText">
-                  <strong>PTP status:</strong> {i.details?.ptpStatus}
-                </Text>
-                <Text fontSize="xs" textColor="GrayText">
-                  <strong>PTSF unusable:</strong> {i.details?.ptsfUnusable}
-                </Text>
               </Box>
             );
           })}
@@ -97,12 +91,15 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
           Additional info
         </Button>
         <HStack spacing={2} marginTop={4}>
-          <Button size="sm" onClick={onClose}>
+          <Button size="sm" onClick={handleClose}>
             Close
           </Button>
         </HStack>
       </Box>
       {isShowingAdditionalInfo && <DeviceInfoPanelAdditionalInfo additionalInfo={details} />}
+      {activeInterface && (
+        <DeviceInfoPanelAdditionalInfo additionalInfo={normalizeNodeInterfaceData(activeInterface)} />
+      )}
     </HStack>
   );
 };
