@@ -2,7 +2,7 @@ import { chakra, Box, Theme, useTheme } from '@chakra-ui/react';
 import get from 'lodash/get';
 import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
-import { getCurvePath, GraphNetNode, Line, Position } from '../../pages/topology/graph.helpers';
+import { getCurvePath, Line, Position } from '../../pages/topology/graph.helpers';
 import { getEdgeColor } from './edge.helpers';
 
 type Props = {
@@ -16,7 +16,6 @@ type Props = {
   isWeightVisible?: boolean;
   isGmPath?: boolean;
   weight: number | null;
-  netNodes?: GraphNetNode[];
 };
 
 const G = chakra('g');

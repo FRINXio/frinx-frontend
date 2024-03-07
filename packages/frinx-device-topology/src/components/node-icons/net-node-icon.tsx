@@ -1,6 +1,12 @@
 import { chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { GrahpNetNodeInterface, GraphNetNode, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import {
+  GrahpNetNodeInterface,
+  GraphNetNode,
+  PositionsWithGroupsMap,
+  width,
+  height,
+} from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NetNodeNetwork from './net-node-network';
@@ -31,10 +37,12 @@ type NetNodeNetworks = {
 
 type EndPoint = {
   id: string;
-  coordinates: {
-    x: any;
-    y: any;
-  };
+  coordinates: Coordinates;
+};
+
+type Coordinates = {
+  x: number;
+  y: number;
 };
 
 const G = chakra('g');
@@ -64,18 +72,18 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
     .map((item) => item.networks)
     .reduce((acc, networks) => acc.concat(networks), []);
 
-  function transformDataForNode(data: GraphNetNode[], nodeName: string) {
+  const getNetworkDataForNode = (netNodes: GraphNetNode[], nodeName: string) => {
     const networkConnections: NetNodeNetworks[] = [];
-    const sourceNode = data.find((node) => node.name === nodeName);
+    const sourceNode = netNodes.find(({ name }) => name === nodeName);
 
-    // Return empty if the node with the specified name is not found
     if (!sourceNode) return [];
 
     sourceNode.networks.forEach((network) => {
-      const subnet = network.subnet;
+      const {subnet} = network;
 
-      // Find all nodes that are part of this network and are not the source node
-      const connectedNodes = data.filter((n) => n.networks.some((net) => net.subnet === subnet) && n.name !== nodeName);
+      const connectedNodes = netNodes.filter(
+        (n) => n.networks.some((net) => net.subnet === subnet) && n.name !== nodeName,
+      );
 
       connectedNodes.forEach((targetNode) => {
         const connectionObject = {
@@ -90,7 +98,6 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
           },
         };
 
-        // Adding a unique string identifier to help with removing duplicates later
         const uniqueIdentifier = JSON.stringify(connectionObject);
 
         if (!networkConnections.some((obj) => JSON.stringify(obj) === uniqueIdentifier)) {
@@ -100,9 +107,9 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
     });
 
     return networkConnections;
-  }
+  };
 
-  const transformedDataForNode = transformDataForNode(netNodes, node.name);
+  const networkDataForNode = getNetworkDataForNode(netNodes, node.name);
 
   return (
     <G
@@ -115,19 +122,14 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
       }}
     >
       {isSelected &&
-        transformedDataForNode.map((netNode) => {
-          const netX = (netNode?.target.coordinates.x - netNode?.source.coordinates.x) * 1248;
-          const netY = (netNode?.target.coordinates.y - netNode?.source.coordinates.y) * 600;
+        networkDataForNode.map((netNode) => {
+          const netX = (netNode.target.coordinates.x - netNode.source.coordinates.x) * width;
+          const netY = (netNode.target.coordinates.y - netNode.source.coordinates.y) * height;
 
           return (
             <G transform={`translate3d(${netX / 2}px, ${netY / 2}px, 0)`}>
               <Circle r={4} fill="back" transition="all .2s ease-in-out" />
-              <Text
-                key={netNode.target.id}
-                transform={`translate3d(-45px, -5px, 0)`}
-                fontSize={15}
-                bg="red"
-              >
+              <Text key={netNode.target.id} transform='translate3d(-45px, -5px, 0)' fontSize={15} bg="red">
                 {netNode.network}
               </Text>
             </G>
@@ -136,7 +138,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
       <G>
         {node.networks.map((network) => {
           return (
-            <NetNodeNetwork allNetworks={allNetworks} isSelected={isSelected} key={network.id} network={network} />
+            <NetNodeNetwork allNetworks={allNetworks} key={network.id} network={network} />
           );
         })}
       </G>

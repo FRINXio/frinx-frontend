@@ -202,7 +202,6 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
 
             return (
               <Edge
-                netNodes={netNodes}
                 controlPoints={controlPoints}
                 edge={edge}
                 isActive={isActive}
@@ -217,7 +216,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
             );
           })}
         </g>
-        <NetNodes  nodes={netNodes} />
+        <NetNodes nodes={netNodes} />
       </svg>
       {unconfirmedShortestPathNodeIds.filter(omitNullValue).length > 0 && (
         <Box position="absolute" top={2} left="2" background="transparent">
