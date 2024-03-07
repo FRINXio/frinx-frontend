@@ -33,8 +33,6 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     }
   };
 
-  // console.log(netNodes);
-
   const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex);
 
   return (

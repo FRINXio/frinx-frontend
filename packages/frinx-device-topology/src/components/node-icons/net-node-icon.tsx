@@ -32,8 +32,8 @@ type NetNodeNetworks = {
 type EndPoint = {
   id: string;
   coordinates: {
-    x: Number;
-    y: Number;
+    x: any;
+    y: any;
   };
 };
 
@@ -103,7 +103,6 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
   }
 
   const transformedDataForNode = transformDataForNode(netNodes, node.name);
-  console.log(node.name, transformedDataForNode);
 
   return (
     <G
@@ -121,9 +120,17 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
           const netY = (netNode?.target.coordinates.y - netNode?.source.coordinates.y) * 600;
 
           return (
-            <Text key={netNode.target.id} transform={`translate3d(${netX / 2 - 25}px, ${netY / 2}px, 0)`} fontSize={10} bg="red">
-              {netNode.network}
-            </Text>
+            <G transform={`translate3d(${netX / 2}px, ${netY / 2}px, 0)`}>
+              <Circle r={4} fill="back" transition="all .2s ease-in-out" />
+              <Text
+                key={netNode.target.id}
+                transform={`translate3d(-45px, -5px, 0)`}
+                fontSize={15}
+                bg="red"
+              >
+                {netNode.network}
+              </Text>
+            </G>
           );
         })}
       <G>
