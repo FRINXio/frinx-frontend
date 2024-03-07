@@ -72,16 +72,16 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
     .map((item) => item.networks)
     .reduce((acc, networks) => acc.concat(networks), []);
 
-  const getNetworkDataForNode = (netNodes: GraphNetNode[], nodeName: string) => {
+  const getNetworkDataForNode = (netNodesData: GraphNetNode[], nodeName: string) => {
     const networkConnections: NetNodeNetworks[] = [];
-    const sourceNode = netNodes.find(({ name }) => name === nodeName);
+    const sourceNode = netNodesData.find(({ name }) => name === nodeName);
 
     if (!sourceNode) return [];
 
     sourceNode.networks.forEach((network) => {
-      const {subnet} = network;
+      const { subnet } = network;
 
-      const connectedNodes = netNodes.filter(
+      const connectedNodes = netNodesData.filter(
         (n) => n.networks.some((net) => net.subnet === subnet) && n.name !== nodeName,
       );
 
@@ -129,7 +129,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
           return (
             <G transform={`translate3d(${netX / 2}px, ${netY / 2}px, 0)`}>
               <Circle r={4} fill="back" transition="all .2s ease-in-out" />
-              <Text key={netNode.target.id} transform='translate3d(-45px, -5px, 0)' fontSize={15} bg="red">
+              <Text key={netNode.target.id} transform="translate3d(-45px, -5px, 0)" fontSize={15} bg="red">
                 {netNode.network}
               </Text>
             </G>
@@ -137,9 +137,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
         })}
       <G>
         {node.networks.map((network) => {
-          return (
-            <NetNodeNetwork allNetworks={allNetworks} key={network.id} network={network} />
-          );
+          return <NetNodeNetwork allNetworks={allNetworks} key={network.id} network={network} />;
         })}
       </G>
       <Circle
