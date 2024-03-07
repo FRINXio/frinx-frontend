@@ -83,6 +83,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
           value={values[inputParameterKey]}
           onChange={(e) => onChange(inputParameterKey, e.target.value)}
         >
+          <option value="">-- choose value</option>
           {parsedInputParameters?.[inputParameterKey]?.options?.map((option) => (
             <option key={option} value={option}>
               {option}

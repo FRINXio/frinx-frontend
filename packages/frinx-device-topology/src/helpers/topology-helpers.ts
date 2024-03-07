@@ -277,3 +277,14 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
     });
   return [...currentEdgesWithDiff, ...deletedBackupEdgesWithDiff];
 }
+
+// we count number of device gm path response excluding device itself
+export function getGmPathHopsCount(gmPathIds: string[], devicePrefix: 'PtpDevice' | 'SynceDevice'): number {
+  return gmPathIds.filter((id) => id.startsWith(devicePrefix)).length - 1;
+}
+
+// ptp profile should be same all over the ptp nodes,
+// so we grab that info from the first one
+export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
+  return ptpNodes.at(0)?.ptpDeviceDetails.ptpProfile ?? null;
+}
