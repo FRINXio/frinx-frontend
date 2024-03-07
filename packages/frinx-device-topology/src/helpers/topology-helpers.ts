@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
 import { BackupGraphNode, GraphEdge, GraphNode } from '../pages/topology/graph.helpers';
+import { PtpGraphNode } from '../__generated__/graphql';
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -109,4 +110,15 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
       };
     });
   return [...currentEdgesWithDiff, ...deletedBackupEdgesWithDiff];
+}
+
+// we count number of device gm path response excluding device itself
+export function getGmPathHopsCount(gmPathIds: string[], devicePrefix: 'PtpDevice' | 'SynceDevice'): number {
+  return gmPathIds.filter((id) => id.startsWith(devicePrefix)).length - 1;
+}
+
+// ptp profile should be same all over the ptp nodes,
+// so we grab that info from the first one
+export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
+  return ptpNodes.at(0)?.ptpDeviceDetails.ptpProfile ?? null;
 }

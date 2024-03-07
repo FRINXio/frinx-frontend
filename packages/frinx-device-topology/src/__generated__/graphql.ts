@@ -1455,12 +1455,29 @@ export type SynceGraphNode = {
   __typename?: 'SynceGraphNode';
   coordinates: GraphNodeCoordinates;
   id: Scalars['ID']['output'];
-  interfaces: Array<GraphNodeInterface>;
+  interfaces: Array<SynceGraphNodeInterface>;
   labels: Maybe<Array<Scalars['String']['output']>>;
   name: Scalars['String']['output'];
   nodeId: Scalars['String']['output'];
   status: GraphEdgeStatus;
   synceDeviceDetails: SynceDeviceDetails;
+};
+
+export type SynceGraphNodeInterface = {
+  __typename?: 'SynceGraphNodeInterface';
+  details: Maybe<SynceGraphNodeInterfaceDetails>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type SynceGraphNodeInterfaceDetails = {
+  __typename?: 'SynceGraphNodeInterfaceDetails';
+  notQualifiedDueTo: Maybe<Scalars['String']['output']>;
+  notSelectedDueTo: Maybe<Scalars['String']['output']>;
+  qualifiedForUse: Maybe<Scalars['String']['output']>;
+  rxQualityLevel: Maybe<Scalars['String']['output']>;
+  synceEnabled: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type SynceTopology = {
@@ -3609,13 +3626,6 @@ export type SchedulerQuerySchedulesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type DeviceQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
-
 export type DeviceLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3708,4 +3718,4 @@ export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __type
 export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'GraphNodeInterfaceDetails', ptpStatus: string | null, adminOperStatus: string | null, ptsfUnusable: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'SynceGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus, details: { __typename?: 'SynceGraphNodeInterfaceDetails', synceEnabled: boolean | null, rxQualityLevel: string | null, qualifiedForUse: string | null, notQualifiedDueTo: string | null, notSelectedDueTo: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };

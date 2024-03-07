@@ -48,9 +48,9 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
         </Flex>
         <Box mt={2}>
           <Heading as="h4" fontSize="xs">
-            PTP Profile
+            Clock Id
           </Heading>
-          {details.ptpProfile}
+          {details.clockId}
         </Box>
         <Box mt={2}>
           <Heading as="h4" fontSize="xs">

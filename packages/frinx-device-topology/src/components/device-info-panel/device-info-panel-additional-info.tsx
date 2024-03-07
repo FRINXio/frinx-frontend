@@ -2,7 +2,7 @@ import { Heading, VStack, Text, Box } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 
 type Props = {
-  additionalInfo: Record<string, string | number | null>;
+  additionalInfo: Record<string, string | number | boolean | null>;
 };
 
 function camelCaseToSentence(value: string) {
@@ -10,7 +10,7 @@ function camelCaseToSentence(value: string) {
 }
 
 const DeviceInfoPanelAdditionalInfo: VoidFunctionComponent<Props> = ({ additionalInfo }) => {
-  const details: [string, string | number | null][] = Object.entries(additionalInfo).map(([key, value]) => [
+  const details: [string, string | number | boolean | null][] = Object.entries(additionalInfo).map(([key, value]) => [
     camelCaseToSentence(key),
     value,
   ]);
@@ -18,14 +18,14 @@ const DeviceInfoPanelAdditionalInfo: VoidFunctionComponent<Props> = ({ additiona
   const detailsWithoutTypename = details.filter(([key]) => key !== '__typename');
 
   return (
-    <VStack spacing={2} align="flex-start" mx={5}>
+    <VStack h="350px" overflow="auto" spacing={2} align="flex-start" mx={5}>
       {detailsWithoutTypename.map(([key, value]) => (
-        <Box>
+        <Box key={key}>
           <Heading as="h4" fontSize="xs">
             {key}
           </Heading>
           <Text fontSize="xs" textColor="GrayText">
-            {value || 'N/A'}
+            {value?.toString() || 'N/A'}
           </Text>
         </Box>
       ))}

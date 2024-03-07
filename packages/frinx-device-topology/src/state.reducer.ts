@@ -148,7 +148,6 @@ export function stateReducer(state: State, action: StateAction): State {
             edges: acc.edges,
             positionMap: acc.nodePositions,
           },
-          (n) => n.name,
           (n) => n.device?.deviceSize ?? 'MEDIUM',
         );
         return acc;
@@ -161,7 +160,6 @@ export function stateReducer(state: State, action: StateAction): State {
             edges: acc.ptpEdges,
             positionMap: acc.ptpNodePositions,
           },
-          (n) => n.name,
           () => 'MEDIUM',
         );
         return acc;
@@ -174,7 +172,6 @@ export function stateReducer(state: State, action: StateAction): State {
             edges: acc.synceEdges,
             positionMap: acc.synceNodePositions,
           },
-          (n) => n.name,
           () => 'MEDIUM',
         );
         return acc;
