@@ -126,10 +126,15 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
         const allocationStrategyId = allocStrategies.find(
           (allocationStrategy) => allocationStrategy.name === resourceTypeName,
         )?.id;
+
         const updatedData = {
           ...omit(data, ['resourceTypeName']),
           tags: [...new Set([...tagsInput.selectedTags, data.name])],
           allocationStrategyId,
+          dealocationSafetyPeriod:
+            data.dealocationSafetyPeriod != null && typeof data.dealocationSafetyPeriod === 'number'
+              ? data.dealocationSafetyPeriod
+              : 0,
         };
 
         onFormSubmit(updatedData);
@@ -197,7 +202,10 @@ const CreatePoolForm: VoidFunctionComponent<Props> = ({
 
     const selectedResourceTypeId = e.target.value;
     setResTypeId(selectedResourceTypeId);
-    onResourceTypeChange(resTypeId);
+
+    if (selectedResourceTypeName != null) {
+      onResourceTypeChange(selectedResourceTypeName);
+    }
   };
 
   const [poolProperties, poolPropertyTypes] = getPoolPropertiesSkeleton(
