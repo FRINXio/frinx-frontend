@@ -23,6 +23,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     selectedEdge,
     selectedNode,
     netNodes,
+    isWeightVisible,
   } = state;
 
   const handleClick = (node: GraphNetNode) => {
@@ -39,6 +40,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     <g>
       {nodes.map((node) => (
         <NetNodeIcon
+          isWeightVisible={isWeightVisible}
           onClick={handleClick}
           key={node.id}
           netNodes={netNodes}

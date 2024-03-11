@@ -27,6 +27,7 @@ type Props = {
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
   onClick: (node: GraphNetNode) => void;
+  isWeightVisible: boolean;
 };
 
 type NetNodeNetworks = {
@@ -62,6 +63,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
   selectedEdge,
   netNodes,
   onClick,
+  isWeightVisible,
 }) => {
   const { x, y } = positions.nodes[node.name];
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
@@ -122,6 +124,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
       }}
     >
       {isSelected &&
+        !isWeightVisible &&
         networkDataForNode.map((netNode) => {
           const netX = (netNode.target.coordinates.x - netNode.source.coordinates.x) * width;
           const netY = (netNode.target.coordinates.y - netNode.source.coordinates.y) * height;
