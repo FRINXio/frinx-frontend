@@ -132,7 +132,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         ...data,
         labelIds: selectedLabels.map((label) => label.value),
         port: Number(data.port),
-        mountParameters: blueprintParameters(blueprintParameterValues),
+        mountParameters: isUsingBlueprints ? blueprintParameters(blueprintParameterValues) : values.mountParameters,
       };
 
       onFormSubmit(updatedData);
