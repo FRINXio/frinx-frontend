@@ -93,7 +93,7 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
         json.map((workflow) => createWorkflow({ input: { workflowDefinition: workflow } })),
       );
 
-      if (response.some((r) => r.error) || response.some((r) => r.data == null)) {
+      if (response.some((r) => r.error)) {
         throw new Error('Badly formatted workflow definition. Check the syntax and try again.');
       }
 
