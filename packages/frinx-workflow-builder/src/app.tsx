@@ -267,7 +267,6 @@ const App: VoidFunctionComponent<Props> = ({
     editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>,
     shouldOpenExecuteModal = false,
   ) => {
-    console.log(editedWorkflow);
     try {
       const newTasks = convertToTasks(elements);
 
