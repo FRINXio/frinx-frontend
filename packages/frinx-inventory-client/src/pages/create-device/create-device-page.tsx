@@ -145,7 +145,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
     addDevice({
       input: {
         ...values,
-        ...(values.mountParameters && { mountParameters: JSON.stringify(values.mountParameters) }),
+        ...(values.mountParameters && { mountParameters: values.mountParameters }),
       },
     })
       .then(({ error }) => {
