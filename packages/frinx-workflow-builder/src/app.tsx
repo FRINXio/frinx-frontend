@@ -9,7 +9,6 @@ import {
   getNodeType,
   NodeData,
   TaskDefinition,
-  TimeoutPolicy,
   useNotifications,
 } from '@frinx/shared';
 import { produce } from 'immer';
@@ -264,11 +263,11 @@ const App: VoidFunctionComponent<Props> = ({
     setHasUnsavedChanges(isWorkflowChanged);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleOnSaveWorkflow = async (
     editedWorkflow: ClientWorkflowWithTasks<ExtendedTask>,
     shouldOpenExecuteModal = false,
   ) => {
+    console.log(editedWorkflow);
     try {
       const newTasks = convertToTasks(elements);
 
@@ -282,10 +281,10 @@ const App: VoidFunctionComponent<Props> = ({
         labels: editedWorkflow.labels,
       });
 
-      const outputParameters = editedWorkflow.outputParameters?.map((p) => ({
-        key: p.key,
-        value: p.value,
-      }));
+      const outputParameters = editedWorkflow.outputParameters?.reduce(
+        (acc, param) => ({ ...acc, [param.key]: param.value }),
+        {},
+      );
 
       const result = await updateWorkflow({
         input: {
@@ -306,7 +305,7 @@ const App: VoidFunctionComponent<Props> = ({
             ownerApp: editedWorkflow.ownerApp,
             accessPolicy: editedWorkflow.accessPolicy,
             workflowStatusListenerEnabled: editedWorkflow.workflowStatusListenerEnabled,
-            timeoutPolicy: editedWorkflow.timeoutPolicy as TimeoutPolicy,
+            timeoutPolicy: editedWorkflow.timeoutPolicy,
             variables: editedWorkflow.variables,
             createdBy: editedWorkflow.createdBy,
             updatedBy: editedWorkflow.updatedBy,

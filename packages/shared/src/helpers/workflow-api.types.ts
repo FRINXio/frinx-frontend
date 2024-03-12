@@ -313,7 +313,7 @@ export type ClientWorkflow = {
   inputParameters: string[] | null;
   outputParameters: OutputParameter[] | null;
   restartable: boolean | null;
-  timeoutPolicy: string | null;
+  timeoutPolicy: TimeoutPolicy | null;
   ownerEmail: string | null;
   inputTemplate?: string | null;
   failureWorkflow?: string | null;
@@ -346,7 +346,7 @@ export type Workflow<T = Task> = {
   workflowStatusListenerEnabled?: boolean;
   tasks: T[];
   updateTime: number;
-  timeoutPolicy: string;
+  timeoutPolicy: TimeoutPolicy;
   timeoutSeconds: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variables: Record<string, any>;
