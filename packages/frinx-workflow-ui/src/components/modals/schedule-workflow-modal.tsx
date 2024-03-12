@@ -147,8 +147,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
           toDate: moment(formValues.toDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
       };
-      console.log(formValues);
-      
+
       onSubmit(formattedValues);
       onClose();
     },

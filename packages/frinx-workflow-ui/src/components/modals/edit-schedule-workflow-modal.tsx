@@ -106,9 +106,9 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
         ...(formValues.fromDate && {
           fromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
-        // ...(formValues.performTillDate && {
-        //   performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-        // }),
+        ...(formValues.toDate && {
+          toDate: moment(formValues.toDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        }),
         ...(formValues.workflowContext && {
           workflowContext: formValues.workflowContext,
         }),
@@ -167,18 +167,17 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               <FormErrorMessage>{errors.fromDate}</FormErrorMessage>
             </FormControl>
 
-            {/* <FormControl isInvalid={errors.performTillDate != null}>
+            <FormControl isInvalid={errors.toDate != null}>
               <FormLabel>To</FormLabel>
               <Input
-                value={values.performTillDate}
+                value={values.toDate}
                 onChange={handleChange}
-                name="performTillDate"
+                name="toDate"
                 placeholder="Enter to date"
                 type="datetime-local"
               />
-              <FormErrorMessage>{errors.performTillDate}</FormErrorMessage>
+              <FormErrorMessage>{errors.toDate}</FormErrorMessage>
             </FormControl>
-            */}
           </HStack>
 
           <HStack my={5} alignItems="flex-start">
