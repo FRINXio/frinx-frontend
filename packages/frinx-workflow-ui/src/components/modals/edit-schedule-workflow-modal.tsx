@@ -104,7 +104,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
         id: scheduledWorkflow?.name,
         cronString: formValues.cronString || DEFAULT_CRON_STRING,
         ...(formValues.fromDate && {
-          performFromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+          fromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
         // ...(formValues.performTillDate && {
         //   performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
@@ -160,7 +160,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               <Input
                 value={values.fromDate}
                 onChange={handleChange}
-                name="performFromDate"
+                name="fromDate"
                 placeholder="Enter from date"
                 type="datetime-local"
               />
