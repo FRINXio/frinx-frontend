@@ -16,7 +16,7 @@ import { useFormik } from 'formik';
 import React, { useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
-import { Editor } from '@frinx/shared';
+import { Editor, jsonParse } from '@frinx/shared';
 import parse from 'json-templates';
 import {
   DeviceBlueprintsQuery,
@@ -128,11 +128,18 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
       );
 
+      // TODO: we parse it and stringify later to remove all escape characters
+      // so it is always saved as json object in prisma
+      // we should find better solution
+      const createMountParamerers = isUsingBlueprints
+        ? JSON.parse(blueprintParameters(blueprintParameterValues))
+        : JSON.parse(data.mountParameters ?? '{}');
+
       const updatedData = {
         ...data,
         labelIds: selectedLabels.map((label) => label.value),
         port: Number(data.port),
-        mountParameters: blueprintParameters(blueprintParameterValues),
+        mountParameters: JSON.stringify(createMountParamerers),
       };
 
       onFormSubmit(updatedData);
@@ -160,6 +167,9 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   const isBlueprintValuesValid =
     Object.keys(blueprintParameterValues).length === blueprintParameters.length &&
     Object.values(blueprintParameterValues).every((value) => value !== '');
+
+  const parsedMountParameters = jsonParse(values.mountParameters);
+  const isMountParametersValid = parsedMountParameters != null && typeof parsedMountParameters === 'string';
 
   return (
     <form onSubmit={handleSubmit}>
@@ -389,7 +399,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}
-            value={values.mountParameters ?? ''}
+            value={isMountParametersValid ? parsedMountParameters : values.mountParameters ?? ''}
           />
         </FormControl>
       )}
