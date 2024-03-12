@@ -19,17 +19,16 @@ import { compact } from 'lodash';
 import React, { useRef, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation } from 'urql';
-// TODO: FIXME
-import {} from '../__generated__/graphql';
+import { CreateWorkflowMutation, CreateWorkflowMutationVariables } from '../__generated__/graphql';
 
 type Props = {
   onImportSuccess: () => void;
 };
 
 const CREATE_WORKFLOW_MUTATION = gql`
-  mutation CreateWorkflow($input: UpdateWorkflowDefinitionInput!) {
+  mutation CreateWorkflow($input: CreateWorkflowDefinitionInput!) {
     conductor {
-      updateWorkflowDefinition(input: $input) {
+      createWorkflowDefinition(input: $input) {
         workflowDefinition {
           updatedAt
           tasksJson
@@ -66,7 +65,9 @@ function readFile(file: File): Promise<string> {
 }
 
 const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) => {
-  const [, createWorkflow] = useMutation<unknown>(CREATE_WORKFLOW_MUTATION);
+  const [, createWorkflow] = useMutation<CreateWorkflowMutation, CreateWorkflowMutationVariables>(
+    CREATE_WORKFLOW_MUTATION,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const { addToastNotification } = useNotifications();
 
@@ -88,7 +89,14 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
             version,
           };
         });
-      await Promise.all(json.map((workflow) => createWorkflow({ input: { workflow } })));
+      const response = await Promise.all(
+        json.map((workflow) => createWorkflow({ input: { workflowDefinition: workflow } })),
+      );
+
+      if (response.some((r) => r.error) || response.some((r) => r.data == null)) {
+        throw new Error('Badly formatted workflow definition. Check the syntax and try again.');
+      }
+
       onImportSuccess();
       addToastNotification({
         type: 'success',
