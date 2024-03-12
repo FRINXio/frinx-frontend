@@ -147,6 +147,8 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
           toDate: moment(formValues.toDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
       };
+      console.log(formValues);
+      
       onSubmit(formattedValues);
       onClose();
     },
@@ -186,7 +188,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
               <Input
                 value={values.fromDate}
                 onChange={handleChange}
-                name="performFromDate"
+                name="fromDate"
                 placeholder="Enter from date"
                 type="datetime-local"
               />
@@ -198,7 +200,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
               <Input
                 value={values.toDate}
                 onChange={handleChange}
-                name="performTillDate"
+                name="toDate"
                 placeholder="Enter to date"
                 type="datetime-local"
               />
