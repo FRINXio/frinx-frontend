@@ -1,10 +1,11 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
+import { SynceGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { GraphSynceNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
-import { GraphEdge, SynceGraphNode } from '../../__generated__/graphql';
+import { GraphEdge } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
-import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node-icon.helpers';
+import { getDeviceNodeTransformProperties, getNodeInterfaceGroups, getNodeBackgroundColor } from './node-icon.helpers';
 import NodeInterface from './node-interface';
 
 type Props = {
@@ -12,12 +13,13 @@ type Props = {
   isFocused: boolean;
   isSelectedForGmPath: boolean;
   isGmPath: boolean;
-  node: SynceGraphNode;
+  node: SynceGraphNodeWithDiff;
   topologyMode: TopologyMode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
   selectedEdge: GraphEdge | null;
+  isSelected: boolean;
 };
 
 const G = chakra('g');
@@ -35,6 +37,7 @@ const SynceNodeIcon: VoidFunctionComponent<Props> = ({
   onPointerMove,
   onPointerUp,
   selectedEdge,
+  isSelected,
 }) => {
   const { x, y } = positions.nodes[node.name];
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
@@ -57,7 +60,18 @@ const SynceNodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <Circle r={`${circleDiameter / 2}px`} fill="gray.400" strokeWidth={1} stroke="gray.400" />
+        <Circle
+          r={`${circleDiameter / 2}px`}
+          fill={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
+          strokeWidth={1}
+          stroke={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
+        />
       </G>
       <Text
         height={`${circleDiameter / 2}px`}
