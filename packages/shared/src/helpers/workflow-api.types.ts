@@ -346,7 +346,7 @@ export type Workflow<T = Task> = {
   workflowStatusListenerEnabled?: boolean;
   tasks: T[];
   updateTime: number;
-  timeoutPolicy: TimeoutPolicy;
+  timeoutPolicy: TimeoutPolicy | null;
   timeoutSeconds: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variables: Record<string, any>;
