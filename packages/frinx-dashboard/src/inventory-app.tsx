@@ -7,7 +7,7 @@ type InventoryComponents = Omit<typeof import('@frinx/inventory-client'), 'getIn
   InventoryAPIProvider: FC<{ client: InventoryApiClient; wsUrl: string }>;
 };
 const InventoryApp: FC = () => {
-  const { inventoryApiURL, inventoryWsURL } = useConfig();
+  const { inventoryApiURL, inventoryWsPath, inventoryWsSchema } = useConfig();
   const [components, setComponents] = useState<InventoryComponents | null>(null);
 
   useEffect(() => {
@@ -26,7 +26,10 @@ const InventoryApp: FC = () => {
   const { InventoryAPIProvider, InventoryApp: App } = components;
 
   return (
-    <InventoryAPIProvider wsUrl={inventoryWsURL} client={InventoryApi.create({ url: inventoryApiURL }).client}>
+    <InventoryAPIProvider
+      wsUrl={inventoryWsSchema + window.location.hostname + inventoryWsPath}
+      client={InventoryApi.create({ url: inventoryApiURL }).client}
+    >
       <App />
     </InventoryAPIProvider>
   );
