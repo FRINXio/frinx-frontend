@@ -301,7 +301,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     })),
   };
 
-
   const handleOnRerunClick = () => {
     rerunWorkflow({
       workflowId,
