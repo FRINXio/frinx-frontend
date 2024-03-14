@@ -9,7 +9,6 @@ import {
   Task,
   DescriptionJSON,
   ClientWorkflowWithTasks,
-  TimeoutPolicy,
   TaskDefinition,
 } from '@frinx/shared';
 import { saveAs } from 'file-saver';
@@ -241,7 +240,17 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   };
 
   const handleFileExport = (wf: ClientWorkflowWithTasks) => {
-    const parsedWf = JSON.stringify(wf, null, 2);
+    const apiWorkflow = {
+      ...wf,
+      outputParameters: wf.outputParameters?.reduce(
+        (acc, param) => ({
+          ...acc,
+          [param.key]: param.value,
+        }),
+        {},
+      ),
+    };
+    const parsedWf = JSON.stringify(apiWorkflow, null, 2);
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
     const file = new Blob([arrayBuffer], { type: 'application/octet-stream' });
@@ -254,7 +263,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       ...wfData,
       name: wfName,
       tasks: JSON.stringify(wf.tasks),
-      timeoutPolicy: (timeoutPolicy ?? undefined) as TimeoutPolicy,
+      timeoutPolicy: timeoutPolicy ?? undefined,
     };
     const result = await updateWorkflow({
       input: {

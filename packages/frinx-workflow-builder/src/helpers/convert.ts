@@ -37,7 +37,7 @@ export function convertWorkflowFragmentToClientWorkflow(fragment: WorkflowDefini
     ownerEmail: fragment.ownerEmail ?? '',
     schemaVersion: 2,
     updateTime,
-    timeoutPolicy: fragment.timeoutPolicy ?? '',
+    timeoutPolicy: fragment.timeoutPolicy,
     timeoutSeconds: fragment.timeoutSeconds ?? 0,
     variables,
     tasks: [],
