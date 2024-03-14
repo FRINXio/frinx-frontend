@@ -20,6 +20,7 @@ import EventHandlerFormActionRecord from './event-handler-form-action-record';
 type ActionProps = {
   isCompleteTask: boolean;
   values: ActionTask;
+  isInvalid?: boolean;
   onChange: (event: ActionTask) => void;
   onRemove: () => void;
 };
@@ -32,7 +33,13 @@ enum ViewModeEnum {
   TASK_ONLY = 'task_only',
 }
 
-const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values, onChange, onRemove }) => {
+const TaskAction: VoidFunctionComponent<ActionProps> = ({
+  isCompleteTask,
+  values,
+  isInvalid = false,
+  onChange,
+  onRemove,
+}) => {
   const [viewMode, setViewMode] = React.useState<ViewMode>(values.taskId ? ViewModeEnum.TASK_ONLY : ViewModeEnum.ALL);
 
   const handleOnTaskIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,8 +62,8 @@ const TaskAction: VoidFunctionComponent<ActionProps> = ({ isCompleteTask, values
     <Card
       p={5}
       mb={5}
-      border={hasObjectUniqueKeys(values.output) ? '' : '1px solid'}
-      borderColor={hasObjectUniqueKeys(values.output) ? '' : 'red.500'}
+      border={hasObjectUniqueKeys(values.output) || isInvalid ? '' : '1px solid'}
+      borderColor={hasObjectUniqueKeys(values.output) || isInvalid ? '' : 'red.500'}
     >
       <HStack mb={3}>
         <Heading size="md" as="h3">

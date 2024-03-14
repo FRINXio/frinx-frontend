@@ -46,7 +46,7 @@ type Props = {
 
 const objectUniqueKeysValidationSchema = yup
   .array()
-  .of(yup.array().min(2, 'Key and value are required').max(2, 'Key and value are required'))
+  .of(yup.array().min(2, 'Tuple cannot have less than 2 elements').max(2, 'Tuple cannot have more than 2 elements'))
   .test('unique-keys', 'Keys must be unique', (value) => {
     if (value == null || value.length === 0) {
       return true;
@@ -54,6 +54,13 @@ const objectUniqueKeysValidationSchema = yup
 
     if (isOfEntriesType<[string, string | number][]>(value)) {
       return hasObjectUniqueKeys(value);
+    }
+
+    return true;
+  })
+  .test('empty-values', 'Values cannot be empty', (value) => {
+    if (value?.some((tuple) => tuple?.some((item) => item == null || item === ''))) {
+      return false;
     }
 
     return true;
@@ -259,6 +266,7 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
           </HStack>
           <EventHandlerFormActions
             values={values.actions}
+            errors={typeof errors.actions !== 'string' && errors.actions != null ? errors.actions : []}
             onChange={(actions) => setFieldValue('actions', actions)}
             onActionRemove={(index) => {
               setFieldValue('actions', [...values.actions].splice(index, 0));
