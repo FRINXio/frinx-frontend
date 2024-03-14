@@ -114,7 +114,6 @@ const APPLY_SNAPSHOT_MUTATION = gql`
     deviceInventory {
       applySnapshot(transactionId: $transactionId, input: $input) {
         isOk
-        output
       }
     }
   }
@@ -309,6 +308,8 @@ const DeviceConfig: VoidFunctionComponent = () => {
         title: 'Error',
         content: 'Failed to create snapshot',
       });
+
+      return;
     }
 
     if (responseData != null) {
