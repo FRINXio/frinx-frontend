@@ -2,7 +2,13 @@ import { UseDisclosureReturn } from '@chakra-ui/react';
 import { useNotifications, ExecuteWorkflowModal, unwrap, ClientWorkflow, ClientWorkflowWithTasks } from '@frinx/shared';
 import { gql, useMutation } from 'urql';
 import React, { VoidFunctionComponent } from 'react';
-import { DefinitionModal, DependencyModal, ScheduleWorkflowModal, ConfirmDeleteModal } from '../../components/modals';
+import {
+  DefinitionModal,
+  DependencyModal,
+  ScheduleWorkflowModal,
+  ConfirmDeleteModal,
+  DiagramModal,
+} from '../../components/modals';
 import {
   CreateScheduleInput,
   CreateScheduleMutation,
@@ -54,7 +60,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   confirmDeleteModal,
   definitionModal,
   dependencyModal,
-  diagramModal, // eslint-disable-line @typescript-eslint/no-unused-vars
+  diagramModal,
   executeWorkflowModal,
   scheduledWorkflowModal,
   onDeleteWorkflow,
@@ -186,6 +192,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
         onClose={confirmDeleteModal.onClose}
         onDelete={handleOnDeleteWorkflowClick}
       />
+      <DiagramModal workflow={activeWorkflow} onClose={diagramModal.onClose} isOpen={diagramModal.isOpen} />
     </>
   );
 };
