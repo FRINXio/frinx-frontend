@@ -266,7 +266,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     if (data?.conductor.controlExecutedWorkflow?.status !== 'RUNNING') {
       reexecuteQuery();
     }
-  }, [data?.conductor.controlExecutedWorkflow?.status]);
+  }, [data?.conductor.controlExecutedWorkflow?.status, reexecuteQuery]);
 
   if (workflowId == null) {
     return <Text>Workflow id is not defined</Text>;
@@ -301,7 +301,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     })),
   };
 
-  console.log(executedWorkflowDetail);
 
   const handleOnRerunClick = () => {
     rerunWorkflow({
