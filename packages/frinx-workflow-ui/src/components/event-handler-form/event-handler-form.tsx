@@ -269,7 +269,10 @@ const EventHandlerForm: VoidFunctionComponent<Props> = ({ isEditing, formValues,
             errors={typeof errors.actions !== 'string' && errors.actions != null ? errors.actions : []}
             onChange={(actions) => setFieldValue('actions', actions)}
             onActionRemove={(index) => {
-              setFieldValue('actions', [...values.actions].splice(index, 0));
+              setFieldValue(
+                'actions',
+                [...values.actions].filter((_, i) => i !== index),
+              );
             }}
           />
           {values.actions.length === 0 && <FormErrorMessage>At least one action is required</FormErrorMessage>}
