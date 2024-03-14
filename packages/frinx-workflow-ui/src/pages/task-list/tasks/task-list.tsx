@@ -100,7 +100,7 @@ const CREATE_TASK_DEFINITION_MUTATION = gql`
 `;
 
 const TaskList = () => {
-  const context = useMemo(() => ({ additionalTypenames: ['TaskDefinition'] }), []);
+  const context = useMemo(() => ({ additionalTypenames: ['TaskDefinitions'] }), []);
   const [orderBy, setOrderBy] = useState<TasksOrderByInput | null>(null);
   const [task, setTask] = useState<Partial<TaskDefinition> | undefined>();
   const [keyword, setKeyword] = useState('');
@@ -119,6 +119,7 @@ const TaskList = () => {
       },
       orderBy,
     },
+    context,
   });
 
   const taskDefinitions = (taskData?.conductor.taskDefinitions.edges ?? [])
@@ -176,7 +177,7 @@ const TaskList = () => {
 
   const addTask = (tsk: TaskDefinition) => {
     if (tsk.name !== '') {
-      const ownerEmail = tsk.ownerEmail || 'example@example.com';
+      const ownerEmail = tsk.ownerEmail || '';
       const responseTimeoutSeconds = Number(tsk?.responseTimeoutSeconds);
       const retryCount = Number(tsk?.retryCount) || null;
       const retryDelaySeconds = Number(tsk?.retryDelaySeconds);
@@ -196,7 +197,7 @@ const TaskList = () => {
         ],
       };
 
-      onCreate(input)
+      onCreate(input, context)
         .then((res) => {
           if (res.error != null) {
             addToastNotification({
