@@ -1,4 +1,4 @@
-FROM node:18.19.1-alpine as build
+FROM node:18.19-alpine as build
 
 ARG PRIVATE_GH_TOKEN
 ARG PRIVATE_NPM_TOKEN
@@ -14,7 +14,7 @@ RUN npm ci
 ENV NODE_ENV production
 RUN npm run build
 
-FROM node:18.19.1-alpine
+FROM node:18.19-alpine
 LABEL org.opencontainers.image.source="https://github.com/FRINXio/frinx-frontend"
 
 ENV NODE_ENV production
