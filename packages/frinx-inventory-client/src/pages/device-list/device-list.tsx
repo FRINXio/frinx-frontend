@@ -503,6 +503,8 @@ const DeviceList: VoidFunctionComponent = () => {
     return null;
   }
 
+  const isBeingInstalled = Object.values(installLoadingMap).some((isInstalling) => isInstalling);
+
   return (
     <>
       {isImportModalOpen && (
@@ -594,7 +596,7 @@ const DeviceList: VoidFunctionComponent = () => {
             <BulkActions
               onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
               onInstallButtonClick={handleInstallSelectedDevices}
-              areButtonsDisabled={selectedDevices.size === 0}
+              areButtonsDisabled={selectedDevices.size === 0 || isBeingInstalled}
               onWorkflowButtonClick={() => {
                 setIsSendingToWorkflows(true);
               }}
