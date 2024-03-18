@@ -1,6 +1,5 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
 import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks, Task, Pagination, usePagination } from '@frinx/shared';
-import { debounce } from 'lodash';
 import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import WorkflowListHeader from '../../components/workflow-list-header';
@@ -132,13 +131,6 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
     WORKFLOW_DELETE_MUTATION,
   );
-  const debouncedKeywordFilter = useMemo(
-    () =>
-      debounce((value) => {
-        setFilter((f) => ({ ...f, keyword: value }));
-      }, 500),
-    [],
-  );
 
   const handleDeleteWorkflow = async (workflow: ClientWorkflow) => {
     const { name, version } = workflow;
@@ -204,7 +196,6 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
         keywords={keywords}
         onKeywordsChange={(value) => {
           setKeywords(value);
-          debouncedKeywordFilter(value);
         }}
         labels={filter.labels}
         onLabelsChange={(newLabels) => {
@@ -220,6 +211,12 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
             keyword: null,
             labels: [],
           });
+        }}
+        onSearchSubmit={() => {
+          setFilter((f) => ({
+            ...f,
+            keyword: keywords,
+          }));
         }}
       />
       <WorkflowDefinitionsTable

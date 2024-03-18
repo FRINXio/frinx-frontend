@@ -9,6 +9,7 @@ type Props = {
   onKeywordsChange: (keywords: string) => void;
   onLabelsChange: (labels: string[]) => void;
   onClearSearch: () => void;
+  onSearchSubmit: () => void;
 };
 
 const WorkflowDefinitionsHeader: FC<Props> = ({
@@ -18,6 +19,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({
   labels,
   onLabelsChange,
   onClearSearch,
+  onSearchSubmit,
 }) => {
   return (
     <Flex marginBottom={6} alignItems="center">
@@ -40,14 +42,24 @@ const WorkflowDefinitionsHeader: FC<Props> = ({
               id="workflow-search"
               marginLeft="2"
               value={keywords}
-              onChange={(e) => onKeywordsChange(e.target.value)}
+              onChange={(e) => {
+                onKeywordsChange(e.target.value);
+              }}
               placeholder="Search workflow"
               background="white"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  onSearchSubmit();
+                }
+              }}
             />
           </InputGroup>
         </Box>
-        <Button marginLeft="2" colorScheme="blue" color="white" onClick={onClearSearch}>
-          Reset
+        <Button onClick={onClearSearch} ml={2}>
+          Clear
+        </Button>
+        <Button marginLeft="2" colorScheme="blue" color="white" onClick={onSearchSubmit}>
+          Search
         </Button>
       </Flex>
     </Flex>
