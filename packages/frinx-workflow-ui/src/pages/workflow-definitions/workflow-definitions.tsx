@@ -4,8 +4,8 @@ import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import WorkflowListHeader from '../../components/workflow-list-header';
 import {
-  DeleteWorkflowMutation,
-  DeleteWorkflowMutationVariables,
+  DeleteWorkflowDefinitionMutation,
+  DeleteWorkflowDefinitionMutationVariables,
   WorkflowsQuery,
   WorkflowsQueryVariables,
 } from '../../__generated__/graphql';
@@ -85,9 +85,13 @@ const WORKFLOW_LABELS_QUERY = gql`
 `;
 
 const WORKFLOW_DELETE_MUTATION = gql`
-  mutation DeleteWorkflow($name: String!, $version: Int!) {
+  mutation DeleteWorkflowDefinition($input: DeleteWorkflowDefinitionInput!) {
     conductor {
-      unregisterWorkflowDef(name: $name, version: $version)
+      deleteWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          id
+        }
+      }
     }
   }
 `;
@@ -128,7 +132,7 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const [{ data: labelsData }] = useQuery({
     query: WORKFLOW_LABELS_QUERY,
   });
-  const [, deleteWorkflow] = useMutation<DeleteWorkflowMutation, DeleteWorkflowMutationVariables>(
+  const [, deleteWorkflow] = useMutation<DeleteWorkflowDefinitionMutation, DeleteWorkflowDefinitionMutationVariables>(
     WORKFLOW_DELETE_MUTATION,
   );
 
@@ -136,8 +140,10 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
     const { name, version } = workflow;
     await deleteWorkflow(
       {
-        name,
-        version: Number(version) || 1,
+        input: {
+          name,
+          version: Number(version) || 1,
+        },
       },
       {
         additionalTypenames: ['WorkflowDefinition', 'WorkflowDefinitionConnection'],

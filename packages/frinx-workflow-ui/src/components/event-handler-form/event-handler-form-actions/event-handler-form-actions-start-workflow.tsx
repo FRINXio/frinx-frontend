@@ -6,11 +6,12 @@ import EventHandlerFormActionRecord from './event-handler-form-action-record';
 
 type Props = {
   values: StartWorkflow;
+  isInvalid?: boolean;
   onChange: (event: StartWorkflow) => void;
   onRemove: () => void;
 };
 
-const StartWorkflowAction: VoidFunctionComponent<Props> = ({ values, onChange, onRemove }) => {
+const StartWorkflowAction: VoidFunctionComponent<Props> = ({ values, isInvalid = false, onChange, onRemove }) => {
   const handleOnNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...values, name: event.target.value });
   };
@@ -38,8 +39,8 @@ const StartWorkflowAction: VoidFunctionComponent<Props> = ({ values, onChange, o
     <Card
       p={5}
       mb={5}
-      border={areAllKeysUniqueInInput || areAllKeysUniqueInTaskToDomain ? '' : '1px solid'}
-      borderColor={areAllKeysUniqueInInput || areAllKeysUniqueInTaskToDomain ? '' : 'red.500'}
+      border={(areAllKeysUniqueInInput || areAllKeysUniqueInTaskToDomain) && !isInvalid ? '' : '1px solid'}
+      borderColor={(areAllKeysUniqueInInput || areAllKeysUniqueInTaskToDomain) && !isInvalid ? '' : 'red.500'}
     >
       <HStack mb={3}>
         <Heading size="md" as="h3">
