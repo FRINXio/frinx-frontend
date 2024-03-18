@@ -140,7 +140,7 @@ export function createEmptyWorkflow(): ClientWorkflow & { tasks: ExtendedTask[] 
     restartable: false,
     ownerEmail: '',
     schemaVersion: 2,
-    timeoutPolicy: 'RETRY',
+    timeoutPolicy: null,
     createdBy: '',
     updatedBy: '',
   };

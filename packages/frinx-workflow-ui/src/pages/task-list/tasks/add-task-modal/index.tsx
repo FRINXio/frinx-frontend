@@ -43,12 +43,13 @@ const validationSchema = yup.object({
 });
 
 function AddTaskModal({ isOpen, onClose, onSubmit, task }: AddTaskModalProps) {
-  const { handleSubmit, setFieldValue, values, errors, submitForm } = useFormik({
+  const { handleSubmit, setFieldValue, values, errors, submitForm, resetForm } = useFormik({
     initialValues: task,
     validationSchema,
     validateOnChange: false,
     onSubmit: (formData) => {
       onSubmit(formData);
+      resetForm();
       onClose();
     },
   });
