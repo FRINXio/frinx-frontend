@@ -53,6 +53,19 @@ export const WorkflowDefinitionFragment = gql`
       value
     }
     tasksJson
+    tasks {
+      type
+      description
+      inputParameters
+      id
+      name
+      taskReferenceName
+      evaluatorType
+      rateLimited
+      optional
+      startDelay
+      scriptExpression
+    }
     restartable
     timeoutSeconds
     timeoutPolicy
@@ -207,8 +220,8 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     if (workflowDetail.__typename !== 'WorkflowDefinition') {
       return;
     }
-    const tasks = jsonParse<Task[]>(workflowDetail.tasksJson);
-    const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
+    const extendedTasks = workflowDetail.tasks?.map((t) => convertTaskToExtendedTask({ ...t } as Task)) ?? [];
+    console.log(workflowDetail.tasks);
     const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { __typename, ...wfDetail } = workflowDetail;
