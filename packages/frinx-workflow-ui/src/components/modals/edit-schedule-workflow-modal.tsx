@@ -104,11 +104,11 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
         id: scheduledWorkflow?.name,
         cronString: formValues.cronString || DEFAULT_CRON_STRING,
         ...(formValues.fromDate && {
-          performFromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+          fromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
         }),
-        // ...(formValues.performTillDate && {
-        //   performTillDate: moment(formValues.performTillDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
-        // }),
+        ...(formValues.toDate && {
+          toDate: moment(formValues.toDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
+        }),
         ...(formValues.workflowContext && {
           workflowContext: formValues.workflowContext,
         }),
@@ -160,25 +160,24 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
               <Input
                 value={values.fromDate}
                 onChange={handleChange}
-                name="performFromDate"
+                name="fromDate"
                 placeholder="Enter from date"
                 type="datetime-local"
               />
               <FormErrorMessage>{errors.fromDate}</FormErrorMessage>
             </FormControl>
 
-            {/* <FormControl isInvalid={errors.performTillDate != null}>
+            <FormControl isInvalid={errors.toDate != null}>
               <FormLabel>To</FormLabel>
               <Input
-                value={values.performTillDate}
+                value={values.toDate}
                 onChange={handleChange}
-                name="performTillDate"
+                name="toDate"
                 placeholder="Enter to date"
                 type="datetime-local"
               />
-              <FormErrorMessage>{errors.performTillDate}</FormErrorMessage>
+              <FormErrorMessage>{errors.toDate}</FormErrorMessage>
             </FormControl>
-            */}
           </HStack>
 
           <HStack my={5} alignItems="flex-start">
