@@ -5,8 +5,7 @@ export type GlobalConfig = Readonly<{
   unistoreApiURL: string;
   URLBasename: string;
   inventoryApiURL: string;
-  inventoryWsPath: string;
-  inventoryWsSchema: string;
+  devInventoryWsURL: string;
   uniresourceApiURL: string;
   uniflowApiDocsURL: string;
   commitHash: string;

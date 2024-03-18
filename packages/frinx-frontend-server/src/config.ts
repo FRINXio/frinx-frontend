@@ -8,6 +8,12 @@ function envString(key: string): string {
   return value;
 }
 
+function optionalEnvString(key: string): string | null {
+  const { env } = process;
+  const value = env[key];
+  return value || null;
+}
+
 function stringToBoolean(value: string): boolean {
   switch (value.toLowerCase()) {
     case 'true':
@@ -27,8 +33,7 @@ const config = {
   isAuthEnabled: stringToBoolean(envString('AUTH_ENABLED')),
   URLBasename: envString('URL_BASENAME'),
   inventoryApiURL: envString('INVENTORY_API_URL'),
-  inventoryWsPath: `:${envString('INVENTORY_WS_PORT')}/${envString('INVENTORY_WS_SLUG')}`,
-  inventoryWsSchema: envString('INVENTORY_WS_SCHEMA'),
+  devInventoryWsURL: optionalEnvString('DEV_INVENTORY_WS_URL'),
   uniresourceApiURL: envString('RESOURCE_MANAGER_API_URL'),
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
