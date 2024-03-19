@@ -157,7 +157,7 @@ const TaskForm: FC<Props> = ({ workflows, task, tasks, onClose, onFormSubmit }) 
                   variant="filled"
                   name="startDelay"
                   type="text"
-                  value={values.startDelay}
+                  value={values.startDelay ?? 0}
                   onChange={handleChange}
                 />
                 <FormHelperText>time period before task executes</FormHelperText>
@@ -166,7 +166,7 @@ const TaskForm: FC<Props> = ({ workflows, task, tasks, onClose, onFormSubmit }) 
             </FormControl>
             <FormControl my={6}>
               <Flex alignItems="center">
-                <Checkbox name="optional" isChecked={values.optional} onChange={handleChange} id="optional" />
+                <Checkbox name="optional" isChecked={values.optional ?? false} onChange={handleChange} id="optional" />
                 <FormLabel htmlFor="optional" mb={0} ml={2}>
                   Optional
                 </FormLabel>

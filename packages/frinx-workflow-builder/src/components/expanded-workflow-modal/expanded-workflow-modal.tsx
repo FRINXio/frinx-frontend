@@ -48,6 +48,46 @@ export const ExpandedWorkflowFragment = gql`
       key
       value
     }
+    tasks {
+      name
+      taskReferenceName
+      description
+      inputParameters
+      type
+      dynamicTaskNameParam
+      scriptExpression
+      decisionCases
+      dynamicForkTasksParam
+      dynamicForkTasksInputParamName
+      defaultCase {
+        name
+        taskReferenceName
+        inputParameters
+        type
+      }
+      forkTasks {
+        name
+        taskReferenceName
+        type
+        inputParameters
+      }
+      startDelay
+      subWorkflowParam {
+        name
+        version
+        taskToDomain
+      }
+      joinOn
+      sink
+      optional
+      rateLimited
+      defaultExclusiveJoinTask
+      asyncComplete
+      loopCondition
+      retryCount
+      evaluatorType
+      expression
+    }
     restartable
     timeoutSeconds
     timeoutPolicy
