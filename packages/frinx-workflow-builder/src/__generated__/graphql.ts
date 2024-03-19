@@ -1045,12 +1045,13 @@ export type OutputParameters = {
   value: Scalars['String']['output'];
 };
 
+/** Holds information about the requested pagination page */
 export type PageInfo = {
   __typename?: 'PageInfo';
-  endCursor: Maybe<Scalars['String']['output']>;
+  endCursor: Maybe<Scalars['Cursor']['output']>;
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor: Maybe<Scalars['String']['output']>;
+  startCursor: Maybe<Scalars['Cursor']['output']>;
 };
 
 export type PaginationArgs = {
@@ -3718,9 +3719,9 @@ export type ExecuteWorkflowByNameBuilderMutationVariables = Exact<{
 
 export type ExecuteWorkflowByNameBuilderMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', executeWorkflowByName: string | null } };
 
-export type DeleteWorkflowDefinitionMutationVariables = Exact<{
+export type DeleteWorkflowBuilderDefinitionMutationVariables = Exact<{
   input: DeleteWorkflowDefinitionInput;
 }>;
 
 
-export type DeleteWorkflowDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', deleteWorkflowDefinition: { __typename?: 'DeleteWorkflowDefinitionPayload', workflowDefinition: { __typename?: 'WorkflowDefinition', id: string } | null } } };
+export type DeleteWorkflowBuilderDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', deleteWorkflowDefinition: { __typename?: 'DeleteWorkflowDefinitionPayload', workflowDefinition: { __typename?: 'WorkflowDefinition', id: string } | null } } };
