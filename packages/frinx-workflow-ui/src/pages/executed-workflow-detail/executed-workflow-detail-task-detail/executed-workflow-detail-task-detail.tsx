@@ -227,7 +227,7 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
                   </Stack>
-                  <Text>{task.reasonForIncompletion || 'No logs'}</Text>
+                  <Text>{JSON.stringify(task.logs) || 'No logs'}</Text>
                 </Box>
               </TabPanel>
             </TabPanels>
