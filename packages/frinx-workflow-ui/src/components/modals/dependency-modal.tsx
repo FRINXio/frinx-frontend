@@ -30,7 +30,7 @@ const nestBranch = (wfs: Workflow[], workflowName = '') => {
 
   const workflowsWithoutLeafNodes = wfs.filter((wf) => !leafNodes.map((node) => node.name).includes(wf.name));
 
-  return leafNodes.map(({ name, version }) => (
+  return leafNodes.map(({ name, version, id }) => (
     <TreeNode
       key={name + version}
       label={
@@ -46,7 +46,7 @@ const nestBranch = (wfs: Workflow[], workflowName = '') => {
           }}
           title="Edit"
           as={Link}
-          to={`../builder/${name}/${version}`}
+          to={`../builder/${id}/${version}`}
         >
           {`${name} / ${version}`}
         </Box>
