@@ -1,5 +1,13 @@
 import { Container, Text, Progress, useDisclosure } from '@chakra-ui/react';
-import { jsonParse, ClientWorkflow, ClientWorkflowWithTasks, Task, Pagination, usePagination } from '@frinx/shared';
+import {
+  jsonParse,
+  ClientWorkflow,
+  ClientWorkflowWithTasks,
+  Task,
+  Pagination,
+  usePagination,
+  convertTaskToExtendedTask,
+} from '@frinx/shared';
 import { debounce } from 'lodash';
 import React, { FC, useMemo, useState } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
@@ -63,6 +71,46 @@ const WORKFLOWS_QUERY = gql`
             timeoutPolicy
             ownerEmail
             tasksJson
+            tasks {
+              name
+              taskReferenceName
+              description
+              inputParameters
+              type
+              dynamicTaskNameParam
+              scriptExpression
+              decisionCases
+              dynamicForkTasksParam
+              dynamicForkTasksInputParamName
+              defaultCase {
+                name
+                taskReferenceName
+                inputParameters
+                type
+              }
+              forkTasks {
+                name
+                taskReferenceName
+                type
+                inputParameters
+              }
+              startDelay
+              subWorkflowParam {
+                name
+                version
+                taskToDomain
+              }
+              joinOn
+              sink
+              optional
+              rateLimited
+              defaultExclusiveJoinTask
+              asyncComplete
+              loopCondition
+              retryCount
+              evaluatorType
+              expression
+            }
           }
         }
         totalCount
@@ -175,13 +223,14 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
   const workflows: ClientWorkflowWithTasks[] =
     workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
       const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
-      const tasks = jsonParse<Task[]>(w.tasksJson) ?? [];
+      const tasks = w.tasks ?? [];
       return {
         ...w,
         timeoutSeconds: w.timeoutSeconds ?? 0,
         labels: parsedLabels,
         hasSchedule: false,
-        tasks,
+        // needed as a workaround since TS is not able to infer the type of tasks from provided string type to Task type
+        tasks: tasks.map((t) => convertTaskToExtendedTask({ ...t, type: t.type ?? 'CUSTOM' } as Task)),
       };
     }) ?? [];
 

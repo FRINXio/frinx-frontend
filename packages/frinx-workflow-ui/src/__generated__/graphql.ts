@@ -211,7 +211,6 @@ export type ApplySnapshotInput = {
 export type ApplySnapshotPayload = {
   __typename?: 'ApplySnapshotPayload';
   isOk: Scalars['Boolean']['output'];
-  output: Scalars['String']['output'];
 };
 
 export type BaseGraphNode = {
@@ -643,6 +642,7 @@ export type Device = Node & {
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
+  version: Maybe<Scalars['String']['output']>;
   zone: Zone;
 };
 
@@ -2050,10 +2050,31 @@ export type WorkflowDefinitionPayload = {
 
 export type WorkflowDefinitionTask = {
   __typename?: 'WorkflowDefinitionTask';
+  asyncComplete: Maybe<Scalars['Boolean']['output']>;
+  decisionCases: Maybe<Scalars['JSON']['output']>;
+  defaultCase: Maybe<Array<Maybe<ApiWorkflowTask>>>;
+  defaultExclusiveJoinTask: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   description: Maybe<Scalars['String']['output']>;
+  dynamicForkTasksInputParamName: Maybe<Scalars['String']['output']>;
+  dynamicForkTasksParam: Maybe<Scalars['String']['output']>;
+  dynamicTaskNameParam: Maybe<Scalars['String']['output']>;
+  evaluatorType: Maybe<Scalars['String']['output']>;
+  expression: Maybe<Scalars['String']['output']>;
+  forkTasks: Maybe<Array<Maybe<Array<Maybe<ApiWorkflowTask>>>>>;
   id: Scalars['ID']['output'];
+  inputParameters: Maybe<Scalars['JSON']['output']>;
+  joinOn: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  loopCondition: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  optional: Maybe<Scalars['Boolean']['output']>;
+  rateLimited: Maybe<Scalars['Boolean']['output']>;
+  retryCount: Maybe<Scalars['Int']['output']>;
+  scriptExpression: Maybe<Scalars['String']['output']>;
+  sink: Maybe<Scalars['String']['output']>;
+  startDelay: Maybe<Scalars['Int']['output']>;
+  subWorkflowParam: Maybe<SubWorkflowParams>;
   taskReferenceName: Scalars['String']['output'];
+  type: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkflowInstanceDetail = {
@@ -3924,7 +3945,7 @@ export type WorkflowsQueryVariables = Exact<{
 }>;
 
 
-export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, description: string | null, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null, tasks: Array<{ __typename?: 'WorkflowDefinitionTask', name: string, taskReferenceName: string, description: string | null, inputParameters: any | null, type: string | null, dynamicTaskNameParam: string | null, scriptExpression: string | null, decisionCases: any | null, dynamicForkTasksParam: string | null, dynamicForkTasksInputParamName: string | null, startDelay: number | null, joinOn: Array<string | null> | null, sink: string | null, optional: boolean | null, rateLimited: boolean | null, defaultExclusiveJoinTask: Array<string | null> | null, asyncComplete: boolean | null, loopCondition: string | null, retryCount: number | null, evaluatorType: string | null, expression: string | null, defaultCase: Array<{ __typename?: 'ApiWorkflowTask', name: string, taskReferenceName: string, inputParameters: any | null, type: string | null } | null> | null, forkTasks: Array<Array<{ __typename?: 'ApiWorkflowTask', name: string, taskReferenceName: string, type: string | null, inputParameters: any | null } | null> | null> | null, subWorkflowParam: { __typename?: 'SubWorkflowParams', name: string, version: number | null, taskToDomain: any | null } | null }> } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 

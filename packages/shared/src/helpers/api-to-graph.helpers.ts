@@ -78,7 +78,7 @@ function convertTaskToNode(task: ExtendedTask, isReadOnly: boolean): Node<NodeDa
   };
 
   if (task.type === 'DECISION') {
-    const decisionHandles = Object.keys(task.decisionCases);
+    const decisionHandles = Object.keys(task.decisionCases ?? {});
     const handles = [...decisionHandles, 'default'];
     const decisionNode = {
       ...node,
@@ -379,7 +379,6 @@ export function getElementsFromWorkflow(
   tasks: ExtendedTask[],
   isReadOnly: boolean,
 ): { nodes: Node<NodeData>[]; edges: Edge[] } {
-  // console.log(tasks);
   const nodes = createAllNodes(tasks, isReadOnly);
   const edges = createAllEdges(tasks);
   return { nodes, edges };
