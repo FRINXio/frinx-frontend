@@ -211,7 +211,6 @@ export type ApplySnapshotInput = {
 export type ApplySnapshotPayload = {
   __typename?: 'ApplySnapshotPayload';
   isOk: Scalars['Boolean']['output'];
-  output: Scalars['String']['output'];
 };
 
 export type BaseGraphNode = {
@@ -643,6 +642,7 @@ export type Device = Node & {
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
+  version: Maybe<Scalars['String']['output']>;
   zone: Zone;
 };
 
@@ -3931,10 +3931,9 @@ export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type WorkflowLabelsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowLabels: Array<string> } };
 
-export type DeleteWorkflowMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  version: Scalars['Int']['input'];
+export type DeleteWorkflowDefinitionMutationVariables = Exact<{
+  input: DeleteWorkflowDefinitionInput;
 }>;
 
 
-export type DeleteWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', unregisterWorkflowDef: any | null } };
+export type DeleteWorkflowDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', deleteWorkflowDefinition: { __typename?: 'DeleteWorkflowDefinitionPayload', workflowDefinition: { __typename?: 'WorkflowDefinition', id: string } | null } } };

@@ -157,9 +157,9 @@ const BULK_INSTALL_DEVICES_MUTATION = gql`
 `;
 
 const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
-  mutation ExecuteModalWorkflowByName($input: StartWorkflowRequest_Input) {
+  mutation ExecuteModalWorkflowByName($input: ExecuteWorkflowByNameInput!) {
     conductor {
-      startWorkflow(input: $input)
+      executeWorkflowByName(input: $input)
     }
   }
 `;
@@ -468,14 +468,14 @@ const DeviceList: VoidFunctionComponent = () => {
 
     return executeWorkflow({
       input: {
-        name: selectedWorkflow.name,
-        version: selectedWorkflow.version,
-        input: values,
+        workflowName: selectedWorkflow.name,
+        workflowVersion: selectedWorkflow.version,
+        inputParameters: JSON.stringify(values),
       },
     })
       .then((res) => {
         addToastNotification({ content: 'We successfully executed workflow', type: 'success' });
-        return res.data?.conductor.startWorkflow;
+        return res.data?.conductor.executeWorkflowByName;
       })
       .catch(() => {
         addToastNotification({ content: 'We have a problem to execute selected workflow', type: 'error' });
@@ -502,6 +502,8 @@ const DeviceList: VoidFunctionComponent = () => {
   if (deviceData == null) {
     return null;
   }
+
+  const isBeingInstalled = Object.values(installLoadingMap).some((isInstalling) => isInstalling);
 
   return (
     <>
@@ -594,7 +596,7 @@ const DeviceList: VoidFunctionComponent = () => {
             <BulkActions
               onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
               onInstallButtonClick={handleInstallSelectedDevices}
-              areButtonsDisabled={selectedDevices.size === 0}
+              areButtonsDisabled={selectedDevices.size === 0 || isBeingInstalled}
               onWorkflowButtonClick={() => {
                 setIsSendingToWorkflows(true);
               }}
