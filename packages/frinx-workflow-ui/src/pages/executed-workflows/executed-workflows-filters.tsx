@@ -1,6 +1,6 @@
 import { Button, chakra, Flex, FormControl, FormLabel, HStack, Input, Select } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
 import { WorkflowStatus } from '../../__generated__/graphql';
 import { ExecutedWorkflowSearchQuery } from './executed-workflows.helpers';
