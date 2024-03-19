@@ -197,7 +197,7 @@ const DeviceList: VoidFunctionComponent = () => {
     },
     context,
   });
-  const [{ data: labelsData }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY });
+  const [{ data: labelsData }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY, context });
   const [, installDevice] = useMutation<InstallDeviceMutation, InstallDeviceMutationVariables>(INSTALL_DEVICE_MUTATION);
   const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
     UNINSTALL_DEVICE_MUTATION,
@@ -567,7 +567,7 @@ const DeviceList: VoidFunctionComponent = () => {
             <Box flex={1}>
               <DeviceFilter
                 labels={labels}
-                selectedLabels={selectedLabels}
+                selectedLabels={selectedLabels || []}
                 onSelectionChange={handleOnSelectionChange}
                 isCreationDisabled
               />
