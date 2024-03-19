@@ -181,7 +181,7 @@ export function renderInputParamForm(
           />
         );
       }
-      return <GenericInputForm params={task.inputParameters} onChange={onChange} tasks={tasks} task={task} />;
+      return <GenericInputForm params={task.inputParameters} onChange={onChange} />;
     }
     if (task.type === 'SUB_WORKFLOW') {
       const workflow = workflows.find(

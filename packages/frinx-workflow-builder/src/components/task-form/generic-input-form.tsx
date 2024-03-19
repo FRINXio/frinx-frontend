@@ -1,11 +1,9 @@
 import { FormControl, FormLabel, Input, Textarea } from '@chakra-ui/react';
-import { Editor, ExtendedTask, jsonParse } from '@frinx/shared';
+import { Editor } from '@frinx/shared';
 import React, { FC, useState } from 'react';
 
 type Props = {
   params: Record<string, string>;
-  tasks: ExtendedTask[];
-  task: ExtendedTask;
   onChange: (p: Record<string, string>) => void;
 };
 
