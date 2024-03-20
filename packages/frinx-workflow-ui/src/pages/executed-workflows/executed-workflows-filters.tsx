@@ -19,11 +19,20 @@ const EXECUTED_WORKFLOW_POSSIBLE_STATUSES: WorkflowStatus[] = [
   'TIMED_OUT',
 ];
 
+const CLEAR_FILTERS = {
+  from: undefined,
+  to: undefined,
+  status: [],
+  workflowId: [],
+  workflowType: [],
+  isRootWorkflow: false,
+};
+
 const Form = chakra('form');
 
 const ExecutedWorkflowsFilters: FC<Props> = ({ onSearchBoxSubmit, initialSearchValues }) => {
-  const { values, handleChange, handleReset, submitForm, setFieldValue } = useFormik<ExecutedWorkflowSearchQuery>({
-    enableReinitialize: false,
+  const { values, handleChange, submitForm, setFieldValue } = useFormik<ExecutedWorkflowSearchQuery>({
+    enableReinitialize: true,
     initialValues: initialSearchValues,
     onSubmit: onSearchBoxSubmit,
   });
@@ -81,11 +90,17 @@ const ExecutedWorkflowsFilters: FC<Props> = ({ onSearchBoxSubmit, initialSearchV
       <HStack spacing={4}>
         <FormControl>
           <FormLabel>Start Time (From)</FormLabel>
-          <Input background="white" name="from" value={values.from} onChange={handleChange} type="datetime-local" />
+          <Input
+            background="white"
+            name="from"
+            value={values.from ?? ''}
+            onChange={handleChange}
+            type="datetime-local"
+          />
         </FormControl>
         <FormControl>
           <FormLabel>Start Time (To)</FormLabel>
-          <Input background="white" name="to" value={values.to} onChange={handleChange} type="datetime-local" />
+          <Input background="white" name="to" value={values.to ?? ''} onChange={handleChange} type="datetime-local" />
         </FormControl>
         <HStack justifyContent="flex-end" alignSelf="flex-end">
           <Button
@@ -93,13 +108,9 @@ const ExecutedWorkflowsFilters: FC<Props> = ({ onSearchBoxSubmit, initialSearchV
             colorScheme="red"
             onClick={(e) => {
               e.preventDefault();
-              handleReset(e);
               onSearchBoxSubmit({
-                ...values,
+                ...CLEAR_FILTERS,
                 workflowsPerPage: values.workflowsPerPage,
-                status: [],
-                workflowId: [],
-                workflowType: [],
               });
             }}
           >

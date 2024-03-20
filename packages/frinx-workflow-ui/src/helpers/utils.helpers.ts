@@ -9,6 +9,10 @@ export function makeURLSearchParamsFromObject<T extends string | number | string
   const objEntries = Object.entries(obj);
 
   objEntries.forEach(([key, value]) => {
+    if (value == null) {
+      return;
+    }
+
     if (Array.isArray(value)) {
       value.forEach((val) => searchParams.append(key, val));
     } else {
