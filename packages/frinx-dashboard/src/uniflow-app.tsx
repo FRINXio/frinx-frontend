@@ -5,7 +5,7 @@ import { useConfig } from './config.provider';
 type UniflowComponents = typeof import('@frinx/workflow-ui');
 
 const UniflowApp: FC = () => {
-  const { inventoryApiURL, devInventoryWsURL, inventoryWsSchema } = useConfig();
+  const { inventoryApiURL, devInventoryWsURL, inventoryWsSchema, inventoryWsPath } = useConfig();
   const [components, setComponents] = useState<UniflowComponents | null>(null);
 
   useEffect(() => {
@@ -22,7 +22,10 @@ const UniflowApp: FC = () => {
   if (components == null) {
     return null;
   }
-  const wsURL = devInventoryWsURL || `${inventoryWsSchema}${window.location.host}${window.location.pathname}`;  
+  const wsURL = devInventoryWsURL || `${inventoryWsSchema}${window.location.host}${inventoryWsPath}`;  
+
+  console.log(`${window.location.host}`);
+  
 
   const { UniflowApp: App, InventoryAPIProvider } = components;
   return (
