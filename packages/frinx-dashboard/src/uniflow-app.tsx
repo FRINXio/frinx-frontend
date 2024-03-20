@@ -22,10 +22,7 @@ const UniflowApp: FC = () => {
   if (components == null) {
     return null;
   }
-  const wsURL = devInventoryWsURL || `${inventoryWsSchema}${window.location.host}${inventoryWsPath}`;  
-
-  console.log(`${window.location.host}`);
-  
+  const wsURL = devInventoryWsURL || `${inventoryWsSchema}${window.location.host}${inventoryWsPath}`;
 
   const { UniflowApp: App, InventoryAPIProvider } = components;
   return (
