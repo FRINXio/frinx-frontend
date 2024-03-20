@@ -114,6 +114,11 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             callbackAfterSeconds
             seq
             pollCount
+            reasonForIncompletion
+            logs {
+              createdAt
+              message
+            }
           }
           correlationId
         }
