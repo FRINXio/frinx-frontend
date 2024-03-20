@@ -307,9 +307,12 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   };
 
   const handleOnRerunClick = () => {
-    rerunWorkflow({
-      workflowId,
-    })
+    rerunWorkflow(
+      {
+        workflowId,
+      },
+      ctx,
+    )
       .then((result) => {
         if (result.error) {
           throw new Error(result.error?.message);
@@ -320,6 +323,13 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         // when specific task detail is opened we need to close it after rerun so that we can see new tasks that have different ids
         setOpenedTaskId(null);
         onExecutedOperation(result.data?.conductor.rerunExecutedWorkflow.workflow.id);
+
+        addToastNotification({
+          title: 'Workflow rerun succeeded',
+          content: `Workflow ${executedWorkflow.workflowDefinition?.name} rerun`,
+          type: 'success',
+          timeout: 2500,
+        });
       })
       .catch((err) => {
         addToastNotification({
