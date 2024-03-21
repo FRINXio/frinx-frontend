@@ -18,8 +18,13 @@ import {
   PtpTopologyQuery,
   PtpTopologyQueryVariables,
   // SynceGraphNode,
+  PtpTopologyVersionDataQuery,
+  PtpTopologyVersionDataQueryVariables,
+  // SynceGraphNode,
   SynceTopologyQuery,
   SynceTopologyQueryVariables,
+  SynceTopologyVersionDataQuery,
+  SynceTopologyVersionDataQueryVariables,
   TopologyQuery,
   TopologyQueryVariables,
   TopologyVersionDataQuery,
@@ -96,6 +101,14 @@ export type StateAction =
     }
   | {
       type: 'SET_BACKUP_NODES_AND_EDGES';
+      payload: BackupNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_PTP_BACKUP_NODES_AND_EDGES';
+      payload: BackupNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES';
       payload: BackupNodesEdgesPayload;
     }
   | {
@@ -282,7 +295,73 @@ const NET_TOPOLOGY_QUERY = gql`
 const TOPOLOGY_VERSION_DATA_QUERY = gql`
   query TopologyVersionData($version: String!) {
     deviceInventory {
-      topologyVersionData(version: $version) {
+      phyTopologyVersionData(version: $version) {
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+      }
+    }
+  }
+`;
+
+const PTP_TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query PtpTopologyVersionData($version: String!) {
+    deviceInventory {
+      ptpTopologyVersionData(version: $version) {
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+      }
+    }
+  }
+`;
+
+const SYNCE_TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query SynceTopologyVersionData($version: String!) {
+    deviceInventory {
+      synceTopologyVersionData(version: $version) {
         edges {
           id
           source {
@@ -605,6 +684,20 @@ export function setBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateA
   };
 }
 
+export function setPtpBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_PTP_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+export function setSynceBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
 export function getBackupNodesAndEdges(client: Client, version: string): ReturnType<ThunkAction<StateAction, State>> {
   return (dispatch) => {
     client
@@ -621,9 +714,71 @@ export function getBackupNodesAndEdges(client: Client, version: string): ReturnT
       .then((data) => {
         dispatch(
           setBackupNodesAndEdges({
-            nodes: data.data?.deviceInventory.topologyVersionData.nodes ?? [],
+            nodes: data.data?.deviceInventory.phyTopologyVersionData.nodes ?? [],
             edges:
-              data.data?.deviceInventory.topologyVersionData.edges.map((e) => ({
+              data.data?.deviceInventory.phyTopologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
+          }),
+        );
+      });
+  };
+}
+
+export function getPtpBackupNodesAndEdges(
+  client: Client,
+  version: string,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<PtpTopologyVersionDataQuery, PtpTopologyVersionDataQueryVariables>(
+        PTP_TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setPtpBackupNodesAndEdges({
+            nodes: data.data?.deviceInventory.ptpTopologyVersionData.nodes ?? [],
+            edges:
+              data.data?.deviceInventory.ptpTopologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
+          }),
+        );
+      });
+  };
+}
+
+export function getSynceBackupNodesAndEdges(
+  client: Client,
+  version: string,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<SynceTopologyVersionDataQuery, SynceTopologyVersionDataQueryVariables>(
+        SYNCE_TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setSynceBackupNodesAndEdges({
+            nodes: data.data?.deviceInventory.synceTopologyVersionData.nodes ?? [],
+            edges:
+              data.data?.deviceInventory.synceTopologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],

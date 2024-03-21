@@ -1,10 +1,11 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { GraphPtpNodeInterface, PositionsWithGroupsMap, PtpGraphNode } from '../../pages/topology/graph.helpers';
+import { GraphPtpNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import { PtpGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
-import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node-icon.helpers';
+import { getDeviceNodeTransformProperties, getNodeBackgroundColor, getNodeInterfaceGroups } from './node-icon.helpers';
 import NodeInterface from './node-interface';
 
 type Props = {
@@ -12,9 +13,10 @@ type Props = {
   ptpDiffSynceIds: string[];
   positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
   isFocused: boolean;
+  isSelected: boolean;
   isSelectedForGmPath: boolean;
   isGmPath: boolean;
-  node: PtpGraphNode;
+  node: PtpGraphNodeWithDiff;
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
@@ -31,6 +33,7 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   isPtpDiffSynceShown,
   ptpDiffSynceIds,
   isFocused,
+  isSelected,
   isSelectedForGmPath,
   isGmPath,
   node,
@@ -44,7 +47,10 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
-  const ptpDiffSynceNodeColor = isPtpDiffSynceShown && ptpDiffSynceIds?.includes(node.nodeId) ? 'red.200' : 'gray.400';
+  const ptpNodeBackgroundColor =
+    isPtpDiffSynceShown && ptpDiffSynceIds?.includes(node.nodeId)
+      ? 'red.200'
+      : getNodeBackgroundColor({ isSelected, change: node.change });
 
   return (
     <G
@@ -65,9 +71,9 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
       <G>
         <Circle
           r={`${circleDiameter / 2}px`}
-          fill={ptpDiffSynceNodeColor}
+          fill={ptpNodeBackgroundColor}
           strokeWidth={1}
-          stroke={ptpDiffSynceNodeColor}
+          stroke={ptpNodeBackgroundColor}
         />
       </G>
       <Text

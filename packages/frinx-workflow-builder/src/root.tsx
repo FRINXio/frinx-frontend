@@ -9,7 +9,6 @@ import {
   Task,
   DescriptionJSON,
   ClientWorkflowWithTasks,
-  TimeoutPolicy,
   TaskDefinition,
 } from '@frinx/shared';
 import { saveAs } from 'file-saver';
@@ -21,8 +20,8 @@ import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
 import {
-  DeleteWorkflowDefinitionMutation,
-  DeleteWorkflowDefinitionMutationVariables,
+  DeleteWorkflowBuilderDefinitionMutation,
+  DeleteWorkflowBuilderDefinitionMutationVariables,
   ExecuteWorkflowByNameBuilderMutation,
   ExecuteWorkflowByNameBuilderMutationVariables,
   UpdateWorkflowMutation,
@@ -135,7 +134,7 @@ const EXECUTE_WORKFLOW_MUTATION = gql`
 `;
 
 const WORKFLOW_DELETE_MUTATION = gql`
-  mutation DeleteWorkflowDefinition($input: DeleteWorkflowDefinitionInput!) {
+  mutation DeleteWorkflowBuilderDefinition($input: DeleteWorkflowDefinitionInput!) {
     conductor {
       deleteWorkflowDefinition(input: $input) {
         workflowDefinition {
@@ -183,9 +182,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     UPDATE_WORKFLOW_MUTATION,
   );
 
-  const [, deleteWorkflow] = useMutation<DeleteWorkflowDefinitionMutation, DeleteWorkflowDefinitionMutationVariables>(
-    WORKFLOW_DELETE_MUTATION,
-  );
+  const [, deleteWorkflow] = useMutation<
+    DeleteWorkflowBuilderDefinitionMutation,
+    DeleteWorkflowBuilderDefinitionMutationVariables
+  >(WORKFLOW_DELETE_MUTATION);
 
   const [, executeWorkflow] = useMutation<
     ExecuteWorkflowByNameBuilderMutation,
@@ -241,7 +241,17 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   };
 
   const handleFileExport = (wf: ClientWorkflowWithTasks) => {
-    const parsedWf = JSON.stringify(wf, null, 2);
+    const apiWorkflow = {
+      ...wf,
+      outputParameters: wf.outputParameters?.reduce(
+        (acc, param) => ({
+          ...acc,
+          [param.key]: param.value,
+        }),
+        {},
+      ),
+    };
+    const parsedWf = JSON.stringify(apiWorkflow, null, 2);
     const textEncoder = new TextEncoder();
     const arrayBuffer = textEncoder.encode(parsedWf);
     const file = new Blob([arrayBuffer], { type: 'application/octet-stream' });
@@ -254,7 +264,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       ...wfData,
       name: wfName,
       tasks: JSON.stringify(wf.tasks),
-      timeoutPolicy: (timeoutPolicy ?? undefined) as TimeoutPolicy,
+      timeoutPolicy: timeoutPolicy ?? undefined,
     };
     const result = await updateWorkflow({
       input: {
@@ -276,9 +286,9 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
   };
 
-  const handleWorkflowDelete = async () => {
+  const handleWorkflowDelete = async (name: string, workflowVersion?: number | null) => {
     const workflowToDelete = unwrap(workflow);
-    const { id, name, version: workflowVersion } = workflowToDelete;
+    const { id } = workflowToDelete;
     // if we are in create mode, workflow is not saved on server yet, no delete needed
     if (!id) {
       onClose();

@@ -1,6 +1,15 @@
 import { omitNullValue } from '@frinx/shared';
 import { produce } from 'immer';
-import { getEdgesWithDiff, getNodesWithDiff, GraphEdgeWithDiff, GraphNodeWithDiff } from './helpers/topology-helpers';
+import {
+  getEdgesWithDiff,
+  getNodesWithDiff,
+  GraphEdgeWithDiff,
+  GraphNodeWithDiff,
+  getSynceNodesWithDiff,
+  getPtpNodesWithDiff,
+  PtpGraphNodeWithDiff,
+  SynceGraphNodeWithDiff,
+} from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
   getInterfacesPositions,
@@ -69,7 +78,7 @@ export type State = {
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
-  ptpNodes: PtpGraphNode[];
+  ptpNodes: PtpGraphNodeWithDiff[];
   ptpEdges: GraphEdgeWithDiff[];
   ptpNodePositions: Record<string, Position>;
   ptpInterfaceGroupPositions: PositionGroupsMap<GraphPtpNodeInterface>;
@@ -78,7 +87,7 @@ export type State = {
   unconfirmedSelectedGmPathNodeId: string | null;
   selectedGmPathNodeId: string | null;
   gmPathIds: string[];
-  synceNodes: SynceGraphNode[];
+  synceNodes: SynceGraphNodeWithDiff[];
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
@@ -222,6 +231,34 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.interfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
+      case 'SET_PTP_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getPtpNodesWithDiff(acc.ptpNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.ptpEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.ptpNodes = allNodes;
+        acc.ptpEdges = allEdges;
+        acc.ptpNodePositions = positionsMap.nodes;
+        acc.ptpInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_SYNCE_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getSynceNodesWithDiff(acc.synceNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.synceEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphSynceNodeInterface, SynceGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.synceNodes = allNodes;
+        acc.synceEdges = allEdges;
+        acc.synceNodePositions = positionsMap.nodes;
+        acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_UNCONFIRMED_NODE_IDS_TO_FIND_COMMON': {
         acc.unconfirmedSelectedNodeIds = [...action.nodeIds];
         return acc;
@@ -311,11 +348,7 @@ export function stateReducer(state: State, action: StateAction): State {
           (n) => n.name,
           () => 'MEDIUM',
         );
-        // acc.ptpNodes = nodes.map((n) => ({
-        //   ...n,
-        //   // labels: n.labels ?? [],
-        // }));
-        acc.ptpNodes = nodes;
+        acc.ptpNodes = nodes.map((n) => ({ ...n, change: 'NONE' }));
         acc.ptpEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.ptpNodePositions = positionMap.nodes;
         acc.ptpInterfaceGroupPositions = positionMap.interfaceGroups;
@@ -328,7 +361,7 @@ export function stateReducer(state: State, action: StateAction): State {
           (n) => n.name,
           () => 'MEDIUM',
         );
-        acc.synceNodes = nodes;
+        acc.synceNodes = nodes.map((n) => ({ ...n, change: 'NONE' }));
         acc.synceEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.synceNodePositions = positionMap.nodes;
         acc.synceInterfaceGroupPositions = positionMap.interfaceGroups;
@@ -342,6 +375,7 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.gmPathIds = [];
         acc.selectedGmPathNodeId = null;
         acc.unconfirmedSelectedGmPathNodeId = null;
+        acc.selectedVersion = null;
         return acc;
       }
       case 'SET_SELECTED_NET_NODE': {

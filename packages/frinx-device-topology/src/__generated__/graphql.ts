@@ -1978,7 +1978,7 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   ownerEmail: Maybe<Scalars['String']['output']>;
   restartable: Scalars['Boolean']['output'];
   tasks: Array<WorkflowDefinitionTask>;
-  tasksJson: Scalars['JSON']['output'];
+  tasksJson: Maybe<Scalars['JSON']['output']>;
   timeoutPolicy: Maybe<TimeoutPolicy>;
   timeoutSeconds: Maybe<Scalars['Int']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
@@ -3047,15 +3047,17 @@ export type DeviceInventoryQuery = {
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
   node: Maybe<Node>;
+  phyTopologyVersionData: TopologyVersionData;
   ptpDiffSynce: PtpDiffSynce;
   ptpPathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   ptpTopology: Maybe<PtpTopology>;
+  ptpTopologyVersionData: TopologyVersionData;
   shortestPath: Array<NetRoutingPathNode>;
   syncePathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   synceTopology: Maybe<SynceTopology>;
+  synceTopologyVersionData: TopologyVersionData;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
-  topologyVersionData: TopologyVersionData;
   topologyVersions: Maybe<Array<Scalars['String']['output']>>;
   transactions: Array<Transaction>;
   uniconfigShellSession: Maybe<Scalars['String']['output']>;
@@ -3123,8 +3125,18 @@ export type DeviceInventoryQueryNodeArgs = {
 };
 
 
+export type DeviceInventoryQueryPhyTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryQueryPtpPathToGrandMasterArgs = {
   deviceFrom: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQueryPtpTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
 };
 
 
@@ -3139,6 +3151,11 @@ export type DeviceInventoryQuerySyncePathToGrandMasterArgs = {
 };
 
 
+export type DeviceInventoryQuerySynceTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryQueryTopologyArgs = {
   filter?: InputMaybe<FilterTopologyInput>;
 };
@@ -3146,11 +3163,6 @@ export type DeviceInventoryQueryTopologyArgs = {
 
 export type DeviceInventoryQueryTopologyCommonNodesArgs = {
   nodes: Array<Scalars['String']['input']>;
-};
-
-
-export type DeviceInventoryQueryTopologyVersionDataArgs = {
-  version: Scalars['String']['input'];
 };
 
 
@@ -3708,7 +3720,21 @@ export type TopologyVersionDataQueryVariables = Exact<{
 }>;
 
 
-export type TopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+export type TopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', phyTopologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+
+export type PtpTopologyVersionDataQueryVariables = Exact<{
+  version: Scalars['String']['input'];
+}>;
+
+
+export type PtpTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+
+export type SynceTopologyVersionDataQueryVariables = Exact<{
+  version: Scalars['String']['input'];
+}>;
+
+
+export type SynceTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
 
 export type PtpTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 

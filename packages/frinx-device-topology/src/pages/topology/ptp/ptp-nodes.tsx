@@ -1,6 +1,7 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import React, { useState, VoidFunctionComponent } from 'react';
 import PtpNodeIcon from '../../../components/node-icons/ptp-node-icon';
+import { PtpGraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedPtpNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { Position, PtpGraphNode } from '../graph.helpers';
@@ -12,7 +13,7 @@ type StatePosition = {
 };
 
 type Props = {
-  nodes: PtpGraphNode[];
+  nodes: PtpGraphNodeWithDiff[];
   ptpDiffSynceIds: string[];
   isPtpDiffSynceShown: boolean;
   onNodePositionUpdate: (deviceName: string, position: Position) => void;
@@ -37,6 +38,7 @@ const PtpNodes: VoidFunctionComponent<Props> = ({
     selectedEdge,
     unconfirmedSelectedGmPathNodeId,
     gmPathIds,
+    selectedNode,
   } = state;
   const [position, setPosition] = useState<StatePosition>({
     nodeId: null,
@@ -101,6 +103,7 @@ const PtpNodes: VoidFunctionComponent<Props> = ({
           key={node.id}
           positions={{ nodes: ptpNodePositions, interfaceGroups: ptpInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
+          isSelected={selectedNode?.id === node.id}
           isSelectedForGmPath={unconfirmedSelectedGmPathNodeId === node.id}
           isGmPath={gmPathIds.includes(node.nodeId)}
           topologyMode={mode}
