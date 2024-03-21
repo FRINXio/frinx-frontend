@@ -19,7 +19,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const { details, interfaces } = node;
 
   const handleInterfaceClick = (deviceInterface: GraphPtpNodeInterface) => {
-    const [edge] = ptpEdges.filter((e) => e.id.startsWith(deviceInterface.id));
+    const [edge] = ptpEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));
     if (!edge) {
       return;
     }

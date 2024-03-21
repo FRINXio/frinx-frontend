@@ -21,7 +21,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const { interfaces } = node;
 
   const handleInterfaceClick = (deviceInterface: GraphSynceNodeInterface) => {
-    const [edge] = synceEdges.filter((e) => e.id.startsWith(deviceInterface.id));
+    const [edge] = synceEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));
     if (!edge) {
       return;
     }
