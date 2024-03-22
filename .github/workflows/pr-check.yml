@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - story-gamma-old
       - story-v1.0
 jobs:
   pr-check:
