@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - story-new-graphql-proxy
+# Needed for nx-set-shas when run on the main branch
+permissions:
+  actions: read
+  contents: read
 jobs:
   pr-check:
     runs-on: ubuntu-latest
@@ -21,6 +25,14 @@ jobs:
         run: cp .npmrc.ci .npmrc
       - name: Install dependencies
         run: npm ci
+
+      - uses: nrwl/nx-set-shas@v3
+      # This line is needed for nx affected to work when CI is running on a PR
+      - run: git branch --track main origin/main
+
+      - run: npx nx-cloud record -- nx format:check
+      - run: npx nx affected -t lint test build e2e-ci
+
       - name: Check code formatting
         run: npm run formatter:check
       - name: Run PR check
