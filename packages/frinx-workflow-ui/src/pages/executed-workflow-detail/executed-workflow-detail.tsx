@@ -16,7 +16,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { ClientWorkflow, useNotifications } from '@frinx/shared';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import {
   ControlExecutedWorkflowSubscription,
@@ -25,8 +25,8 @@ import {
   ExecutedWorkflowDetailQueryVariables,
   PauseWorkflowMutation,
   PauseWorkflowMutationVariables,
-  RerunWorkflowMutation,
-  RerunWorkflowMutationVariables,
+  RerunEditedWorkflowMutation,
+  RerunEditedWorkflowMutationVariables,
   RestartWorkflowMutation,
   RestartWorkflowMutationVariables,
   ResumeWorkflowMutation,
@@ -149,14 +149,9 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
 `;
 
 const RERUN_WORKFLOW_MUTATION = gql`
-  mutation RerunWorkflow($workflowId: String!) {
+  mutation RerunEditedWorkflow($input: ExecuteWorkflowByNameInput!) {
     conductor {
-      rerunExecutedWorkflow(id: $workflowId) {
-        workflow {
-          id
-          status
-        }
-      }
+      executeWorkflowByName(input: $input)
     }
   }
 `;
@@ -238,6 +233,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const { addToastNotification } = useNotifications();
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
+  const navigate = useNavigate();
   const [
     { data: executedWorkflowDetail, fetching: isLoadingExecutedWorkflow, error: executedWorkflowDetailError },
     reexecuteQuery,
@@ -264,7 +260,9 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const [, terminateWorkflow] = useMutation<TerminateWorkflowMutation, TerminateWorkflowMutationVariables>(
     TERMINATE_WORKFLOW_MUTATION,
   );
-  const [, rerunWorkflow] = useMutation<RerunWorkflowMutation, RerunWorkflowMutationVariables>(RERUN_WORKFLOW_MUTATION);
+  const [, rerunWorkflow] = useMutation<RerunEditedWorkflowMutation, RerunEditedWorkflowMutationVariables>(
+    RERUN_WORKFLOW_MUTATION,
+  );
 
   // TODO: FIXME
   useEffect(() => {
@@ -306,10 +304,15 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     })),
   };
 
-  const handleOnRerunClick = () => {
+  const handleOnRerunClick = (inputParameters: string) => {
     rerunWorkflow(
       {
-        workflowId,
+        input: {
+          inputParameters,
+          workflowName: executedWorkflow.workflowDefinition?.name ?? '',
+          workflowVersion: executedWorkflow.workflowDefinition?.version ?? 0,
+          correlationId: executedWorkflow.correlationId ?? '',
+        },
       },
       ctx,
     )
@@ -317,12 +320,14 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         if (result.error) {
           throw new Error(result.error?.message);
         }
-        if (result.data?.conductor.rerunExecutedWorkflow.workflow == null) {
+        if (result.data?.conductor.executeWorkflowByName == null) {
           throw new Error('Something went wrong');
         }
         // when specific task detail is opened we need to close it after rerun so that we can see new tasks that have different ids
         setOpenedTaskId(null);
-        onExecutedOperation(result.data?.conductor.rerunExecutedWorkflow.workflow.id);
+        onExecutedOperation(executedWorkflow.id);
+
+        navigate(`../${result.data.conductor.executeWorkflowByName}`, { replace: true });
 
         addToastNotification({
           title: 'Workflow rerun succeeded',
