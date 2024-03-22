@@ -3,8 +3,7 @@
     "default": {
       "runner": "nx-cloud",
       "options": {
-        "cacheableOperations": ["lint", "type-check", "typegen", "codegen", "build"],
-        "accessToken": "YzE3ZDMxYTMtOTRiMC00ZjBmLTk2ZTEtY2QwYzdlM2M3MDZifHJlYWQtd3JpdGU="
+        "cacheableOperations": ["lint", "type-check", "typegen", "codegen", "build"]
       }
     }
   },
