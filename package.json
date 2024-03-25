@@ -34,7 +34,7 @@
     "dev": "run-p dev:shared dev:api dev:topology dev:inventory dev:resource dev:workflow dev:builder dev:dashboard dev:server",
     "lerna:shared": "lerna run typegen,type-check,lint --scope=@frinx/shared",
     "lerna": "lerna run typegen,type-check,lint",
-    "pr": "run-s version:check dedubcheck lerna:shared lerna",
+    "pr": "NX_NO_CLOUD=true run-s version:check dedubcheck lerna:shared lerna",
     "version:check": "node ./version-check.mjs",
     "test": "lerna run test"
   },

@@ -54,7 +54,7 @@ const WorkflowDefinitionsHeader: FC<Props> = ({
           <Button onClick={onClearSearch} ml={2}>
             Clear
           </Button>
-          <Button type="submit" marginLeft="2" colorScheme="blue" color="white" onClick={onSearchSubmit}>
+          <Button marginLeft="2" colorScheme="blue" color="white" onClick={onSearchSubmit}>
             Search
           </Button>
         </Flex>
