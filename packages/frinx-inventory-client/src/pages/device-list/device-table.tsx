@@ -169,13 +169,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     isDisabled={isInstalled}
                     disabled={isInstalled}
                     icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    as={Link}
-                    to={`../${device.id}/edit`}
-                    onClick={(e) => {
-                      if (isInstalled) {
-                        e.preventDefault();
-                      }
-                    }}
+                    as={isInstalled ? 'button' : Link}
+                    {...(isInstalled ? {} : { to: `../${device.id}/edit` })}
                   />
                   <IconButton
                     data-cy={`device-delete-${device.name}`}
