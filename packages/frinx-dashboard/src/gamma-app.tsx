@@ -8,7 +8,8 @@ type GammaComponents = Omit<typeof import('@frinxio/gamma'), 'getGammaAppProvide
 };
 
 const GammaApp: VoidFunctionComponent = () => {
-  const { unistoreApiURL, uniflowApiURL, inventoryApiURL, inventoryWsURL } = useConfig();
+  const { unistoreApiURL, uniflowApiURL, inventoryApiURL, devInventoryWsURL, inventoryWsSchema, inventoryWsPath } =
+    useConfig();
   const [components, setComponents] = useState<GammaComponents | null>(null);
   const [hasTransactionError, setHasTransactionError] = useState(false);
 
@@ -30,7 +31,7 @@ const GammaApp: VoidFunctionComponent = () => {
   }
 
   const { GammaAppProvider, GammaApp: App } = components;
-
+  const wsURL = devInventoryWsURL || `${inventoryWsSchema}${window.location.host}${inventoryWsPath}`;
   return (
     <GammaAppProvider
       hasTransactionError={hasTransactionError}
@@ -38,7 +39,7 @@ const GammaApp: VoidFunctionComponent = () => {
         setHasTransactionError(false);
       }}
       deviceInventoryClient={InventoryApi.create({ url: inventoryApiURL }).client}
-      wsUrl={inventoryWsURL}
+      wsUrl={wsURL}
     >
       <App />
     </GammaAppProvider>

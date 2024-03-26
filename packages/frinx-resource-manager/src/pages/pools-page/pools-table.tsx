@@ -149,6 +149,7 @@ const PoolsTable: VoidFunctionComponent<Props> = ({
                         data-cy={`pool-${pool.Name}-${t.Tag}`}
                         key={t.id}
                         marginRight={1}
+                        cursor="pointer"
                         onClick={() => {
                           if (t && onTagClick) {
                             onTagClick(t.Tag);

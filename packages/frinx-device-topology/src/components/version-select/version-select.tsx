@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import React, { ChangeEvent, VoidFunctionComponent } from 'react';
 import { gql, useQuery } from 'urql';
 import { getLocalDateFromUTC } from '@frinx/shared';
-import { setSelectedVersion } from '../../state.actions';
+import { setSelectedVersion, setSynceDiffVisibility } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { VersionsQuery, VersionsQueryVariables } from '../../__generated__/graphql';
 
@@ -26,6 +26,7 @@ const VersionSelect: VoidFunctionComponent = () => {
   const handleSelectVersionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.currentTarget;
     dispatch(setSelectedVersion(value === 'none' ? null : value));
+    dispatch(setSynceDiffVisibility(false));
   };
 
   if (isFetchingVersions) {
@@ -37,7 +38,7 @@ const VersionSelect: VoidFunctionComponent = () => {
   return (
     <>
       <FormLabel marginBottom={4}>Compare current topology with:</FormLabel>
-      <Select value={selectedVersion || undefined} onChange={handleSelectVersionChange} background="white">
+      <Select value={selectedVersion ?? 'none'} onChange={handleSelectVersionChange} background="white">
         <option value="none">None</option>
         {versions.map((v) => (
           <option key={`version-${v}`} value={v}>

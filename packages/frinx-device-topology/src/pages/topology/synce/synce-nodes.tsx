@@ -1,6 +1,7 @@
 import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
 import SynceNodeIcon from '../../../components/node-icons/synce-node-icon';
+import { SynceGraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedSynceNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { SynceGraphNode } from '../../../__generated__/graphql';
@@ -13,7 +14,7 @@ type StatePosition = {
 };
 
 type Props = {
-  nodes: SynceGraphNode[];
+  nodes: SynceGraphNodeWithDiff[];
   onNodePositionUpdate: (deviceName: string, position: Position) => void;
   onNodePositionUpdateFinish: () => void;
 };
@@ -30,6 +31,7 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
     selectedEdge,
     unconfirmedSelectedGmPathNodeId,
     gmPathIds,
+    selectedNode,
   } = state;
 
   const [position, setPosition] = useState<StatePosition>({
@@ -93,6 +95,7 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
           key={node.id}
           positions={{ nodes: synceNodePositions, interfaceGroups: synceInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
+          isSelected={selectedNode?.id === node.id}
           isSelectedForGmPath={unconfirmedSelectedGmPathNodeId === node.id}
           isGmPath={gmPathIds.includes(node.nodeId)}
           topologyMode={mode}
