@@ -1045,13 +1045,12 @@ export type OutputParameters = {
   value: Scalars['String']['output'];
 };
 
-/** Holds information about the requested pagination page */
 export type PageInfo = {
   __typename?: 'PageInfo';
-  endCursor: Maybe<Scalars['Cursor']['output']>;
+  endCursor: Maybe<Scalars['String']['output']>;
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor: Maybe<Scalars['Cursor']['output']>;
+  startCursor: Maybe<Scalars['String']['output']>;
 };
 
 export type PaginationArgs = {
@@ -1995,6 +1994,7 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   hasSchedule: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   inputParameters: Maybe<Array<Scalars['String']['output']>>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
   name: Scalars['String']['output'];
   outputParameters: Maybe<Array<OutputParameters>>;
   ownerEmail: Maybe<Scalars['String']['output']>;
@@ -2016,6 +2016,11 @@ export type WorkflowDefinitionConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type WorkflowDefinitionDescriptionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 export type WorkflowDefinitionEdge = {
   __typename?: 'WorkflowDefinitionEdge';
   cursor: Scalars['String']['output'];
@@ -2026,7 +2031,7 @@ export type WorkflowDefinitionInput = {
   accessPolicy?: InputMaybe<Scalars['JSON']['input']>;
   createTime?: InputMaybe<Scalars['BigInt']['input']>;
   createdBy?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<WorkflowDefinitionDescriptionInput>;
   failureWorkflow?: InputMaybe<Scalars['String']['input']>;
   inputParameters?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   inputTemplate?: InputMaybe<Scalars['JSON']['input']>;

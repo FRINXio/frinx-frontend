@@ -73,6 +73,7 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             tasksJson
             hasSchedule
             description
+            labels
             createdAt
             updatedAt
             createdBy

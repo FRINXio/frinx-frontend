@@ -290,7 +290,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
         }),
         {},
       ),
-      description: JSON.stringify({ description: wf.description, labels: wf.labels }),
+      description: { description: wf.description, labels: wf.labels },
       tasksJson: undefined,
     };
 

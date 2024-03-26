@@ -78,11 +78,11 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
       const json = readFiles
         .map((data) => JSON.parse(data))
         .map((data) => {
-          const { tasks, name, description, outputParameters, restartable, timeoutSeconds, version } = data;
+          const { tasks, name, description, labels, outputParameters, restartable, timeoutSeconds, version } = data;
           return {
             tasks: JSON.stringify(tasks),
             name,
-            description,
+            description: { description, labels: labels || [] },
             outputParameters,
             restartable,
             timeoutSeconds,
