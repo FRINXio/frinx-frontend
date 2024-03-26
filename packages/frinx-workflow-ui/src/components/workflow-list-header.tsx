@@ -33,7 +33,10 @@ const CREATE_WORKFLOW_MUTATION = gql`
           updatedAt
           tasksJson
           name
-          description
+          description {
+            description
+            labels
+          }
           version
           outputParameters {
             key

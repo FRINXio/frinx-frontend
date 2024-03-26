@@ -7,7 +7,6 @@ import {
   useNotifications,
   ExtendedTask,
   Task,
-  DescriptionJSON,
   ClientWorkflowWithTasks,
   TaskDefinition,
 } from '@frinx/shared';
@@ -42,7 +41,10 @@ export const WorkflowDefinitionFragment = gql`
   fragment WorkflowDefinitionFragment on WorkflowDefinition {
     id
     name
-    description
+    description {
+      description
+      labels
+    }
     version
     createdAt
     updatedAt
@@ -115,7 +117,10 @@ const UPDATE_WORKFLOW_MUTATION = gql`
           updatedAt
           tasksJson
           name
-          description
+          description {
+            description
+            labels
+          }
           version
           outputParameters {
             key
@@ -228,13 +233,12 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
     const tasks = jsonParse<Task[]>(workflowDetail.tasksJson);
     const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
-    const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { __typename, ...wfDetail } = workflowDetail;
     setWorkflow({
       ...wfDetail,
-      description: description?.description ?? null,
-      labels: description?.labels || [],
+      description: wfDetail.description?.description ?? '',
+      labels: wfDetail.description?.labels ?? [],
       tasks: extendedTasks,
       hasSchedule: workflowDetail.hasSchedule ?? false,
       outputParameters: workflowDetail.outputParameters,
@@ -366,10 +370,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     (e) => {
       const { node } = e;
       const parsedTasks = jsonParse<Task[]>(node.tasksJson) ?? [];
-      const description = jsonParse<DescriptionJSON | null>(node.description);
       return {
         ...node,
-        labels: description?.labels || [],
+        description: node.description?.description ?? '',
+        labels: node.description?.labels ?? [],
         tasks: parsedTasks,
         hasSchedule: node.hasSchedule || false,
         timeoutSeconds: node.timeoutSeconds ?? 0,

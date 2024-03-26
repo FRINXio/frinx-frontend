@@ -72,8 +72,10 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             restartable
             tasksJson
             hasSchedule
-            description
-            labels
+            description {
+              description
+              labels
+            }
             createdAt
             updatedAt
             createdBy
@@ -506,7 +508,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     executedWorkflow.workflowDefinition != null
       ? {
           ...executedWorkflow.workflowDefinition,
-          labels: [],
+          description: executedWorkflow.workflowDefinition.description?.description ?? '',
+          labels: executedWorkflow.workflowDefinition.description?.labels ?? [],
           timeoutSeconds: executedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
         }
       : null;
