@@ -1045,12 +1045,13 @@ export type OutputParameters = {
   value: Scalars['String']['output'];
 };
 
+/** Holds information about the requested pagination page */
 export type PageInfo = {
   __typename?: 'PageInfo';
-  endCursor: Maybe<Scalars['String']['output']>;
+  endCursor: Maybe<Scalars['Cursor']['output']>;
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor: Maybe<Scalars['String']['output']>;
+  startCursor: Maybe<Scalars['Cursor']['output']>;
 };
 
 export type PaginationArgs = {
@@ -1916,6 +1917,8 @@ export type Workflow = Node & {
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
   endTime: Maybe<Scalars['String']['output']>;
+  externalInputPayloadStoragePath: Maybe<Scalars['String']['output']>;
+  externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   failedReferenceTaskNames: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasSubworkflows: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -2104,6 +2107,7 @@ export type WorkflowTask = Node & {
   externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   inputData: Maybe<Scalars['String']['output']>;
+  logs: Maybe<Array<WorkflowTaskLog>>;
   outputData: Maybe<Scalars['String']['output']>;
   pollCount: Maybe<Scalars['Int']['output']>;
   reasonForIncompletion: Maybe<Scalars['String']['output']>;
@@ -2121,6 +2125,12 @@ export type WorkflowTask = Node & {
   taskType: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
   workflowType: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkflowTaskLog = {
+  __typename?: 'WorkflowTaskLog';
+  createdAt: Maybe<Scalars['String']['output']>;
+  message: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkflowTaskStatus =
@@ -2414,6 +2424,7 @@ export type ConductorMutationRerunArgs = {
 
 export type ConductorMutationRerunExecutedWorkflowArgs = {
   id: Scalars['String']['input'];
+  input?: InputMaybe<RerunWorkflowRequest_Input>;
 };
 
 
@@ -2580,6 +2591,7 @@ export type ConductorQuery = {
   doCheck: Maybe<HealthCheckStatus>;
   eventHandlers: EventHandlerConnection;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
+  externalStorage: Maybe<Scalars['JSON']['output']>;
   /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
   /** Retrieves all workflow definition along with blueprint */
@@ -2682,6 +2694,11 @@ export type ConductorQueryExecutedWorkflowsArgs = {
   orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+};
+
+
+export type ConductorQueryExternalStorageArgs = {
+  path: Scalars['String']['input'];
 };
 
 
@@ -3703,3 +3720,10 @@ export type DeleteWorkflowBuilderDefinitionMutationVariables = Exact<{
 
 
 export type DeleteWorkflowBuilderDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', deleteWorkflowDefinition: { __typename?: 'DeleteWorkflowDefinitionPayload', workflowDefinition: { __typename?: 'WorkflowDefinition', id: string } | null } } };
+
+export type CloneWorkflowMutationVariables = Exact<{
+  input: CreateWorkflowDefinitionInput;
+}>;
+
+
+export type CloneWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', createWorkflowDefinition: { __typename?: 'WorkflowDefinitionPayload', workflowDefinition: { __typename?: 'WorkflowDefinition', id: string } | null } | null } };

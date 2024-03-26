@@ -20,6 +20,8 @@ import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
 import {
+  CloneWorkflowMutation,
+  CloneWorkflowMutationVariables,
   DeleteWorkflowBuilderDefinitionMutation,
   DeleteWorkflowBuilderDefinitionMutationVariables,
   ExecuteWorkflowByNameBuilderMutation,
@@ -145,6 +147,18 @@ const WORKFLOW_DELETE_MUTATION = gql`
   }
 `;
 
+const CREATE_WORKFLOW_DEFINITION_MUTATION = gql`
+  mutation CloneWorkflow($input: CreateWorkflowDefinitionInput!) {
+    conductor {
+      createWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          id
+        }
+      }
+    }
+  }
+`;
+
 const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   const ctx = useMemo(
     () => ({
@@ -180,6 +194,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const [, updateWorkflow] = useMutation<UpdateWorkflowMutation, UpdateWorkflowMutationVariables>(
     UPDATE_WORKFLOW_MUTATION,
+  );
+
+  const [, cloneWorkflow] = useMutation<CloneWorkflowMutation, CloneWorkflowMutationVariables>(
+    CREATE_WORKFLOW_DEFINITION_MUTATION,
   );
 
   const [, deleteWorkflow] = useMutation<
@@ -265,22 +283,33 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       name: wfName,
       tasks: JSON.stringify(wf.tasks),
       timeoutPolicy: timeoutPolicy ?? undefined,
+      outputParameters: wf.outputParameters?.reduce(
+        (acc, curr) => ({
+          ...acc,
+          [curr.key]: curr.value,
+        }),
+        {},
+      ),
+      description: JSON.stringify({ description: wf.description, labels: wf.labels }),
+      tasksJson: undefined,
     };
-    const result = await updateWorkflow({
-      input: {
-        id: '',
-        workflowDefinition: updatedWorkflow,
-      },
-    });
-    if (result.data) {
-      onClose();
+
+    try {
+      const result = await cloneWorkflow({ input: { workflowDefinition: updatedWorkflow } });
+      if (result.error != null) {
+        throw new Error(result.error.message);
+      }
+
+      if (result.data) {
+        onClose();
+        addToastNotification({
+          content: 'Workflow cloned',
+          type: 'success',
+        });
+      }
+    } catch (error) {
       addToastNotification({
-        content: 'Workflow cloned',
-        type: 'success',
-      });
-    } else {
-      addToastNotification({
-        content: `Workflow clone failed: ${result.error}`,
+        content: `Workflow clone failed: ${error}`,
         type: 'error',
       });
     }
