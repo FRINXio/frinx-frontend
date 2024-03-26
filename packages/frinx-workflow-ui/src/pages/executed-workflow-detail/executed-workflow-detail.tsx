@@ -89,6 +89,8 @@ const EXECUTED_WORKFLOW_QUERY = gql`
           lastRetriedTime
           startTime
           endTime
+          externalOutputPayloadStoragePath
+          externalInputPayloadStoragePath
           tasks {
             id
             taskType
@@ -560,6 +562,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   isEscaped={isEscaped}
                   input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
                   output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
+                  externalInputPayloadStoragePath={executedWorkflow.externalInputPayloadStoragePath}
+                  externalOutputPayloadStoragePath={executedWorkflow.externalOutputPayloadStoragePath}
                   onEscapeChange={() => {
                     setIsEscaped((prev) => !prev);
                   }}
