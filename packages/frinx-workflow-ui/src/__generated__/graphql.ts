@@ -3774,12 +3774,12 @@ export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
 
 export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', conductor: { __typename?: 'ConductorSubscription', controlExecutedWorkflow: { __typename?: 'Workflow', endTime: string | null, startTime: string | null, status: WorkflowStatus | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, endTime: string | null, startTime: string | null, updatedAt: string | null, status: WorkflowTaskStatus | null, taskType: string | null, subWorkflowId: string | null }> | null } } };
 
-export type RerunWorkflowMutationVariables = Exact<{
-  workflowId: Scalars['String']['input'];
+export type RerunEditedWorkflowMutationVariables = Exact<{
+  input: ExecuteWorkflowByNameInput;
 }>;
 
 
-export type RerunWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', rerunExecutedWorkflow: { __typename?: 'ActionWorkflowPayload', workflow: { __typename?: 'Workflow', id: string, status: WorkflowStatus | null } | null } } };
+export type RerunEditedWorkflowMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', executeWorkflowByName: string | null } };
 
 export type RestartWorkflowMutationVariables = Exact<{
   workflowId: Scalars['String']['input'];
