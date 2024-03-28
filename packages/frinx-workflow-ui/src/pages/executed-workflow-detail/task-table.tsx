@@ -61,7 +61,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick }) => {
                     size="sm"
                     aria-label="show-subworkflow"
                     as={Link}
-                    to={`../executed/${task.subWorkflowId}`}
+                    to={`../${task.subWorkflowId}`}
                     icon={<Icon size={12} as={FeatherIcon} icon="arrow-right" />}
                     isDisabled={task.subWorkflowId == null}
                   />

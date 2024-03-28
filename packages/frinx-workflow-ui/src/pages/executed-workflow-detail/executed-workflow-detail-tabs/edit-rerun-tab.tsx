@@ -5,15 +5,15 @@ import { Button, Spacer, HStack } from '@chakra-ui/react';
 type Props = {
   workflowDefinition?: ClientWorkflow | null;
   workflowInput?: Record<string, string | boolean | number | string[]> | null;
-  onRerunClick: () => void;
+  onRerunClick: (inputParameters: string) => void;
 };
 
 const EditRerunTab: FC<Props> = ({ onRerunClick, workflowDefinition, workflowInput }) => {
   const { values, inputParameterKeys, parsedInputParameters, submitForm, isSubmitting, setSubmitting, handleChange } =
     useWorkflowInputsForm({
       workflow: workflowDefinition,
-      onSubmit: () => {
-        onRerunClick();
+      onSubmit: (data) => {
+        onRerunClick(JSON.stringify(data));
         setSubmitting(false);
       },
       initialValues: workflowInput,
