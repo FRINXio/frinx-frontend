@@ -1,7 +1,7 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { PtpGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { GraphPtpNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import { PtpGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
