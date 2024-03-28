@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import { ClientWorkflow, ClientWorkflowWithTasks, jsonParse } from '@frinx/shared';
+import { ClientWorkflow, ClientWorkflowWithTasks } from '@frinx/shared';
 import WorkflowActions from './workflow-actions';
 import WorkflowLabel from '../../components/workflow-label';
 
@@ -43,17 +43,10 @@ type Props = {
   setActiveWorkflow: (wf: ClientWorkflowWithTasks) => void;
 };
 
-function getLabelsFromJSON(description?: string): string[] {
-  return jsonParse<{ labels: string[] }>(description)?.labels || [];
-}
-
-const Labels: VoidFunctionComponent<{ wf: ClientWorkflow; onClick: (label: string) => void }> = ({ wf, onClick }) => {
-  const { description } = wf;
-  const labelsDef = getLabelsFromJSON(description ?? undefined);
-
+const Labels: VoidFunctionComponent<{ labels: string[]; onClick: (label: string) => void }> = ({ labels, onClick }) => {
   return (
     <>
-      {labelsDef.map((label: string) => {
+      {labels.map((label: string) => {
         return (
           <WorkflowLabel
             key={label}
@@ -116,13 +109,11 @@ const WorkflowDefinitionsTable: VoidFunctionComponent<Props> = ({
                     {workflow.name} / {workflow.version}
                   </Heading>
                   <Text fontStyle="italic" color="gray.600">
-                    {jsonParse(workflow.description)?.description ||
-                      (jsonParse(workflow.description)?.description !== '' && workflow.description) ||
-                      'no description'}
+                    {workflow.description || 'No description'}
                   </Text>
                 </Td>
                 <Td>
-                  <Labels wf={workflow} onClick={onLabelClick} />
+                  <Labels labels={workflow.labels} onClick={onLabelClick} />
                 </Td>
                 <Td>
                   <Popover trigger="hover">

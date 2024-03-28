@@ -7,7 +7,6 @@ import {
   useNotifications,
   ExtendedTask,
   Task,
-  DescriptionJSON,
   ClientWorkflowWithTasks,
   TaskDefinition,
 } from '@frinx/shared';
@@ -20,6 +19,8 @@ import App from './app';
 import WorkflowForm from './components/workflow-form/workflow-form';
 import { TaskActionsProvider } from './task-actions-context';
 import {
+  CloneWorkflowMutation,
+  CloneWorkflowMutationVariables,
   DeleteWorkflowBuilderDefinitionMutation,
   DeleteWorkflowBuilderDefinitionMutationVariables,
   ExecuteWorkflowByNameBuilderMutation,
@@ -40,7 +41,10 @@ export const WorkflowDefinitionFragment = gql`
   fragment WorkflowDefinitionFragment on WorkflowDefinition {
     id
     name
-    description
+    description {
+      description
+      labels
+    }
     version
     createdAt
     updatedAt
@@ -113,7 +117,10 @@ const UPDATE_WORKFLOW_MUTATION = gql`
           updatedAt
           tasksJson
           name
-          description
+          description {
+            description
+            labels
+          }
           version
           outputParameters {
             key
@@ -137,6 +144,18 @@ const WORKFLOW_DELETE_MUTATION = gql`
   mutation DeleteWorkflowBuilderDefinition($input: DeleteWorkflowDefinitionInput!) {
     conductor {
       deleteWorkflowDefinition(input: $input) {
+        workflowDefinition {
+          id
+        }
+      }
+    }
+  }
+`;
+
+const CREATE_WORKFLOW_DEFINITION_MUTATION = gql`
+  mutation CloneWorkflow($input: CreateWorkflowDefinitionInput!) {
+    conductor {
+      createWorkflowDefinition(input: $input) {
         workflowDefinition {
           id
         }
@@ -182,6 +201,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     UPDATE_WORKFLOW_MUTATION,
   );
 
+  const [, cloneWorkflow] = useMutation<CloneWorkflowMutation, CloneWorkflowMutationVariables>(
+    CREATE_WORKFLOW_DEFINITION_MUTATION,
+  );
+
   const [, deleteWorkflow] = useMutation<
     DeleteWorkflowBuilderDefinitionMutation,
     DeleteWorkflowBuilderDefinitionMutationVariables
@@ -210,13 +233,12 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     }
     const tasks = jsonParse<Task[]>(workflowDetail.tasksJson);
     const extendedTasks = tasks?.map(convertTaskToExtendedTask) ?? [];
-    const description = jsonParse<DescriptionJSON | null>(workflowDetail.description);
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { __typename, ...wfDetail } = workflowDetail;
     setWorkflow({
       ...wfDetail,
-      description: description?.description ?? null,
-      labels: description?.labels || [],
+      description: wfDetail.description?.description ?? '',
+      labels: wfDetail.description?.labels ?? [],
       tasks: extendedTasks,
       hasSchedule: workflowDetail.hasSchedule ?? false,
       outputParameters: workflowDetail.outputParameters,
@@ -265,22 +287,33 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       name: wfName,
       tasks: JSON.stringify(wf.tasks),
       timeoutPolicy: timeoutPolicy ?? undefined,
+      outputParameters: wf.outputParameters?.reduce(
+        (acc, curr) => ({
+          ...acc,
+          [curr.key]: curr.value,
+        }),
+        {},
+      ),
+      description: { description: wf.description, labels: wf.labels },
+      tasksJson: undefined,
     };
-    const result = await updateWorkflow({
-      input: {
-        id: '',
-        workflowDefinition: updatedWorkflow,
-      },
-    });
-    if (result.data) {
-      onClose();
+
+    try {
+      const result = await cloneWorkflow({ input: { workflowDefinition: updatedWorkflow } });
+      if (result.error != null) {
+        throw new Error(result.error.message);
+      }
+
+      if (result.data) {
+        onClose();
+        addToastNotification({
+          content: 'Workflow cloned',
+          type: 'success',
+        });
+      }
+    } catch (error) {
       addToastNotification({
-        content: 'Workflow cloned',
-        type: 'success',
-      });
-    } else {
-      addToastNotification({
-        content: `Workflow clone failed: ${result.error}`,
+        content: `Workflow clone failed: ${error}`,
         type: 'error',
       });
     }
@@ -337,10 +370,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     (e) => {
       const { node } = e;
       const parsedTasks = jsonParse<Task[]>(node.tasksJson) ?? [];
-      const description = jsonParse<DescriptionJSON | null>(node.description);
       return {
         ...node,
-        labels: description?.labels || [],
+        description: node.description?.description ?? '',
+        labels: node.description?.labels ?? [],
         tasks: parsedTasks,
         hasSchedule: node.hasSchedule || false,
         timeoutSeconds: node.timeoutSeconds ?? 0,

@@ -20,31 +20,16 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import {
-  omitNullValue,
-  useNotifications,
-  // ScheduledWorkflow,
-  StatusType,
-  ClientWorkflow,
-  DescriptionJSON,
-  jsonParse,
-  // Pagination,
-  // usePagination,
-  CreateScheduledWorkflow,
-  // WorkflowDefinition,
-  // ClientWorkflowWithTasks,
-} from '@frinx/shared';
+import { omitNullValue, useNotifications, StatusType, ClientWorkflow, CreateScheduledWorkflow } from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
 import {
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
   SchedulesQuery,
-  // SchedulesQueryVariables,
   UpdateScheduleMutation,
   UpdateScheduleMutationVariables,
   WorkflowListQuery,
-  // WorkflowListQueryVariables,
 } from '../../__generated__/graphql';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
 
@@ -56,7 +41,10 @@ const WORKFLOWS_QUERY = gql`
           node {
             id
             name
-            description
+            description {
+              description
+              labels
+            }
             version
             createdAt
             updatedAt
@@ -152,18 +140,12 @@ function ScheduledWorkflowList() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<CreateScheduledWorkflow | null>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
-  // TODO: FIXME
-  // add paging
-  // const [paginationArgs, { nextPage, previousPage }] = usePagination();
 
   const [{ data: workflows }] = useQuery<WorkflowListQuery>({
     query: WORKFLOWS_QUERY,
   });
   const [{ data: scheduledWorkflows, fetching: isLoadingSchedules, error }] = useQuery<SchedulesQuery>({
     query: SCHEDULED_WORKFLOWS_QUERY,
-    // variables: {
-    //   ...paginationArgs,
-    // },
   });
   const [, deleteSchedule] = useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(
     DELETE_SCHEDULE_MUTATION,
@@ -279,10 +261,10 @@ function ScheduledWorkflowList() {
 
   const clientWorkflows: ClientWorkflow[] =
     workflows?.conductor.workflowDefinitions.edges.map(({ node }) => {
-      const parsedLabels = jsonParse<DescriptionJSON>(node.description)?.labels ?? [];
       return {
         ...node,
-        labels: parsedLabels,
+        description: node.description?.description ?? '',
+        labels: node.description?.labels ?? [],
         hasSchedule: node.hasSchedule ?? false,
         timeoutSeconds: node.timeoutSeconds ?? 0,
       };

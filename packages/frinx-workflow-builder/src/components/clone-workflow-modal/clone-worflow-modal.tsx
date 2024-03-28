@@ -9,7 +9,6 @@ import {
   FormControl,
   FormErrorMessage,
   Input,
-  useToast,
 } from '@chakra-ui/react';
 import { ClientWorkflowWithTasks, isWorkflowNameAvailable } from '@frinx/shared';
 import { isEmpty } from 'lodash';
@@ -24,7 +23,6 @@ type Props = {
 
 const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose, workflows }) => {
   const [wfNameError, setWfNameError] = useState<string | null>(null);
-  const toast = useToast();
 
   const cloneInputRef = useRef<HTMLInputElement | null>(null);
   const cancelCloneRef = useRef();
@@ -51,19 +49,8 @@ const CloneWorkflowModal: FC<Props> = ({ onWorkflowClone, isOpen, onClose, workf
       return;
     }
 
-    try {
-      onWorkflowClone(workflowName);
-      handleCloneModalClose();
-
-      toast({
-        duration: 2000,
-        title: `Successfully saved workflow as ${workflowName}`,
-        isClosable: true,
-        status: 'success',
-      });
-    } catch (err) {
-      toast({ duration: 2000, title: 'There was a problem with saving workflow', isClosable: true, status: 'error' });
-    }
+    onWorkflowClone(workflowName);
+    handleCloneModalClose();
   };
 
   return (

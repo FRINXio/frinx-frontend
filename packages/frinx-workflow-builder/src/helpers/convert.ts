@@ -28,7 +28,7 @@ export function convertWorkflowFragmentToClientWorkflow(fragment: WorkflowDefini
 
   return {
     correlationId: '',
-    description: fragment.description ?? undefined,
+    description: fragment.description?.description ?? undefined,
     hasSchedule: fragment.hasSchedule ?? false,
     name: fragment.name,
     version: fragment.version ?? 1,

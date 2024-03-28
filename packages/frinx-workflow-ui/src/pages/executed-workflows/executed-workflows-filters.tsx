@@ -25,7 +25,7 @@ const CLEAR_FILTERS = {
   status: [],
   workflowId: [],
   workflowType: [],
-  isRootWorkflow: false,
+  isRootWorkflow: true,
 };
 
 const Form = chakra('form');

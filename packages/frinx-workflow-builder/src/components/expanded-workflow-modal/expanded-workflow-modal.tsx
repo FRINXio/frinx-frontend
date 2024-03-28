@@ -35,7 +35,10 @@ export const ExpandedWorkflowFragment = gql`
   fragment ExpandedWorkflowFragment on WorkflowDefinition {
     id
     name
-    description
+    description {
+      description
+      labels
+    }
     version
     createdAt
     updatedAt

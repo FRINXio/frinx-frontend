@@ -289,7 +289,10 @@ const App: VoidFunctionComponent<Props> = ({
         input: {
           id: editedWorkflow.id,
           workflowDefinition: {
-            description,
+            description: {
+              description,
+              labels: editedWorkflow.labels,
+            },
             name: editedWorkflow.name,
             tasks: JSON.stringify(newTasks),
             timeoutSeconds: 0,
