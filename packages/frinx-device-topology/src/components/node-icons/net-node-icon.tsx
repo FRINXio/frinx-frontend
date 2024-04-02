@@ -119,6 +119,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
       cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}
       transform={`translate3d(${x}px, ${y}px, 0)`}
       transformOrigin="center center"
+      key={node.id}
       onClick={() => {
         onClick(node);
       }}
