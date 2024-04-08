@@ -202,6 +202,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
 
             return (
               <Edge
+                netNodes={netNodes}
                 controlPoints={controlPoints}
                 edge={edge}
                 isActive={isActive}
