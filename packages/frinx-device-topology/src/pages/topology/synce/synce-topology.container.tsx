@@ -40,6 +40,7 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
   const { topologyLayer, selectedGmPathNodeId, selectedVersion } = state;
+console.log(selectedVersion);
 
   const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,

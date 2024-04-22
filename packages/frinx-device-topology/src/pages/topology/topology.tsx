@@ -37,11 +37,9 @@ const Topology: VoidFunctionComponent = () => {
             ))}
           </Select>
         </FormControl>
-        {(topologyLayer === 'LLDP' || topologyLayer === 'PTP' || topologyLayer === 'Synchronous Ethernet') && (
           <Box flex={1}>
             <VersionSelect />
           </Box>
-        )}
         {topologyLayer === 'LLDP' && (
           <Box flex={1}>
             <LabelsFilter />
