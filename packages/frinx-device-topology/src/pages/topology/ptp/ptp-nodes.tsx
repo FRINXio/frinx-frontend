@@ -4,8 +4,7 @@ import PtpNodeIcon from '../../../components/node-icons/ptp-node-icon';
 import { PtpGraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedPtpNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { PtpGraphNode } from '../../../__generated__/graphql';
-import { Position } from '../graph.helpers';
+import { Position, PtpGraphNode } from '../graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;

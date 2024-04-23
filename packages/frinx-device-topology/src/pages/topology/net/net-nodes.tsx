@@ -21,6 +21,9 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     alternativeShortestPaths,
     selectedAlternativeShortestPathIndex,
     selectedEdge,
+    selectedNode,
+    netNodes,
+    isWeightVisible,
   } = state;
 
   const handleClick = (node: GraphNetNode) => {
@@ -37,10 +40,13 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     <g>
       {nodes.map((node) => (
         <NetNodeIcon
+          isWeightVisible={isWeightVisible}
           onClick={handleClick}
           key={node.id}
+          netNodes={netNodes}
           positions={{ nodes: netNodePositions, interfaceGroups: netInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
+          isSelected={node.id === selectedNode?.id}
           isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}
           isSelectedForShortestPath={unconfirmedShortestPathNodeIds.includes(node.id)}
           isCommon={commonNodeIds.includes(node.name)}

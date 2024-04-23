@@ -1,7 +1,8 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
-import { BackupGraphNode, GraphEdge, GraphNode } from '../pages/topology/graph.helpers';
-import { PtpDeviceDetails, PtpGraphNode, SynceDeviceDetails, SynceGraphNode } from '../__generated__/graphql';
+// import { PtpGraphNode } from '../__generated__/graphql';
+import { BackupGraphNode, GraphEdge, GraphNode, SynceGraphNode, PtpGraphNode } from '../pages/topology/graph.helpers';
+import { PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -152,7 +153,7 @@ export function getPtpNodesWithDiff(
           createdAt: '1970-01-01',
           serviceState: 'PLANNING',
         },
-        ptpDeviceDetails: {} as PtpDeviceDetails,
+        details: {} as PtpDeviceDetails,
         interfaces: interfaces.map((i) => ({ ...i, details: null })),
         coordinates,
         change: 'DELETED' as const,
@@ -231,7 +232,7 @@ export function getSynceNodesWithDiff(
           createdAt: '1970-01-01',
           serviceState: 'PLANNING',
         },
-        synceDeviceDetails: {} as SynceDeviceDetails,
+        details: {} as SynceDeviceDetails,
         interfaces: interfaces.map((i) => ({ ...i, details: null })),
         coordinates,
         change: 'DELETED' as const,
@@ -286,5 +287,5 @@ export function getGmPathHopsCount(gmPathIds: string[], devicePrefix: 'PtpDevice
 // ptp profile should be same all over the ptp nodes,
 // so we grab that info from the first one
 export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
-  return ptpNodes.at(0)?.ptpDeviceDetails.ptpProfile ?? null;
+  return ptpNodes.at(0)?.details.ptpProfile ?? null;
 }

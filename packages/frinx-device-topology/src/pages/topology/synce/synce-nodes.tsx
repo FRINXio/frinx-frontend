@@ -4,8 +4,7 @@ import SynceNodeIcon from '../../../components/node-icons/synce-node-icon';
 import { SynceGraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedSynceNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { SynceGraphNode } from '../../../__generated__/graphql';
-import { Position } from '../graph.helpers';
+import { Position, SynceGraphNode } from '../graph.helpers';
 
 type StatePosition = {
   nodeId: string | null;

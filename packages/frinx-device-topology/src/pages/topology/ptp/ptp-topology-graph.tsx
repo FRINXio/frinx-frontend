@@ -5,10 +5,9 @@ import PtpInfoPanel from './ptp-info-panel';
 import { clearGmPathSearch, setSelectedNode, updatePtpNodePosition } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './ptp-edges';
-import { height, Position, width } from '../graph.helpers';
+import { height, Position, width, PtpGraphNode } from '../graph.helpers';
 import BackgroundSvg from '../img/background.svg';
 import PtpNodes from './ptp-nodes';
-import { PtpGraphNode } from '../../../__generated__/graphql';
 import { getGmPathHopsCount, getPtpProfile } from '../../../helpers/topology-helpers';
 
 type Props = {
