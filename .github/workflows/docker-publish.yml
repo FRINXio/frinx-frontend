@@ -1,18 +1,21 @@
 name: Docker
 
 on:
-  workflow_dispatch:
   push:
-    # Publish `main` as Docker `latest` image.
+    # Publish `main` and `stable` as Docker `latest` image.
     branches:
-      - main
+      - 'main'
+      - '[0-9]+.X-stable'
 
     # Publish `v1.2.3` tags as releases.
     tags:
-      - v*
+      - 'v*'
+      - 'v[0-9]+.[0-9]+.[0-9]-stable'
 
 env:
+  # TODO: Change variable to your image's name.
   IMAGE_NAME: frinx/frinx-frontend
+  # DOCKER_CONTENT_TRUST: 1
 
 jobs:
   # Push image to GitHub Packages.
@@ -22,42 +25,42 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
+      #### Set tags based on source type ####
+
+      - name: Set tag for latest image
+        if: github.ref_type == 'branch' && startsWith(github.ref, 'refs/heads/main')
+        run: |
+          echo "IMAGE_TAG=$(echo 'latest')" >> "$GITHUB_ENV"
+
+      - name: Set tag for stable-latest image
+        if: github.ref_type == 'branch' && endsWith(github.ref, '-stable')
+        run: |
+          echo "IMAGE_TAG=$(echo 'stable-latest')" >> "$GITHUB_ENV"
+
+      - name: Set tag for stable-release image
+        if: github.ref_type == 'tag' && endsWith(github.ref, '-stable')
+        run: |
+          echo "IMAGE_TAG=$(echo $GITHUB_REF | cut -d / -f 3 | sed -e 's/^v//' | sed -e 's/-stable//')" >> "$GITHUB_ENV"
+
+      - name: Set tag for release image
+        if: ${{ github.ref_type == 'tag' && !endsWith(github.ref, '-stable') }}
+        run: |
+          echo "IMAGE_TAG=$(echo $GITHUB_REF | cut -d / -f 3 | sed -e 's/^v//')" >> "$GITHUB_ENV"
+
       - name: Build image
-        run: docker build . --file Dockerfile --build-arg COMMIT_HASH=${{ github.sha }} --build-arg PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }} --build-arg PRIVATE_NPM_TOKEN=${{ secrets.PUBLISH_TOKEN }} --tag $IMAGE_NAME
+        run: docker build . --file Dockerfile --build-arg COMMIT_HASH=${{ github.sha }} --build-arg PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }} --build-arg PRIVATE_NPM_TOKEN=${{ secrets.PUBLISH_TOKEN }} --tag $IMAGE_NAME:${IMAGE_TAG}
+      # - uses: Azure/container-scan@v0
+      #   with:
+      #     image-name: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          # severity-threshold: CRITICAL
 
       - name: Log into docker hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Push image
         run: |
-          IMAGE_ID=$IMAGE_NAME
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "main" ] && VERSION=latest
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
-          # Add latest tag if we are on main and github.ref points to a tag
-          if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
-            MAIN=$(git show-ref --hash origin/main)
-            echo "main: $MAIN"
-            HEAD=$(git rev-parse HEAD)
-            echo "head: $HEAD"
-            echo "github.ref ${{ github.ref }}"
-            if [[ $MAIN == $HEAD ]]; then
-              VERSION=latest
-              echo VERSION=$VERSION
-              docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-              docker push $IMAGE_ID:$VERSION
-            fi
-          fi
+          docker push $IMAGE_NAME:${IMAGE_TAG}
