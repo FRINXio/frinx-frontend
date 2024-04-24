@@ -1,11 +1,12 @@
 import React, { VoidFunctionComponent } from 'react';
 import NetNodeIcon from '../../../components/node-icons/net-node-icon';
+import { NetGraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import { addRemoveUnconfirmedNodeIdForShortestPath, setSelectedNetNode } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { GraphNetNode } from '../graph.helpers';
 
 type Props = {
-  nodes: GraphNetNode[];
+  nodes: NetGraphNodeWithDiff[];
 };
 
 const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
@@ -21,6 +22,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     alternativeShortestPaths,
     selectedAlternativeShortestPathIndex,
     selectedEdge,
+    selectedNode
   } = state;
 
   const handleClick = (node: GraphNetNode) => {
@@ -39,6 +41,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
         <NetNodeIcon
           onClick={handleClick}
           key={node.id}
+          isSelected={selectedNode?.id === node.id}
           positions={{ nodes: netNodePositions, interfaceGroups: netInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
           isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}

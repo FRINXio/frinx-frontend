@@ -1,11 +1,20 @@
 import { Client, gql } from 'urql';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
-import { BackupGraphNode, GraphEdge, GraphNetNode, GraphNode, Position } from './pages/topology/graph.helpers';
+import {
+  BackupGraphNode,
+  BackupNetGraphNode,
+  GraphEdge,
+  GraphNetNode,
+  GraphNode,
+  Position,
+} from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
   NetTopologyQuery,
   NetTopologyQueryVariables,
+  NetTopologyVersionDataQuery,
+  NetTopologyVersionDataQueryVariables,
   PtpGraphNode,
   PtpTopologyQuery,
   PtpTopologyQueryVariables,
@@ -44,6 +53,11 @@ export type SynceNodesEdgesPayload = {
 
 export type BackupNodesEdgesPayload = {
   nodes: BackupGraphNode[];
+  edges: GraphEdge[];
+};
+
+export type BackupNetNodesEdgesPayload = {
+  nodes: BackupNetGraphNode[];
   edges: GraphEdge[];
 };
 
@@ -101,6 +115,10 @@ export type StateAction =
   | {
       type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES';
       payload: BackupNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_NET_BACKUP_NODES_AND_EDGES';
+      payload: BackupNetNodesEdgesPayload;
     }
   | {
       type: 'SET_MODE';
@@ -382,6 +400,47 @@ const SYNCE_TOPOLOGY_VERSION_DATA_QUERY = gql`
   }
 `;
 
+const NET_TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query NetTopologyVersionData($version: String!) {
+    deviceInventory {
+      netTopologyVersionData(version: $version) {
+        nodes {
+          id
+          nodeId
+          name
+          interfaces {
+            id
+            name
+          }
+          networks {
+            id
+            subnet
+            coordinates {
+              x
+              y
+            }
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+      }
+    }
+  }
+`;
+
 const PTP_TOPOLOGY_QUERY = gql`
   query PtpTopology {
     deviceInventory {
@@ -651,6 +710,13 @@ export function setBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateA
   };
 }
 
+export function setNetBackupNodesAndEdges(payload: BackupNetNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_NET_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
 export function setPtpBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
   return {
     type: 'SET_PTP_BACKUP_NODES_AND_EDGES',
@@ -746,6 +812,37 @@ export function getSynceBackupNodesAndEdges(
             nodes: data.data?.deviceInventory.synceTopologyVersionData.nodes ?? [],
             edges:
               data.data?.deviceInventory.synceTopologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
+          }),
+        );
+      });
+  };
+}
+
+export function getNetBackupNodesAndEdges(
+  client: Client,
+  version: string,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<NetTopologyVersionDataQuery, NetTopologyVersionDataQueryVariables>(
+        NET_TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setNetBackupNodesAndEdges({
+            nodes: data.data?.deviceInventory.netTopologyVersionData.nodes ?? [],
+            edges:
+              data.data?.deviceInventory.netTopologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],

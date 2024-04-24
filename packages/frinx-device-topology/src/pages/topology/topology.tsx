@@ -37,9 +37,9 @@ const Topology: VoidFunctionComponent = () => {
             ))}
           </Select>
         </FormControl>
-          <Box flex={1}>
-            <VersionSelect />
-          </Box>
+        <Box flex={1}>
+          <VersionSelect />
+        </Box>
         {topologyLayer === 'LLDP' && (
           <Box flex={1}>
             <LabelsFilter />

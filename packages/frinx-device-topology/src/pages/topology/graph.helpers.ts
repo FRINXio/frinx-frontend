@@ -28,6 +28,12 @@ export type GraphNodeInterface = {
   status: 'ok' | 'unknown';
   name: string;
 };
+
+export type GraphNetNodeInterface = {
+  id: string;
+  name: string;
+};
+
 export type GraphNode = {
   id: string;
   name: string;
@@ -73,6 +79,14 @@ export type BackupGraphNode = {
   id: string;
   name: string;
   interfaces: GraphNodeInterface[];
+  coordinates: Position;
+};
+
+export type BackupNetGraphNode = {
+  id: string;
+  name: string;
+  interfaces: GraphNetNodeInterface[];
+  networks: NetNetwork[];
   coordinates: Position;
 };
 
