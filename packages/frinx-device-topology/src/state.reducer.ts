@@ -39,7 +39,7 @@ import {
   getZoomLevel,
 } from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
-import { NetInterface, NetNode, SynceGraphNodeInterface } from './__generated__/graphql';
+import { NetInterface, NetNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
@@ -265,8 +265,6 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_NET_BACKUP_NODES_AND_EDGES': {
         const allNodes = getNetNodesWithDiff(acc.netNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.netEdges, action.payload.edges);
-        console.log(acc.netNodes, action.payload.nodes);
-        
         const positionsMap = getDefaultPositionsMap<NetInterface, NetNode>(
           { nodes: allNodes, edges: allEdges },
           (n) => n.name,

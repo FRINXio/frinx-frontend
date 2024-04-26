@@ -1,7 +1,14 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
-import { BackupGraphNode,BackupNetGraphNode, GraphEdge, GraphNode, SynceGraphNode, PtpGraphNode } from '../pages/topology/graph.helpers';
-import { NetNode, PtpDeviceDetails, PtpGraphNode, SynceDeviceDetails, SynceGraphNode } from '../__generated__/graphql';
+import {
+  BackupGraphNode,
+  BackupNetGraphNode,
+  GraphEdge,
+  GraphNode,
+  SynceGraphNode,
+  PtpGraphNode,
+} from '../pages/topology/graph.helpers';
+import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -250,8 +257,6 @@ export function getSynceNodesWithDiff(
 }
 
 export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNetGraphNode[]): NetGraphNodeWithDiff[] {
-  console.log(backupGraphNodes);
-  
   if (backupGraphNodes.length === 0) {
     return nodes.map((n) => ({
       ...n,

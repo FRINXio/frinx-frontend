@@ -18,7 +18,6 @@ import NodeInterface from './node-interface';
 type Props = {
   positions: PositionsWithGroupsMap<GrahpNetNodeInterface>;
   isCommon: boolean;
-  isSelected: boolean;
   isFocused: boolean;
   isSelected: boolean;
   isShortestPath: boolean;
@@ -54,7 +53,6 @@ const Text = chakra('text');
 
 const NetNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
-  isSelected,
   isFocused,
   isSelected,
   isCommon,

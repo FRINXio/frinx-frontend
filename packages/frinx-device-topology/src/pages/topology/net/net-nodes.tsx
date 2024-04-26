@@ -48,7 +48,6 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
           netNodes={netNodes}
           positions={{ nodes: netNodePositions, interfaceGroups: netInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
-          isSelected={node.id === selectedNode?.id}
           isSelectedForCommonSearch={unconfirmedSelectedNodeIds.includes(node.name)}
           isSelectedForShortestPath={unconfirmedShortestPathNodeIds.includes(node.id)}
           isCommon={commonNodeIds.includes(node.name)}

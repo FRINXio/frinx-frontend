@@ -75,7 +75,6 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     selectedVersion,
   } = state;
 
-
   const [{ data: shorthestPathData, fetching: isShortestPathFetching }] = useQuery<
     ShortestPathQuery,
     ShortestPathQueryVariables
