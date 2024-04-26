@@ -1916,6 +1916,8 @@ export type Workflow = Node & {
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
   endTime: Maybe<Scalars['String']['output']>;
+  externalInputPayloadStoragePath: Maybe<Scalars['String']['output']>;
+  externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   failedReferenceTaskNames: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasSubworkflows: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -1988,7 +1990,7 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   __typename?: 'WorkflowDefinition';
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
-  description: Maybe<Scalars['String']['output']>;
+  description: Maybe<WorkflowDefinitionDescription>;
   hasSchedule: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   inputParameters: Maybe<Array<Scalars['String']['output']>>;
@@ -2013,6 +2015,17 @@ export type WorkflowDefinitionConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type WorkflowDefinitionDescription = {
+  __typename?: 'WorkflowDefinitionDescription';
+  description: Maybe<Scalars['String']['output']>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type WorkflowDefinitionDescriptionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 export type WorkflowDefinitionEdge = {
   __typename?: 'WorkflowDefinitionEdge';
   cursor: Scalars['String']['output'];
@@ -2023,7 +2036,7 @@ export type WorkflowDefinitionInput = {
   accessPolicy?: InputMaybe<Scalars['JSON']['input']>;
   createTime?: InputMaybe<Scalars['BigInt']['input']>;
   createdBy?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<WorkflowDefinitionDescriptionInput>;
   failureWorkflow?: InputMaybe<Scalars['String']['input']>;
   inputParameters?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   inputTemplate?: InputMaybe<Scalars['JSON']['input']>;
@@ -2104,6 +2117,7 @@ export type WorkflowTask = Node & {
   externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   inputData: Maybe<Scalars['String']['output']>;
+  logs: Maybe<Array<WorkflowTaskLog>>;
   outputData: Maybe<Scalars['String']['output']>;
   pollCount: Maybe<Scalars['Int']['output']>;
   reasonForIncompletion: Maybe<Scalars['String']['output']>;
@@ -2121,6 +2135,12 @@ export type WorkflowTask = Node & {
   taskType: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
   workflowType: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkflowTaskLog = {
+  __typename?: 'WorkflowTaskLog';
+  createdAt: Maybe<Scalars['String']['output']>;
+  message: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkflowTaskStatus =
@@ -2414,6 +2434,7 @@ export type ConductorMutationRerunArgs = {
 
 export type ConductorMutationRerunExecutedWorkflowArgs = {
   id: Scalars['String']['input'];
+  input?: InputMaybe<RerunWorkflowRequest_Input>;
 };
 
 
@@ -2580,6 +2601,7 @@ export type ConductorQuery = {
   doCheck: Maybe<HealthCheckStatus>;
   eventHandlers: EventHandlerConnection;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
+  externalStorage: Maybe<Scalars['JSON']['output']>;
   /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
   /** Retrieves all workflow definition along with blueprint */
@@ -2682,6 +2704,11 @@ export type ConductorQueryExecutedWorkflowsArgs = {
   orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+};
+
+
+export type ConductorQueryExternalStorageArgs = {
+  path: Scalars['String']['input'];
 };
 
 
@@ -2905,6 +2932,7 @@ export type DeviceInventoryMutation = {
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
+  reconnectKafka: Maybe<IsOkResponse>;
   resetConfig: ResetConfigPayload;
   revertChanges: RevertChangesPayload;
   syncFromNetwork: SyncFromNetworkPayload;
@@ -3062,6 +3090,7 @@ export type DeviceInventoryQuery = {
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
   devices: DeviceConnection;
+  kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
@@ -3863,6 +3892,16 @@ export type ExecuteModalWorkflowByNameMutationVariables = Exact<{
 
 
 export type ExecuteModalWorkflowByNameMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', executeWorkflowByName: string | null } };
+
+export type KafkaHealthCheckQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type KafkaHealthCheckQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', kafkaHealthCheck: { __typename?: 'IsOkResponse', isOk: boolean } | null } };
+
+export type KafkaReconnectMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type KafkaReconnectMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', reconnectKafka: { __typename?: 'IsOkResponse', isOk: boolean } | null } };
 
 export type ModalWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
 

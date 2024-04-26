@@ -19,9 +19,10 @@ import {
   usePagination,
   Pagination,
   ConfirmDeleteModal,
+  KafkaHealthCheckToolbar,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
-import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { FormEvent, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
@@ -38,8 +39,12 @@ import {
   FilterLabelsQuery,
   InstallDeviceMutation,
   InstallDeviceMutationVariables,
+  KafkaHealthCheckQuery,
+  KafkaHealthCheckQueryVariables,
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
+  KafkaReconnectMutation,
+  KafkaReconnectMutationVariables,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -164,6 +169,26 @@ const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
   }
 `;
 
+const KAFKA_HEALTHCHECK_QUERY = gql`
+  query KafkaHealthCheck {
+    deviceInventory {
+      kafkaHealthCheck {
+        isOk
+      }
+    }
+  }
+`;
+
+const KAFKA_RECONNECT_MUTATION = gql`
+  mutation KafkaReconnect {
+    deviceInventory {
+      reconnectKafka {
+        isOk
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -198,6 +223,13 @@ const DeviceList: VoidFunctionComponent = () => {
     context,
   });
   const [{ data: labelsData }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY, context });
+  const [{ data: isKafkaOk, error: kafkaHealthCheckError }] = useQuery<
+    KafkaHealthCheckQuery,
+    KafkaHealthCheckQueryVariables
+  >({ query: KAFKA_HEALTHCHECK_QUERY });
+  const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
+    KAFKA_RECONNECT_MUTATION,
+  );
   const [, installDevice] = useMutation<InstallDeviceMutation, InstallDeviceMutationVariables>(INSTALL_DEVICE_MUTATION);
   const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
     UNINSTALL_DEVICE_MUTATION,
@@ -212,6 +244,8 @@ const DeviceList: VoidFunctionComponent = () => {
   );
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
+
+  const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
@@ -546,6 +580,32 @@ const DeviceList: VoidFunctionComponent = () => {
         />
       )}
       <Container maxWidth={1280}>
+        {kafkaHealthCheckToolbar.isOpen && (
+          <KafkaHealthCheckToolbar
+            onClose={kafkaHealthCheckToolbar.onClose}
+            isKafkaHealthy={isKafkaOk?.deviceInventory.kafkaHealthCheck?.isOk ?? false}
+            isKafkaHealthyError={kafkaHealthCheckError?.message}
+            onReconnect={() =>
+              reconnectKafka()
+                .then(() => {
+                  addToastNotification({
+                    type: 'success',
+                    title: 'Success',
+                    content: 'Kafka reconnected successfuly',
+                  });
+                  kafkaHealthCheckToolbar.onClose();
+                })
+                .catch(() => {
+                  addToastNotification({
+                    type: 'error',
+                    title: 'Error',
+                    content: 'Kafka reconnection failed',
+                  });
+                  kafkaHealthCheckToolbar.onOpen();
+                })
+            }
+          />
+        )}
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
             Devices
