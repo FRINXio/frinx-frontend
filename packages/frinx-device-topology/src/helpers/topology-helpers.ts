@@ -296,8 +296,6 @@ export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNe
       })),
       change: 'ADDED' as const,
     };
-    //  console.log(node);
-
     return {
       ...node,
       change: 'ADDED' as const,
