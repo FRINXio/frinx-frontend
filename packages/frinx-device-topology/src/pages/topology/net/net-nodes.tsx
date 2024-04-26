@@ -22,7 +22,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     alternativeShortestPaths,
     selectedAlternativeShortestPathIndex,
     selectedEdge,
-    selectedNode
+    selectedNode,
   } = state;
 
   const handleClick = (node: GraphNetNode) => {

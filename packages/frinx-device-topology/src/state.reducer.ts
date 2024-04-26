@@ -249,6 +249,7 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_SYNCE_BACKUP_NODES_AND_EDGES': {
         const allNodes = getSynceNodesWithDiff(acc.synceNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.synceEdges, action.payload.edges);
+
         const positionsMap = getDefaultPositionsMap<SynceGraphNodeInterface, SynceGraphNode>(
           { nodes: allNodes, edges: allEdges },
           (n) => n.name,
@@ -263,6 +264,8 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_NET_BACKUP_NODES_AND_EDGES': {
         const allNodes = getNetNodesWithDiff(acc.netNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.netEdges, action.payload.edges);
+        console.log(acc.netNodes, action.payload.nodes);
+        
         const positionsMap = getDefaultPositionsMap<NetInterface, NetNode>(
           { nodes: allNodes, edges: allEdges },
           (n) => n.name,
@@ -345,7 +348,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_NET_NODES_AND_EDGES': {
         const { nodes, edges } = action.payload;
-        const positionMap = getDefaultPositionsMap<GrahpNetNodeInterface, GraphNetNode>(
+        const positionMap = getDefaultPositionsMap<GrahpNetNodeInterface, NetNode>(
           { nodes, edges },
           (n) => n.name,
           () => 'MEDIUM',

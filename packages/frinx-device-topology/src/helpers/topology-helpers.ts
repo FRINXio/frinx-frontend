@@ -250,6 +250,8 @@ export function getSynceNodesWithDiff(
 }
 
 export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNetGraphNode[]): NetGraphNodeWithDiff[] {
+  console.log(backupGraphNodes);
+  
   if (backupGraphNodes.length === 0) {
     return nodes.map((n) => ({
       ...n,
@@ -286,12 +288,18 @@ export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNe
         change: 'NONE' as const,
       };
     }
-    return {
+    const node = {
       ...n,
       interfaces: [...addedInterfaces, ...removedInterfaces, ...noChangeInterfaces].map((i) => ({
         ...i,
         details: null,
       })),
+      change: 'ADDED' as const,
+    };
+    //  console.log(node);
+
+    return {
+      ...node,
       change: 'ADDED' as const,
     };
   });
@@ -334,6 +342,8 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
   }
   const edgesMap = new Map(edges.map((e) => [e.id, e]));
   const backupEdgesMap = new Map(backupEdges.map((e) => [e.id, e]));
+  // console.log(edgesMap,backupEdgesMap);
+
   const currentEdgesWithDiff = edges.map((e) => {
     if (backupEdgesMap.has(e.id)) {
       return {

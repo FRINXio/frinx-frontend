@@ -259,47 +259,6 @@ const TOPOLOGY_QUERY = gql`
     }
   }
 `;
-const NET_TOPOLOGY_QUERY = gql`
-  query NetTopology {
-    deviceInventory {
-      netTopology {
-        nodes {
-          id
-          nodeId
-          name
-          interfaces {
-            id
-            name
-          }
-          networks {
-            id
-            subnet
-            coordinates {
-              x
-              y
-            }
-          }
-          coordinates {
-            x
-            y
-          }
-        }
-        edges {
-          id
-          weight
-          source {
-            nodeId
-            interface
-          }
-          target {
-            nodeId
-            interface
-          }
-        }
-      }
-    }
-  }
-`;
 
 const TOPOLOGY_VERSION_DATA_QUERY = gql`
   query TopologyVersionData($version: String!) {
@@ -400,13 +359,54 @@ const SYNCE_TOPOLOGY_VERSION_DATA_QUERY = gql`
   }
 `;
 
+const NET_TOPOLOGY_QUERY = gql`
+  query NetTopology {
+    deviceInventory {
+      netTopology {
+        nodes {
+          id
+          nodeId
+          name
+          interfaces {
+            id
+            name
+          }
+          networks {
+            id
+            subnet
+            coordinates {
+              x
+              y
+            }
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+        edges {
+          id
+          weight
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+      }
+    }
+  }
+`;
+
 const NET_TOPOLOGY_VERSION_DATA_QUERY = gql`
   query NetTopologyVersionData($version: String!) {
     deviceInventory {
       netTopologyVersionData(version: $version) {
         nodes {
           id
-          nodeId
           name
           interfaces {
             id

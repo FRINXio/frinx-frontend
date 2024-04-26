@@ -11,7 +11,6 @@ import {
   findShortestPath,
   getNetBackupNodesAndEdges,
   getNetNodesAndEdges,
-  getPtpBackupNodesAndEdges,
   setAlternativePaths,
   setMode,
   setSelectedAlternativePath,
@@ -76,8 +75,6 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     selectedVersion,
   } = state;
 
-  console.log(netNodes);
-  
 
   const [{ data: shorthestPathData, fetching: isShortestPathFetching }] = useQuery<
     ShortestPathQuery,
@@ -123,7 +120,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
       window.clearInterval(intervalRef.current);
       dispatch(getNetBackupNodesAndEdges(client, state.selectedVersion));
     }
-  }, [client, dispatch, selectedVersion]);
+  }, [client, dispatch, state.selectedVersion]);
 
   const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
     dispatch(setSelectedEdge(edge));
