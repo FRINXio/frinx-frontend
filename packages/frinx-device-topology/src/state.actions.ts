@@ -6,7 +6,9 @@ import {
   GraphEdge,
   GraphNetNode,
   GraphNode,
+  PtpGraphNode,
   Position,
+  SynceGraphNode,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
@@ -18,9 +20,9 @@ import {
   PtpGraphNode,
   PtpTopologyQuery,
   PtpTopologyQueryVariables,
+  SynceGraphNode,
   PtpTopologyVersionDataQuery,
   PtpTopologyVersionDataQueryVariables,
-  SynceGraphNode,
   SynceTopologyQuery,
   SynceTopologyQueryVariables,
   SynceTopologyVersionDataQuery,
@@ -621,7 +623,11 @@ export function getPtpNodesAndEdges(client: Client): ReturnType<ThunkAction<Stat
       .toPromise()
       .then((data) => {
         const { nodes, edges } = data.data?.deviceInventory.ptpTopology ?? { nodes: [], edges: [] };
-        dispatch(setPtpNodesAndEdges({ nodes, edges }));
+        const ptpNodes = nodes.map((n) => ({
+          ...n,
+          details: n.ptpDeviceDetails,
+        }));
+        dispatch(setPtpNodesAndEdges({ nodes: ptpNodes, edges }));
       });
   };
 }
@@ -646,7 +652,27 @@ export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<St
       .toPromise()
       .then((data) => {
         const { nodes, edges } = data.data?.deviceInventory.synceTopology ?? { nodes: [], edges: [] };
-        dispatch(setSynceNodesAndEdges({ nodes, edges }));
+        const synceNodes: SynceGraphNode[] = nodes.map((n) => {
+          const nodeInterfaces = n.interfaces.map((i) => ({
+            ...i,
+            details: {
+              ...i.details,
+              qualifiedForUse: i.details?.qualifiedForUse ?? null,
+              rxQualityLevel: i.details?.rxQualityLevel ?? null,
+              isSynceEnabled: i.details?.synceEnabled ?? false,
+              notQualifiedDueTo: i.details?.notQualifiedDueTo ?? null,
+              notSelectedDueTo: i.details?.notSelectedDueTo ?? null,
+            },
+          }));
+          return {
+            ...n,
+            interfaces: nodeInterfaces,
+            details: {
+              selectedForUse: n.synceDeviceDetails.selectedForUse,
+            },
+          };
+        });
+        dispatch(setSynceNodesAndEdges({ nodes: synceNodes, edges }));
       });
   };
 }

@@ -17,7 +17,6 @@ type OrderBy = {
   sortKey: 'name';
   direction: 'ASC' | 'DESC';
 };
-type DescriptionJSON = { labels: string[]; description: string };
 type WorkflowFilter = {
   keyword: string | null;
   labels: string[] | [];
@@ -45,7 +44,10 @@ const WORKFLOWS_QUERY = gql`
           node {
             id
             name
-            description
+            description {
+              description
+              labels
+            }
             version
             createdAt
             updatedAt
@@ -172,12 +174,12 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
 
   const workflows: ClientWorkflowWithTasks[] =
     workflowsData?.conductor.workflowDefinitions.edges.map(({ node: w }) => {
-      const parsedLabels = jsonParse<DescriptionJSON>(w.description)?.labels ?? [];
       const tasks = jsonParse<Task[]>(w.tasksJson) ?? [];
       return {
         ...w,
+        description: w.description?.description ?? '',
         timeoutSeconds: w.timeoutSeconds ?? 0,
-        labels: parsedLabels,
+        labels: w.description?.labels ?? [],
         hasSchedule: false,
         tasks,
       };

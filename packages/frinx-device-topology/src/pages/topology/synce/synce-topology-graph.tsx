@@ -4,10 +4,9 @@ import React, { useRef, VoidFunctionComponent } from 'react';
 import { clearGmPathSearch, setSelectedNode, updateSynceNodePosition } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './synce-edges';
-import { height, Position, width } from '../graph.helpers';
+import { height, Position, width, SynceGraphNode } from '../graph.helpers';
 import BackgroundSvg from '../img/background.svg';
 import SynceNodes from './synce-nodes';
-import { SynceGraphNode } from '../../../__generated__/graphql';
 import SynceInfoPanel from './synce-info-panel';
 import { getGmPathHopsCount } from '../../../helpers/topology-helpers';
 

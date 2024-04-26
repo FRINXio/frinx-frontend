@@ -1,7 +1,13 @@
 import { chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { NetGraphNodeWithDiff } from '../../helpers/topology-helpers';
-import { GrahpNetNodeInterface, GraphNetNode, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import {
+  GrahpNetNodeInterface,
+  GraphNetNode,
+  PositionsWithGroupsMap,
+  width,
+  height,
+} from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NetNodeNetwork from './net-node-network';
@@ -14,13 +20,32 @@ type Props = {
   isCommon: boolean;
   isSelected: boolean;
   isFocused: boolean;
+  isSelected: boolean;
   isShortestPath: boolean;
   isSelectedForCommonSearch: boolean;
   isSelectedForShortestPath: boolean;
   node: NetGraphNodeWithDiff;
+  netNodes: GraphNetNode[];
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
   onClick: (node: GraphNetNode) => void;
+  isWeightVisible: boolean;
+};
+
+type NetNodeNetworks = {
+  network: string;
+  source: EndPoint;
+  target: EndPoint;
+};
+
+type EndPoint = {
+  id: string;
+  coordinates: Coordinates;
+};
+
+type Coordinates = {
+  x: number;
+  y: number;
 };
 
 const G = chakra('g');
@@ -31,6 +56,7 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isSelected,
   isFocused,
+  isSelected,
   isCommon,
   isShortestPath,
   isSelectedForCommonSearch,
@@ -38,24 +64,87 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
   node,
   topologyMode,
   selectedEdge,
+  netNodes,
   onClick,
+  isWeightVisible,
 }) => {
   const { x, y } = positions.nodes[node.name];
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
+  const allNetworks = netNodes
+    .filter((netNode) => node.id !== netNode.id)
+    .map((item) => item.networks)
+    .reduce((acc, networks) => acc.concat(networks), []);
+
+  const getNetworkDataForNode = (netNodesData: GraphNetNode[], nodeName: string) => {
+    const networkConnections: NetNodeNetworks[] = [];
+    const sourceNode = netNodesData.find(({ name }) => name === nodeName);
+
+    if (!sourceNode) return [];
+
+    sourceNode.networks.forEach((network) => {
+      const { subnet } = network;
+
+      const connectedNodes = netNodesData.filter(
+        (n) => n.networks.some((net) => net.subnet === subnet) && n.name !== nodeName,
+      );
+
+      connectedNodes.forEach((targetNode) => {
+        const connectionObject = {
+          network: subnet,
+          source: {
+            id: sourceNode.id,
+            coordinates: sourceNode.coordinates,
+          },
+          target: {
+            id: targetNode.id,
+            coordinates: targetNode.coordinates,
+          },
+        };
+
+        const uniqueIdentifier = JSON.stringify(connectionObject);
+
+        if (!networkConnections.some((obj) => JSON.stringify(obj) === uniqueIdentifier)) {
+          networkConnections.push(connectionObject);
+        }
+      });
+    });
+
+    return networkConnections;
+  };
+
+  const networkDataForNode = getNetworkDataForNode(netNodes, node.name);
+
   return (
     <G
+      position="relative"
       cursor={topologyMode === 'COMMON_NODES' ? 'not-allowed' : 'pointer'}
       transform={`translate3d(${x}px, ${y}px, 0)`}
       transformOrigin="center center"
+      key={node.id}
       onClick={() => {
         onClick(node);
       }}
     >
+      {isSelected &&
+        !isWeightVisible &&
+        networkDataForNode.map((netNode) => {
+          const netX = (netNode.target.coordinates.x - netNode.source.coordinates.x) * width;
+          const netY = (netNode.target.coordinates.y - netNode.source.coordinates.y) * height;
+
+          return (
+            <G transform={`translate3d(${netX / 2}px, ${netY / 2}px, 0)`}>
+              <Circle r={4} fill="back" transition="all .2s ease-in-out" />
+              <Text key={netNode.target.id} transform="translate3d(-45px, -5px, 0)" fontSize={15} bg="red">
+                {netNode.network}
+              </Text>
+            </G>
+          );
+        })}
       <G>
         {node.networks.map((network) => {
-          return <NetNodeNetwork key={network.id} network={network} />;
+          return <NetNodeNetwork allNetworks={allNetworks} key={network.id} network={network} />;
         })}
       </G>
       <Circle

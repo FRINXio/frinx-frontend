@@ -1,6 +1,6 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
-import { DeviceSize, PtpGraphNode, SynceGraphNode } from '../../__generated__/graphql';
+import { DeviceSize } from '../../__generated__/graphql';
 
 export const width = 1248;
 export const height = 600;
@@ -42,6 +42,45 @@ export type GraphNode = {
   softwareVersion: string | null;
   interfaces: GraphNodeInterface[];
   coordinates: Position;
+};
+
+export type PtpGraphNodeDetails = {
+  clockAccuracy: string | null;
+  clockClass: number | null;
+  clockId: string;
+  clockType: string | null;
+  clockVariance: string | null;
+  domain: number;
+  globalPriority: number | null;
+  gmClockId: string;
+  parentClockId: string;
+  ptpProfile: string;
+  timeRecoveryStatus: string | null;
+  userPriority: number | null;
+};
+
+export type PtpGraphNode = {
+  id: string;
+  name: string;
+  interfaces: GraphPtpNodeInterface[];
+  coordinates: Position;
+  nodeId: string;
+  status: string;
+  details: PtpGraphNodeDetails;
+};
+
+export type SynceGraphNodeDetails = {
+  selectedForUse: string | null;
+};
+
+export type SynceGraphNode = {
+  id: string;
+  name: string;
+  nodeId: string;
+  interfaces: GraphSynceNodeInterface[];
+  coordinates: Position;
+  details: SynceGraphNodeDetails;
+  status: string;
 };
 
 export type SourceTarget = {
@@ -93,11 +132,23 @@ export type BackupNetGraphNode = {
 export type GraphPtpNodeInterface = {
   id: string;
   name: string;
+  status: string;
+  details: Record<string, unknown> | null;
+};
+
+export type SynceGraphNodeInterfaceDetails = {
+  isSynceEnabled: boolean;
+  rxQualityLevel: string | null;
+  qualifiedForUse: string | null;
+  notQualifiedDueTo: string | null;
+  notSelectedDueTo: string | null;
 };
 
 export type GraphSynceNodeInterface = {
   id: string;
   name: string;
+  status: string;
+  details: SynceGraphNodeInterfaceDetails | null;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
@@ -361,3 +412,17 @@ export const isGmPathPredicate = (gmPath: string[], edge: GraphEdgeWithDiff): bo
   }
   return gmPath.includes(edge.target.interface, fromInterfaceIndex);
 };
+
+// we flatten interface data to be able to use them in info panel
+export function normalizeNodeInterfaceData<
+  T extends { id: string; status: string; name: string; details: Record<string, unknown> | null },
+>(nodeInterface: T): Record<string, boolean | string | number | null> {
+  const { id, status, name, details } = nodeInterface;
+
+  return {
+    id,
+    status,
+    name,
+    ...details,
+  };
+}

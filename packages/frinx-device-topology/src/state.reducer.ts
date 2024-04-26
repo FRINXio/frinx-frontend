@@ -24,6 +24,8 @@ import {
   GraphSynceNodeInterface,
   Position,
   PositionGroupsMap,
+  PtpGraphNode,
+  SynceGraphNode,
   width as topologyWidth,
   height as topologyHeight,
 } from './pages/topology/graph.helpers';
@@ -37,7 +39,7 @@ import {
   getZoomLevel,
 } from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
-import { NetInterface, NetNode, PtpGraphNode, SynceGraphNode, SynceGraphNodeInterface } from './__generated__/graphql';
+import { NetInterface, NetNode, SynceGraphNodeInterface } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
@@ -165,7 +167,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'UPDATE_PTP_NODE_POSITION': {
         acc.ptpNodePositions[action.nodeId] = action.position;
-        acc.ptpInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, PtpGraphNode>(
+        acc.ptpInterfaceGroupPositions = getInterfacesPositions<GraphPtpNodeInterface, PtpGraphNode>(
           {
             nodes: acc.ptpNodes,
             edges: acc.ptpEdges,
@@ -177,7 +179,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'UPDATE_SYNCE_NODE_POSITION': {
         acc.synceNodePositions[action.nodeId] = action.position;
-        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphNodeInterface, SynceGraphNode>(
+        acc.synceInterfaceGroupPositions = getInterfacesPositions<GraphSynceNodeInterface, SynceGraphNode>(
           {
             nodes: acc.synceNodes,
             edges: acc.synceEdges,
@@ -235,7 +237,7 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_PTP_BACKUP_NODES_AND_EDGES': {
         const allNodes = getPtpNodesWithDiff(acc.ptpNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.ptpEdges, action.payload.edges);
-        const positionsMap = getDefaultPositionsMap<GraphNodeInterface, PtpGraphNode>(
+        const positionsMap = getDefaultPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
           { nodes: allNodes, edges: allEdges },
           (n) => n.name,
           () => 'MEDIUM',
@@ -249,8 +251,7 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_SYNCE_BACKUP_NODES_AND_EDGES': {
         const allNodes = getSynceNodesWithDiff(acc.synceNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.synceEdges, action.payload.edges);
-
-        const positionsMap = getDefaultPositionsMap<SynceGraphNodeInterface, SynceGraphNode>(
+        const positionsMap = getDefaultPositionsMap<GraphSynceNodeInterface, SynceGraphNode>(
           { nodes: allNodes, edges: allEdges },
           (n) => n.name,
           () => 'MEDIUM',
