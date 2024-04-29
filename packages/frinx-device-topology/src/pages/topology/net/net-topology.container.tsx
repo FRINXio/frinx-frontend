@@ -111,8 +111,6 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     dispatch(setAlternativePaths(shortestPath));
   }, [dispatch, shorthestPathData]);
 
-  useEffect(() => {});
-
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
       fetchNetNodes();
@@ -123,6 +121,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     return () => {
       window.clearInterval(intervalRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client, dispatch, topologyLayer, selectedVersion]);
 
   const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
