@@ -87,6 +87,14 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     pause: selectedShortestPathNodeIds.filter(omitNullValue).length !== 2,
   });
 
+  const fetchNetNodes = () => {
+    if (selectedVersion != null) {
+      dispatch(getNetBackupNodesAndEdges(client, selectedVersion));
+    } else {
+      dispatch(getNetNodesAndEdges(client));
+    }
+  };
+
   useEffect(() => {
     const shortestPath: ShortestPath =
       shorthestPathData?.deviceInventory.shortestPath.map((d) => {
@@ -103,23 +111,19 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     dispatch(setAlternativePaths(shortestPath));
   }, [dispatch, shorthestPathData]);
 
+  useEffect(() => {});
+
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
-      dispatch(getNetNodesAndEdges(client));
+      fetchNetNodes();
     }, 10000);
-    dispatch(getNetNodesAndEdges(client));
+
+    fetchNetNodes();
 
     return () => {
       window.clearInterval(intervalRef.current);
     };
   }, [client, dispatch, topologyLayer, selectedVersion]);
-
-  useEffect(() => {
-    if (state.selectedVersion != null) {
-      window.clearInterval(intervalRef.current);
-      dispatch(getNetBackupNodesAndEdges(client, state.selectedVersion));
-    }
-  }, [client, dispatch, state.selectedVersion]);
 
   const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
     dispatch(setSelectedEdge(edge));
