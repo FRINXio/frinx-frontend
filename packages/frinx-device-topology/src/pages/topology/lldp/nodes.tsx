@@ -115,6 +115,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}
+          selectedNode={selectedNode}
         />
       ))}
     </g>
