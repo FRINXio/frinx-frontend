@@ -860,7 +860,11 @@ export function getNetBackupNodesAndEdges(
           requestPolicy: 'network-only',
         },
       )
-      .toPromise()
+      .toPromise().then((data) => {
+        console.log(data);
+        return data
+        
+      })
       .then((data) => {
         dispatch(
           setNetBackupNodesAndEdges({

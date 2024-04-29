@@ -263,6 +263,7 @@ export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNe
       change: 'NONE' as const,
     }));
   }
+  // console.log(backupGraphNodes);
 
   const nodesMap = new Map(nodes.map((n) => [n.id, n]));
   const backupNodesMap = new Map(backupGraphNodes.map((n) => [n.id, n]));
@@ -345,7 +346,6 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
   }
   const edgesMap = new Map(edges.map((e) => [e.id, e]));
   const backupEdgesMap = new Map(backupEdges.map((e) => [e.id, e]));
-  // console.log(edgesMap,backupEdgesMap);
 
   const currentEdgesWithDiff = edges.map((e) => {
     if (backupEdgesMap.has(e.id)) {
