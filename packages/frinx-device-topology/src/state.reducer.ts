@@ -228,8 +228,7 @@ export function stateReducer(state: State, action: StateAction): State {
           (n) => n.name,
           (n) => n.device?.deviceSize ?? 'MEDIUM',
         );
-        console.log(allEdges);
-        
+
         acc.nodes = allNodes;
         acc.edges = allEdges;
         acc.nodePositions = positionsMap.nodes;
@@ -267,8 +266,7 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_NET_BACKUP_NODES_AND_EDGES': {
         const allNodes = getNetNodesWithDiff(acc.netNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.netEdges, action.payload.edges);
-        console.log(acc.netNodes, action.payload.nodes, allNodes);
-        
+
         const positionsMap = getDefaultPositionsMap<NetInterface, NetNode>(
           { nodes: allNodes, edges: allEdges },
           (n) => n.name,
