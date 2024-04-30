@@ -6,6 +6,9 @@ import {
   PositionsWithGroupsMap,
   width,
   height,
+  GraphNode,
+  PtpGraphNode,
+  SynceGraphNode,
 } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
@@ -28,6 +31,7 @@ type Props = {
   selectedEdge: GraphEdge | null;
   onClick: (node: GraphNetNode) => void;
   isWeightVisible: boolean;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
 };
 
 type NetNodeNetworks = {
@@ -64,9 +68,12 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
   netNodes,
   onClick,
   isWeightVisible,
+  selectedNode,
 }) => {
   const { x, y } = positions.nodes[node.name];
-  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
+  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups).filter((item) =>
+    selectedNode ? item[0].includes(selectedNode.name) : true,
+  );
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
   const allNetworks = netNodes
