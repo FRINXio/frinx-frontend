@@ -24,7 +24,7 @@ import {
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { gql, useMutation, useQuery } from 'urql';
+import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
 import { ModalWorkflow } from '../../helpers/convert';
 import {
@@ -45,6 +45,8 @@ import {
   UninstallDeviceMutationVariables,
   KafkaReconnectMutation,
   KafkaReconnectMutationVariables,
+  DevicesUsageSubscription,
+  DevicesUsageSubscriptionVariables,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -189,6 +191,20 @@ const KAFKA_RECONNECT_MUTATION = gql`
   }
 `;
 
+const DEVICES_USAGE_SUBSCRIPTION = gql`
+  subscription DevicesUsage($deviceNames: [String!]!, $refreshEverySec: Int) {
+    deviceInventory {
+      devicesUsage(deviceNames: $deviceNames, refreshEverySec: $refreshEverySec) {
+        devicesUsage {
+          cpuLoad
+          deviceName
+          memoryLoad
+        }
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -242,6 +258,13 @@ const DeviceList: VoidFunctionComponent = () => {
   const [, bulkInstallation] = useMutation<BulkInstallDevicesMutation, BulkInstallDevicesMutationVariables>(
     BULK_INSTALL_DEVICES_MUTATION,
   );
+  const [{ data: devicesUsage }] = useSubscription<DevicesUsageSubscriptionVariables, DevicesUsageSubscription>({
+    query: DEVICES_USAGE_SUBSCRIPTION,
+    variables: {
+      deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
+      refreshEverySec: 5,
+    },
+  });
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
 
@@ -692,6 +715,7 @@ const DeviceList: VoidFunctionComponent = () => {
         <DeviceTable
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
+          devicesUsage={devicesUsage}
           areSelectedAll={areSelectedAll}
           onSelectAll={handleSelectionOfAllDevices}
           selectedDevices={selectedDevices}

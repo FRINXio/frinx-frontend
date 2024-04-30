@@ -19,8 +19,9 @@ import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { getLocalDateFromUTC } from '@frinx/shared';
-import { DevicesQuery } from '../../__generated__/graphql';
+import { DevicesQuery, DevicesUsageSubscription } from '../../__generated__/graphql';
 import InstallButton from './install-button';
+import { DeviceUsageWatermark, getDeviceUsage } from '../../helpers/device';
 
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
@@ -32,6 +33,7 @@ type OrderBy = {
 type Props = {
   orderBy: OrderBy;
   devices: DevicesQuery['deviceInventory']['devices']['edges'];
+  devicesUsage?: DevicesUsageSubscription | null;
   selectedDevices: Set<string>;
   areSelectedAll: boolean;
   installLoadingMap: Record<string, boolean>;
@@ -46,6 +48,7 @@ type Props = {
 const DeviceTable: VoidFunctionComponent<Props> = ({
   orderBy,
   devices,
+  devicesUsage,
   selectedDevices,
   onSort,
   onInstallButtonClick,
@@ -56,6 +59,26 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   areSelectedAll,
   onSelectAll,
 }) => {
+  const deviceStatuses =
+    devicesUsage?.deviceInventory.devicesUsage?.devicesUsage.map((deviceUsage) => {
+      const deviceUsageLevel = getDeviceUsage(deviceUsage?.cpuLoad, deviceUsage?.memoryLoad);
+      let statusColor = 'gray';
+
+      if (deviceUsageLevel === DeviceUsageWatermark.HIGH) {
+        statusColor = 'red';
+      } else if (deviceUsageLevel === DeviceUsageWatermark.MEDIUM) {
+        statusColor = 'yellow';
+      } else if (deviceUsageLevel === DeviceUsageWatermark.LOW) {
+        statusColor = 'green';
+      }
+
+      return {
+        deviceName: deviceUsage?.deviceName ?? '',
+        status: deviceUsageLevel,
+        statusColor,
+      };
+    }) ?? [];
+
   return (
     <Table background="white" size="lg">
       <Thead>
@@ -87,6 +110,11 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           <Th>
             <Flex alignItems="center" justifyContent="space-between">
               <Text>Zone</Text>
+            </Flex>
+          </Th>
+          <Th>
+            <Flex alignItems="center" justifyContent="space-between" cursor="pointer">
+              <Text>Device Status</Text>
             </Flex>
           </Th>
           <Th>
@@ -134,6 +162,14 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </Tooltip>
               </Td>
               <Td data-cy={`device-zone-${device.name}`}>{device.zone?.name}</Td>
+              <Td>
+                <Badge
+                  data-cy={`device-status-${device.name}`}
+                  colorScheme={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
+                >
+                  {deviceStatuses.find((d) => d.deviceName === device.name)?.status}
+                </Badge>
+              </Td>
               <Td minWidth={200}>
                 <Badge data-cy={`device-state-${device.name}`}>{device.serviceState}</Badge>
               </Td>
