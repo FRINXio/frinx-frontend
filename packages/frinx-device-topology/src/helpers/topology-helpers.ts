@@ -263,7 +263,6 @@ export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNe
       change: 'NONE' as const,
     }));
   }
-  // console.log(backupGraphNodes);
 
   const nodesMap = new Map(nodes.map((n) => [n.id, n]));
   const backupNodesMap = new Map(backupGraphNodes.map((n) => [n.id, n]));
@@ -302,10 +301,7 @@ export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNe
       })),
       change: 'ADDED' as const,
     };
-    return {
-      ...node,
-      change: 'ADDED' as const,
-    };
+    return node;
   });
 
   const deletedBackupNodesWithDiff = backupGraphNodes
