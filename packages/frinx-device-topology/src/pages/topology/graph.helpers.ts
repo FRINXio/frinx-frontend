@@ -115,11 +115,17 @@ export type BackupGraphNode = {
   coordinates: Position;
 };
 
+export type GraphPtpNodeInterfaceDetails = {
+  ptpStatus: string | null;
+  adminOperStatus: string | null;
+  ptsfUnusable: string | null;
+};
+
 export type GraphPtpNodeInterface = {
   id: string;
   name: string;
   status: string;
-  details: Record<string, unknown> | null;
+  details: GraphPtpNodeInterfaceDetails | null;
 };
 
 export type SynceGraphNodeInterfaceDetails = {
@@ -359,6 +365,22 @@ export function getControlPoints<S extends { id: string; name: string }>({
 
 export function getCurvePath(source: Position, target: Position, controlPoints: Position[]): string {
   return `M ${source.x},${source.y} Q${controlPoints.map((p) => `${p.x},${p.y}`)} ${target.x},${target.y}`;
+}
+
+export function getInterfaceStatusColor(interfaceDetails: GraphPtpNodeInterfaceDetails): string {
+  const { adminOperStatus, ptpStatus, ptsfUnusable } = interfaceDetails;
+
+  if (adminOperStatus === 'up/up' && ptpStatus === 'master') {
+    return 'green';
+  } else if (adminOperStatus?.startsWith('up/') && (ptpStatus === 'slave' || ptpStatus === 'uncalibrated')) {
+    return 'blue';
+  } else if (adminOperStatus?.startsWith('up/') && ptpStatus === 'passive') {
+    return 'orange';
+  } else if (ptsfUnusable !== null && ptsfUnusable !== 'ok') {
+    return 'red';
+  } else {
+    return 'transparent';
+  }
 }
 
 export function isTargetingActiveNode<S extends { id: string; name: string }>(

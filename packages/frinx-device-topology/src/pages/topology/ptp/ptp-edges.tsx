@@ -1,6 +1,6 @@
 import { partition } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
-import Edge from '../../../components/edge/edge';
+import PtpEdge from './ptp-edge';
 import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedEdge } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
@@ -21,6 +21,7 @@ type Props = {
 const PtpEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
   const { state, dispatch } = useStateContext();
   const {
+    ptpNodes,
     connectedNodeIds,
     selectedNode,
     ptpNodePositions: nodePositions,
@@ -34,6 +35,7 @@ const PtpEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
 
   const [gmEdges, nonGmEdges] = partition(edges, (edge) => isGmPathPredicate(gmPathIds, edge));
   const sortedPtpEdges = [...nonGmEdges, ...gmEdges];
+  const netInterfaceMap = new Map(ptpNodes.flatMap((n) => n.interfaces).map((i) => [i.id, i]));
 
   return (
     <g>
@@ -70,8 +72,9 @@ const PtpEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
           ) > -1;
 
         return (
-          <Edge
+          <PtpEdge
             controlPoints={controlPoints}
+            netInterfaceMap={netInterfaceMap}
             edge={edge}
             isActive={isActive ?? false}
             linePoints={linePoints}
