@@ -223,7 +223,7 @@ const DeviceList: VoidFunctionComponent = () => {
     context,
   });
   const [{ data: labelsData }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY, context });
-  const [{ data: isKafkaOk, error: kafkaHealthCheckError }] = useQuery<
+  const [{ data: isKafkaOk, error: kafkaHealthCheckError, fetching: isLoadingKafkaStatus }] = useQuery<
     KafkaHealthCheckQuery,
     KafkaHealthCheckQueryVariables
   >({ query: KAFKA_HEALTHCHECK_QUERY });
@@ -246,6 +246,20 @@ const DeviceList: VoidFunctionComponent = () => {
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
+
+  useEffect(() => {
+    let kafkaToolbarTimeout: NodeJS.Timeout;
+
+    if (kafkaHealthCheckToolbar.isOpen && isKafkaOk?.deviceInventory.kafkaHealthCheck?.isOk) {
+      kafkaToolbarTimeout = setTimeout(() => {
+        kafkaHealthCheckToolbar.onClose();
+      }, 5000);
+    }
+
+    return () => {
+      clearTimeout(kafkaToolbarTimeout);
+    };
+  }, [kafkaHealthCheckToolbar, isKafkaOk]);
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
@@ -521,6 +535,17 @@ const DeviceList: VoidFunctionComponent = () => {
   const areSelectedAll =
     deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
 
+  if (isLoadingKafkaStatus) {
+    return (
+      <Container maxWidth="container.xl">
+        <Alert status="info">
+          <AlertIcon />
+          <AlertTitle>Checking Kafka status...</AlertTitle>
+        </Alert>
+      </Container>
+    );
+  }
+
   if (deviceData == null && error) {
     return (
       <Container maxWidth="container.xl">
@@ -541,6 +566,33 @@ const DeviceList: VoidFunctionComponent = () => {
 
   return (
     <>
+      {kafkaHealthCheckToolbar.isOpen && (
+        <KafkaHealthCheckToolbar
+          mt={-10}
+          onClose={kafkaHealthCheckToolbar.onClose}
+          isKafkaHealthy={isKafkaOk?.deviceInventory.kafkaHealthCheck?.isOk ?? false}
+          isKafkaHealthyError={kafkaHealthCheckError?.message}
+          onReconnect={() =>
+            reconnectKafka({})
+              .then(() => {
+                addToastNotification({
+                  type: 'success',
+                  title: 'Success',
+                  content: 'Kafka reconnected successfuly',
+                });
+                kafkaHealthCheckToolbar.onClose();
+              })
+              .catch(() => {
+                addToastNotification({
+                  type: 'error',
+                  title: 'Error',
+                  content: 'Kafka reconnection failed',
+                });
+                kafkaHealthCheckToolbar.onOpen();
+              })
+          }
+        />
+      )}
       {isImportModalOpen && (
         <ImportCSVModal
           onClose={() => {
@@ -580,32 +632,6 @@ const DeviceList: VoidFunctionComponent = () => {
         />
       )}
       <Container maxWidth={1280}>
-        {kafkaHealthCheckToolbar.isOpen && (
-          <KafkaHealthCheckToolbar
-            onClose={kafkaHealthCheckToolbar.onClose}
-            isKafkaHealthy={isKafkaOk?.deviceInventory.kafkaHealthCheck?.isOk ?? false}
-            isKafkaHealthyError={kafkaHealthCheckError?.message}
-            onReconnect={() =>
-              reconnectKafka()
-                .then(() => {
-                  addToastNotification({
-                    type: 'success',
-                    title: 'Success',
-                    content: 'Kafka reconnected successfuly',
-                  });
-                  kafkaHealthCheckToolbar.onClose();
-                })
-                .catch(() => {
-                  addToastNotification({
-                    type: 'error',
-                    title: 'Error',
-                    content: 'Kafka reconnection failed',
-                  });
-                  kafkaHealthCheckToolbar.onOpen();
-                })
-            }
-          />
-        )}
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
             Devices

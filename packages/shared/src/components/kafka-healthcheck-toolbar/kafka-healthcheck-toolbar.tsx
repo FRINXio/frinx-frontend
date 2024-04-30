@@ -1,5 +1,16 @@
 import React from 'react';
-import { Box, Button, HStack, IconButton, Link, Spacer, Text, useDisclosure, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  ChakraProps,
+  HStack,
+  IconButton,
+  Link,
+  Spacer,
+  Text,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 
 type Props = {
@@ -9,17 +20,23 @@ type Props = {
   onClose: () => void;
 };
 
-const KafkaHealthCheckToolbar = ({ isKafkaHealthy, isKafkaHealthyError, onClose, onReconnect }: Props) => {
+const KafkaHealthCheckToolbar = ({
+  isKafkaHealthy,
+  isKafkaHealthyError,
+  onClose,
+  onReconnect,
+  ...rest
+}: Props & ChakraProps) => {
   const { isOpen: isOpenError, onOpen: onShowError, onClose: onCloseError } = useDisclosure();
 
   return (
-    <HStack bgColor={isKafkaHealthy ? 'green.500' : 'red.500'} rounded="md" p={5} mb={5}>
+    <HStack bgColor={isKafkaHealthy ? 'green.500' : 'red.500'} px={5} py={2} mb={5} {...rest}>
       <VStack align="start" spacing={0}>
         <HStack>
-          <Text color="white">Kafka is {isKafkaHealthy ? 'healthy' : 'unhealthy'}</Text>
+          <Text color="white">Kafka is {isKafkaHealthy ? 'healthy' : 'unhealthy'}.</Text>
           {!isKafkaHealthy && (
-            <Button as={Link} onClick={onReconnect}>
-              Reconnect
+            <Button variant="link" onClick={onReconnect} colorScheme="blue">
+              Try to reconnect
             </Button>
           )}
         </HStack>
