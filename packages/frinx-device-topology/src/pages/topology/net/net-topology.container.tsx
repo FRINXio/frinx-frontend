@@ -87,13 +87,13 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     pause: selectedShortestPathNodeIds.filter(omitNullValue).length !== 2,
   });
 
-  const fetchNetNodes = () => {
+  const fetchNetNodes = useCallback(() => {
     if (selectedVersion != null) {
       dispatch(getNetBackupNodesAndEdges(client, selectedVersion));
     } else {
       dispatch(getNetNodesAndEdges(client));
     }
-  };
+  }, [selectedVersion, client, dispatch]);
 
   useEffect(() => {
     const shortestPath: ShortestPath =
@@ -121,8 +121,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     return () => {
       window.clearInterval(intervalRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client, dispatch, topologyLayer, selectedVersion]);
+  }, [client, dispatch, fetchNetNodes, topologyLayer, selectedVersion]);
 
   const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
     dispatch(setSelectedEdge(edge));
