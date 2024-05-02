@@ -62,7 +62,6 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
     query: GET_SELECTED_NODE_USAGE_SUBSCRIPTION,
     variables: {
       deviceName: selectedNode?.name ?? '',
-      refreshEverySec: 1,
     },
     pause: selectedNode == null,
   });
