@@ -64,6 +64,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
       deviceName: selectedNode?.name ?? '',
       refreshEverySec: 1,
     },
+    pause: selectedNode == null,
   });
 
   useEffect(() => {
