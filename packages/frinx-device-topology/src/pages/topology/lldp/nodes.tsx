@@ -66,8 +66,6 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
     },
   });
 
-  console.log('deviceUsage', deviceUsage?.deviceInventory?.deviceUsage, selectedNode?.name);
-
   useEffect(() => {
     dispatch(setSelectedNodeLoad(selectedNode?.name ?? '', deviceUsage?.deviceInventory?.deviceUsage));
   }, [deviceUsage, dispatch, selectedNode?.name]);
