@@ -1,6 +1,7 @@
 import { CustomToastProvider } from '@frinx/shared';
 import React, { createContext, FC, useRef } from 'react';
-import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider } from 'urql';
+import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider, subscriptionExchange } from 'urql';
+import { createClient as createWSClient } from 'graphql-ws';
 
 export const InventoryAPIContext = createContext(false);
 
@@ -10,13 +11,28 @@ export type InventoryApiClient = {
 
 export type Props = {
   client: InventoryApiClient;
+  wsUrl: string;
 };
 
-export const InventoryAPIProvider: FC<Props> = ({ children, client }) => {
+export const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
+  const wsClient = createWSClient({ url: wsUrl });
   const { current: urqlClient } = useRef(
     createClient({
       ...client.clientOptions,
-      exchanges: [cacheExchange, fetchExchange],
+      exchanges: [
+        cacheExchange,
+        fetchExchange,
+        subscriptionExchange({
+          forwardSubscription: (request) => {
+            const input = { ...request, query: request.query || '' };
+            return {
+              subscribe: (sink) => ({
+                unsubscribe: wsClient.subscribe(input, sink),
+              }),
+            };
+          },
+        }),
+      ],
     }),
   );
   return (

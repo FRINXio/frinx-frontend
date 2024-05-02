@@ -92,6 +92,13 @@ export type State = {
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
   transform: Matrix;
+  selectedNodeLoad: {
+    deviceName: string;
+    deviceUsage?: {
+      cpuLoad: number;
+      memoryLoad: number;
+    } | null;
+  };
   // isMouseDown: boolean;
 };
 
@@ -132,6 +139,10 @@ export const initialState: State = {
   synceNodePositions: {},
   synceInterfaceGroupPositions: {},
   transform: identity(),
+  selectedNodeLoad: {
+    deviceName: '',
+    deviceUsage: null,
+  },
   // isMouseDown: false,
 };
 
@@ -451,6 +462,17 @@ export function stateReducer(state: State, action: StateAction): State {
         }
 
         acc.transform = finalTransform;
+        return acc;
+      }
+      case 'SET_SELECTED_NODE_USAGE': {
+        const selectedDeviceName = action.payload.deviceName;
+        const selectedDeviceUsage = action.payload.deviceUsage;
+
+        acc.selectedNodeLoad = {
+          deviceName: selectedDeviceName,
+          deviceUsage: selectedDeviceUsage,
+        };
+
         return acc;
       }
       default:
