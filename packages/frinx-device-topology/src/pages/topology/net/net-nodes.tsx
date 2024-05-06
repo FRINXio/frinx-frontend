@@ -40,6 +40,7 @@ const NetNodes: VoidFunctionComponent<Props> = ({ nodes }) => {
     <g>
       {nodes.map((node) => (
         <NetNodeIcon
+          selectedNode={selectedNode}
           isWeightVisible={isWeightVisible}
           onClick={handleClick}
           key={node.id}

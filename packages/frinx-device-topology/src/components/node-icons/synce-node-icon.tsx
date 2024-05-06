@@ -1,7 +1,14 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
 import { SynceGraphNodeWithDiff } from '../../helpers/topology-helpers';
-import { GraphSynceNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import {
+  GraphNetNode,
+  GraphNode,
+  GraphSynceNodeInterface,
+  PositionsWithGroupsMap,
+  PtpGraphNode,
+  SynceGraphNode,
+} from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
@@ -19,6 +26,7 @@ type Props = {
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
   selectedEdge: GraphEdge | null;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
   isSelected: boolean;
 };
 
@@ -37,10 +45,13 @@ const SynceNodeIcon: VoidFunctionComponent<Props> = ({
   onPointerMove,
   onPointerUp,
   selectedEdge,
+  selectedNode,
   isSelected,
 }) => {
   const { x, y } = positions.nodes[node.name];
-  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
+  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups).filter((item) =>
+    selectedNode ? item[0].includes(selectedNode.name) : true,
+  );
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
   return (

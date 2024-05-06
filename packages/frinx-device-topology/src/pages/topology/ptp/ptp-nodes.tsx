@@ -110,6 +110,7 @@ const PtpNodes: VoidFunctionComponent<Props> = ({
           node={node}
           selectedEdge={selectedEdge}
           onPointerMove={handlePointerMove}
+          selectedNode={selectedNode}
           onPointerUp={() => {
             handlePointerUp(node);
           }}
