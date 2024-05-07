@@ -96,7 +96,7 @@ const WorkflowDiagram = ({ meta, result }: Props) => {
         fitView
         onNodeClick={(_e, node) => {
           if (node.data?.isSubWorkflow) {
-            navigate(`../executed/${node.data?.subWorkflowId}`);
+            navigate(`../${node.data?.subWorkflowId}`);
           }
         }}
       />
