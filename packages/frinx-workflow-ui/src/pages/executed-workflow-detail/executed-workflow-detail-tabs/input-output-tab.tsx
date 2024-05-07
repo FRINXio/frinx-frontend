@@ -1,7 +1,6 @@
 import React, { VoidFunctionComponent, useState } from 'react';
 import { IconButton, Button, SimpleGrid, Box, Stack, Text, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import unescapeJs from 'unescape-js';
 import { Editor } from '@frinx/shared';
 import ExternalStorageModal from './external-storage-modal';
 
@@ -13,20 +12,6 @@ type Props = {
   onEscapeChange: (isEscaped: boolean) => void;
   externalInputPayloadStoragePath?: string;
   externalOutputPayloadStoragePath?: string;
-};
-
-const getJSON = (data: Record<string, unknown> | unknown, isEscaped: boolean) => {
-  return isEscaped
-    ? JSON.stringify(data, null, 2)
-        .replace(/\\n/g, '\\n')
-        .replace(/\\'/g, "\\'")
-        .replace(/\\"/g, '\\"')
-        .replace(/\\&/g, '\\&')
-        .replace(/\\r/g, '\\r')
-        .replace(/\\t/g, '\\t')
-        .replace(/\\b/g, '\\b')
-        .replace(/\\f/g, '\\f')
-    : unescapeJs(JSON.stringify(data, null, 2));
 };
 
 const InputOutputTab: VoidFunctionComponent<Props> = ({
@@ -80,7 +65,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Editor value={getJSON(input, isEscaped)} options={{ readOnly: true, lineNumbers: 'on' }} />
+          <Editor value={JSON.stringify(input, null, 2)} options={{ readOnly: true, lineNumbers: 'off' }} />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -108,7 +93,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Editor value={getJSON(output, isEscaped)} options={{ readOnly: true, lineNumbers: 'on' }} />
+          <Editor value={JSON.stringify(output, null, 2)} options={{ readOnly: true, lineNumbers: 'off' }} />
         </Box>
       </SimpleGrid>
     </>
