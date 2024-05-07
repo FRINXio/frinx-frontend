@@ -1,7 +1,8 @@
 import React, { VoidFunctionComponent, useState } from 'react';
-import { IconButton, Button, SimpleGrid, Box, Stack, Textarea, Text, Icon } from '@chakra-ui/react';
+import { IconButton, Button, SimpleGrid, Box, Stack, Text, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import unescapeJs from 'unescape-js';
+import { Editor } from '@frinx/shared';
 import ExternalStorageModal from './external-storage-modal';
 
 type Props = {
@@ -79,7 +80,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getJSON(input, isEscaped)} isReadOnly id="workflowInput" variant="filled" minH={500} />
+          <Editor value={getJSON(input, isEscaped)} options={{ readOnly: true, lineNumbers: 'on' }} />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -107,7 +108,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getJSON(output, isEscaped)} isReadOnly id="workflowOutput" variant="filled" minH={500} />
+          <Editor value={getJSON(output, isEscaped)} options={{ readOnly: true, lineNumbers: 'on' }} />
         </Box>
       </SimpleGrid>
     </>
