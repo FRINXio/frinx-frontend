@@ -40,6 +40,7 @@ const OMITTED_NESTED_OBJECT = {
   },
 };
 
+// INFO: object cannot be nested more in the constants above because of the limitation of the test framework
 describe('omitDeep function test', () => {
   test('omitDeep', () => {
     assert.deepEqual(omitDeep(NESTED_OBJECT, 'g'), OMITTED_NESTED_OBJECT);
