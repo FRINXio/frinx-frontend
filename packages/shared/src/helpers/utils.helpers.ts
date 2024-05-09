@@ -1,6 +1,9 @@
 import { omit } from 'lodash';
 
-export function omitDeep<T extends Record<string, unknown>>(obj: T | null, key: string[]): Record<string, unknown> {
+export function omitDeep<T extends Record<string, unknown>>(
+  obj: T | null | undefined,
+  key: string[],
+): Record<string, unknown> {
   if (obj == null) {
     return {} as Pick<T, Exclude<keyof T, string>>;
   }
