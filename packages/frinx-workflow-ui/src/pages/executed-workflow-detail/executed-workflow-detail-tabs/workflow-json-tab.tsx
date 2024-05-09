@@ -30,7 +30,7 @@ const WorkflowJsonTab: FC<Props> = ({ isEscaped, result, copyToClipBoard, onEsca
       </Button>
     </Stack>
     <Editor
-      value={JSON.stringify(omitDeep(result, '__typename'), null, 2)}
+      value={JSON.stringify(omitDeep(result, ['__typename']), null, 2)}
       options={{ readOnly: true, lineNumbers: 'off', minimap: { enabled: false } }}
     />
   </Box>

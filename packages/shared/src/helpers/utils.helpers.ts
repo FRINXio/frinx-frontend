@@ -1,14 +1,14 @@
 import { omit } from 'lodash';
 
-export function omitDeep<T extends Record<string, unknown>>(obj: T | null, key: string): Record<string, unknown> {
+export function omitDeep<T extends Record<string, unknown>>(obj: T | null, key: string[]): Record<string, unknown> {
   if (obj == null) {
     return {} as Pick<T, Exclude<keyof T, string>>;
   }
 
   const keys = Object.keys(obj);
   const values = Object.values(obj);
-  const containsKey = keys.includes(key);
   const containsObject = values.some((val) => typeof val === 'object');
+  const containsKey = keys.some((k) => key.includes(k));
 
   if (!containsKey && !containsObject) {
     return obj;
