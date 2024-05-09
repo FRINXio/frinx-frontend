@@ -3991,6 +3991,28 @@ export type CreateTaskDefinitionMutationVariables = Exact<{
 
 export type CreateTaskDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', registerTaskDef_1: any | null } };
 
+export type CreateScheduleMutationVariables = Exact<{
+  input: CreateScheduleInput;
+}>;
+
+
+export type CreateScheduleMutation = { __typename?: 'Mutation', scheduler: { __typename?: 'schedulerMutation', createSchedule: { __typename?: 'Schedule', name: string, enabled: boolean, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, fromDate: any, toDate: any } } };
+
+export type ExecuteWorkflowByNameMutationVariables = Exact<{
+  input: ExecuteWorkflowByNameInput;
+}>;
+
+
+export type ExecuteWorkflowByNameMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', executeWorkflowByName: string | null } };
+
+export type ExportWorkflowDefinitionMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type ExportWorkflowDefinitionMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', exportWorkflowDefinition: any | null } };
+
 export type WorkflowsQueryVariables = Exact<{
   filter?: InputMaybe<WorkflowsFilterInput>;
   orderBy?: InputMaybe<WorkflowsOrderByInput>;

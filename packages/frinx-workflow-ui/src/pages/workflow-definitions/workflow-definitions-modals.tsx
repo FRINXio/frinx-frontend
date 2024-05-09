@@ -15,8 +15,8 @@ import {
   CreateScheduleMutationVariables,
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
-  ExportWorkflowMutation,
-  ExportWorkflowMutationVariables,
+  ExportWorkflowDefinitionMutation,
+  ExportWorkflowDefinitionMutationVariables,
 } from '../../__generated__/graphql';
 
 type Props = {
@@ -83,7 +83,7 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
     EXECUTE_WORKFLOW_MUTATION,
   );
 
-  const [, exportWorkflow] = useMutation<ExportWorkflowMutation, ExportWorkflowMutationVariables>(
+  const [, exportWorkflow] = useMutation<ExportWorkflowDefinitionMutation, ExportWorkflowDefinitionMutationVariables>(
     EXPORT_WORKFLOW_MUTATION,
   );
 
