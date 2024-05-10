@@ -1,5 +1,5 @@
 import React, { VoidFunctionComponent } from 'react';
-import { Grid, GridItem } from '@chakra-ui/react';
+import { VStack } from '@chakra-ui/react';
 import WorkflowFormInput from './workflow-form-input';
 import { InputParameter } from '../../helpers/workflow.helpers';
 
@@ -17,18 +17,17 @@ const WorkflowInputsForm: VoidFunctionComponent<Props> = ({
   onChange,
 }) => {
   return (
-    <Grid templateColumns="repeat(2, 1fr)" gap={5}>
+    <VStack spacing={4}>
       {inputParameterKeys.map((inputParameterKey) => (
-        <GridItem key={inputParameterKey}>
-          <WorkflowFormInput
-            inputParameterKey={inputParameterKey}
-            onChange={onChange}
-            values={values}
-            parsedInputParameters={parsedInputParameters}
-          />
-        </GridItem>
+        <WorkflowFormInput
+          key={inputParameterKey}
+          inputParameterKey={inputParameterKey}
+          onChange={onChange}
+          values={values}
+          parsedInputParameters={parsedInputParameters}
+        />
       ))}
-    </Grid>
+    </VStack>
   );
 };
 

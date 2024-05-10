@@ -15,7 +15,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { ClientWorkflow, useNotifications } from '@frinx/shared';
+import { ClientWorkflow, jsonParse, useNotifications } from '@frinx/shared';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import {
@@ -142,6 +142,7 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
           status
           taskType
           subWorkflowId
+          referenceTaskName
         }
       }
     }
@@ -515,7 +516,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           {executedWorkflow.workflowDefinition?.name} / {executedWorkflow.workflowDefinition?.version}
         </Heading>
         {executedWorkflow.parentId && (
-          <Button margin={2} as={Link} to={`../executed/${executedWorkflow.parentId}`}>
+          <Button margin={2} as={Link} to={`../${executedWorkflow.parentId}`}>
             Go to parent workflow
           </Button>
         )}
@@ -585,7 +586,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   <EditRerunTab
                     onRerunClick={handleOnRerunClick}
                     workflowDefinition={clientWorkflow}
-                    workflowInput={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
+                    workflowInput={jsonParse(executedWorkflow.input) ?? {}}
                   />
                 )}
               </TabPanel>
