@@ -72,7 +72,10 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             restartable
             tasksJson
             hasSchedule
-            description
+            description {
+              description
+              labels
+            }
             createdAt
             updatedAt
             createdBy
@@ -89,6 +92,8 @@ const EXECUTED_WORKFLOW_QUERY = gql`
           lastRetriedTime
           startTime
           endTime
+          externalOutputPayloadStoragePath
+          externalInputPayloadStoragePath
           tasks {
             id
             taskType
@@ -504,7 +509,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     executedWorkflow.workflowDefinition != null
       ? {
           ...executedWorkflow.workflowDefinition,
-          labels: [],
+          description: executedWorkflow.workflowDefinition.description?.description ?? '',
+          labels: executedWorkflow.workflowDefinition.description?.labels ?? [],
           timeoutSeconds: executedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
         }
       : null;
@@ -566,6 +572,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   isEscaped={isEscaped}
                   input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
                   output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
+                  externalInputPayloadStoragePath={executedWorkflow.externalInputPayloadStoragePath}
+                  externalOutputPayloadStoragePath={executedWorkflow.externalOutputPayloadStoragePath}
                   onEscapeChange={() => {
                     setIsEscaped((prev) => !prev);
                   }}

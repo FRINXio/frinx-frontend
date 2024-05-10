@@ -9,6 +9,7 @@ import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import {
   clearShortestPathSearch,
   findShortestPath,
+  getNetBackupNodesAndEdges,
   getNetNodesAndEdges,
   setAlternativePaths,
   setMode,
@@ -71,6 +72,7 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     alternativeShortestPaths,
     selectedAlternativeShortestPathIndex,
     isWeightVisible,
+    selectedVersion,
   } = state;
 
   const [{ data: shorthestPathData, fetching: isShortestPathFetching }] = useQuery<
@@ -84,6 +86,14 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     },
     pause: selectedShortestPathNodeIds.filter(omitNullValue).length !== 2,
   });
+
+  const fetchNetNodes = useCallback(() => {
+    if (selectedVersion != null) {
+      dispatch(getNetBackupNodesAndEdges(client, selectedVersion));
+    } else {
+      dispatch(getNetNodesAndEdges(client));
+    }
+  }, [selectedVersion, client, dispatch]);
 
   useEffect(() => {
     const shortestPath: ShortestPath =
@@ -103,14 +113,15 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
 
   useEffect(() => {
     intervalRef.current = window.setInterval(() => {
-      dispatch(getNetNodesAndEdges(client));
+      fetchNetNodes();
     }, 10000);
-    dispatch(getNetNodesAndEdges(client));
+
+    fetchNetNodes();
 
     return () => {
       window.clearInterval(intervalRef.current);
     };
-  }, [client, dispatch, topologyLayer]);
+  }, [client, dispatch, fetchNetNodes, topologyLayer, selectedVersion]);
 
   const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
     dispatch(setSelectedEdge(edge));

@@ -1,5 +1,5 @@
-import React, { VoidFunctionComponent, useState } from 'react';
-import { IconButton, Button, SimpleGrid, Box, Stack, Text, Icon } from '@chakra-ui/react';
+import React, { VoidFunctionComponent, useState, useEffect } from 'react';
+import { IconButton, Button, SimpleGrid, Box, Stack, Text, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Editor } from '@frinx/shared';
 import ExternalStorageModal from './external-storage-modal';
@@ -10,8 +10,8 @@ type Props = {
   output: Record<string, string>;
   copyToClipBoard: (value: Record<string, string>) => void;
   onEscapeChange: (isEscaped: boolean) => void;
-  externalInputPayloadStoragePath?: string;
-  externalOutputPayloadStoragePath?: string;
+  externalInputPayloadStoragePath?: string | null;
+  externalOutputPayloadStoragePath?: string | null;
 };
 
 const InputOutputTab: VoidFunctionComponent<Props> = ({
@@ -24,15 +24,23 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
   externalOutputPayloadStoragePath,
 }) => {
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
+  useEffect(() => {
+    if (payload) {
+      onOpen();
+    }
+  }, [payload, onOpen]);
 
   return (
     <>
-      {payload && (
+      {payload != null && (
         <ExternalStorageModal
           title={payload.type}
-          isOpen={payload != null}
+          isOpen={isOpen}
           onClose={() => {
             setPayload(null);
+            onClose();
           }}
           storagePath={payload.data}
         />
