@@ -33,7 +33,10 @@ const CREATE_WORKFLOW_MUTATION = gql`
           updatedAt
           tasksJson
           name
-          description
+          description {
+            description
+            labels
+          }
           version
           outputParameters {
             key
@@ -79,6 +82,7 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
         .map((data) => JSON.parse(data))
         .map((data) => {
           const {
+            labels,
             tasks,
             name,
             description,
@@ -94,7 +98,7 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
           return {
             tasks: JSON.stringify(tasks),
             name,
-            description,
+            description: { description, labels: labels || [] },
             outputParameters,
             inputParameters: inputParameters || [],
             restartable,

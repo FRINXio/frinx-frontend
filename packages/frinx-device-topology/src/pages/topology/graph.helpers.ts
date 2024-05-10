@@ -28,6 +28,12 @@ export type GraphNodeInterface = {
   status: 'ok' | 'unknown';
   name: string;
 };
+
+export type GraphNetNodeInterface = {
+  id: string;
+  name: string;
+};
+
 export type GraphNode = {
   id: string;
   name: string;
@@ -119,6 +125,14 @@ export type GraphPtpNodeInterfaceDetails = {
   ptpStatus: string | null;
   adminOperStatus: string | null;
   ptsfUnusable: string | null;
+};
+
+export type BackupNetGraphNode = {
+  id: string;
+  name: string;
+  interfaces: GraphNetNodeInterface[];
+  networks: NetNetwork[];
+  coordinates: Position;
 };
 
 export type GraphPtpNodeInterface = {
