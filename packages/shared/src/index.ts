@@ -25,6 +25,7 @@ export * from './hooks';
 export * from './helpers/task.helpers';
 export * from './helpers/api-to-graph.helpers';
 export * from './helpers/graph-to-api.helpers';
+export * from './helpers/utils.helpers';
 export {
   ToastNotification,
   Editor,
