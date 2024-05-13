@@ -15,6 +15,8 @@ import {
   CreateScheduleMutationVariables,
   ExecuteWorkflowByNameMutation,
   ExecuteWorkflowByNameMutationVariables,
+  ExportWorkflowDefinitionMutation,
+  ExportWorkflowDefinitionMutationVariables,
 } from '../../__generated__/graphql';
 
 type Props = {
@@ -54,6 +56,14 @@ const EXECUTE_WORKFLOW_MUTATION = gql`
   }
 `;
 
+const EXPORT_WORKFLOW_MUTATION = gql`
+  mutation ExportWorkflowDefinition($name: String!, $version: Int) {
+    conductor {
+      exportWorkflowDefinition(name: $name, version: $version)
+    }
+  }
+`;
+
 const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
   workflows,
   activeWorkflow,
@@ -71,6 +81,10 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
 
   const [, onExecute] = useMutation<ExecuteWorkflowByNameMutation, ExecuteWorkflowByNameMutationVariables>(
     EXECUTE_WORKFLOW_MUTATION,
+  );
+
+  const [, exportWorkflow] = useMutation<ExportWorkflowDefinitionMutation, ExportWorkflowDefinitionMutationVariables>(
+    EXPORT_WORKFLOW_MUTATION,
   );
 
   const { addToastNotification } = useNotifications();
@@ -161,13 +175,58 @@ const WorkflowDefinitionsModals: VoidFunctionComponent<Props> = ({
       });
   };
 
+  const handleOnExportClick = () => {
+    if (activeWorkflow == null) {
+      addToastNotification({
+        content: 'We cannot export undefined workflow',
+        type: 'error',
+      });
+
+      return;
+    }
+
+    exportWorkflow({
+      name: activeWorkflow.name,
+      version: activeWorkflow.version,
+    })
+      .then((res) => {
+        if (!res.error) {
+          const workflowDefinition = res.data?.conductor.exportWorkflowDefinition;
+
+          const file = new Blob([JSON.stringify(workflowDefinition, null, 2)], { type: 'application/json' });
+          const a = document.createElement('a');
+          const url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = `${activeWorkflow.name}.json`;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 0);
+        }
+
+        if (res.error) {
+          addToastNotification({ content: res.error.message, type: 'error' });
+        }
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem to export selected workflow', type: 'error' });
+      });
+  };
+
   if (activeWorkflow == null) {
     return null;
   }
 
   return (
     <>
-      <DefinitionModal workflow={activeWorkflow} isOpen={definitionModal.isOpen} onClose={definitionModal.onClose} />
+      <DefinitionModal
+        workflow={activeWorkflow}
+        isOpen={definitionModal.isOpen}
+        onClose={definitionModal.onClose}
+        onExportClick={handleOnExportClick}
+      />
       <DependencyModal
         workflow={activeWorkflow}
         onClose={dependencyModal.onClose}
