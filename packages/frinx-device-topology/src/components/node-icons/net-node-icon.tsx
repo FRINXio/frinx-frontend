@@ -1,5 +1,6 @@
 import { chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
+import { NetGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import {
   GrahpNetNodeInterface,
   GraphNetNode,
@@ -14,7 +15,7 @@ import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NetNodeNetwork from './net-node-network';
 import NodeIconImage from './node-icon-image';
-import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node-icon.helpers';
+import { getDeviceNodeTransformProperties, getNodeInterfaceGroups, getNodeBackgroundColor } from './node-icon.helpers';
 import NodeInterface from './node-interface';
 
 type Props = {
@@ -25,7 +26,7 @@ type Props = {
   isShortestPath: boolean;
   isSelectedForCommonSearch: boolean;
   isSelectedForShortestPath: boolean;
-  node: GraphNetNode;
+  node: NetGraphNodeWithDiff;
   netNodes: GraphNetNode[];
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
@@ -159,7 +160,18 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <Circle r={`${circleDiameter / 2}px`} fill="gray.400" strokeWidth={1} stroke="gray.400" />
+        <Circle
+          r={`${circleDiameter / 2}px`}
+          fill={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
+          strokeWidth={1}
+          stroke={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
+        />
       </G>
       <Text
         height={`${circleDiameter / 2}px`}

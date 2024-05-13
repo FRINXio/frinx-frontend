@@ -275,11 +275,6 @@ const App: VoidFunctionComponent<Props> = ({
         tasks: newTasks.map(convertTaskToExtendedTask),
       });
 
-      const description = JSON.stringify({
-        description: editedWorkflow.description,
-        labels: editedWorkflow.labels,
-      });
-
       const outputParameters = editedWorkflow.outputParameters?.reduce(
         (acc, param) => ({ ...acc, [param.key]: param.value }),
         {},
@@ -289,7 +284,10 @@ const App: VoidFunctionComponent<Props> = ({
         input: {
           id: editedWorkflow.id,
           workflowDefinition: {
-            description,
+            description: {
+              description: editedWorkflow.description,
+              labels: editedWorkflow.labels,
+            },
             name: editedWorkflow.name,
             tasks: JSON.stringify(newTasks),
             timeoutSeconds: 0,

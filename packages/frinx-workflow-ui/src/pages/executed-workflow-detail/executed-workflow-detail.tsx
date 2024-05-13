@@ -15,7 +15,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { ClientWorkflow, useNotifications } from '@frinx/shared';
+import { ClientWorkflow, jsonParse, useNotifications } from '@frinx/shared';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import {
@@ -72,7 +72,10 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             restartable
             tasksJson
             hasSchedule
-            description
+            description {
+              description
+              labels
+            }
             createdAt
             updatedAt
             createdBy
@@ -89,6 +92,8 @@ const EXECUTED_WORKFLOW_QUERY = gql`
           lastRetriedTime
           startTime
           endTime
+          externalOutputPayloadStoragePath
+          externalInputPayloadStoragePath
           tasks {
             id
             taskType
@@ -142,6 +147,7 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
           status
           taskType
           subWorkflowId
+          referenceTaskName
         }
       }
     }
@@ -503,7 +509,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     executedWorkflow.workflowDefinition != null
       ? {
           ...executedWorkflow.workflowDefinition,
-          labels: [],
+          description: executedWorkflow.workflowDefinition.description?.description ?? '',
+          labels: executedWorkflow.workflowDefinition.description?.labels ?? [],
           timeoutSeconds: executedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
         }
       : null;
@@ -515,7 +522,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           {executedWorkflow.workflowDefinition?.name} / {executedWorkflow.workflowDefinition?.version}
         </Heading>
         {executedWorkflow.parentId && (
-          <Button margin={2} as={Link} to={`../executed/${executedWorkflow.parentId}`}>
+          <Button margin={2} as={Link} to={`../${executedWorkflow.parentId}`}>
             Go to parent workflow
           </Button>
         )}
@@ -565,6 +572,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   isEscaped={isEscaped}
                   input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
                   output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
+                  externalInputPayloadStoragePath={executedWorkflow.externalInputPayloadStoragePath}
+                  externalOutputPayloadStoragePath={executedWorkflow.externalOutputPayloadStoragePath}
                   onEscapeChange={() => {
                     setIsEscaped((prev) => !prev);
                   }}
@@ -585,7 +594,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   <EditRerunTab
                     onRerunClick={handleOnRerunClick}
                     workflowDefinition={clientWorkflow}
-                    workflowInput={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
+                    workflowInput={jsonParse(executedWorkflow.input) ?? {}}
                   />
                 )}
               </TabPanel>
