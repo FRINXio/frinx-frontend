@@ -677,6 +677,11 @@ export type DeviceEdge = {
   node: Device;
 };
 
+export type DeviceListUsage = {
+  __typename?: 'DeviceListUsage';
+  devicesUsage: Array<Maybe<DevicesUsage>>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -696,6 +701,19 @@ export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
   | 'MANUAL';
+
+export type DeviceUsage = {
+  __typename?: 'DeviceUsage';
+  cpuLoad: Scalars['Float']['output'];
+  memoryLoad: Scalars['Float']['output'];
+};
+
+export type DevicesUsage = {
+  __typename?: 'DevicesUsage';
+  cpuLoad: Scalars['Float']['output'];
+  deviceName: Scalars['String']['output'];
+  memoryLoad: Scalars['Float']['output'];
+};
 
 export type DiffData = {
   __typename?: 'DiffData';
@@ -3305,7 +3323,21 @@ export type DeviceInventoryQueryZonesArgs = {
 
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
+  deviceUsage: Maybe<DeviceUsage>;
+  devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
+};
+
+
+export type DeviceInventorySubscriptionDeviceUsageArgs = {
+  deviceName: Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesUsageArgs = {
+  deviceNames: Array<Scalars['String']['input']>;
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
