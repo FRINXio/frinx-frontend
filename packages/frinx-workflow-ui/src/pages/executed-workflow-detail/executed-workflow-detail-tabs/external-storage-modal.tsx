@@ -1,6 +1,6 @@
-// @flow
 import {
   Button,
+  HStack,
   Icon,
   IconButton,
   Modal,
@@ -9,24 +9,25 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Stack,
   Text,
-  Textarea,
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent, useState } from 'react';
 import FeatherIcon from 'feather-icons-react';
 import unescapeJs from 'unescape-js';
-// import { gql, useQuery } from 'urql';
+import { gql, useQuery } from 'urql';
+import { Editor } from '@frinx/shared';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
-import {} from '../../../__generated__/graphql';
+import { ExternalStorageQuery, ExternalStorageQueryVariables } from '../../../__generated__/graphql';
 
-// const EXTERNAL_STORAGE = gql`
-//   query ExternalStorage($path: String!) {
-//     externalStorage(path: $path) {
-//       data
-//     }
-//   }
-// `;
+const EXTERNAL_STORAGE = gql`
+  query ExternalStorage($path: String!) {
+    conductor {
+      externalStorage(path: $path)
+    }
+  }
+`;
 
 type Props = {
   storagePath: string;
@@ -35,32 +36,18 @@ type Props = {
   title: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, storagePath, title }) => {
-  //  TODO: FIXME
-  //  const [{ data }] = useQuery<unknown>({
-  //    query: EXTERNAL_STORAGE,
-  //    variables: {
-  //      path: storagePath,
-  //    },
-  //  });
-  const data = null;
-
   const [isEscaped, setIsEscaped] = useState(false);
+  const [{ data, fetching, error }] = useQuery<ExternalStorageQuery, ExternalStorageQueryVariables>({
+    query: EXTERNAL_STORAGE,
+    variables: { path: storagePath },
+  });
 
   const handleEscapeChange = () => {
     setIsEscaped((prev) => !prev);
   };
 
-  if (!data) {
-    return null;
-  }
-
-  // TODO: FIXME
-  // const payload = data.externalStorage?.data ?? '';
-  const payload = '';
-
-  const value = isEscaped ? payload : unescapeJs(payload);
+  const value = isEscaped ? storagePath : unescapeJs(storagePath);
 
   return (
     <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
@@ -84,7 +71,15 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
               {isEscaped ? 'Unescape' : 'Escape'}
             </Button>
           </Stack>
-          {payload != null && <Textarea value={value} isReadOnly id="storage" variant="filled" minH={450} />}
+          {fetching && (
+            <HStack>
+              <Spinner /> <Text my={5}>We are loading external storage payload for you...</Text>
+            </HStack>
+          )}
+          {!fetching && (error || data == null) && <Text>Failed to load external storage payload</Text>}
+          {!fetching && data != null && (
+            <Editor value={JSON.stringify(data.conductor.externalStorage)} language="json" />
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>

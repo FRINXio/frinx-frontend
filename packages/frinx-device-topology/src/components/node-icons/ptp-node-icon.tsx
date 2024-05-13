@@ -1,6 +1,13 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
-import { GraphPtpNodeInterface, PositionsWithGroupsMap } from '../../pages/topology/graph.helpers';
+import {
+  GraphNetNode,
+  GraphNode,
+  GraphPtpNodeInterface,
+  PositionsWithGroupsMap,
+  PtpGraphNode,
+  SynceGraphNode,
+} from '../../pages/topology/graph.helpers';
 import { PtpGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
@@ -19,6 +26,7 @@ type Props = {
   node: PtpGraphNodeWithDiff;
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
@@ -39,12 +47,15 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   node,
   topologyMode,
   selectedEdge,
+  selectedNode,
   onPointerDown,
   onPointerMove,
   onPointerUp,
 }) => {
   const { x, y } = positions.nodes[node.name];
-  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
+  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups).filter((item) =>
+    selectedNode ? item[0].includes(selectedNode.name) : true,
+  );
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
   const ptpNodeBackgroundColor =

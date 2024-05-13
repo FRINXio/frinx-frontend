@@ -1,8 +1,14 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
-// import { PtpGraphNode } from '../__generated__/graphql';
-import { BackupGraphNode, GraphEdge, GraphNode, SynceGraphNode, PtpGraphNode } from '../pages/topology/graph.helpers';
-import { PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
+import {
+  BackupGraphNode,
+  BackupNetGraphNode,
+  GraphEdge,
+  GraphNode,
+  SynceGraphNode,
+  PtpGraphNode,
+} from '../pages/topology/graph.helpers';
+import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -15,6 +21,10 @@ export type PtpGraphNodeWithDiff = PtpGraphNode & {
 };
 
 export type SynceGraphNodeWithDiff = SynceGraphNode & {
+  change: Change;
+};
+
+export type NetGraphNodeWithDiff = NetNode & {
   change: Change;
 };
 
@@ -246,6 +256,83 @@ export function getSynceNodesWithDiff(
   return [...currentNodesWithDiff, ...deletedBackupNodesWithDiff];
 }
 
+export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNetGraphNode[]): NetGraphNodeWithDiff[] {
+  if (backupGraphNodes.length === 0) {
+    return nodes.map((n) => ({
+      ...n,
+      change: 'NONE' as const,
+    }));
+  }
+
+  const nodesMap = new Map(nodes.map((n) => [n.id, n]));
+  const backupNodesMap = new Map(backupGraphNodes.map((n) => [n.id, n]));
+
+  const currentNodesWithDiff = nodes.map((n) => {
+    const { id, interfaces } = n;
+    const addedInterfaces = differenceBy(
+      nodesMap.get(id)?.interfaces ?? [],
+      backupNodesMap.get(id)?.interfaces ?? [],
+      'id',
+    ).map((i) => ({ ...i, change: 'ADDED' }));
+    const removedInterfaces = differenceBy(
+      backupNodesMap.get(id)?.interfaces,
+      nodesMap.get(id)?.interfaces ?? [],
+      'id',
+    ).map((i) => ({ ...i, change: 'DELETED' }));
+    const noChangeInterfaces = differenceBy(interfaces, removedInterfaces, addedInterfaces, 'id').map((i) => ({
+      ...i,
+      change: 'NONE',
+    }));
+    if (backupNodesMap.has(n.id)) {
+      return {
+        ...n,
+        interfaces: [...addedInterfaces, ...removedInterfaces, ...noChangeInterfaces].map((i) => ({
+          ...i,
+          details: null,
+        })),
+        change: 'NONE' as const,
+      };
+    }
+    const node = {
+      ...n,
+      interfaces: [...addedInterfaces, ...removedInterfaces, ...noChangeInterfaces].map((i) => ({
+        ...i,
+        details: null,
+      })),
+      change: 'ADDED' as const,
+    };
+    return node;
+  });
+
+  const deletedBackupNodesWithDiff = backupGraphNodes
+    .map((n) => {
+      const { id, name, interfaces, coordinates, networks } = n;
+      return {
+        id,
+        name,
+        device: {
+          id: uuid(),
+          deviceSize: 'MEDIUM' as const,
+          name,
+          // below are some fake data
+          isInstalled: false,
+          createdAt: '1970-01-01',
+          serviceState: 'PLANNING',
+        },
+        interfaces: interfaces.map((i) => ({ ...i, details: null })),
+        networks,
+        coordinates,
+        change: 'DELETED' as const,
+        status: 'ok' as const,
+        labels: [],
+        nodeId: '',
+      };
+    })
+    .filter((n) => !nodesMap.has(n.id));
+
+  return [...currentNodesWithDiff, ...deletedBackupNodesWithDiff];
+}
+
 export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): GraphEdgeWithDiff[] {
   if (backupEdges.length === 0) {
     return edges.map((e) => ({
@@ -255,6 +342,7 @@ export function getEdgesWithDiff(edges: GraphEdge[], backupEdges: GraphEdge[]): 
   }
   const edgesMap = new Map(edges.map((e) => [e.id, e]));
   const backupEdgesMap = new Map(backupEdges.map((e) => [e.id, e]));
+
   const currentEdgesWithDiff = edges.map((e) => {
     if (backupEdgesMap.has(e.id)) {
       return {

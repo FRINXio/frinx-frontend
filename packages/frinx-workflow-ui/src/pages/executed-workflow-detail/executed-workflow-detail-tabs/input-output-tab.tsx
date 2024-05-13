@@ -1,7 +1,7 @@
-import React, { VoidFunctionComponent, useState } from 'react';
-import { IconButton, Button, SimpleGrid, Box, Stack, Textarea, Text, Icon } from '@chakra-ui/react';
+import React, { VoidFunctionComponent, useState, useEffect } from 'react';
+import { IconButton, Button, SimpleGrid, Box, Stack, Text, Icon, useDisclosure } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import unescapeJs from 'unescape-js';
+import { Editor } from '@frinx/shared';
 import ExternalStorageModal from './external-storage-modal';
 
 type Props = {
@@ -10,22 +10,8 @@ type Props = {
   output: Record<string, string>;
   copyToClipBoard: (value: Record<string, string>) => void;
   onEscapeChange: (isEscaped: boolean) => void;
-  externalInputPayloadStoragePath?: string;
-  externalOutputPayloadStoragePath?: string;
-};
-
-const getJSON = (data: Record<string, unknown> | unknown, isEscaped: boolean) => {
-  return isEscaped
-    ? JSON.stringify(data, null, 2)
-        .replace(/\\n/g, '\\n')
-        .replace(/\\'/g, "\\'")
-        .replace(/\\"/g, '\\"')
-        .replace(/\\&/g, '\\&')
-        .replace(/\\r/g, '\\r')
-        .replace(/\\t/g, '\\t')
-        .replace(/\\b/g, '\\b')
-        .replace(/\\f/g, '\\f')
-    : unescapeJs(JSON.stringify(data, null, 2));
+  externalInputPayloadStoragePath?: string | null;
+  externalOutputPayloadStoragePath?: string | null;
 };
 
 const InputOutputTab: VoidFunctionComponent<Props> = ({
@@ -38,15 +24,23 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
   externalOutputPayloadStoragePath,
 }) => {
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
+  const { isOpen, onClose, onOpen } = useDisclosure();
+
+  useEffect(() => {
+    if (payload) {
+      onOpen();
+    }
+  }, [payload, onOpen]);
 
   return (
     <>
-      {payload && (
+      {payload != null && (
         <ExternalStorageModal
           title={payload.type}
-          isOpen={payload != null}
+          isOpen={isOpen}
           onClose={() => {
             setPayload(null);
+            onClose();
           }}
           storagePath={payload.data}
         />
@@ -79,7 +73,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getJSON(input, isEscaped)} isReadOnly id="workflowInput" variant="filled" minH={500} />
+          <Editor value={JSON.stringify(input, null, 2)} options={{ readOnly: true, lineNumbers: 'off' }} />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -107,7 +101,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Textarea value={getJSON(output, isEscaped)} isReadOnly id="workflowOutput" variant="filled" minH={500} />
+          <Editor value={JSON.stringify(output, null, 2)} options={{ readOnly: true, lineNumbers: 'off' }} />
         </Box>
       </SimpleGrid>
     </>

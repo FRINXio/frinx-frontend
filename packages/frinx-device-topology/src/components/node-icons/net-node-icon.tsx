@@ -1,17 +1,21 @@
 import { chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
+import { NetGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import {
   GrahpNetNodeInterface,
   GraphNetNode,
   PositionsWithGroupsMap,
   width,
   height,
+  GraphNode,
+  PtpGraphNode,
+  SynceGraphNode,
 } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NetNodeNetwork from './net-node-network';
 import NodeIconImage from './node-icon-image';
-import { getDeviceNodeTransformProperties, getNodeInterfaceGroups } from './node-icon.helpers';
+import { getDeviceNodeTransformProperties, getNodeInterfaceGroups, getNodeBackgroundColor } from './node-icon.helpers';
 import NodeInterface from './node-interface';
 
 type Props = {
@@ -22,12 +26,13 @@ type Props = {
   isShortestPath: boolean;
   isSelectedForCommonSearch: boolean;
   isSelectedForShortestPath: boolean;
-  node: GraphNetNode;
+  node: NetGraphNodeWithDiff;
   netNodes: GraphNetNode[];
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
   onClick: (node: GraphNetNode) => void;
   isWeightVisible: boolean;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
 };
 
 type NetNodeNetworks = {
@@ -64,9 +69,12 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
   netNodes,
   onClick,
   isWeightVisible,
+  selectedNode,
 }) => {
   const { x, y } = positions.nodes[node.name];
-  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups);
+  const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups).filter((item) =>
+    selectedNode ? item[0].includes(selectedNode.name) : true,
+  );
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
 
   const allNetworks = netNodes
@@ -152,7 +160,18 @@ const NetNodeIcon: VoidFunctionComponent<Props> = ({
         transition="all .2s ease-in-out"
       />
       <G>
-        <Circle r={`${circleDiameter / 2}px`} fill="gray.400" strokeWidth={1} stroke="gray.400" />
+        <Circle
+          r={`${circleDiameter / 2}px`}
+          fill={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
+          strokeWidth={1}
+          stroke={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
+        />
       </G>
       <Text
         height={`${circleDiameter / 2}px`}
