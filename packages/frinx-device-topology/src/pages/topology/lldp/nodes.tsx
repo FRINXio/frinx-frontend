@@ -167,6 +167,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
           selectedEdge={selectedEdge}
           isShowingLoad={selectedNodeLoad?.deviceName === node.device?.name}
           nodeLoad={selectedNodeLoad.deviceUsage}
+          selectedNode={selectedNode}
         />
       ))}
     </g>

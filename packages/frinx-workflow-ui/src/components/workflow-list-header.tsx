@@ -33,7 +33,10 @@ const CREATE_WORKFLOW_MUTATION = gql`
           updatedAt
           tasksJson
           name
-          description
+          description {
+            description
+            labels
+          }
           version
           outputParameters {
             key
@@ -78,15 +81,34 @@ const WorkflowListHeader: VoidFunctionComponent<Props> = ({ onImportSuccess }) =
       const json = readFiles
         .map((data) => JSON.parse(data))
         .map((data) => {
-          const { tasks, name, description, outputParameters, restartable, timeoutSeconds, version } = data;
-          return {
-            tasks: JSON.stringify(tasks),
+          const {
+            labels,
+            tasks,
             name,
             description,
             outputParameters,
             restartable,
             timeoutSeconds,
             version,
+            inputParameters,
+            ownerApp,
+            createdBy,
+            updatedBy,
+          } = data;
+          return {
+            tasks: JSON.stringify(tasks),
+            name,
+            description: { description, labels: labels || [] },
+            outputParameters,
+            inputParameters: inputParameters || [],
+            restartable,
+            timeoutSeconds,
+            version,
+            ownerApp: ownerApp || '',
+            createTime: Date.now(),
+            updateTime: Date.now(),
+            createdBy: createdBy || '',
+            updatedBy: updatedBy || '',
           };
         });
       const response = await Promise.all(

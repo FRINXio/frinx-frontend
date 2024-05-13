@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
-import { Box, Stack, IconButton, Button, Text, Textarea, Icon } from '@chakra-ui/react';
+import { Box, Stack, IconButton, Button, Text, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { omit } from 'lodash';
-import { unescapedJSON } from '../../../helpers/utils.helpers';
+import { Editor, omitDeep } from '@frinx/shared';
 import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
 
 type Props = {
@@ -29,12 +29,9 @@ const WorkflowJsonTab: FC<Props> = ({ isEscaped, result, copyToClipBoard, onEsca
         {isEscaped ? 'Unescape' : 'Escape'}
       </Button>
     </Stack>
-    <Textarea
-      value={unescapedJSON(isEscaped, omit(result, ['__typename']))}
-      isReadOnly
-      id="json"
-      variant="filled"
-      minH={500}
+    <Editor
+      value={JSON.stringify(omitDeep(result, ['__typename']), null, 2)}
+      options={{ readOnly: true, lineNumbers: 'off', minimap: { enabled: false } }}
     />
   </Box>
 );
