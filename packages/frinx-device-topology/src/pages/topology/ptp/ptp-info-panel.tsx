@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Divider, Flex, Heading, HStack } from '@chakra-ui/react';
+import { Badge, Box, Button, Divider, Flex, Heading, HStack, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { setSelectedEdge } from '../../../state.actions';
@@ -12,10 +12,9 @@ type Props = {
 };
 
 const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
-  const [activeInterface, setActiveInterface] = useState<GraphPtpNodeInterface | null>(null);
   const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = useState(false);
   const { state, dispatch } = useStateContext();
-  const { ptpEdges } = state;
+  const { selectedEdge, ptpEdges } = state;
   const { details, interfaces } = node;
 
   const handleInterfaceClick = (deviceInterface: GraphPtpNodeInterface) => {
@@ -24,13 +23,13 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
       return;
     }
     dispatch(setSelectedEdge(edge));
-    setActiveInterface(deviceInterface);
   };
 
   const handleClose = () => {
     onClose();
-    setActiveInterface(null);
   };
+
+  const activeInterface = interfaces.filter((i) => i.id === selectedEdge?.source.interface).pop();
 
   return (
     <HStack
@@ -73,7 +72,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             return (
               <Box key={`device-interface-${i.id}`} my={2}>
                 <Button as={Link} onClick={() => handleInterfaceClick(i)} variant="link">
-                  {i.name}
+                  <Text fontWeight={i.id === activeInterface?.id ? 'bold' : 'normal'}>{i.name}</Text>
                 </Button>
               </Box>
             );

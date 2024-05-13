@@ -63,7 +63,12 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
         />
       )}
 
-      {isJson && <Editor value={values[inputParameterKey]} onChange={(e) => onChange(inputParameterKey, e ?? '')} />}
+      {isJson && (
+        <Editor
+          value={JSON.stringify(values[inputParameterKey], null, 2)}
+          onChange={(e) => onChange(inputParameterKey, e ?? '')}
+        />
+      )}
 
       {isList && (
         <FormControl>

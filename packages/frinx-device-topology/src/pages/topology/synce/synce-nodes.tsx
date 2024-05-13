@@ -100,6 +100,7 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}
+          selectedNode={selectedNode}
           onPointerMove={handlePointerMove}
           onPointerUp={() => {
             handlePointerUp(node);

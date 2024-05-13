@@ -16,6 +16,7 @@ import Pagination from './components/pagination/pagination';
 import ConfirmDeleteModal from './components/confirm-delete-modal/confirm-delete-modal';
 import SelectItemsPerPage from './components/select-items-per-page/select-items-per-page';
 import WorkflowInputsForm from './components/workflow-inputs-form/workflow-inputs-form';
+import KafkaHealthCheckToolbar from './components/kafka-healthcheck-toolbar/kafka-healthcheck-toolbar';
 
 export * from './helpers/workflow-api.types';
 export * from './helpers/workflow.helpers';
@@ -25,6 +26,7 @@ export * from './hooks';
 export * from './helpers/task.helpers';
 export * from './helpers/api-to-graph.helpers';
 export * from './helpers/graph-to-api.helpers';
+export * from './helpers/utils.helpers';
 export {
   ToastNotification,
   Editor,
@@ -42,4 +44,5 @@ export {
   getDynamicInputParametersFromWorkflow,
   getInitialValuesFromParsedInputParameters as getAvailableInputParamsOfWorkflow,
   parseInputParameters,
+  KafkaHealthCheckToolbar,
 };
