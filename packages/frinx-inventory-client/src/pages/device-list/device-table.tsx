@@ -117,19 +117,6 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               <Text>Device Status</Text>
             </Flex>
           </Th>
-          <Th>
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              cursor="pointer"
-              onClick={() => onSort('serviceState')}
-            >
-              <Text>Service State</Text>
-              {orderBy?.sortKey === 'serviceState' && (
-                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
-              )}
-            </Flex>
-          </Th>
           <Th>Installation</Th>
           <Th>Actions</Th>
         </Tr>
@@ -169,9 +156,6 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 >
                   {deviceStatuses.find((d) => d.deviceName === device.name)?.status}
                 </Badge>
-              </Td>
-              <Td minWidth={200}>
-                <Badge data-cy={`device-state-${device.name}`}>{device.serviceState}</Badge>
               </Td>
               <Td minWidth={200}>
                 <InstallButton
