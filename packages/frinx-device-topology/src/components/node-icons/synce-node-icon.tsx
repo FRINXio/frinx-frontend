@@ -10,6 +10,7 @@ import {
   SynceGraphNode,
 } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
+import { TopologyLayer } from '../../state.reducer';
 import { GraphEdge } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
 import { getDeviceNodeTransformProperties, getNodeInterfaceGroups, getNodeBackgroundColor } from './node-icon.helpers';
@@ -28,6 +29,7 @@ type Props = {
   selectedEdge: GraphEdge | null;
   selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
   isSelected: boolean;
+  topologyLayer: TopologyLayer;
 };
 
 const G = chakra('g');
@@ -47,6 +49,7 @@ const SynceNodeIcon: VoidFunctionComponent<Props> = ({
   selectedEdge,
   selectedNode,
   isSelected,
+  topologyLayer,
 }) => {
   const { x, y } = positions.nodes[node.name];
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups).filter((item) =>
@@ -117,8 +120,15 @@ const SynceNodeIcon: VoidFunctionComponent<Props> = ({
           const iPosition = data.position;
           const sourceInterface = data.interfaces.find((i) => i.id === selectedEdge?.source.interface);
           const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
+          const interfaceDetails = {
+            isSynceEnabled: data.interfaces[0].details?.isSynceEnabled,
+            isQualifiedForUse: data.interfaces[0].details?.qualifiedForUse,
+            isSelectedForUse: node.details.selectedForUse,
+          };
           return (
             <NodeInterface
+              interfaceDetails={interfaceDetails}
+              topologyLayer={topologyLayer}
               key={group}
               position={{
                 x: iPosition.x - x,
