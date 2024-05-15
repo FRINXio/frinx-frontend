@@ -11,8 +11,11 @@ export type ApiHelpers = {
 };
 
 export type ErrorType = 'UNAUTHORIZED' | 'FORBIDDEN' | 'ACCESS_REJECTED';
+export type AuthContext = {
+  emit: (errorType: ErrorType) => void;
+};
 
-export function createApiHelpers(baseURL: string): ApiHelpers {
+export function createApiHelpers(baseURL: string, authContext?: AuthContext): ApiHelpers {
   async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
     const url = urlJoin(baseURL, path);
     const { headers, ...rest } = options;
@@ -23,6 +26,11 @@ export function createApiHelpers(baseURL: string): ApiHelpers {
         ...headers,
       },
     });
+
+    // this is here for handling unistore nonvalid/expired transaction
+    if (authContext && response.status === 422) {
+      return authContext.emit('FORBIDDEN');
+    }
 
     if (!response.ok) {
       throw new Error(`apiFetch failed with http-code ${response.status}`);
