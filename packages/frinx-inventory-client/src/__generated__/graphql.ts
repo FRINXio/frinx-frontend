@@ -44,6 +44,11 @@ export type Action_Input = {
   start_workflow?: InputMaybe<StartWorkflow_Input>;
 };
 
+export type ActivateStreamPayload = {
+  __typename?: 'ActivateStreamPayload';
+  stream: Stream;
+};
+
 export type AddBlueprintInput = {
   name: Scalars['String']['input'];
   template: Scalars['String']['input'];
@@ -552,6 +557,11 @@ export type DataStore = {
   config: Scalars['String']['output'];
   operational: Scalars['String']['output'];
   snapshots: Array<Snapshot>;
+};
+
+export type DeactivateStreamPayload = {
+  __typename?: 'DeactivateStreamPayload';
+  stream: Stream;
 };
 
 /** Input parameters for deleting an existing allocation strategy */
@@ -1480,6 +1490,7 @@ export type Stream = Node & {
   createdAt: Scalars['String']['output'];
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
   streamName: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
 };
@@ -2991,6 +3002,7 @@ export type ConductorQueryWorkflowInstanceDetailArgs = {
 
 export type DeviceInventoryMutation = {
   __typename?: 'deviceInventoryMutation';
+  activateStream: ActivateStreamPayload;
   addBlueprint: AddBlueprintPayload;
   addDevice: AddDevicePayload;
   addLocation: AddLocationPayload;
@@ -3004,6 +3016,7 @@ export type DeviceInventoryMutation = {
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
   createTransaction: CreateTransactionPayload;
+  deactivateStream: DeactivateStreamPayload;
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
@@ -3019,6 +3032,11 @@ export type DeviceInventoryMutation = {
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+};
+
+
+export type DeviceInventoryMutationActivateStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3088,6 +3106,11 @@ export type DeviceInventoryMutationCreateLabelArgs = {
 
 export type DeviceInventoryMutationCreateTransactionArgs = {
   deviceId: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryMutationDeactivateStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -4062,7 +4085,21 @@ export type StreamsQueryVariables = Exact<{
 }>;
 
 
-export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+
+export type ActivateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ActivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', activateStream: { __typename?: 'ActivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
+
+export type DeactivateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeactivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deactivateStream: { __typename?: 'DeactivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
 
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 

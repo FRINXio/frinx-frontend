@@ -10,11 +10,18 @@ import {
   HStack,
   useDisclosure,
 } from '@chakra-ui/react';
-import { usePagination, Pagination } from '@frinx/shared';
+import { usePagination, Pagination, useNotifications } from '@frinx/shared';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { gql, useQuery } from 'urql';
-import { StreamsQuery, StreamsQueryVariables } from '../../__generated__/graphql';
+import { gql, useMutation, useQuery } from 'urql';
+import {
+  ActivateStreamMutation,
+  ActivateStreamMutationVariables,
+  DeactivateStreamMutation,
+  DeactivateStreamMutationVariables,
+  StreamsQuery,
+  StreamsQueryVariables,
+} from '../../__generated__/graphql';
 import StreamTable from './stream-table';
 
 const STREAMS_QUERY = gql`
@@ -41,6 +48,7 @@ const STREAMS_QUERY = gql`
             streamName
             deviceName
             createdAt
+            isActive
           }
         }
         pageInfo {
@@ -48,6 +56,34 @@ const STREAMS_QUERY = gql`
           endCursor
           hasNextPage
           hasPreviousPage
+        }
+      }
+    }
+  }
+`;
+
+const ACTIVATE_STREAM_MUTATION = gql`
+  mutation ActivateStream($id: String!) {
+    deviceInventory {
+      activateStream(id: $id) {
+        stream {
+          id
+          createdAt
+          isActive
+        }
+      }
+    }
+  }
+`;
+
+const DEACTIVATE_STREAM_MUTATION = gql`
+  mutation DeactivateStream($id: String!) {
+    deviceInventory {
+      deactivateStream(id: $id) {
+        stream {
+          id
+          createdAt
+          isActive
         }
       }
     }
@@ -62,6 +98,7 @@ type Sorting = {
 
 const StreamList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Stream'] }), []);
+  const { addToastNotification } = useNotifications();
   const deleteModalDisclosure = useDisclosure();
   const [orderBy, setOrderBy] = useState<Sorting | null>(null);
   // TODO: will be implemented later
@@ -69,13 +106,13 @@ const StreamList: VoidFunctionComponent = () => {
   const [streamIdToDelete, setStreamIdToDelete] = useState<string | null>(null);
   // TODO: will be implemented later
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [installLoadingMap, setInstallLoadingMap] = useState<Record<string, boolean>>({});
+  const [activateLoadingMap, setActivateLoadingMap] = useState<Record<string, boolean>>({});
   // TODO: will be implemented later
   const [selectedStreams, setSelectedStreams] = useState<Set<string>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [streamNameFilter, setStreamNameFilter] = useState<string | null>(null);
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
-  const [{ data: deviceData, error }] = useQuery<StreamsQuery, StreamsQueryVariables>({
+  const [{ data: streamData, error }] = useQuery<StreamsQuery, StreamsQueryVariables>({
     query: STREAMS_QUERY,
     variables: {
       streamName: streamNameFilter,
@@ -84,6 +121,13 @@ const StreamList: VoidFunctionComponent = () => {
     },
     context,
   });
+
+  const [, activateStream] = useMutation<ActivateStreamMutation, ActivateStreamMutationVariables>(
+    ACTIVATE_STREAM_MUTATION,
+  );
+  const [, deactivateStream] = useMutation<DeactivateStreamMutation, DeactivateStreamMutationVariables>(
+    DEACTIVATE_STREAM_MUTATION,
+  );
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
@@ -116,20 +160,85 @@ const StreamList: VoidFunctionComponent = () => {
     console.log('select all streams');
   };
 
-  const handleStreamInstall = () => {
-    // eslint-disable-next-line no-console
-    console.log('stream install clicked');
+  const handleStreamInstall = (streamId: string) => {
+    setActivateLoadingMap((m) => {
+      return {
+        ...m,
+        [streamId]: true,
+      };
+    });
+    activateStream({
+      id: streamId,
+    })
+      .then((res) => {
+        if (res.data?.deviceInventory.activateStream.stream.isActive === true) {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Stream activated successsfuly',
+          });
+        }
+        if (res.error != null) {
+          throw new Error(res.error.message);
+        }
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Installation failed',
+        });
+      })
+      .finally(() => {
+        setActivateLoadingMap((m) => {
+          return {
+            ...m,
+            [streamId]: false,
+          };
+        });
+      });
   };
 
-  const handleStreamUninstall = () => {
-    // eslint-disable-next-line no-console
-    console.log('stream uninstall clicked');
+  const handleStreamUninstall = (streamId: string) => {
+    setActivateLoadingMap((m) => {
+      return {
+        ...m,
+        [streamId]: true,
+      };
+    });
+    deactivateStream({
+      id: streamId,
+    })
+      .then((res) => {
+        if (res.data?.deviceInventory.deactivateStream.stream.isActive === false) {
+          addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: 'Stream deactivated successfuly',
+          });
+        }
+        if (res.error) {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: 'Deactivation failed',
+          });
+        }
+      })
+      .finally(() => {
+        setActivateLoadingMap((m) => {
+          return {
+            ...m,
+            [streamId]: false,
+          };
+        });
+      });
   };
 
   // TODO: will be implemented later
   const areSelectedAll = false;
 
-  if (deviceData == null && error) {
+  if (streamData == null && error) {
     return (
       <Container maxWidth="container.xl">
         <Alert status="error">
@@ -141,7 +250,7 @@ const StreamList: VoidFunctionComponent = () => {
       </Container>
     );
   }
-  if (deviceData == null) {
+  if (streamData == null) {
     return null;
   }
 
@@ -159,7 +268,7 @@ const StreamList: VoidFunctionComponent = () => {
       </Flex>
       <StreamTable
         data-cy="stream-table"
-        streams={deviceData?.deviceInventory.streams.edges}
+        streams={streamData?.deviceInventory.streams.edges}
         areSelectedAll={areSelectedAll}
         onSelectAll={handleSelectionOfAllStreams}
         selectedStreams={selectedStreams}
@@ -168,14 +277,14 @@ const StreamList: VoidFunctionComponent = () => {
         onInstallButtonClick={handleStreamInstall}
         onUninstallButtonClick={handleStreamUninstall}
         onDeleteBtnClick={handleDeleteBtnClick}
-        installLoadingMap={installLoadingMap}
+        installLoadingMap={activateLoadingMap}
         onStreamSelection={handleStreamSelection}
       />
       <Pagination
-        onPrevious={previousPage(deviceData.deviceInventory.streams.pageInfo.startCursor)}
-        onNext={nextPage(deviceData.deviceInventory.streams.pageInfo.endCursor)}
-        hasNextPage={deviceData.deviceInventory.streams.pageInfo.hasNextPage}
-        hasPreviousPage={deviceData.deviceInventory.streams.pageInfo.hasPreviousPage}
+        onPrevious={previousPage(streamData.deviceInventory.streams.pageInfo.startCursor)}
+        onNext={nextPage(streamData.deviceInventory.streams.pageInfo.endCursor)}
+        hasNextPage={streamData.deviceInventory.streams.pageInfo.hasNextPage}
+        hasPreviousPage={streamData.deviceInventory.streams.pageInfo.hasPreviousPage}
       />
     </Container>
   );
