@@ -36,7 +36,6 @@ export function createApiHelpers(baseURL: string, authContext?: AuthContext): Ap
       throw new Error(`apiFetch failed with http-code ${response.status}`);
     }
 
-
     if (response.status === 201 || response.status === 204) {
       return response;
     }
