@@ -180,7 +180,7 @@ export function getPtpNodesWithDiff(
 export function getSynceInterfaceNodeColor(
   isQualifiedForUse?: string | null,
   selectedForUse?: string | null,
-  synceEnabled: boolean = false
+  synceEnabled: boolean = false,
 ) {
   if (synceEnabled === false) {
     return 'black';

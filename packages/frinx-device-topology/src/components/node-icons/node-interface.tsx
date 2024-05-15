@@ -49,7 +49,7 @@ const NodeInterface: VoidFunctionComponent<Props> = ({
       <Circle
         r="4px"
         fill={
-          (topologyLayer === 'Synchronous Ethernet')
+          topologyLayer === 'Synchronous Ethernet'
             ? getSynceInterfaceNodeColor(
                 interfaceDetails?.isQualifiedForUse,
                 interfaceDetails?.isSelectedForUse,
