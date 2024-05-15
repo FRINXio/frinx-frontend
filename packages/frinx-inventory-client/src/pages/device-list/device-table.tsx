@@ -114,6 +114,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           const { isInstalled } = device;
           const localDate = getLocalDateFromUTC(device.createdAt);
           const isLoading = installLoadingMap[device.id] ?? false;
+          const isUnknown = device.model == null && device.software == null && device.version == null;
 
           return (
             <Tr key={device.id}>
@@ -126,10 +127,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td>
                 <HStack>
-                  <Text data-cy={`device-name-${device.name}`} as="span" fontWeight={600}>
+                  <Text
+                    data-cy={`device-name-${device.name}`}
+                    as="span"
+                    fontWeight={600}
+                    textColor={isUnknown ? 'gray.400' : 'black'}
+                  >
                     {device.name}
                   </Text>
-                  {device.model == null && device.software == null && device.software == null && (
+                  {isUnknown && (
                     <Tooltip label="This device is currently unknown to the network, since we do not have any information on its model and software version">
                       <Text data-cy={`device-id-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
                         <Icon size={12} as={FeatherIcon} icon="info" />
