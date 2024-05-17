@@ -44,6 +44,11 @@ export type Action_Input = {
   start_workflow?: InputMaybe<StartWorkflow_Input>;
 };
 
+export type ActivateStreamPayload = {
+  __typename?: 'ActivateStreamPayload';
+  stream: Stream;
+};
+
 export type AddBlueprintInput = {
   name: Scalars['String']['input'];
   template: Scalars['String']['input'];
@@ -554,6 +559,11 @@ export type DataStore = {
   snapshots: Array<Snapshot>;
 };
 
+export type DeactivateStreamPayload = {
+  __typename?: 'DeactivateStreamPayload';
+  stream: Stream;
+};
+
 /** Input parameters for deleting an existing allocation strategy */
 export type DeleteAllocationStrategyInput = {
   allocationStrategyId: Scalars['ID']['input'];
@@ -1045,6 +1055,12 @@ export type NetTopology = {
   nodes: Array<NetNode>;
 };
 
+export type NetTopologyVersionData = {
+  __typename?: 'NetTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
+  nodes: Array<NetNode>;
+};
+
 export type Node = {
   id: Scalars['ID']['output'];
 };
@@ -1059,12 +1075,13 @@ export type OutputParameters = {
   value: Scalars['String']['output'];
 };
 
+/** Holds information about the requested pagination page */
 export type PageInfo = {
   __typename?: 'PageInfo';
-  endCursor: Maybe<Scalars['String']['output']>;
+  endCursor: Maybe<Scalars['Cursor']['output']>;
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor: Maybe<Scalars['String']['output']>;
+  startCursor: Maybe<Scalars['Cursor']['output']>;
 };
 
 export type PaginationArgs = {
@@ -1455,6 +1472,7 @@ export type Stream = Node & {
   createdAt: Scalars['String']['output'];
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
   streamName: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
 };
@@ -2292,6 +2310,7 @@ export type ConductorMutation = {
   deleteWorkflowDefinition: DeleteWorkflowDefinitionPayload;
   editEventHandler: EditEventHandlerPayload;
   executeWorkflowByName: Maybe<Scalars['String']['output']>;
+  exportWorkflowDefinition: Maybe<Scalars['JSON']['output']>;
   /** Lists workflows for the given correlation id list */
   getWorkflows: Maybe<Scalars['JSON']['output']>;
   /** Log Task Execution Details */
@@ -2414,6 +2433,12 @@ export type ConductorMutationEditEventHandlerArgs = {
 
 export type ConductorMutationExecuteWorkflowByNameArgs = {
   input: ExecuteWorkflowByNameInput;
+};
+
+
+export type ConductorMutationExportWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -2959,6 +2984,7 @@ export type ConductorQueryWorkflowInstanceDetailArgs = {
 
 export type DeviceInventoryMutation = {
   __typename?: 'deviceInventoryMutation';
+  activateStream: ActivateStreamPayload;
   addBlueprint: AddBlueprintPayload;
   addDevice: AddDevicePayload;
   addLocation: AddLocationPayload;
@@ -2972,6 +2998,7 @@ export type DeviceInventoryMutation = {
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
   createTransaction: CreateTransactionPayload;
+  deactivateStream: DeactivateStreamPayload;
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
@@ -2987,6 +3014,11 @@ export type DeviceInventoryMutation = {
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+};
+
+
+export type DeviceInventoryMutationActivateStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3056,6 +3088,11 @@ export type DeviceInventoryMutationCreateLabelArgs = {
 
 export type DeviceInventoryMutationCreateTransactionArgs = {
   deviceId: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryMutationDeactivateStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3145,6 +3182,7 @@ export type DeviceInventoryQuery = {
   labels: LabelConnection;
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
+  netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
   phyTopologyVersionData: PhyTopologyVersionData;
   ptpDiffSynce: PtpDiffSynce;
@@ -3217,6 +3255,11 @@ export type DeviceInventoryQueryLocationsArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventoryQueryNetTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
 };
 
 
@@ -3913,7 +3956,7 @@ export type DevicesQueryVariables = Exact<{
 }>;
 
 
-export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type InstallDeviceMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -4010,7 +4053,21 @@ export type StreamsQueryVariables = Exact<{
 }>;
 
 
-export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+
+export type ActivateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ActivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', activateStream: { __typename?: 'ActivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
+
+export type DeactivateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeactivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deactivateStream: { __typename?: 'DeactivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
 
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 

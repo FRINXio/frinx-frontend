@@ -95,7 +95,7 @@ const StreamTable: VoidFunctionComponent<Props> = ({
       </Thead>
       <Tbody>
         {streams.map(({ node: stream }) => {
-          const isInstalled = false;
+          const { isActive } = stream;
           const localDate = getLocalDateFromUTC(stream.createdAt);
           const isLoading = installLoadingMap[stream.id] ?? false;
 
@@ -134,7 +134,7 @@ const StreamTable: VoidFunctionComponent<Props> = ({
               <Td minWidth={200}>
                 <InstallButton
                   deviceName={stream.streamName}
-                  isInstalled={isInstalled}
+                  isInstalled={isActive}
                   isLoading={isLoading}
                   onInstalClick={() => {
                     onInstallButtonClick(stream.id);
