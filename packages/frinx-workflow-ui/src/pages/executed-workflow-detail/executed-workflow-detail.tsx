@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -136,19 +136,81 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
   subscription ControlExecutedWorkflow($workflowId: String!) {
     conductor {
       controlExecutedWorkflow(workflowId: $workflowId) {
-        endTime
-        startTime
+        id
+        createdBy
+        updatedBy
+        createdAt
+        updatedAt
         status
+        parentId
+        ownerApp
+        input
+        output
+        reasonForIncompletion
+        failedReferenceTaskNames
+        originalId
+        workflowDefinition {
+          id
+          version
+          name
+          ownerEmail
+          restartable
+          tasksJson
+          hasSchedule
+          description {
+            description
+            labels
+          }
+          createdAt
+          updatedAt
+          createdBy
+          updatedBy
+          inputParameters
+          outputParameters {
+            key
+            value
+          }
+          timeoutPolicy
+          timeoutSeconds
+        }
+        variables
+        lastRetriedTime
+        startTime
+        endTime
+        externalOutputPayloadStoragePath
+        externalInputPayloadStoragePath
         tasks {
           id
-          endTime
-          startTime
-          updatedAt
-          status
           taskType
-          subWorkflowId
           referenceTaskName
+          status
+          retryCount
+          startTime
+          endTime
+          updatedAt
+          scheduledTime
+          taskDefName
+          workflowType
+          retried
+          executed
+          taskId
+          reasonForIncompletion
+          taskDefinition
+          subWorkflowId
+          inputData
+          outputData
+          externalOutputPayloadStoragePath
+          externalInputPayloadStoragePath
+          callbackAfterSeconds
+          seq
+          pollCount
+          reasonForIncompletion
+          logs {
+            createdAt
+            message
+          }
         }
+        correlationId
       }
     }
   }
@@ -270,13 +332,6 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     RERUN_WORKFLOW_MUTATION,
   );
 
-  // TODO: FIXME
-  useEffect(() => {
-    if (data?.conductor.controlExecutedWorkflow?.status !== 'RUNNING') {
-      reexecuteQuery();
-    }
-  }, [data?.conductor.controlExecutedWorkflow?.status, reexecuteQuery]);
-
   if (workflowId == null) {
     return <Text>Workflow id is not defined</Text>;
   }
@@ -304,9 +359,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const executedWorkflow = {
     ...executedWorkflowDetail.conductor.node,
     ...data?.conductor.controlExecutedWorkflow,
-    tasks: executedWorkflowDetail.conductor.node.tasks?.map((task) => ({
+    tasks: data?.conductor.controlExecutedWorkflow.tasks?.map((task) => ({
       ...task,
-      ...data?.conductor.controlExecutedWorkflow?.tasks?.find((t) => t.id === task.id),
     })),
   };
 
@@ -506,12 +560,12 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   // TODO: FIXME
   // some propery typing or helper function
   const clientWorkflow: ClientWorkflow | null =
-    executedWorkflow.workflowDefinition != null
+    data?.conductor.controlExecutedWorkflow.workflowDefinition != null
       ? {
-          ...executedWorkflow.workflowDefinition,
-          description: executedWorkflow.workflowDefinition.description?.description ?? '',
-          labels: executedWorkflow.workflowDefinition.description?.labels ?? [],
-          timeoutSeconds: executedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
+          ...data.conductor.controlExecutedWorkflow.workflowDefinition,
+          description: data.conductor.controlExecutedWorkflow.workflowDefinition.description?.description ?? '',
+          labels: data.conductor.controlExecutedWorkflow.workflowDefinition.description?.labels ?? [],
+          timeoutSeconds: data.conductor.controlExecutedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
         }
       : null;
 
@@ -590,13 +644,14 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                 )}
               </TabPanel>
               <TabPanel>
-                {executedWorkflow != null && executedWorkflow.workflowDefinition != null && (
-                  <EditRerunTab
-                    onRerunClick={handleOnRerunClick}
-                    workflowDefinition={clientWorkflow}
-                    workflowInput={jsonParse(executedWorkflow.input) ?? {}}
-                  />
-                )}
+                {data?.conductor.controlExecutedWorkflow != null &&
+                  data.conductor.controlExecutedWorkflow.workflowDefinition != null && (
+                    <EditRerunTab
+                      onRerunClick={handleOnRerunClick}
+                      workflowDefinition={clientWorkflow}
+                      workflowInput={jsonParse(data.conductor.controlExecutedWorkflow.input) ?? {}}
+                    />
+                  )}
               </TabPanel>
               <TabPanel>
                 {executedWorkflow.workflowDefinition && (
