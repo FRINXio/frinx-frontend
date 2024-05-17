@@ -154,7 +154,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   data-cy={`device-status-${device.name}`}
                   colorScheme={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
                 >
-                  {deviceStatuses.find((d) => d.deviceName === device.name)?.status}
+                  {deviceStatuses.find((d) => d.deviceName === device.name)?.status ?? 'UNKNOWN'}
                 </Badge>
               </Td>
               <Td minWidth={200}>
