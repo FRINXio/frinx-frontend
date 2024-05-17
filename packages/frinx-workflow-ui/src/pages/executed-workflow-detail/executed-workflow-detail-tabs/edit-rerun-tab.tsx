@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ClientWorkflow, useWorkflowInputsForm, WorkflowInputsForm } from '@frinx/shared';
+import { ClientWorkflow, jsonParse, useWorkflowInputsForm, WorkflowInputsForm } from '@frinx/shared';
 import { Button, Spacer, HStack } from '@chakra-ui/react';
 
 type Props = {
@@ -13,7 +13,15 @@ const EditRerunTab: FC<Props> = ({ onRerunClick, workflowDefinition, workflowInp
     useWorkflowInputsForm({
       workflow: workflowDefinition,
       onSubmit: (data) => {
-        onRerunClick(JSON.stringify(data));
+        // Parsing needed because editor used in form returns string when JSON is provided as hint
+        const result = Object.entries(data).reduce((acc, [key, value]) => {
+          if (parsedInputParameters?.[key]?.type === 'json' && typeof value === 'string') {
+            return { ...acc, [key]: jsonParse(value) };
+          }
+
+          return { ...acc, [key]: value };
+        }, {});
+        onRerunClick(JSON.stringify(result));
         setSubmitting(false);
       },
       initialValues: workflowInput,

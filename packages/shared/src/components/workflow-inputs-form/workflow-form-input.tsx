@@ -65,7 +65,8 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
 
       {isJson && (
         <Editor
-          value={JSON.stringify(values[inputParameterKey], null, 2)}
+          language="json"
+          value={values[inputParameterKey]}
           onChange={(e) => onChange(inputParameterKey, e ?? '')}
         />
       )}

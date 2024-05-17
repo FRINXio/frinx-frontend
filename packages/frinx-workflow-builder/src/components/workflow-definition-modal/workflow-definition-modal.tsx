@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { ClientWorkflowWithTasks, Editor, removeGraphqlSpecsFromWorkflow } from '@frinx/shared';
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
+import { omit } from 'lodash';
 
 type Props = {
   isOpen: boolean;
@@ -16,7 +17,10 @@ const WorkflowDefinitionModal: FC<Props> = ({ isOpen, onClose, workflow }) => {
         <ModalHeader>Workflow definition</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Editor language="json" defaultValue={JSON.stringify(removeGraphqlSpecsFromWorkflow(workflow), null, 2)} />
+          <Editor
+            language="json"
+            defaultValue={JSON.stringify(removeGraphqlSpecsFromWorkflow(omit(workflow, 'tasksJson')), null, 2)}
+          />
         </ModalBody>
       </ModalContent>
     </Modal>
