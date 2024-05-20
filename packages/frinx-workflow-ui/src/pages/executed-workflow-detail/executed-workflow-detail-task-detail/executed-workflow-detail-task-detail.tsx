@@ -23,10 +23,10 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { unescapedJSON } from '../../../helpers/utils.helpers';
 import ExternalStorageModal from '../executed-workflow-detail-tabs/external-storage-modal';
-import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
+import { ControlExecutedWorkflowSubscription } from '../../../__generated__/graphql';
 
 type Props = {
-  executedWorkflow: NonNullable<ExecutedWorkflowDetailQuery['conductor']['node']>;
+  executedWorkflow: NonNullable<ControlExecutedWorkflowSubscription['conductor']['controlExecutedWorkflow']>;
   taskId: string;
   onClose: () => void;
 };
@@ -38,10 +38,6 @@ function renderTaskDescription<T extends { taskDefinition: string | null }>(task
 const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ executedWorkflow, taskId, onClose }) => {
   const [isEscaped, setIsEscaped] = useState(true);
   const [payload, setPayload] = useState<{ type: 'Input' | 'Output'; data: string } | null>(null);
-
-  if (executedWorkflow.__typename !== 'Workflow') {
-    return <Text>Workflow not found</Text>;
-  }
 
   const task = executedWorkflow.tasks?.find((t) => t.id === taskId);
 

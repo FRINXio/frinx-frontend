@@ -17,12 +17,10 @@ import {
 } from '@chakra-ui/react';
 import { ClientWorkflow, jsonParse, useNotifications } from '@frinx/shared';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { gql, useMutation, useQuery, useSubscription } from 'urql';
+import { gql, useMutation, useSubscription } from 'urql';
 import {
   ControlExecutedWorkflowSubscription,
   ControlExecutedWorkflowSubscriptionVariables,
-  ExecutedWorkflowDetailQuery,
-  ExecutedWorkflowDetailQueryVariables,
   PauseWorkflowMutation,
   PauseWorkflowMutationVariables,
   RerunEditedWorkflowMutation,
@@ -35,7 +33,6 @@ import {
   RetryWorkflowMutationVariables,
   TerminateWorkflowMutation,
   TerminateWorkflowMutationVariables,
-  // TaskDefinition,
 } from '../../__generated__/graphql';
 import TaskTable from './task-table';
 import InputOutputTab from './executed-workflow-detail-tabs/input-output-tab';
@@ -45,92 +42,6 @@ import ExecutedWorkflowDetailHeader from './executed-workflow-detail-header';
 import copyToClipBoard from '../../helpers/copy-to-clipboard';
 import WorkflowDiagram from '../../components/workflow-diagram';
 import ExecutedWorkflowDetailTaskDetail from './executed-workflow-detail-task-detail/executed-workflow-detail-task-detail';
-
-const EXECUTED_WORKFLOW_QUERY = gql`
-  query ExecutedWorkflowDetail($nodeId: ID!) {
-    conductor {
-      node(id: $nodeId) {
-        ... on Workflow {
-          id
-          createdBy
-          updatedBy
-          createdAt
-          updatedAt
-          status
-          parentId
-          ownerApp
-          input
-          output
-          reasonForIncompletion
-          failedReferenceTaskNames
-          originalId
-          workflowDefinition {
-            id
-            version
-            name
-            ownerEmail
-            restartable
-            tasksJson
-            hasSchedule
-            description {
-              description
-              labels
-            }
-            createdAt
-            updatedAt
-            createdBy
-            updatedBy
-            inputParameters
-            outputParameters {
-              key
-              value
-            }
-            timeoutPolicy
-            timeoutSeconds
-          }
-          variables
-          lastRetriedTime
-          startTime
-          endTime
-          externalOutputPayloadStoragePath
-          externalInputPayloadStoragePath
-          tasks {
-            id
-            taskType
-            referenceTaskName
-            status
-            retryCount
-            startTime
-            endTime
-            updatedAt
-            scheduledTime
-            taskDefName
-            workflowType
-            retried
-            executed
-            taskId
-            reasonForIncompletion
-            taskDefinition
-            subWorkflowId
-            inputData
-            outputData
-            externalOutputPayloadStoragePath
-            externalInputPayloadStoragePath
-            callbackAfterSeconds
-            seq
-            pollCount
-            reasonForIncompletion
-            logs {
-              createdAt
-              message
-            }
-          }
-          correlationId
-        }
-      }
-    }
-  }
-`;
 
 const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
   subscription ControlExecutedWorkflow($workflowId: String!) {
@@ -302,21 +213,15 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
   const navigate = useNavigate();
-  const [
-    { data: executedWorkflowDetail, fetching: isLoadingExecutedWorkflow, error: executedWorkflowDetailError },
-    reexecuteQuery,
-  ] = useQuery<ExecutedWorkflowDetailQuery, ExecutedWorkflowDetailQueryVariables>({
-    query: EXECUTED_WORKFLOW_QUERY,
-    variables: { nodeId: workflowId || '' },
-  });
-  const [{ data, error }, reexecuteSubscription] = useSubscription<
-    ControlExecutedWorkflowSubscription,
-    ControlExecutedWorkflowSubscription,
-    ControlExecutedWorkflowSubscriptionVariables
-  >({
-    query: EXECUTED_WORKFLOW_SUBSCRIPTION,
-    variables: { workflowId: workflowId || '' },
-  });
+  const [{ data: executedWorkflowDetail, error: executedWorkflowDetailError, fetching }, reexecuteSubscription] =
+    useSubscription<
+      ControlExecutedWorkflowSubscription,
+      ControlExecutedWorkflowSubscription,
+      ControlExecutedWorkflowSubscriptionVariables
+    >({
+      query: EXECUTED_WORKFLOW_SUBSCRIPTION,
+      variables: { workflowId: workflowId || '' },
+    });
   const [, restartWorkflow] = useMutation<RestartWorkflowMutation, RestartWorkflowMutationVariables>(
     RESTART_WORKFLOW_MUTATION,
   );
@@ -336,7 +241,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     return <Text>Workflow id is not defined</Text>;
   }
 
-  if (isLoadingExecutedWorkflow) {
+  if (executedWorkflowDetail == null && fetching) {
     return <Progress size="xs" mt={-10} isIndeterminate />;
   }
 
@@ -344,25 +249,11 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
     return <Text>{executedWorkflowDetailError.message}</Text>;
   }
 
-  if (error != null) {
-    return <Text>{error.message}</Text>;
-  }
-
-  if (
-    executedWorkflowDetail == null ||
-    executedWorkflowDetail.conductor.node == null ||
-    executedWorkflowDetail.conductor.node.__typename !== 'Workflow'
-  ) {
+  if (executedWorkflowDetail == null || executedWorkflowDetail.conductor.controlExecutedWorkflow == null) {
     return <Text>Workflow not found</Text>;
   }
 
-  const executedWorkflow = {
-    ...executedWorkflowDetail.conductor.node,
-    ...data?.conductor.controlExecutedWorkflow,
-    tasks: data?.conductor.controlExecutedWorkflow.tasks?.map((task) => ({
-      ...task,
-    })),
-  };
+  const executedWorkflow = executedWorkflowDetail.conductor.controlExecutedWorkflow;
 
   const handleOnRerunClick = (inputParameters: string) => {
     rerunWorkflow(
@@ -444,8 +335,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
       },
       ctx,
     ).then(() => {
-      reexecuteQuery();
-      reexecuteSubscription();
+      reexecuteSubscription({ requestPolicy: 'network-only' });
     });
   };
 
@@ -560,12 +450,12 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   // TODO: FIXME
   // some propery typing or helper function
   const clientWorkflow: ClientWorkflow | null =
-    data?.conductor.controlExecutedWorkflow.workflowDefinition != null
+    executedWorkflow.workflowDefinition != null
       ? {
-          ...data.conductor.controlExecutedWorkflow.workflowDefinition,
-          description: data.conductor.controlExecutedWorkflow.workflowDefinition.description?.description ?? '',
-          labels: data.conductor.controlExecutedWorkflow.workflowDefinition.description?.labels ?? [],
-          timeoutSeconds: data.conductor.controlExecutedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
+          ...executedWorkflow.workflowDefinition,
+          description: executedWorkflow.workflowDefinition.description?.description ?? '',
+          labels: executedWorkflow.workflowDefinition.description?.labels ?? [],
+          timeoutSeconds: executedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
         }
       : null;
 
@@ -612,7 +502,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                 {openedTaskId == null && <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />}
                 {openedTaskId != null && executedWorkflow.tasks != null && (
                   <ExecutedWorkflowDetailTaskDetail
-                    executedWorkflow={executedWorkflowDetail.conductor.node}
+                    executedWorkflow={executedWorkflow}
                     taskId={openedTaskId}
                     onClose={() => {
                       setOpenedTaskId(null);
@@ -638,26 +528,25 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
                   <WorkflowJsonTab
                     copyToClipBoard={handleCopyToClipborad}
                     isEscaped={isEscaped}
-                    result={executedWorkflowDetail.conductor.node}
+                    result={executedWorkflow}
                     onEscapeChange={() => setIsEscaped(!isEscaped)}
                   />
                 )}
               </TabPanel>
               <TabPanel>
-                {data?.conductor.controlExecutedWorkflow != null &&
-                  data.conductor.controlExecutedWorkflow.workflowDefinition != null && (
-                    <EditRerunTab
-                      onRerunClick={handleOnRerunClick}
-                      workflowDefinition={clientWorkflow}
-                      workflowInput={jsonParse(data.conductor.controlExecutedWorkflow.input) ?? {}}
-                    />
-                  )}
+                {executedWorkflow != null && executedWorkflow.workflowDefinition != null && (
+                  <EditRerunTab
+                    onRerunClick={handleOnRerunClick}
+                    workflowDefinition={clientWorkflow}
+                    workflowInput={jsonParse(executedWorkflow.input) ?? {}}
+                  />
+                )}
               </TabPanel>
               <TabPanel>
                 {executedWorkflow.workflowDefinition && (
                   <WorkflowDiagram
                     meta={{ ...executedWorkflow.workflowDefinition, tasks: [] }}
-                    result={data?.conductor.controlExecutedWorkflow}
+                    result={executedWorkflow}
                   />
                 )}
               </TabPanel>
