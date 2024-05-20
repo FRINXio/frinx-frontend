@@ -60,7 +60,6 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               onClick={() => copyToClipBoard(input)}
             />
             <Button size="sm" onClick={() => onEscapeChange(!isEscaped)}>
-              Textarea,
               {isEscaped ? 'Unescape' : 'Escape'}
             </Button>
             {externalInputPayloadStoragePath && (
