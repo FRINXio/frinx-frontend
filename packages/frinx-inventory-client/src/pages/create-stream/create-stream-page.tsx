@@ -65,7 +65,6 @@ type FormValues = {
 type Props = {
   onAddStreamSuccess: () => void;
 };
-type Error = string | null;
 
 const CreateStreamPage: FC<Props> = ({ onAddStreamSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,6 +80,7 @@ const CreateStreamPage: FC<Props> = ({ onAddStreamSuccess }) => {
       input: {
         deviceName: values.deviceName,
         streamName: values.streamName,
+        ...(values.streamParameters && { streamParameters: values.streamParameters }),
       },
     })
       .then(({ error }) => {

@@ -105,6 +105,7 @@ export type AddSnapshotPayload = {
 export type AddStreamInput = {
   deviceName: Scalars['String']['input'];
   streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddStreamPayload = {

@@ -76,7 +76,21 @@ const CreateStreamForm: VoidFunctionComponent<Props> = ({
       new Set(streams.map((s) => getStreamFullName(s.node.deviceName, s.node.streamName))),
     ),
     onSubmit: (data) => {
-      onFormSubmit(data);
+      const blueprintParameters = parse(
+        blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
+      );
+
+      // TODO: we parse it and stringify later to remove all escape characters
+      // so it is always saved as json object in prisma
+      // we should find better solution
+      const createStreamParamerers = isUsingBlueprints
+        ? JSON.parse(blueprintParameters(blueprintParameterValues))
+        : JSON.parse(data.streamParameters ?? '{}');
+
+      onFormSubmit({
+        ...data,
+        streamParameters: JSON.stringify(createStreamParamerers),
+      });
     },
   });
 
@@ -197,7 +211,7 @@ const CreateStreamForm: VoidFunctionComponent<Props> = ({
             onChange={(value) => {
               setFieldValue('streamParameters', value);
             }}
-            value=""
+            value={isStreamParametersValid ? parsedStreamParameters : values.streamParameters ?? ''}
           />
         </FormControl>
       )}
@@ -210,7 +224,7 @@ const CreateStreamForm: VoidFunctionComponent<Props> = ({
           type="submit"
           colorScheme="blue"
           isLoading={isSubmitting}
-          isDisabled={!isValid}
+          isDisabled={!isValid || !isBlueprintValuesValid}
         >
           Add stream
         </Button>

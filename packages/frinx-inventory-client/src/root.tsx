@@ -23,7 +23,7 @@ const Root: VoidFunctionComponent = () => {
     navigate('blueprints');
   };
   const handleStreamListRedirect = () => {
-    navigate('stream');
+    navigate('streams');
   };
   return (
     <Suspense fallback={<SkeletonScreen />}>
