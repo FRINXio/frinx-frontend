@@ -31,7 +31,6 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
     unconfirmedSelectedGmPathNodeId,
     gmPathIds,
     selectedNode,
-    topologyLayer,
   } = state;
 
   const [position, setPosition] = useState<StatePosition>({
@@ -92,7 +91,6 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
     <g>
       {nodes.map((node) => (
         <SynceNodeIcon
-          topologyLayer={topologyLayer}
           key={node.id}
           positions={{ nodes: synceNodePositions, interfaceGroups: synceInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}

@@ -1,36 +1,19 @@
 import { chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
-import { getSynceInterfaceNodeColor } from '../../helpers/topology-helpers';
 import { Position } from '../../pages/topology/graph.helpers';
-import { TopologyLayer } from '../../state.reducer';
-
-type InterfaceDetails = {
-  isSynceEnabled: boolean | undefined;
-  isQualifiedForUse: string | null | undefined;
-  isSelectedForUse: string | null;
-};
 
 type Props = {
   position: Position;
   sourceInterface?: { id: string; name: string };
   targetInterface?: { id: string; name: string };
   isFocused: boolean;
-  topologyLayer?: TopologyLayer;
-  interfaceDetails?: InterfaceDetails;
 };
 
 const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
 
-const NodeInterface: VoidFunctionComponent<Props> = ({
-  position,
-  sourceInterface,
-  targetInterface,
-  isFocused,
-  topologyLayer,
-  interfaceDetails,
-}) => {
+const NodeInterface: VoidFunctionComponent<Props> = ({ position, sourceInterface, targetInterface, isFocused }) => {
   return position != null ? (
     <G
       transform={isFocused ? `translate3d(${position.x}px, ${position.y}px, 0)` : undefined}
@@ -46,18 +29,7 @@ const NodeInterface: VoidFunctionComponent<Props> = ({
           {targetInterface.name}
         </Text>
       )}
-      <Circle
-        r="4px"
-        fill={
-          topologyLayer === 'Synchronous Ethernet'
-            ? getSynceInterfaceNodeColor(
-                interfaceDetails?.isQualifiedForUse,
-                interfaceDetails?.isSelectedForUse,
-                interfaceDetails?.isSynceEnabled,
-              )
-            : 'purple'
-        }
-      />
+      <Circle r="4px" fill="purple" />
     </G>
   ) : null;
 };
