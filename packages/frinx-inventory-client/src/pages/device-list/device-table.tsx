@@ -95,6 +95,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
             </Flex>
           </Th>
           <Th>
+            <Text>Model/Version</Text>
+          </Th>
+          <Th>
             <Flex
               alignItems="center"
               justifyContent="space-between"
@@ -126,6 +129,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           const { isInstalled } = device;
           const localDate = getLocalDateFromUTC(device.createdAt);
           const isLoading = installLoadingMap[device.id] ?? false;
+          const isUnknown = device.model == null && device.software == null && device.version == null;
 
           return (
             <Tr key={device.id}>
@@ -137,8 +141,27 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 />
               </Td>
               <Td>
-                <Text data-cy={`device-name-${device.name}`} as="span" fontWeight={600}>
-                  {device.name}
+                <HStack>
+                  <Text
+                    data-cy={`device-name-${device.name}`}
+                    as="span"
+                    fontWeight={600}
+                    textColor={isUnknown ? 'gray.400' : 'black'}
+                  >
+                    {device.name}
+                  </Text>
+                  {isUnknown && (
+                    <Tooltip label="This device is currently unknown to the network, since we do not have any information on its model and software version">
+                      <Text data-cy={`device-id-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
+                        <Icon size={12} as={FeatherIcon} icon="info" />
+                      </Text>
+                    </Tooltip>
+                  )}
+                </HStack>
+              </Td>
+              <Td>
+                <Text data-cy="device-name-software" as="span">
+                  {device.model ?? device.software ?? '?'} / {device.version ?? '?'}
                 </Text>
               </Td>
               <Td>
