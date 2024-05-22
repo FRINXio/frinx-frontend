@@ -1,8 +1,7 @@
-import { CustomToastProvider } from '@frinx/shared';
+import { CustomToastProvider, PerformanceMonitoringProvider } from '@frinx/shared';
 import { createClient as createWSClient } from 'graphql-ws';
 import React, { createContext, FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider, subscriptionExchange } from 'urql';
-import PerformanceMonitoringProvider from './performance-monitoring-provider';
 
 export const InventoryAPIContext = createContext(false);
 

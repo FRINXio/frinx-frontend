@@ -20,6 +20,7 @@ import {
   Pagination,
   ConfirmDeleteModal,
   KafkaHealthCheckToolbar,
+  usePerformanceMonitoring,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -27,7 +28,6 @@ import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
 import { ModalWorkflow } from '../../helpers/convert';
-import { usePerformanceMonitoring } from '../../performance-monitoring-provider';
 import {
   BulkInstallDevicesMutation,
   BulkInstallDevicesMutationVariables,
