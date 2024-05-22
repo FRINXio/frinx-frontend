@@ -177,6 +177,26 @@ export function getPtpNodesWithDiff(
   return [...currentNodesWithDiff, ...deletedBackupNodesWithDiff];
 }
 
+export function getSynceInterfaceNodeColor(
+  isQualifiedForUse?: string | null,
+  selectedForUse?: string | null,
+  synceEnabled?: boolean,
+) {
+  if (!synceEnabled) {
+    return 'black';
+  }
+  if (synceEnabled && isQualifiedForUse === 'unknown') {
+    return 'red';
+  }
+  if (synceEnabled && isQualifiedForUse === 'Yes' && !selectedForUse) {
+    return 'blue';
+  }
+  if (synceEnabled && isQualifiedForUse) {
+    return 'green';
+  }
+  return 'purple';
+}
+
 export function getSynceNodesWithDiff(
   nodes: SynceGraphNode[],
   backupGraphNodes: BackupGraphNode[],

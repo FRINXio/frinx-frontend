@@ -1,13 +1,17 @@
 import { chakra, Box, Theme, useTheme } from '@chakra-ui/react';
 import get from 'lodash/get';
 import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
-import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
-import { getCurvePath, getInterfaceStatusColor, Line, Position, GraphPtpNodeInterface } from '../graph.helpers';
+import {
+  getSynceInterfaceNodeColor,
+  GraphEdgeWithDiff,
+  SynceGraphNodeWithDiff,
+} from '../../../helpers/topology-helpers';
+import { getCurvePath, Line, Position, GraphSynceNodeInterface } from '../graph.helpers';
 import { getEdgeColor } from '../../../components/edge/edge.helpers';
+import { useStateContext } from '../../../state.provider';
 
 type Props = {
   edge: GraphEdgeWithDiff;
-  ptpInterfaceMap: Map<string, GraphPtpNodeInterface>;
   isActive: boolean;
   controlPoints: Position[];
   linePoints: Line;
@@ -17,15 +21,16 @@ type Props = {
   isWeightVisible?: boolean;
   isGmPath?: boolean;
   weight: number | null;
+  netInterfaceMap: Map<string, GraphSynceNodeInterface>;
+  synceNodes: SynceGraphNodeWithDiff[];
 };
 
 const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
-
 const Edge: VoidFunctionComponent<Props> = ({
+  synceNodes,
   edge,
-  ptpInterfaceMap,
   isActive,
   controlPoints,
   linePoints,
@@ -35,11 +40,22 @@ const Edge: VoidFunctionComponent<Props> = ({
   isWeightVisible,
   isGmPath,
   weight,
+  netInterfaceMap,
 }) => {
+  const { state } = useStateContext();
+  const { selectedNode } = state;
   const { start, end } = linePoints;
   const [weightPosition, setWeightPosition] = useState<Position | null>(null);
   const edgeRef = useRef<SVGPathElement>(null);
   const { colors } = useTheme<Theme>();
+
+  const interfaceMap = netInterfaceMap.get(edge.source.interface)?.details ?? null;
+
+  const interfaceDetails = {
+    isQualifiedForUse: interfaceMap?.qualifiedForUse,
+    isSynceEnabled: interfaceMap?.isSynceEnabled,
+    isSelectedForUse: synceNodes?.find((n) => selectedNode?.id === n.id)?.details.selectedForUse,
+  };
 
   // TODO; maybe instead using svg path arithmetic (this needs one extra render)
   // we can use some proper geometry math to get weight point position
@@ -53,8 +69,6 @@ const Edge: VoidFunctionComponent<Props> = ({
       setWeightPosition(null);
     }
   }, [isActive, isWeightVisible]);
-
-  const interfaceDetails = ptpInterfaceMap.get(edge.source.interface)?.details ?? null;
 
   return isActive ? (
     <g>
@@ -96,7 +110,11 @@ const Edge: VoidFunctionComponent<Props> = ({
         <Circle
           r="5"
           css={`
-            fill: ${getInterfaceStatusColor(interfaceDetails)};
+            fill: ${getSynceInterfaceNodeColor(
+              interfaceMap?.qualifiedForUse,
+              synceNodes?.find((n) => selectedNode?.id === n.id)?.details.selectedForUse,
+              interfaceMap?.isSynceEnabled,
+            )};
             offset-path: path('${getCurvePath(start, end, controlPoints)}');
             offset-distance: 20px;
           `}
@@ -125,6 +143,7 @@ const Edge: VoidFunctionComponent<Props> = ({
         borderWidth={3}
         transition="all .2s ease-in-out"
       />
+      {/* <Text>{subnetValue}</Text> */}
       {isWeightVisible && (
         <G
           transform={`translate3d(${(start.x + end.x) / 2}px, ${(start.y + end.y) / 2}px, 0)`}

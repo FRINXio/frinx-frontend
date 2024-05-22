@@ -1,6 +1,5 @@
 import { partition } from 'lodash';
 import React, { VoidFunctionComponent } from 'react';
-import Edge from '../../../components/edge/edge';
 import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedEdge } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
@@ -11,6 +10,7 @@ import {
   isGmPathPredicate,
   isTargetingActiveNode,
 } from '../graph.helpers';
+import SynceEdge from './synce-edge';
 
 const EDGE_GAP = 75;
 
@@ -21,6 +21,7 @@ type Props = {
 const SynceEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
   const { state, dispatch } = useStateContext();
   const {
+    synceNodes,
     connectedNodeIds,
     selectedNode,
     synceNodePositions: nodePositions,
@@ -34,6 +35,7 @@ const SynceEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
 
   const [gmEdges, nonGmEdges] = partition(edges, (edge) => isGmPathPredicate(gmPathIds, edge));
   const sortedSynceEdges = [...nonGmEdges, ...gmEdges];
+  const netInterfaceMap = new Map(synceNodes.flatMap((n) => n.interfaces).map((i) => [i.id, i]));
 
   return (
     <g>
@@ -62,6 +64,7 @@ const SynceEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
               edgeGap: EDGE_GAP,
             })
           : [];
+
         const isUnknown = false;
         const isShortestPath = false;
         const isGmPathEdge =
@@ -70,7 +73,9 @@ const SynceEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
           ) > -1;
 
         return (
-          <Edge
+          <SynceEdge
+            synceNodes={synceNodes}
+            netInterfaceMap={netInterfaceMap}
             controlPoints={controlPoints}
             edge={edge}
             isActive={isActive ?? false}
