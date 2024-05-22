@@ -4040,6 +4040,14 @@ export type KafkaReconnectMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type KafkaReconnectMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', reconnectKafka: { __typename?: 'IsOkResponse', isOk: boolean } | null } };
 
+export type DevicesUsageSubscriptionVariables = Exact<{
+  deviceNames: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type DevicesUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesUsage: { __typename?: 'DeviceListUsage', devicesUsage: Array<{ __typename?: 'DevicesUsage', cpuLoad: number, deviceName: string, memoryLoad: number } | null> } | null } };
+
 export type ModalWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
