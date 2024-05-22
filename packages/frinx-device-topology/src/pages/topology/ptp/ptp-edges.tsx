@@ -35,7 +35,7 @@ const PtpEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
 
   const [gmEdges, nonGmEdges] = partition(edges, (edge) => isGmPathPredicate(gmPathIds, edge));
   const sortedPtpEdges = [...nonGmEdges, ...gmEdges];
-  const netInterfaceMap = new Map(ptpNodes.flatMap((n) => n.interfaces).map((i) => [i.id, i]));
+  const ptpInterfaceMap = new Map(ptpNodes.flatMap((n) => n.interfaces).map((i) => [i.id, i]));
 
   return (
     <g>
@@ -74,7 +74,7 @@ const PtpEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
         return (
           <PtpEdge
             controlPoints={controlPoints}
-            netInterfaceMap={netInterfaceMap}
+            ptpInterfaceMap={ptpInterfaceMap}
             edge={edge}
             isActive={isActive ?? false}
             linePoints={linePoints}
