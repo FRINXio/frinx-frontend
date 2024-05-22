@@ -466,9 +466,6 @@ describe('Check pools', () => {
       .find('option')
       .then((options) => {
         const actual = Array.from(options).map((o) => o.text);
-        // console.log(options);
-        // console.log(actual);
-        // console.log(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6']);
         expect(actual).to.deep.eq(['Select resource type', 'ipv6_prefix', 'ipv4', 'ipv4_prefix', 'ipv6']);
       });
   });

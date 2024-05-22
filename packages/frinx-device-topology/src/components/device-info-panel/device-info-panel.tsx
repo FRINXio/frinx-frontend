@@ -3,8 +3,9 @@ import { format } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { getLocalDateFromUTC } from '@frinx/shared';
+import { getDeviceUsage, getDeviceUsageColor, getLocalDateFromUTC } from '@frinx/shared';
 import { Device } from '../../pages/topology/graph.helpers';
+import { DeviceUsage } from '../../__generated__/graphql';
 
 type Props = {
   name: string;
@@ -12,10 +13,22 @@ type Props = {
   onClose: () => void;
   deviceType: string | null;
   softwareVersion: string | null;
+  isShowingLoad: boolean;
+  nodeLoad?: DeviceUsage | null;
 };
 
-const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ name, device, onClose, deviceType, softwareVersion }) => {
+const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
+  name,
+  device,
+  onClose,
+  deviceType,
+  softwareVersion,
+  nodeLoad,
+  isShowingLoad,
+}) => {
   const localDate = device ? getLocalDateFromUTC(device.createdAt) : null;
+  const nodeLoadUsage = getDeviceUsage(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad);
+  const nodeLoadUsageColor = isShowingLoad ? getDeviceUsageColor(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad) : 'gray';
 
   return (
     <Box>
@@ -23,7 +36,11 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({ name, device, onClose, 
         <Heading as="h3" size="sm">
           {name}
         </Heading>
-        {device?.serviceState && <Badge marginLeft="auto">{device.serviceState}</Badge>}
+        {isShowingLoad && (
+          <Badge marginLeft="auto" colorScheme={nodeLoadUsageColor}>
+            {nodeLoadUsage}
+          </Badge>
+        )}
       </Flex>
       {localDate && (
         <Text as="span" fontSize="xs" color="gray.700">

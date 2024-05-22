@@ -66,6 +66,11 @@ export type LabelItem = {
   value: string;
 };
 
+export type SetDeviceUsagePayload = {
+  cpuLoad: number;
+  memoryLoad: number;
+};
+
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
 
 export type StateAction =
@@ -210,7 +215,14 @@ export type StateAction =
       isVisible: boolean;
     }
   | { type: 'PAN_TOPOLOGY'; panDelta: Position }
-  | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number };
+  | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number }
+  | {
+      type: 'SET_SELECTED_NODE_USAGE';
+      payload: {
+        deviceName: string;
+        deviceUsage?: SetDeviceUsagePayload | null;
+      };
+    };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1017,5 +1029,15 @@ export function zoomTopology(zoomDelta: number): StateAction {
   return {
     type: 'ZOOM_TOPOLOGY',
     zoomDelta,
+  };
+}
+
+export function setSelectedNodeLoad(deviceName: string, payload?: SetDeviceUsagePayload | null): StateAction {
+  return {
+    type: 'SET_SELECTED_NODE_USAGE',
+    payload: {
+      deviceName,
+      deviceUsage: payload,
+    },
   };
 }
