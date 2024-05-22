@@ -79,6 +79,9 @@ const DEVICES_QUERY = gql`
             createdAt
             isInstalled
             serviceState
+            version
+            model
+            software
             zone {
               id
               name
