@@ -41,6 +41,7 @@ const config = {
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
   commitHash: envString('COMMIT_HASH'),
   unistoreApiURL: envString('UNISTORE_API_URL'),
+  isPerformanceMonitoringEnabled: stringToBoolean(envString('PERFORMANCE_MONITORING_ENABLED')),
 };
 
 export default config;

@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
 import { ModalWorkflow } from '../../helpers/convert';
+import { usePerformanceMonitoring } from '../../performance-monitoring-provider';
 import {
   BulkInstallDevicesMutation,
   BulkInstallDevicesMutationVariables,
@@ -218,6 +219,7 @@ type Sorting = {
 const Form = chakra('form');
 
 const DeviceList: VoidFunctionComponent = () => {
+  const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const deleteModalDisclosure = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -267,6 +269,7 @@ const DeviceList: VoidFunctionComponent = () => {
       deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
       refreshEverySec: 5,
     },
+    pause: !isPerformanceMonitoringEnabled,
   });
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
@@ -729,6 +732,7 @@ const DeviceList: VoidFunctionComponent = () => {
           onDeleteBtnClick={handleDeleteBtnClick}
           installLoadingMap={installLoadingMap}
           onDeviceSelection={handleDeviceSelection}
+          isPerformanceMonitoringEnabled={isPerformanceMonitoringEnabled}
         />
         <Pagination
           onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}

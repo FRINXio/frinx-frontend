@@ -2,6 +2,7 @@ import { CustomToastProvider } from '@frinx/shared';
 import { createClient as createWSClient } from 'graphql-ws';
 import React, { createContext, FC, useRef } from 'react';
 import { cacheExchange, ClientOptions, createClient, fetchExchange, Provider, subscriptionExchange } from 'urql';
+import PerformanceMonitoringProvider from './performance-monitoring-provider';
 
 export const InventoryAPIContext = createContext(false);
 
@@ -12,9 +13,10 @@ export type InventoryApiClient = {
 export type Props = {
   client: InventoryApiClient;
   wsUrl: string;
+  isPerformanceMonitoringEnabled: boolean;
 };
 
-const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
+const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl, isPerformanceMonitoringEnabled }) => {
   const wsClient = createWSClient({ url: wsUrl });
   const { current: urqlClient } = useRef(
     createClient({
@@ -38,7 +40,9 @@ const InventoryAPIProvider: FC<Props> = ({ children, client, wsUrl }) => {
   );
   return (
     <Provider value={urqlClient}>
-      <CustomToastProvider>{children}</CustomToastProvider>
+      <PerformanceMonitoringProvider isEnabled={isPerformanceMonitoringEnabled}>
+        <CustomToastProvider>{children}</CustomToastProvider>
+      </PerformanceMonitoringProvider>
     </Provider>
   );
 };
