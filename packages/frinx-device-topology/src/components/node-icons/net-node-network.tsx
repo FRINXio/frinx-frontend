@@ -20,7 +20,7 @@ const NetNodeNetwork: VoidFunctionComponent<Props> = ({ network, allNetworks }) 
 
   if (isEndNetwork) {
     return (
-      <G>
+      <G sx={{ userSelect: 'none' }}>
         <line x1={0} y1={0} x2={positionX} y2={positionY} stroke="black" />
         <Circle
           r={15}

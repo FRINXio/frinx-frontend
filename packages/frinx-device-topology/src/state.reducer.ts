@@ -375,6 +375,8 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.gmPathIds = [];
         acc.selectedGmPathNodeId = null;
         acc.unconfirmedSelectedGmPathNodeId = null;
+        acc.unconfirmedShortestPathNodeIds = [null, null];
+        acc.selectedShortestPathNodeIds = [null, null];
         acc.selectedVersion = null;
         return acc;
       }
