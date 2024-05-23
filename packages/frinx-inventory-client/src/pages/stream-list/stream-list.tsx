@@ -261,7 +261,7 @@ const StreamList: VoidFunctionComponent = () => {
           Streams
         </Heading>
         <HStack spacing={2} marginLeft="auto">
-          <Button data-cy="add-device" as={Link} colorScheme="blue" to="../new">
+          <Button data-cy="add-device" as={Link} colorScheme="blue" to="./new">
             Add stream
           </Button>
         </HStack>
