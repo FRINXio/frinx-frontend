@@ -20,6 +20,7 @@ import {
   Pagination,
   ConfirmDeleteModal,
   KafkaHealthCheckToolbar,
+  usePerformanceMonitoring,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -218,6 +219,7 @@ type Sorting = {
 const Form = chakra('form');
 
 const DeviceList: VoidFunctionComponent = () => {
+  const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const deleteModalDisclosure = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -267,6 +269,7 @@ const DeviceList: VoidFunctionComponent = () => {
       deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
       refreshEverySec: 5,
     },
+    pause: !isPerformanceMonitoringEnabled,
   });
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
@@ -729,6 +732,7 @@ const DeviceList: VoidFunctionComponent = () => {
           onDeleteBtnClick={handleDeleteBtnClick}
           installLoadingMap={installLoadingMap}
           onDeviceSelection={handleDeviceSelection}
+          isPerformanceMonitoringEnabled={isPerformanceMonitoringEnabled}
         />
         <Pagination
           onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}

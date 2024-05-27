@@ -1,4 +1,4 @@
-import { unwrap } from '@frinx/shared';
+import { unwrap, usePerformanceMonitoring } from '@frinx/shared';
 import React, { useCallback, useEffect, useState, VoidFunctionComponent } from 'react';
 import { gql, useSubscription } from 'urql';
 import NodeIcon from '../../../components/node-icons/node-icon';
@@ -35,6 +35,7 @@ type Props = {
 };
 
 const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpdate, onNodePositionUpdateFinish }) => {
+  const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
   const [isPointerDown, setIsPointerDown] = useState(false);
   const [isMoved, setIsMoved] = useState(false);
   const { state, dispatch } = useStateContext();
@@ -63,7 +64,7 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
     variables: {
       deviceName: selectedNode?.name ?? '',
     },
-    pause: selectedNode == null,
+    pause: selectedNode == null || !isPerformanceMonitoringEnabled,
   });
 
   useEffect(() => {

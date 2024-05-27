@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { getDeviceUsage, getDeviceUsageColor, getLocalDateFromUTC } from '@frinx/shared';
+import { getDeviceUsage, getDeviceUsageColor, getLocalDateFromUTC, usePerformanceMonitoring } from '@frinx/shared';
 import { Device } from '../../pages/topology/graph.helpers';
 import { DeviceUsage } from '../../__generated__/graphql';
 
@@ -26,6 +26,7 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
   nodeLoad,
   isShowingLoad,
 }) => {
+  const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
   const localDate = device ? getLocalDateFromUTC(device.createdAt) : null;
   const nodeLoadUsage = getDeviceUsage(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad);
   const nodeLoadUsageColor = isShowingLoad ? getDeviceUsageColor(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad) : 'gray';
@@ -36,7 +37,7 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
         <Heading as="h3" size="sm">
           {name}
         </Heading>
-        {isShowingLoad && (
+        {isShowingLoad && isPerformanceMonitoringEnabled && (
           <Badge marginLeft="auto" colorScheme={nodeLoadUsageColor}>
             {nodeLoadUsage}
           </Badge>
