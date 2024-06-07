@@ -1,6 +1,7 @@
 import { ResourceManagerApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { useConfig } from './config.provider';
+import { authContext } from './auth-helpers';
 
 const ResourceManagerApp: FC = () => {
   const { uniresourceApiURL } = useConfig();
@@ -19,7 +20,7 @@ const ResourceManagerApp: FC = () => {
   const { ResourceManagerAppProvider, ResourceManagerApp: App } = components;
 
   return (
-    <ResourceManagerAppProvider client={ResourceManagerApi.create({ url: uniresourceApiURL }).client}>
+    <ResourceManagerAppProvider client={ResourceManagerApi.create({ url: uniresourceApiURL, authContext }).client}>
       <App />
     </ResourceManagerAppProvider>
   );

@@ -372,8 +372,9 @@ export function createTask(taskLabel: TaskLabel): ExtendedTask {
       return createJsonJQTask(taskLabel);
     case 'set variable':
       return createSetVariableTask(taskLabel);
-    default:
+    default: {
       throw new Error('should never happen');
+    }
   }
 }
 
