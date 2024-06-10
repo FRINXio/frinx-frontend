@@ -86,8 +86,8 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
     workflowId: makeArrayFromValue(searchParams.getAll('workflowId')),
     workflowType: makeArrayFromValue(searchParams.getAll('workflowType')),
     workflowsPerPage: workflowsPerPage > 0 ? workflowsPerPage : 20,
-    ...(from != null && { from: moment(new Date(from)).format('yyyy-MM-DDThh:mm') }),
-    ...(to != null && { to: moment(new Date(to)).format('yyyy-MM-DDThh:mm') }),
+    ...(from != null && { from: moment(new Date(from)).toISOString() }),
+    ...(to != null && { to: moment(new Date(to)).toISOString() }),
   };
 }
 
