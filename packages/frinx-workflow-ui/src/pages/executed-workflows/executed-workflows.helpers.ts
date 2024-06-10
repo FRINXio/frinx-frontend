@@ -23,7 +23,7 @@ export type ExecutedWorkflowSearchQuery = {
   to?: string;
   status: string[];
   workflowId: string[];
-  workflowType: string[];
+  workflowType?: string[];
   workflowsPerPage: number;
 };
 
@@ -82,9 +82,9 @@ export function makeFilterFromSearchParams(searchParams: URLSearchParams): Execu
 
   return {
     isRootWorkflow: parseBoolean(searchParams.get('isRootWorkflow')),
-    status: makeArrayFromValue(searchParams.getAll('status')),
-    workflowId: makeArrayFromValue(searchParams.getAll('workflowId')),
-    workflowType: makeArrayFromValue(searchParams.getAll('workflowType')),
+    status: makeArrayFromValue(searchParams.getAll('status')).filter((wf) => wf.length > 0),
+    workflowId: makeArrayFromValue(searchParams.getAll('workflowId')).filter((wf) => wf.length > 0),
+    workflowType: makeArrayFromValue(searchParams.getAll('workflowType').filter((wf) => wf.length > 0)),
     workflowsPerPage: workflowsPerPage > 0 ? workflowsPerPage : 20,
     ...(from != null && { from: moment(new Date(from)).format('yyyy-MM-DDThh:mm') }),
     ...(to != null && { to: moment(new Date(to)).format('yyyy-MM-DDThh:mm') }),
