@@ -95,6 +95,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ scheduledWorkflow, workflow, isOpen,
       cronString: scheduledWorkflow?.cronString || DEFAULT_CRON_STRING,
       enabled: scheduledWorkflow?.enabled ?? false,
       fromDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.fromDate),
+      toDate: scheduledWorkflow.toDate && resetDateFormat(scheduledWorkflow?.toDate),
       // TODO: FIXME
       // performTillDate: scheduledWorkflow?.fromDate && resetDateFormat(scheduledWorkflow?.performTillDate),
     },
