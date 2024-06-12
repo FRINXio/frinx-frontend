@@ -8,8 +8,8 @@ export default class UnistoreApi {
   private static instance: UnistoreApi;
 
   private constructor(config: ApiConfig, unistoreAuthToken: string) {
-    const { url } = config;
-    const apiHelpers = createApiHelpers(url);
+    const { url, authContext } = config;
+    const apiHelpers = createApiHelpers(url, authContext);
     this.client = createUnistoreApiClient(apiHelpers, unistoreAuthToken);
   }
 

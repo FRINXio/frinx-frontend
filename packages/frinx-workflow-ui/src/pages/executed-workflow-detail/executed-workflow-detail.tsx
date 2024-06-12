@@ -87,6 +87,7 @@ const EXECUTED_WORKFLOW_QUERY = gql`
             }
             timeoutPolicy
             timeoutSeconds
+            tasksJson
           }
           variables
           lastRetriedTime

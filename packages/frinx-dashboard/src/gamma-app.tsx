@@ -2,6 +2,7 @@ import { InventoryApi, UnistoreApi } from '@frinx/api';
 import { GammaAppProviderProps } from '@frinxio/gamma';
 import React, { FC, useEffect, useState, VoidFunctionComponent } from 'react';
 import { useConfig } from './config.provider';
+import { authContext } from './auth-helpers';
 
 type GammaComponents = Omit<typeof import('@frinxio/gamma'), 'getGammaAppProvider'> & {
   GammaAppProvider: FC<GammaAppProviderProps>;
@@ -20,7 +21,7 @@ const GammaApp: VoidFunctionComponent = () => {
       setComponents({
         GammaApp: App,
         GammaAppProvider: getGammaAppProvider({
-          unistoreClient: UnistoreApi.create({ url: unistoreApiURL }, '').client,
+          unistoreClient: UnistoreApi.create({ url: unistoreApiURL, authContext }, '').client,
         }),
       });
     });
@@ -38,7 +39,7 @@ const GammaApp: VoidFunctionComponent = () => {
       onTransactionRefresh={() => {
         setHasTransactionError(false);
       }}
-      deviceInventoryClient={InventoryApi.create({ url: inventoryApiURL }).client}
+      deviceInventoryClient={InventoryApi.create({ url: inventoryApiURL, authContext }).client}
       wsUrl={wsURL}
     >
       <App />
