@@ -624,6 +624,11 @@ export type DeleteSnapshotPayload = {
   snapshot: Maybe<Snapshot>;
 };
 
+export type DeleteStreamPayload = {
+  __typename?: 'DeleteStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for deleting an existing tag */
 export type DeleteTagInput = {
   tagId: Scalars['ID']['input'];
@@ -2298,6 +2303,7 @@ export type ConductorMutation = {
   __typename?: 'conductorMutation';
   /** Add a new event handler. */
   addEventHandler: Maybe<Scalars['JSON']['output']>;
+  cloneWorkflowDefinition: Scalars['Boolean']['output'];
   /** Create a new workflow definition */
   create: Maybe<Scalars['JSON']['output']>;
   createEventHandler: CreateEventHandlerPayload;
@@ -2387,6 +2393,13 @@ export type ConductorMutation = {
 
 export type ConductorMutationAddEventHandlerArgs = {
   input?: InputMaybe<EventHandler_Input>;
+};
+
+
+export type ConductorMutationCloneWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  workflowToBeCloned: WorkflowDefinitionInput;
 };
 
 
@@ -3003,6 +3016,7 @@ export type DeviceInventoryMutation = {
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   reconnectKafka: Maybe<IsOkResponse>;
@@ -3113,6 +3127,11 @@ export type DeviceInventoryMutationDeleteLabelArgs = {
 
 export type DeviceInventoryMutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
+};
+
+
+export type DeviceInventoryMutationDeleteStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -4080,6 +4099,13 @@ export type DeactivateStreamMutationVariables = Exact<{
 
 
 export type DeactivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deactivateStream: { __typename?: 'DeactivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
+
+export type DeleteStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteStream: { __typename?: 'DeleteStreamPayload', stream: { __typename?: 'Stream', id: string } | null } } };
 
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 

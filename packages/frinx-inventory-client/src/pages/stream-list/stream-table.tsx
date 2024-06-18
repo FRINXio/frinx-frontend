@@ -1,4 +1,18 @@
-import { Checkbox, Flex, Icon, Table, Tbody, Td, Text, Th, Thead, Tooltip, Tr } from '@chakra-ui/react';
+import {
+  Checkbox,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+} from '@chakra-ui/react';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
@@ -54,14 +68,14 @@ const StreamTable: VoidFunctionComponent<Props> = ({
               cursor="pointer"
               onClick={() => onSort('streamName')}
             >
-              <Text>Name</Text>
+              <Text>Stream Name</Text>
               {orderBy?.sortKey === 'streamName' && (
                 <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
               )}
             </Flex>
           </Th>
           <Th>
-            <Text>Device Id</Text>
+            <Text>Device Name</Text>
           </Th>
           <Th>
             <Flex
@@ -145,8 +159,8 @@ const StreamTable: VoidFunctionComponent<Props> = ({
                 />
               </Td>
               <Td minWidth={200}>
-                {/* <HStack spacing={2}>
-                  <IconButton
+                <HStack spacing={2}>
+                  {/* <IconButton
                     data-cy={`device-settings-${stream.streamName}`}
                     aria-label="config"
                     size="sm"
@@ -165,20 +179,20 @@ const StreamTable: VoidFunctionComponent<Props> = ({
                     icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
                     as={isInstalled ? 'button' : Link}
                     {...(isInstalled ? {} : { to: `../${stream.id}/edit` })}
-                  />
+                  /> */}
                   <IconButton
                     data-cy={`device-delete-${stream.streamName}`}
                     aria-label="Delete device"
                     size="sm"
-                    isDisabled={isInstalled}
-                    disabled={isInstalled}
+                    isDisabled={isActive}
+                    disabled={isActive}
                     colorScheme="red"
                     icon={<Icon size={12} as={FeatherIcon} icon="trash-2" />}
                     onClick={() => {
                       onDeleteBtnClick(stream.id);
                     }}
                   />
-                </HStack> */}
+                </HStack>
               </Td>
             </Tr>
           );
