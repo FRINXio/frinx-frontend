@@ -17,6 +17,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { getLocalDateFromUTC } from '@frinx/shared';
+import { Link } from 'react-router-dom';
 import { StreamsQuery } from '../../__generated__/graphql';
 import InstallButton from '../device-list/install-button';
 
@@ -169,17 +170,17 @@ const StreamTable: VoidFunctionComponent<Props> = ({
                     icon={<Icon size={12} as={FeatherIcon} icon="settings" />}
                     as={isInstalled ? Link : 'button'}
                     {...(isInstalled ? { to: `../config/${stream.id}` } : {})}
-                  />
+                  /> */}
                   <IconButton
                     data-cy={`device-edit-${stream.streamName}`}
                     aria-label="edit"
                     size="sm"
-                    isDisabled={isInstalled}
-                    disabled={isInstalled}
+                    isDisabled={isActive}
+                    disabled={isActive}
                     icon={<Icon size={12} as={FeatherIcon} icon="edit" />}
-                    as={isInstalled ? 'button' : Link}
-                    {...(isInstalled ? {} : { to: `../${stream.id}/edit` })}
-                  /> */}
+                    as={isActive ? 'button' : Link}
+                    {...(isActive ? {} : { to: `${stream.id}/edit` })}
+                  />
                   <IconButton
                     data-cy={`device-delete-${stream.streamName}`}
                     aria-label="Delete device"

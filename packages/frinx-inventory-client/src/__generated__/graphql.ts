@@ -103,6 +103,7 @@ export type AddSnapshotPayload = {
 };
 
 export type AddStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deviceName: Scalars['String']['input'];
   streamName: Scalars['String']['input'];
   streamParameters?: InputMaybe<Scalars['String']['input']>;
@@ -1474,11 +1475,13 @@ export type Status =
 
 export type Stream = Node & {
   __typename?: 'Stream';
+  blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String']['output'];
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
   streamName: Scalars['String']['output'];
+  streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
 };
 
@@ -1959,6 +1962,18 @@ export type UpdateScheduleInput = {
   workflowContext?: InputMaybe<Scalars['String']['input']>;
   workflowName?: InputMaybe<Scalars['String']['input']>;
   workflowVersion?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamPayload = {
+  __typename?: 'UpdateStreamPayload';
+  stream: Maybe<Stream>;
 };
 
 /** Input parameters for updating an existing tag */
@@ -3028,6 +3043,7 @@ export type DeviceInventoryMutation = {
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateStream: UpdateStreamPayload;
 };
 
 
@@ -3188,6 +3204,12 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
+};
+
+
+export type DeviceInventoryMutationUpdateStreamArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -4073,6 +4095,21 @@ export type UpdateDeviceMutationVariables = Exact<{
 
 
 export type UpdateDeviceMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateDevice: { __typename?: 'UpdateDevicePayload', device: { __typename?: 'Device', id: string, name: string, model: string | null, vendor: string | null, address: string | null, isInstalled: boolean, zone: { __typename?: 'Zone', id: string, name: string } } | null } } };
+
+export type StreamQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type StreamQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', stream: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', streamName: string, deviceName: string, streamParameters: string | null, id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null, streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } }> }, devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string } }> }, blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } } };
+
+export type UpdateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
+}>;
+
+
+export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
 
 export type StreamsQueryVariables = Exact<{
   streamName?: InputMaybe<Scalars['String']['input']>;
