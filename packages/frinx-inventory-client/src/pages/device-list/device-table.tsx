@@ -28,8 +28,15 @@ type OrderBy = {
   sortKey: SortedBy;
   direction: Direction;
 } | null;
+type DevicesConnection = { deviceName: string | null; status: string | null } | null;
+type DeviceInstallStatus = {
+  name: string;
+  isInstalled: boolean;
+};
 
 type Props = {
+  deviceInstallStatuses?: DeviceInstallStatus[];
+  devicesConnection?: DevicesConnection[] | null;
   orderBy: OrderBy;
   devices: DevicesQuery['deviceInventory']['devices']['edges'];
   devicesUsage?: DevicesUsageSubscription | null;
@@ -46,6 +53,8 @@ type Props = {
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
+  deviceInstallStatuses,
+  devicesConnection,
   orderBy,
   devices,
   devicesUsage,
@@ -63,8 +72,20 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   const deviceStatuses = isPerformanceMonitoringEnabled
     ? []
     : devicesUsage?.deviceInventory.devicesUsage?.devicesUsage.map((deviceUsage) => {
-        const deviceUsageLevel = getDeviceUsage(deviceUsage?.cpuLoad, deviceUsage?.memoryLoad);
-        const statusColor = getDeviceUsageColor(deviceUsage?.cpuLoad, deviceUsage?.memoryLoad);
+        const deviceConnection = devicesConnection?.find((device) => device?.deviceName === deviceUsage.deviceName);
+        const deviceInstallStatus = deviceInstallStatuses?.find((device) => device?.name === deviceUsage.deviceName);
+
+        const deviceUsageLevel = getDeviceUsage(
+          deviceUsage?.cpuLoad,
+          deviceUsage?.memoryLoad,
+          deviceConnection?.status,
+          deviceInstallStatus?.isInstalled,
+        );
+        const statusColor = getDeviceUsageColor(
+          deviceUsage?.cpuLoad,
+          deviceUsage?.memoryLoad,
+          deviceConnection?.status,
+        );
 
         return {
           deviceName: deviceUsage?.deviceName ?? '',
@@ -102,11 +123,6 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               {orderBy?.sortKey === 'createdAt' && (
                 <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
               )}
-            </Flex>
-          </Th>
-          <Th>
-            <Flex alignItems="center" justifyContent="space-between">
-              <Text>Zone</Text>
             </Flex>
           </Th>
           {isPerformanceMonitoringEnabled && (
@@ -167,7 +183,6 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   </Text>
                 </Tooltip>
               </Td>
-              <Td data-cy={`device-zone-${device.name}`}>{device.zone?.name}</Td>
               {isPerformanceMonitoringEnabled && (
                 <Td>
                   <Badge

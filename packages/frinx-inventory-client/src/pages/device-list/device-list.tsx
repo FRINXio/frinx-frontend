@@ -48,6 +48,8 @@ import {
   KafkaReconnectMutationVariables,
   DevicesUsageSubscription,
   DevicesUsageSubscriptionVariables,
+  DevicesConnectionSubscriptionVariables,
+  DevicesConnectionSubscription,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -209,6 +211,19 @@ const DEVICES_USAGE_SUBSCRIPTION = gql`
   }
 `;
 
+const DEVICES_STATUS_SUBSCRIPTION = gql`
+  subscription DevicesConnection($targetDevices: [String!]!, $connectionTimeout: Int) {
+    deviceInventory {
+      devicesConnection(targetDevices: $targetDevices, connectionTimeout: $connectionTimeout) {
+        deviceStatuses {
+          deviceName
+          status
+        }
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -271,6 +286,24 @@ const DeviceList: VoidFunctionComponent = () => {
     },
     pause: !isPerformanceMonitoringEnabled,
   });
+
+  const deviceInstallStatuses = deviceData?.deviceInventory.devices.edges.map((device) => ({
+    name: device.node.name,
+    isInstalled: device.node.isInstalled,
+  }));
+
+  const [{ data: devicesConnection }] = useSubscription<
+    DevicesConnectionSubscriptionVariables,
+    DevicesConnectionSubscription
+  >({
+    query: DEVICES_STATUS_SUBSCRIPTION,
+    variables: {
+      connectionTimeout: 10,
+      targetDevices: deviceInstallStatuses?.filter((device) => device.isInstalled).map((device) => device.name) ?? [],
+    },
+    pause: !isPerformanceMonitoringEnabled,
+  });
+
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
 
@@ -719,6 +752,8 @@ const DeviceList: VoidFunctionComponent = () => {
           </Flex>
         </Flex>
         <DeviceTable
+          deviceInstallStatuses={deviceInstallStatuses}
+          devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
           devicesUsage={devicesUsage}

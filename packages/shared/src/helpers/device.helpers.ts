@@ -8,40 +8,70 @@ export enum DeviceUsageWatermark {
   HIGH_MEMORY = 'high Memory load',
   HIGH = 'high CPU and Memory load',
   MEDIUM = 'medium load',
-  LOW = 'low load',
+  IN_SERVICE = 'in service',
+  OFFLINE = 'offline',
   UNKNOWN = 'unknown',
 }
 
-export const getDeviceUsage = (cpuLoad?: number | null, memoryLoad?: number | null) => {
+export const getDeviceUsage = (
+  cpuLoad?: number | null,
+  memoryLoad?: number | null,
+  deviceConnection?: string | null,
+  deviceInstallStatus?: boolean,
+) => {
+  if ((cpuLoad == null || memoryLoad == null) && deviceConnection === 'complete' && deviceInstallStatus) {
+    return DeviceUsageWatermark.IN_SERVICE;
+  }
+
+  if ((cpuLoad == null || memoryLoad == null) && !deviceConnection && deviceInstallStatus) {
+    return DeviceUsageWatermark.OFFLINE;
+  }
+
   if (cpuLoad == null || memoryLoad == null) {
     return DeviceUsageWatermark.UNKNOWN;
   }
 
-  if (isHighUsage(cpuLoad) && isHighUsage(memoryLoad)) {
+
+  if (isHighUsage(cpuLoad) && isHighUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
     return DeviceUsageWatermark.HIGH;
   }
 
-  if (isHighUsage(cpuLoad) && !isHighUsage(memoryLoad)) {
+  if (isHighUsage(cpuLoad) && !isHighUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
     return DeviceUsageWatermark.HIGH_CPU;
   }
 
-  if (!isHighUsage(cpuLoad) && isHighUsage(memoryLoad)) {
+  if (!isHighUsage(cpuLoad) && isHighUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
     return DeviceUsageWatermark.HIGH_MEMORY;
   }
 
-  if (isMediumUsage(cpuLoad) && isMediumUsage(memoryLoad)) {
+  if (isMediumUsage(cpuLoad) && isMediumUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
     return DeviceUsageWatermark.MEDIUM;
   }
 
-  if (isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) {
-    return DeviceUsageWatermark.LOW;
+  if ((isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) && deviceConnection === 'complete' && deviceInstallStatus) {
+    return DeviceUsageWatermark.IN_SERVICE;
   }
+
+  if ((isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) && !deviceConnection && deviceInstallStatus) {
+    return DeviceUsageWatermark.OFFLINE;
+  }
+
+
+  if (cpuLoad && memoryLoad && !deviceInstallStatus) {
+    return DeviceUsageWatermark.UNKNOWN;
+  }
+
 
   return DeviceUsageWatermark.UNKNOWN;
 };
 
-export const getDeviceUsageColor = (cpuLoad?: number | null, memoryLoad?: number | null) => {
-  const deviceUsage = getDeviceUsage(cpuLoad, memoryLoad);
+export const getDeviceUsageColor = (
+  cpuLoad?: number | null,
+  memoryLoad?: number | null,
+  deviceConnection?: string | null,
+  deviceInstallStatus?: boolean,
+) => {
+  const deviceUsage = getDeviceUsage(cpuLoad, memoryLoad, deviceConnection, deviceInstallStatus);
 
   switch (deviceUsage) {
     case DeviceUsageWatermark.HIGH:
@@ -50,8 +80,10 @@ export const getDeviceUsageColor = (cpuLoad?: number | null, memoryLoad?: number
       return 'red';
     case DeviceUsageWatermark.MEDIUM:
       return 'yellow';
-    case DeviceUsageWatermark.LOW:
+    case DeviceUsageWatermark.IN_SERVICE:
       return 'green';
+    case DeviceUsageWatermark.OFFLINE:
+      return 'red';
     default:
       return 'gray';
   }
