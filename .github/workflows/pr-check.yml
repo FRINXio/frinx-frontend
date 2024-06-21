@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - 6.X-stable
+      - story-*
 jobs:
   pr-check:
     runs-on: ubuntu-latest

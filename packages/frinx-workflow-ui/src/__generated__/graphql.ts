@@ -677,6 +677,11 @@ export type DeviceEdge = {
   node: Device;
 };
 
+export type DeviceListUsage = {
+  __typename?: 'DeviceListUsage';
+  devicesUsage: Array<Maybe<DevicesUsage>>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -696,6 +701,19 @@ export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
   | 'MANUAL';
+
+export type DeviceUsage = {
+  __typename?: 'DeviceUsage';
+  cpuLoad: Scalars['Float']['output'];
+  memoryLoad: Scalars['Float']['output'];
+};
+
+export type DevicesUsage = {
+  __typename?: 'DevicesUsage';
+  cpuLoad: Scalars['Float']['output'];
+  deviceName: Scalars['String']['output'];
+  memoryLoad: Scalars['Float']['output'];
+};
 
 export type DiffData = {
   __typename?: 'DiffData';
@@ -1065,13 +1083,12 @@ export type OutputParameters = {
   value: Scalars['String']['output'];
 };
 
-/** Holds information about the requested pagination page */
 export type PageInfo = {
   __typename?: 'PageInfo';
-  endCursor: Maybe<Scalars['Cursor']['output']>;
+  endCursor: Maybe<Scalars['String']['output']>;
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor: Maybe<Scalars['Cursor']['output']>;
+  startCursor: Maybe<Scalars['String']['output']>;
 };
 
 export type PaginationArgs = {
@@ -3306,7 +3323,21 @@ export type DeviceInventoryQueryZonesArgs = {
 
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
+  deviceUsage: Maybe<DeviceUsage>;
+  devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
+};
+
+
+export type DeviceInventorySubscriptionDeviceUsageArgs = {
+  deviceName: Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesUsageArgs = {
+  deviceNames: Array<Scalars['String']['input']>;
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -3832,7 +3863,7 @@ export type GetEventHandlersQueryVariables = Exact<{
 }>;
 
 
-export type GetEventHandlersQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', cursor: string, node: { __typename?: 'EventHandler', id: string, isActive: boolean | null, name: string, evaluatorType: string | null, event: string, actions: Array<{ __typename?: 'EventHandlerAction', action: MutationInput_UpdateEventHandler_Input_Actions_Items_Action | null } | null> } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type GetEventHandlersQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', eventHandlers: { __typename?: 'EventHandlerConnection', edges: Array<{ __typename?: 'EventHandlerEdge', cursor: string, node: { __typename?: 'EventHandler', id: string, isActive: boolean | null, name: string, evaluatorType: string | null, event: string, actions: Array<{ __typename?: 'EventHandlerAction', action: MutationInput_UpdateEventHandler_Input_Actions_Items_Action | null } | null> } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type DeleteEventHandlerMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -3975,7 +4006,7 @@ export type WorkflowListQuery = { __typename?: 'Query', conductor: { __typename?
 export type SchedulesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', totalCount: number, edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, enabled: boolean, fromDate: any, toDate: any, parallelRuns: boolean, status: Status } } | null>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
+export type SchedulesQuery = { __typename?: 'Query', scheduler: { __typename?: 'schedulerQuery', schedules: { __typename?: 'ScheduleConnection', totalCount: number, edges: Array<{ __typename?: 'ScheduleEdge', node: { __typename?: 'Schedule', name: string, workflowName: string, workflowVersion: string, cronString: string, workflowContext: string, enabled: boolean, fromDate: any, toDate: any, parallelRuns: boolean, status: Status } } | null>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } | null } };
 
 export type DeleteScheduleMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -4002,7 +4033,7 @@ export type TaskDefinitionsQueryVariables = Exact<{
 }>;
 
 
-export type TaskDefinitionsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', taskDefinitions: { __typename?: 'TaskDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', id: string, name: string, timeoutSeconds: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, description: string | null, retryCount: number | null, pollTimeoutSeconds: number | null, inputKeys: Array<string> | null, outputKeys: Array<string> | null, inputTemplate: string | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, concurrentExecLimit: number | null, rateLimitFrequencyInSeconds: number | null, rateLimitPerFrequency: number | null, ownerEmail: string | null, timeoutPolicy: TaskTimeoutPolicy | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type TaskDefinitionsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', taskDefinitions: { __typename?: 'TaskDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'TaskDefinitionEdge', node: { __typename?: 'TaskDefinition', id: string, name: string, timeoutSeconds: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, description: string | null, retryCount: number | null, pollTimeoutSeconds: number | null, inputKeys: Array<string> | null, outputKeys: Array<string> | null, inputTemplate: string | null, retryLogic: RetryLogic | null, retryDelaySeconds: number | null, responseTimeoutSeconds: number | null, concurrentExecLimit: number | null, rateLimitFrequencyInSeconds: number | null, rateLimitPerFrequency: number | null, ownerEmail: string | null, timeoutPolicy: TaskTimeoutPolicy | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type DeleteTaskMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -4050,7 +4081,7 @@ export type WorkflowsQueryVariables = Exact<{
 }>;
 
 
-export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any | null, description: { __typename?: 'WorkflowDefinitionDescription', description: string | null, labels: Array<string> | null } | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: any | null, endCursor: any | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type WorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', workflowDefinitions: { __typename?: 'WorkflowDefinitionConnection', totalCount: number, edges: Array<{ __typename?: 'WorkflowDefinitionEdge', node: { __typename?: 'WorkflowDefinition', id: string, name: string, version: number, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutSeconds: number | null, restartable: boolean, variables: any | null, timeoutPolicy: TimeoutPolicy | null, ownerEmail: string | null, tasksJson: any | null, description: { __typename?: 'WorkflowDefinitionDescription', description: string | null, labels: Array<string> | null } | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type WorkflowLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 

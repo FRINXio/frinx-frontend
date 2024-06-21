@@ -121,18 +121,18 @@ export type BackupGraphNode = {
   coordinates: Position;
 };
 
+export type GraphPtpNodeInterfaceDetails = {
+  ptpStatus: string | null;
+  adminOperStatus: string | null;
+  ptsfUnusable: string | null;
+};
+
 export type BackupNetGraphNode = {
   id: string;
   name: string;
   interfaces: GraphNetNodeInterface[];
   networks: NetNetwork[];
   coordinates: Position;
-};
-
-export type GraphPtpNodeInterfaceDetails = {
-  ptpStatus: string | null;
-  adminOperStatus: string | null;
-  ptsfUnusable: string | null;
 };
 
 export type GraphPtpNodeInterface = {

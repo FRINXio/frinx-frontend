@@ -666,6 +666,7 @@ export type Device = Node & {
   name: Scalars['String']['output'];
   port: Maybe<Scalars['Int']['output']>;
   serviceState: DeviceServiceState;
+  software: Maybe<Scalars['String']['output']>;
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
@@ -694,6 +695,11 @@ export type DeviceEdge = {
   node: Device;
 };
 
+export type DeviceListUsage = {
+  __typename?: 'DeviceListUsage';
+  devicesUsage: Array<DevicesUsage>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -713,6 +719,30 @@ export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
   | 'MANUAL';
+
+export type DeviceStatus = {
+  __typename?: 'DeviceStatus';
+  deviceName: Maybe<Scalars['String']['output']>;
+  status: Maybe<Scalars['String']['output']>;
+};
+
+export type DeviceUsage = {
+  __typename?: 'DeviceUsage';
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
+
+export type DevicesConnection = {
+  __typename?: 'DevicesConnection';
+  deviceStatuses: Maybe<Array<Maybe<DeviceStatus>>>;
+};
+
+export type DevicesUsage = {
+  __typename?: 'DevicesUsage';
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  deviceName: Scalars['String']['output'];
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
 
 export type DiffData = {
   __typename?: 'DiffData';
@@ -1138,14 +1168,14 @@ export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
   clockAccuracy: Maybe<Scalars['String']['output']>;
   clockClass: Maybe<Scalars['Int']['output']>;
-  clockId: Scalars['String']['output'];
-  clockType: Scalars['String']['output'];
+  clockId: Maybe<Scalars['String']['output']>;
+  clockType: Maybe<Scalars['String']['output']>;
   clockVariance: Maybe<Scalars['String']['output']>;
-  domain: Scalars['Int']['output'];
+  domain: Maybe<Scalars['Int']['output']>;
   globalPriority: Maybe<Scalars['Int']['output']>;
-  gmClockId: Scalars['String']['output'];
-  parentClockId: Scalars['String']['output'];
-  ptpProfile: Scalars['String']['output'];
+  gmClockId: Maybe<Scalars['String']['output']>;
+  parentClockId: Maybe<Scalars['String']['output']>;
+  ptpProfile: Maybe<Scalars['String']['output']>;
   timeRecoveryStatus: Maybe<Scalars['String']['output']>;
   userPriority: Maybe<Scalars['Int']['output']>;
 };
@@ -3370,7 +3400,28 @@ export type DeviceInventoryQueryZonesArgs = {
 
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
+  deviceUsage: Maybe<DeviceUsage>;
+  devicesConnection: Maybe<DevicesConnection>;
+  devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
+};
+
+
+export type DeviceInventorySubscriptionDeviceUsageArgs = {
+  deviceName: Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesConnectionArgs = {
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+  targetDevices: Array<Scalars['String']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesUsageArgs = {
+  deviceNames: Array<Scalars['String']['input']>;
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -4009,7 +4060,7 @@ export type DevicesQueryVariables = Exact<{
 }>;
 
 
-export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, version: string | null, model: string | null, software: string | null, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type InstallDeviceMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -4060,6 +4111,22 @@ export type KafkaReconnectMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type KafkaReconnectMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', reconnectKafka: { __typename?: 'IsOkResponse', isOk: boolean } | null } };
+
+export type DevicesUsageSubscriptionVariables = Exact<{
+  deviceNames: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type DevicesUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesUsage: { __typename?: 'DeviceListUsage', devicesUsage: Array<{ __typename?: 'DevicesUsage', cpuLoad: number | null, deviceName: string, memoryLoad: number | null }> } | null } };
+
+export type DevicesConnectionSubscriptionVariables = Exact<{
+  targetDevices: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type DevicesConnectionSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesConnection: { __typename?: 'DevicesConnection', deviceStatuses: Array<{ __typename?: 'DeviceStatus', deviceName: string | null, status: string | null } | null> | null } | null } };
 
 export type ModalWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
 

@@ -186,6 +186,8 @@ const TopologyGraph: VoidFunctionComponent<Props> = ({
             onClose={handleInfoPanelClose}
             deviceType={selectedNode.deviceType}
             softwareVersion={selectedNode.softwareVersion}
+            nodeLoad={state.selectedNodeLoad.deviceUsage}
+            isShowingLoad={state.selectedNode?.name === state.selectedNodeLoad.deviceName}
           />
         </Box>
       )}
