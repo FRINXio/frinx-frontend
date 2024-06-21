@@ -32,7 +32,6 @@ export const getDeviceUsage = (
     return DeviceUsageWatermark.UNKNOWN;
   }
 
-
   if (isHighUsage(cpuLoad) && isHighUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
     return DeviceUsageWatermark.HIGH;
   }
@@ -57,11 +56,9 @@ export const getDeviceUsage = (
     return DeviceUsageWatermark.OFFLINE;
   }
 
-
   if (cpuLoad && memoryLoad && !deviceInstallStatus) {
     return DeviceUsageWatermark.UNKNOWN;
   }
-
 
   return DeviceUsageWatermark.UNKNOWN;
 };
