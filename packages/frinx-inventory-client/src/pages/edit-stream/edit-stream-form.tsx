@@ -17,14 +17,16 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Autocomplete, Editor, jsonParse } from '@frinx/shared';
 import parse from 'json-templates';
-import { DevicesAndBlueprintsQuery } from '../../__generated__/graphql';
+import { StreamQuery } from '../../__generated__/graphql';
 
 type Props = {
   isSubmitting: boolean;
-  devices: DevicesAndBlueprintsQuery['deviceInventory']['devices']['edges'];
-  streams: DevicesAndBlueprintsQuery['deviceInventory']['streams']['edges'];
-  blueprints: DevicesAndBlueprintsQuery['deviceInventory']['blueprints']['edges'];
-  onFormSubmit: (device: FormValues) => void;
+  editedStream: FormValues;
+  devices: StreamQuery['deviceInventory']['devices']['edges'];
+  streams: StreamQuery['deviceInventory']['streams']['edges'];
+  blueprints: StreamQuery['deviceInventory']['blueprints']['edges'];
+  onUpdate: (stream: FormValues) => void;
+  onCancel: () => void;
 };
 
 type FormValues = {
@@ -40,40 +42,37 @@ function getStreamFullName(deviceName: string, streamName: string) {
   return `${deviceName}>>${streamName}`;
 }
 
-function getStreamSchema(streamSet: StreamSet) {
+function getStreamSchema(streamSet: StreamSet, initialValues: FormValues) {
   return yup.object({
     deviceName: yup.string().required('Please enter name of device'),
     streamName: yup
       .string()
       .required('Please enter name of stream')
       .test('duplicateStream', 'Stream name is duplicate for selected device', (value, context) => {
-        return !streamSet.has(getStreamFullName(context.parent.deviceName, value ?? ''));
+        const { streamName } = initialValues;
+        return streamName === value || !streamSet.has(getStreamFullName(context.parent.deviceName, value ?? ''));
       }),
     blueprintId: yup.string().nullable(),
     streamParameters: yup.string(),
   });
 }
 
-const INITIAL_VALUES: FormValues = {
-  deviceName: '',
-  streamName: '',
-  blueprintId: null,
-  streamParameters: '{}',
-};
-
-const CreateStreamForm: VoidFunctionComponent<Props> = ({
+const EditStreamForm: VoidFunctionComponent<Props> = ({
+  editedStream,
   devices,
   streams,
-  onFormSubmit,
   blueprints,
   isSubmitting,
+  onUpdate,
+  onCancel,
 }) => {
   const [blueprintParameterValues, setBlueprintParameterValues] = useState<Record<string, string>>({});
   const [isUsingBlueprints, setIsUsingBlueprints] = useState(false);
   const { errors, values, isValid, handleSubmit, handleChange, setFieldValue } = useFormik<FormValues>({
-    initialValues: INITIAL_VALUES,
+    initialValues: editedStream,
     validationSchema: getStreamSchema(
       new Set(streams.map((s) => getStreamFullName(s.node.deviceName, s.node.streamName))),
+      editedStream,
     ),
     onSubmit: (data) => {
       const blueprintParameters = parse(
@@ -87,7 +86,7 @@ const CreateStreamForm: VoidFunctionComponent<Props> = ({
         ? JSON.parse(blueprintParameters(blueprintParameterValues))
         : JSON.parse(data.streamParameters ?? '{}');
 
-      onFormSubmit({
+      onUpdate({
         ...data,
         streamParameters: JSON.stringify(createStreamParamerers),
       });
@@ -217,20 +216,25 @@ const CreateStreamForm: VoidFunctionComponent<Props> = ({
       )}
 
       <Divider my={6} />
-      <HStack mb={6}>
-        <Spacer />
-        <Button
-          data-cy="add-stream-button"
-          type="submit"
-          colorScheme="blue"
-          isLoading={isSubmitting}
-          isDisabled={!isValid || !isBlueprintValuesValid}
-        >
-          Add stream
-        </Button>
-      </HStack>
+      <FormControl mb={6}>
+        <HStack>
+          <Spacer />
+          <Button data-cy="stream-edit-cancel" onClick={onCancel} colorScheme="gray" ml={3}>
+            Cancel
+          </Button>
+          <Button
+            data-cy="stream-edit-save"
+            type="submit"
+            colorScheme="blue"
+            isLoading={isSubmitting}
+            isDisabled={!isValid || !isBlueprintValuesValid}
+          >
+            Save changes
+          </Button>
+        </HStack>
+      </FormControl>
     </form>
   );
 };
 
-export default CreateStreamForm;
+export default EditStreamForm;

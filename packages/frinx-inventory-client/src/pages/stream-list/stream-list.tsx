@@ -10,7 +10,7 @@ import {
   HStack,
   useDisclosure,
 } from '@chakra-ui/react';
-import { usePagination, Pagination, useNotifications } from '@frinx/shared';
+import { usePagination, Pagination, useNotifications, ConfirmDeleteModal, unwrap } from '@frinx/shared';
 import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
@@ -19,6 +19,8 @@ import {
   ActivateStreamMutationVariables,
   DeactivateStreamMutation,
   DeactivateStreamMutationVariables,
+  DeleteStreamMutation,
+  DeleteStreamMutationVariables,
   StreamsQuery,
   StreamsQueryVariables,
 } from '../../__generated__/graphql';
@@ -89,6 +91,19 @@ const DEACTIVATE_STREAM_MUTATION = gql`
     }
   }
 `;
+
+const DELETE_STREAM_MUTATION = gql`
+  mutation DeleteStream($id: String!) {
+    deviceInventory {
+      deleteStream(id: $id) {
+        stream {
+          id
+        }
+      }
+    }
+  }
+`;
+
 type SortedBy = 'streamName' | 'deviceName' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -101,10 +116,8 @@ const StreamList: VoidFunctionComponent = () => {
   const { addToastNotification } = useNotifications();
   const deleteModalDisclosure = useDisclosure();
   const [orderBy, setOrderBy] = useState<Sorting | null>(null);
-  // TODO: will be implemented later
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [streamIdToDelete, setStreamIdToDelete] = useState<string | null>(null);
-  // TODO: will be implemented later
+  // TODO: will be implemented laterdeletedStream.streamName
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [activateLoadingMap, setActivateLoadingMap] = useState<Record<string, boolean>>({});
   // TODO: will be implemented later
@@ -128,13 +141,14 @@ const StreamList: VoidFunctionComponent = () => {
   const [, deactivateStream] = useMutation<DeactivateStreamMutation, DeactivateStreamMutationVariables>(
     DEACTIVATE_STREAM_MUTATION,
   );
+  const [, deleteStream] = useMutation<DeleteStreamMutation, DeleteStreamMutationVariables>(DELETE_STREAM_MUTATION);
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
   };
 
-  const handleDeleteBtnClick = (deviceId: string) => {
-    setStreamIdToDelete(deviceId);
+  const handleDeleteBtnClick = (streamId: string) => {
+    setStreamIdToDelete(streamId);
     deleteModalDisclosure.onOpen();
   };
 
@@ -235,6 +249,54 @@ const StreamList: VoidFunctionComponent = () => {
       });
   };
 
+  const deleteStreams = (streamIds: string[]) => {
+    return Promise.allSettled(
+      [...streamIds].map(async (streamId: string) => {
+        const res = await deleteStream({
+          id: streamId,
+        });
+        if (res.data?.deviceInventory.deleteStream) {
+          return res.data.deviceInventory.deleteStream.stream?.id;
+        }
+        if (res.error) {
+          throw new Error(res.error?.message);
+        }
+        return null;
+      }),
+    )
+      .then((res) => {
+        if (res.every((item) => item.status === 'fulfilled')) {
+          return addToastNotification({
+            type: 'success',
+            title: 'Success',
+            content: res.length > 1 ? 'Streams were deleted successfully' : 'Stream was deleted successfully',
+          });
+        }
+
+        if (res.every((item) => item.status === 'rejected')) {
+          return addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: res.length > 1 ? 'Failed to delete streams' : 'Failed to delete streams',
+          });
+        }
+
+        return addToastNotification({
+          type: 'warning',
+          title: 'Warning',
+          content: 'Not all selected streams were deleted',
+        });
+      })
+      .finally(() => {
+        setSelectedStreams(new Set());
+        deleteModalDisclosure.onClose();
+      });
+  };
+
+  const handleStreamDelete = () => {
+    deleteStreams([unwrap(streamIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
+  };
+
   // TODO: will be implemented later
   const areSelectedAll = false;
 
@@ -255,38 +317,48 @@ const StreamList: VoidFunctionComponent = () => {
   }
 
   return (
-    <Container maxWidth={1280}>
-      <Flex justify="space-between" align="center" marginBottom={6}>
-        <Heading as="h1" size="xl">
-          Streams
-        </Heading>
-        <HStack spacing={2} marginLeft="auto">
-          <Button data-cy="add-device" as={Link} colorScheme="blue" to="./new">
-            Add stream
-          </Button>
-        </HStack>
-      </Flex>
-      <StreamTable
-        data-cy="stream-table"
-        streams={streamData?.deviceInventory.streams.edges}
-        areSelectedAll={areSelectedAll}
-        onSelectAll={handleSelectionOfAllStreams}
-        selectedStreams={selectedStreams}
-        orderBy={orderBy}
-        onSort={handleSort}
-        onInstallButtonClick={handleStreamInstall}
-        onUninstallButtonClick={handleStreamUninstall}
-        onDeleteBtnClick={handleDeleteBtnClick}
-        installLoadingMap={activateLoadingMap}
-        onStreamSelection={handleStreamSelection}
-      />
-      <Pagination
-        onPrevious={previousPage(streamData.deviceInventory.streams.pageInfo.startCursor)}
-        onNext={nextPage(streamData.deviceInventory.streams.pageInfo.endCursor)}
-        hasNextPage={streamData.deviceInventory.streams.pageInfo.hasNextPage}
-        hasPreviousPage={streamData.deviceInventory.streams.pageInfo.hasPreviousPage}
-      />
-    </Container>
+    <>
+      <ConfirmDeleteModal
+        isOpen={deleteModalDisclosure.isOpen}
+        onClose={deleteModalDisclosure.onClose}
+        onConfirmBtnClick={handleStreamDelete}
+        title="Delete stream"
+      >
+        Are you sure? You can&apos;t undo this action afterwards.
+      </ConfirmDeleteModal>
+      <Container maxWidth={1280}>
+        <Flex justify="space-between" align="center" marginBottom={6}>
+          <Heading as="h1" size="xl">
+            Streams
+          </Heading>
+          <HStack spacing={2} marginLeft="auto">
+            <Button data-cy="add-device" as={Link} colorScheme="blue" to="./new">
+              Add stream
+            </Button>
+          </HStack>
+        </Flex>
+        <StreamTable
+          data-cy="stream-table"
+          streams={streamData?.deviceInventory.streams.edges}
+          areSelectedAll={areSelectedAll}
+          onSelectAll={handleSelectionOfAllStreams}
+          selectedStreams={selectedStreams}
+          orderBy={orderBy}
+          onSort={handleSort}
+          onInstallButtonClick={handleStreamInstall}
+          onUninstallButtonClick={handleStreamUninstall}
+          onDeleteBtnClick={handleDeleteBtnClick}
+          installLoadingMap={activateLoadingMap}
+          onStreamSelection={handleStreamSelection}
+        />
+        <Pagination
+          onPrevious={previousPage(streamData.deviceInventory.streams.pageInfo.startCursor)}
+          onNext={nextPage(streamData.deviceInventory.streams.pageInfo.endCursor)}
+          hasNextPage={streamData.deviceInventory.streams.pageInfo.hasNextPage}
+          hasPreviousPage={streamData.deviceInventory.streams.pageInfo.hasPreviousPage}
+        />
+      </Container>
+    </>
   );
 };
 
