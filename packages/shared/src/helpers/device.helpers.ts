@@ -13,6 +13,7 @@ export enum DeviceUsageWatermark {
   UNKNOWN = 'unknown',
 }
 
+// TODO: write test
 export const getDeviceUsage = (
   cpuLoad?: number | null,
   memoryLoad?: number | null,

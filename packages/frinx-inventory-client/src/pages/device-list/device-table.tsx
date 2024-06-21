@@ -125,13 +125,11 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               )}
             </Flex>
           </Th>
-          {isPerformanceMonitoringEnabled && (
-            <Th>
-              <Flex alignItems="center" justifyContent="space-between" cursor="pointer">
-                <Text>Device Status</Text>
-              </Flex>
-            </Th>
-          )}
+          <Th>
+            <Flex alignItems="center" justifyContent="space-between" cursor="pointer">
+              <Text>Device Status</Text>
+            </Flex>
+          </Th>
           <Th>Installation</Th>
           <Th>Actions</Th>
         </Tr>
@@ -183,16 +181,14 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   </Text>
                 </Tooltip>
               </Td>
-              {isPerformanceMonitoringEnabled && (
-                <Td>
-                  <Badge
-                    data-cy={`device-status-${device.name}`}
-                    colorScheme={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
-                  >
-                    {deviceStatuses.find((d) => d.deviceName === device.name)?.status ?? 'UNKNOWN'}
-                  </Badge>
-                </Td>
-              )}
+              <Td>
+                <Badge
+                  data-cy={`device-status-${device.name}`}
+                  colorScheme={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
+                >
+                  {deviceStatuses.find((d) => d.deviceName === device.name)?.status ?? 'UNKNOWN'}
+                </Badge>
+              </Td>
               <Td minWidth={200}>
                 <InstallButton
                   deviceName={device.name}
