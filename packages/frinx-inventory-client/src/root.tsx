@@ -9,6 +9,7 @@ import DeviceConfigPage from './pages/device-config/device-config-page';
 import DeviceList from './pages/device-list/device-list';
 import EditBlueprintPage from './pages/edit-blueprint/edit-blueprint-page';
 import EditDevicePage from './pages/edit-device/edit-device-page';
+import EditStreamPage from './pages/edit-stream/edit-stream-page';
 import StreamList from './pages/stream-list/stream-list';
 import TransactionList from './pages/transaction-list/transaction-list';
 import UniconfigShellPage from './pages/uniconfig-shell/uniconfig-shell-page';
@@ -46,6 +47,12 @@ const Root: VoidFunctionComponent = () => {
         />
         <Route path="streams" element={<StreamList />} />
         <Route path="streams/new" element={<CreateStreamPage onAddStreamSuccess={handleStreamListRedirect} />} />
+        <Route
+          path="streams/:streamId/edit"
+          element={
+            <EditStreamPage onSuccess={handleStreamListRedirect} onCancelButtonClick={handleStreamListRedirect} />
+          }
+        />
 
         <Route path="transactions" element={<TransactionList />} />
         <Route path="shell" element={<UniconfigShellPage />} />

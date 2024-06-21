@@ -78,6 +78,7 @@ const CreateStreamPage: FC<Props> = ({ onAddStreamSuccess }) => {
     setIsSubmitting(true);
     addStream({
       input: {
+        blueprintId: values.blueprintId,
         deviceName: values.deviceName,
         streamName: values.streamName,
         ...(values.streamParameters && { streamParameters: values.streamParameters }),
