@@ -105,6 +105,7 @@ export type AddSnapshotPayload = {
 export type AddStreamInput = {
   deviceName: Scalars['String']['input'];
   streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddStreamPayload = {
@@ -690,7 +691,7 @@ export type DeviceEdge = {
 
 export type DeviceListUsage = {
   __typename?: 'DeviceListUsage';
-  devicesUsage: Array<Maybe<DevicesUsage>>;
+  devicesUsage: Array<DevicesUsage>;
 };
 
 export type DeviceOrderByInput = {
@@ -713,17 +714,28 @@ export type DeviceSource =
   | 'IMPORTED'
   | 'MANUAL';
 
+export type DeviceStatus = {
+  __typename?: 'DeviceStatus';
+  deviceName: Maybe<Scalars['String']['output']>;
+  status: Maybe<Scalars['String']['output']>;
+};
+
 export type DeviceUsage = {
   __typename?: 'DeviceUsage';
-  cpuLoad: Scalars['Float']['output'];
-  memoryLoad: Scalars['Float']['output'];
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
+
+export type DevicesConnection = {
+  __typename?: 'DevicesConnection';
+  deviceStatuses: Maybe<Array<Maybe<DeviceStatus>>>;
 };
 
 export type DevicesUsage = {
   __typename?: 'DevicesUsage';
-  cpuLoad: Scalars['Float']['output'];
+  cpuLoad: Maybe<Scalars['Float']['output']>;
   deviceName: Scalars['String']['output'];
-  memoryLoad: Scalars['Float']['output'];
+  memoryLoad: Maybe<Scalars['Float']['output']>;
 };
 
 export type DiffData = {
@@ -2316,6 +2328,7 @@ export type ConductorMutation = {
   __typename?: 'conductorMutation';
   /** Add a new event handler. */
   addEventHandler: Maybe<Scalars['JSON']['output']>;
+  cloneWorkflowDefinition: Scalars['Boolean']['output'];
   /** Create a new workflow definition */
   create: Maybe<Scalars['JSON']['output']>;
   createEventHandler: CreateEventHandlerPayload;
@@ -2405,6 +2418,13 @@ export type ConductorMutation = {
 
 export type ConductorMutationAddEventHandlerArgs = {
   input?: InputMaybe<EventHandler_Input>;
+};
+
+
+export type ConductorMutationCloneWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  workflowToBeCloned: WorkflowDefinitionInput;
 };
 
 
@@ -3348,6 +3368,7 @@ export type DeviceInventoryQueryZonesArgs = {
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
   deviceUsage: Maybe<DeviceUsage>;
+  devicesConnection: Maybe<DevicesConnection>;
   devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
 };
@@ -3356,6 +3377,12 @@ export type DeviceInventorySubscription = {
 export type DeviceInventorySubscriptionDeviceUsageArgs = {
   deviceName: Scalars['String']['input'];
   refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesConnectionArgs = {
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+  targetDevices: Array<Scalars['String']['input']>;
 };
 
 
@@ -4046,7 +4073,15 @@ export type DevicesUsageSubscriptionVariables = Exact<{
 }>;
 
 
-export type DevicesUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesUsage: { __typename?: 'DeviceListUsage', devicesUsage: Array<{ __typename?: 'DevicesUsage', cpuLoad: number, deviceName: string, memoryLoad: number } | null> } | null } };
+export type DevicesUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesUsage: { __typename?: 'DeviceListUsage', devicesUsage: Array<{ __typename?: 'DevicesUsage', cpuLoad: number | null, deviceName: string, memoryLoad: number | null }> } | null } };
+
+export type DevicesConnectionSubscriptionVariables = Exact<{
+  targetDevices: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type DevicesConnectionSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesConnection: { __typename?: 'DevicesConnection', deviceStatuses: Array<{ __typename?: 'DeviceStatus', deviceName: string | null, status: string | null } | null> | null } | null } };
 
 export type ModalWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
 
