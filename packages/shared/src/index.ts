@@ -1,3 +1,4 @@
+import Autocomplete from './components/autocomplete/autocomplete';
 import Editor from './components/editor/editor';
 import LabelsInput from './components/labels-input/labels-input';
 import SearchByTag from './components/search-by-tag/search-by-tag';
@@ -29,6 +30,7 @@ export * from './helpers/graph-to-api.helpers';
 export * from './helpers/device.helpers';
 export * from './helpers/utils.helpers';
 export {
+  Autocomplete,
   ToastNotification,
   Editor,
   SearchByTagInput,

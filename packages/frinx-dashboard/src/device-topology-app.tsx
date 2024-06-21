@@ -1,6 +1,7 @@
 import { InventoryApi } from '@frinx/api';
 import React, { FC, useEffect, useState } from 'react';
 import { useConfig } from './config.provider';
+import { authContext } from './auth-helpers';
 
 const DeviceTopologyApp: FC = () => {
   const { inventoryApiURL, devInventoryWsURL, inventoryWsSchema, inventoryWsPath, isPerformanceMonitoringEnabled } =
@@ -22,8 +23,8 @@ const DeviceTopologyApp: FC = () => {
 
   return (
     <InventoryAPIProvider
-      client={InventoryApi.create({ url: inventoryApiURL }).client}
       wsUrl={wsURL}
+      client={InventoryApi.create({ url: inventoryApiURL, authContext }).client}
       isPerformanceMonitoringEnabled={isPerformanceMonitoringEnabled}
     >
       <App />

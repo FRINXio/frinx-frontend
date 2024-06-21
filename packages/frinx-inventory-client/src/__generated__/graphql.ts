@@ -103,6 +103,7 @@ export type AddSnapshotPayload = {
 };
 
 export type AddStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deviceName: Scalars['String']['input'];
   streamName: Scalars['String']['input'];
   streamParameters?: InputMaybe<Scalars['String']['input']>;
@@ -622,6 +623,11 @@ export type DeleteSnapshotInput = {
 export type DeleteSnapshotPayload = {
   __typename?: 'DeleteSnapshotPayload';
   snapshot: Maybe<Snapshot>;
+};
+
+export type DeleteStreamPayload = {
+  __typename?: 'DeleteStreamPayload';
+  stream: Maybe<Stream>;
 };
 
 /** Input parameters for deleting an existing tag */
@@ -1162,14 +1168,14 @@ export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
   clockAccuracy: Maybe<Scalars['String']['output']>;
   clockClass: Maybe<Scalars['Int']['output']>;
-  clockId: Scalars['String']['output'];
-  clockType: Scalars['String']['output'];
+  clockId: Maybe<Scalars['String']['output']>;
+  clockType: Maybe<Scalars['String']['output']>;
   clockVariance: Maybe<Scalars['String']['output']>;
-  domain: Scalars['Int']['output'];
+  domain: Maybe<Scalars['Int']['output']>;
   globalPriority: Maybe<Scalars['Int']['output']>;
-  gmClockId: Scalars['String']['output'];
-  parentClockId: Scalars['String']['output'];
-  ptpProfile: Scalars['String']['output'];
+  gmClockId: Maybe<Scalars['String']['output']>;
+  parentClockId: Maybe<Scalars['String']['output']>;
+  ptpProfile: Maybe<Scalars['String']['output']>;
   timeRecoveryStatus: Maybe<Scalars['String']['output']>;
   userPriority: Maybe<Scalars['Int']['output']>;
 };
@@ -1499,11 +1505,13 @@ export type Status =
 
 export type Stream = Node & {
   __typename?: 'Stream';
+  blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String']['output'];
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
   streamName: Scalars['String']['output'];
+  streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
 };
 
@@ -1984,6 +1992,18 @@ export type UpdateScheduleInput = {
   workflowContext?: InputMaybe<Scalars['String']['input']>;
   workflowName?: InputMaybe<Scalars['String']['input']>;
   workflowVersion?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamPayload = {
+  __typename?: 'UpdateStreamPayload';
+  stream: Maybe<Stream>;
 };
 
 /** Input parameters for updating an existing tag */
@@ -3041,6 +3061,7 @@ export type DeviceInventoryMutation = {
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   reconnectKafka: Maybe<IsOkResponse>;
@@ -3052,6 +3073,7 @@ export type DeviceInventoryMutation = {
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateStream: UpdateStreamPayload;
 };
 
 
@@ -3154,6 +3176,11 @@ export type DeviceInventoryMutationDeleteSnapshotArgs = {
 };
 
 
+export type DeviceInventoryMutationDeleteStreamArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationImportCsvArgs = {
   input: CsvImportInput;
 };
@@ -3207,6 +3234,12 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
+};
+
+
+export type DeviceInventoryMutationUpdateStreamArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -3898,6 +3931,18 @@ export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LabelsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } };
 
+export type AddStreamMutationVariables = Exact<{
+  input: AddStreamInput;
+}>;
+
+
+export type AddStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', addStream: { __typename?: 'AddStreamPayload', stream: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } } } };
+
+export type DevicesAndBlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DevicesAndBlueprintsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } }> }, devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string } }> }, blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } } };
+
 export type BlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4118,6 +4163,21 @@ export type UpdateDeviceMutationVariables = Exact<{
 
 export type UpdateDeviceMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateDevice: { __typename?: 'UpdateDevicePayload', device: { __typename?: 'Device', id: string, name: string, model: string | null, vendor: string | null, address: string | null, isInstalled: boolean, zone: { __typename?: 'Zone', id: string, name: string } } | null } } };
 
+export type StreamQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type StreamQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', stream: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', streamName: string, deviceName: string, streamParameters: string | null, id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null, streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } }> }, devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string } }> }, blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } } };
+
+export type UpdateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
+}>;
+
+
+export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
+
 export type StreamsQueryVariables = Exact<{
   streamName?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<StreamOrderByInput>;
@@ -4143,6 +4203,13 @@ export type DeactivateStreamMutationVariables = Exact<{
 
 
 export type DeactivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deactivateStream: { __typename?: 'DeactivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
+
+export type DeleteStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteStream: { __typename?: 'DeleteStreamPayload', stream: { __typename?: 'Stream', id: string } | null } } };
 
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 

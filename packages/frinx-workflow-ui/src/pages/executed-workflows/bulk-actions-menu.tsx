@@ -109,10 +109,11 @@ const BulkActionsMenu: FC<Props> = ({ selectedWorkflowIds, onBulkActionSuccess, 
 
   const handleBulkPauseButtonClick = () => {
     bulkPauseWorkflows({ input: selectedWorkflowIds }, ctx).then((res) => {
-      if (res.data?.conductor.pauseWorkflow_1?.bulkErrorResults.length === 0) {
-        return onBulkActionSuccess("One or more workflow can't be paused.");
+      const hasPauseErrors = Object.keys(res.data?.conductor.pauseWorkflow_1?.bulkErrorResults).length > 0;
+      if (hasPauseErrors) {
+        return onBulkActionError("One or more workflow can't be paused.");
       }
-      return onBulkActionError();
+      return onBulkActionSuccess();
     });
   };
 

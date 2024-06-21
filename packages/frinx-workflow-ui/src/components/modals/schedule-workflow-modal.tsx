@@ -105,6 +105,10 @@ type Props = {
   onSubmit: (workflow: CreateScheduleInput) => void;
 };
 
+type ClientSchedule = Omit<CreateScheduleInput, 'workflowContext'> & {
+  workflowContext: Record<string, string>;
+};
+
 const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
   const [{ data: scheduledWorkflows, fetching: isLoadingScheduledWorkflows }] = useQuery<
     GetSchedulesQuery,
@@ -120,16 +124,14 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
 
   const [shouldShowInputParams, { toggle: toggleShouldShowInputParams }] = useBoolean(false);
 
-  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<CreateScheduleInput>({
+  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<ClientSchedule>({
     enableReinitialize: true,
     validationSchema,
     validateOnMount: false,
     initialValues: {
       workflowName: workflow.name,
       workflowVersion: workflow.version?.toString() ?? '',
-      workflowContext: JSON.stringify(
-        getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
-      ),
+      workflowContext: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
       name: '',
       cronString: DEFAULT_CRON_STRING,
       enabled: false,
@@ -139,6 +141,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
     onSubmit: (formValues) => {
       const formattedValues: CreateScheduleInput = {
         ...formValues,
+        workflowContext: JSON.stringify(formValues.workflowContext),
         cronString: formValues.cronString || DEFAULT_CRON_STRING,
         ...(formValues.fromDate && {
           fromDate: moment(formValues.fromDate).format('yyyy-MM-DDTHH:mm:ss.SSSZ'),
@@ -157,7 +160,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
     return <Progress size="xs" isIndeterminate />;
   }
 
-  const inputParametersKeys = Object.keys(JSON.parse(values.workflowContext ?? '{}'));
+  const inputParametersKeys = Object.keys(values.workflowContext);
 
   return (
     <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
@@ -254,8 +257,13 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
                   <GridItem key={inputParameterKey}>
                     <ExecuteWorkflowModalFormInput
                       inputParameterKey={inputParameterKey}
-                      onChange={(key, value) => setFieldValue(`workflowContext.${key}`, value)}
-                      values={JSON.parse(values.workflowContext ?? '{}')}
+                      onChange={(key, value) =>
+                        setFieldValue(`workflowContext`, {
+                          ...values.workflowContext,
+                          [key]: value,
+                        })
+                      }
+                      values={values.workflowContext}
                       parsedInputParameters={parsedInputParameters}
                     />
                   </GridItem>
