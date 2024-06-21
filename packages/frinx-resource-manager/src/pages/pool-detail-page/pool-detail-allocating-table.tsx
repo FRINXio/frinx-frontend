@@ -1,5 +1,5 @@
 import { Table, Thead, Tr, Th, Tbody, Td, Button, Tooltip, HStack, useDisclosure } from '@chakra-ui/react';
-import { omitNullValue, Pagination } from '@frinx/shared';
+import { Pagination } from '@frinx/shared';
 import React, { FC, useState } from 'react';
 import AlternativeIdModal from '../../components/alternative-id-modal/alternative-id-modal';
 import { AllocatedResourcesQuery } from '../../__generated__/graphql';
@@ -17,20 +17,14 @@ type Props = {
 const getNamesOfAllocatedResources = (allocatedResources?: AllocatedResources) => {
   if (allocatedResources == null) return [];
 
-  return [
-    ...new Set(
-      allocatedResources.edges.reduce(
-        (prev, curr) => {
-          return prev.concat(
-            Object.keys({
-              ...curr?.node.Properties,
-            }),
-          );
-        },
-        [''],
-      ),
-    ),
-  ].filter(omitNullValue);
+  const uniqueResourceNames = allocatedResources.edges.reduce<string[]>((prev, curr) => {
+    const resourceNames = Object.keys(curr?.node.Properties);
+
+    const updatedResource = [...new Set([...prev, ...resourceNames])];
+    return updatedResource;
+  }, []);
+
+  return uniqueResourceNames;
 };
 
 const PoolDetailAllocatingTable: FC<Props> = ({ allocatedResources, onFreeResource, onPrevious, onNext }) => {
