@@ -15,7 +15,7 @@ import { useStateContext } from '../../../state.provider';
 
 type Props = {
   edge: GraphEdgeWithDiff;
-  netInterfaceMap: Map<string, GraphPtpNodeInterface>;
+  ptpInterfaceMap: Map<string, GraphPtpNodeInterface>;
   isActive: boolean;
   controlPoints: Position[];
   linePoints: Line;
@@ -35,7 +35,7 @@ const Text = chakra('text');
 const Edge: VoidFunctionComponent<Props> = ({
   netNodes,
   edge,
-  netInterfaceMap,
+  ptpInterfaceMap,
   isActive,
   controlPoints,
   linePoints,
@@ -69,7 +69,7 @@ const Edge: VoidFunctionComponent<Props> = ({
   const subnetCoordinates = getNetSubnetCoordinates(netNodes || [], edge);
   const subnetValue = findCommonNetSubnet(netNodes || [], edge);
   const isSelectedEdge = selectedEdge?.id === edge.id;
-  const interfaceDetails = netInterfaceMap.get(edge.source.interface)?.details ?? null;
+  const interfaceDetails = ptpInterfaceMap.get(edge.source.interface)?.details ?? null;
 
   return isActive ? (
     <g>

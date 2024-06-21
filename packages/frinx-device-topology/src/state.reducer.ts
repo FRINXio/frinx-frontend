@@ -9,6 +9,8 @@ import {
   getPtpNodesWithDiff,
   PtpGraphNodeWithDiff,
   SynceGraphNodeWithDiff,
+  getNetNodesWithDiff,
+  NetGraphNodeWithDiff,
 } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
@@ -37,6 +39,7 @@ import {
   getZoomLevel,
 } from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
+import { NetInterface, NetNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
 export type NodeInfo = {
@@ -74,7 +77,7 @@ export type State = {
   selectedShortestPathNodeIds: [string | null, string | null];
   alternativeShortestPaths: ShortestPath;
   selectedAlternativeShortestPathIndex: number;
-  netNodes: GraphNetNode[];
+  netNodes: NetGraphNodeWithDiff[];
   netEdges: GraphEdgeWithDiff[];
   netNodePositions: Record<string, Position>;
   netInterfaceGroupPositions: PositionGroupsMap<GrahpNetNodeInterface>;
@@ -92,6 +95,13 @@ export type State = {
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
   transform: Matrix;
+  selectedNodeLoad: {
+    deviceName: string;
+    deviceUsage?: {
+      cpuLoad: number;
+      memoryLoad: number;
+    } | null;
+  };
   // isMouseDown: boolean;
 };
 
@@ -132,6 +142,10 @@ export const initialState: State = {
   synceNodePositions: {},
   synceInterfaceGroupPositions: {},
   transform: identity(),
+  selectedNodeLoad: {
+    deviceName: '',
+    deviceUsage: null,
+  },
   // isMouseDown: false,
 };
 
@@ -225,6 +239,7 @@ export function stateReducer(state: State, action: StateAction): State {
           (n) => n.name,
           (n) => n.device?.deviceSize ?? 'MEDIUM',
         );
+
         acc.nodes = allNodes;
         acc.edges = allEdges;
         acc.nodePositions = positionsMap.nodes;
@@ -257,6 +272,21 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.synceEdges = allEdges;
         acc.synceNodePositions = positionsMap.nodes;
         acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_NET_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getNetNodesWithDiff(acc.netNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.netEdges, action.payload.edges);
+
+        const positionsMap = getDefaultPositionsMap<NetInterface, NetNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.netNodes = allNodes;
+        acc.netEdges = allEdges;
+        acc.netNodePositions = positionsMap.nodes;
+        acc.netInterfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
       case 'SET_UNCONFIRMED_NODE_IDS_TO_FIND_COMMON': {
@@ -330,12 +360,12 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_NET_NODES_AND_EDGES': {
         const { nodes, edges } = action.payload;
-        const positionMap = getDefaultPositionsMap<GrahpNetNodeInterface, GraphNetNode>(
+        const positionMap = getDefaultPositionsMap<GrahpNetNodeInterface, NetNode>(
           { nodes, edges },
           (n) => n.name,
           () => 'MEDIUM',
         );
-        acc.netNodes = nodes;
+        acc.netNodes = nodes.map((n) => ({ ...n, change: 'NONE' }));
         acc.netEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
         acc.netNodePositions = positionMap.nodes;
         acc.netInterfaceGroupPositions = positionMap.interfaceGroups;
@@ -373,6 +403,9 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.selectedNode = null;
         acc.connectedNodeIds = [];
         acc.gmPathIds = [];
+        acc.unconfirmedSelectedGmPathNodeId = null;
+        acc.unconfirmedShortestPathNodeIds = [null, null];
+        acc.selectedShortestPathNodeIds = [null, null];
         acc.selectedGmPathNodeId = null;
         acc.unconfirmedSelectedGmPathNodeId = null;
         acc.selectedVersion = null;
@@ -451,6 +484,17 @@ export function stateReducer(state: State, action: StateAction): State {
         }
 
         acc.transform = finalTransform;
+        return acc;
+      }
+      case 'SET_SELECTED_NODE_USAGE': {
+        const selectedDeviceName = action.payload.deviceName;
+        const selectedDeviceUsage = action.payload.deviceUsage;
+
+        acc.selectedNodeLoad = {
+          deviceName: selectedDeviceName,
+          deviceUsage: selectedDeviceUsage,
+        };
+
         return acc;
       }
       default:

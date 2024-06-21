@@ -15,7 +15,7 @@ export type AuthContext = {
   emit: (errorType: ErrorType) => void;
 };
 
-export function createApiHelpers(baseURL: string, authContext?: AuthContext): ApiHelpers {
+export function createApiHelpers(baseURL: string, authContext: AuthContext): ApiHelpers {
   async function apiFetch(path: string, options: RequestInit): Promise<unknown> {
     const url = urlJoin(baseURL, path);
     const { headers, ...rest } = options;
@@ -27,9 +27,14 @@ export function createApiHelpers(baseURL: string, authContext?: AuthContext): Ap
       },
     });
 
-    // this is here for handling unistore nonvalid/expired transaction
-    if (authContext && response.status === 422) {
+    // https://frinxhelpdesk.atlassian.net/browse/FD-460
+    // error code 422 introduced to properly deal with expired/nonvalid transactions
+    if (response.status === 403 || response.status === 422) {
       return authContext.emit('FORBIDDEN');
+    }
+
+    if (response.status === 427) {
+      return authContext.emit('ACCESS_REJECTED');
     }
 
     if (!response.ok) {
@@ -79,10 +84,11 @@ export function createApiHelpers(baseURL: string, authContext?: AuthContext): Ap
 }
 
 export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
-  const { url } = config;
+  const { url, authContext } = config;
   return {
     clientOptions: {
       url,
     },
+    authContext,
   };
 }

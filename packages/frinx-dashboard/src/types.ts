@@ -11,4 +11,5 @@ export type GlobalConfig = Readonly<{
   uniresourceApiURL: string;
   uniflowApiDocsURL: string;
   commitHash: string;
+  isPerformanceMonitoringEnabled: boolean;
 }>;

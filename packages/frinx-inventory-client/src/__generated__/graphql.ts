@@ -44,6 +44,11 @@ export type Action_Input = {
   start_workflow?: InputMaybe<StartWorkflow_Input>;
 };
 
+export type ActivateStreamPayload = {
+  __typename?: 'ActivateStreamPayload';
+  stream: Stream;
+};
+
 export type AddBlueprintInput = {
   name: Scalars['String']['input'];
   template: Scalars['String']['input'];
@@ -95,6 +100,18 @@ export type AddSnapshotInput = {
 export type AddSnapshotPayload = {
   __typename?: 'AddSnapshotPayload';
   snapshot: Maybe<Snapshot>;
+};
+
+export type AddStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddStreamPayload = {
+  __typename?: 'AddStreamPayload';
+  stream: Stream;
 };
 
 export type AddZoneInput = {
@@ -544,6 +561,11 @@ export type DataStore = {
   snapshots: Array<Snapshot>;
 };
 
+export type DeactivateStreamPayload = {
+  __typename?: 'DeactivateStreamPayload';
+  stream: Stream;
+};
+
 /** Input parameters for deleting an existing allocation strategy */
 export type DeleteAllocationStrategyInput = {
   allocationStrategyId: Scalars['ID']['input'];
@@ -603,6 +625,11 @@ export type DeleteSnapshotPayload = {
   snapshot: Maybe<Snapshot>;
 };
 
+export type DeleteStreamPayload = {
+  __typename?: 'DeleteStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for deleting an existing tag */
 export type DeleteTagInput = {
   tagId: Scalars['ID']['input'];
@@ -639,6 +666,7 @@ export type Device = Node & {
   name: Scalars['String']['output'];
   port: Maybe<Scalars['Int']['output']>;
   serviceState: DeviceServiceState;
+  software: Maybe<Scalars['String']['output']>;
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
@@ -667,6 +695,11 @@ export type DeviceEdge = {
   node: Device;
 };
 
+export type DeviceListUsage = {
+  __typename?: 'DeviceListUsage';
+  devicesUsage: Array<DevicesUsage>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -686,6 +719,30 @@ export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
   | 'MANUAL';
+
+export type DeviceStatus = {
+  __typename?: 'DeviceStatus';
+  deviceName: Maybe<Scalars['String']['output']>;
+  status: Maybe<Scalars['String']['output']>;
+};
+
+export type DeviceUsage = {
+  __typename?: 'DeviceUsage';
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
+
+export type DevicesConnection = {
+  __typename?: 'DevicesConnection';
+  deviceStatuses: Maybe<Array<Maybe<DeviceStatus>>>;
+};
+
+export type DevicesUsage = {
+  __typename?: 'DevicesUsage';
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  deviceName: Scalars['String']['output'];
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
 
 export type DiffData = {
   __typename?: 'DiffData';
@@ -831,6 +888,10 @@ export type FilterEventHandlerInput = {
 
 export type FilterLabelsInput = {
   name: Scalars['String']['input'];
+};
+
+export type FilterStreamsInput = {
+  streamName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type FilterTaskDefinitionsInput = {
@@ -1031,6 +1092,12 @@ export type NetTopology = {
   nodes: Array<NetNode>;
 };
 
+export type NetTopologyVersionData = {
+  __typename?: 'NetTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
+  nodes: Array<NetNode>;
+};
+
 export type Node = {
   id: Scalars['ID']['output'];
 };
@@ -1101,14 +1168,14 @@ export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
   clockAccuracy: Maybe<Scalars['String']['output']>;
   clockClass: Maybe<Scalars['Int']['output']>;
-  clockId: Scalars['String']['output'];
-  clockType: Scalars['String']['output'];
+  clockId: Maybe<Scalars['String']['output']>;
+  clockType: Maybe<Scalars['String']['output']>;
   clockVariance: Maybe<Scalars['String']['output']>;
-  domain: Scalars['Int']['output'];
+  domain: Maybe<Scalars['Int']['output']>;
   globalPriority: Maybe<Scalars['Int']['output']>;
-  gmClockId: Scalars['String']['output'];
-  parentClockId: Scalars['String']['output'];
-  ptpProfile: Scalars['String']['output'];
+  gmClockId: Maybe<Scalars['String']['output']>;
+  parentClockId: Maybe<Scalars['String']['output']>;
+  ptpProfile: Maybe<Scalars['String']['output']>;
   timeRecoveryStatus: Maybe<Scalars['String']['output']>;
   userPriority: Maybe<Scalars['Int']['output']>;
 };
@@ -1388,6 +1455,10 @@ export type SortResourcePoolsInput = {
   field?: InputMaybe<ResourcePoolOrderField>;
 };
 
+export type SortStreamBy =
+  | 'createdAt'
+  | 'streamName';
+
 export type SortTasksBy = {
   _fake?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1431,6 +1502,36 @@ export type Status =
   | 'TERMINATED'
   | 'TIMED_OUT'
   | 'UNKNOWN';
+
+export type Stream = Node & {
+  __typename?: 'Stream';
+  blueprint: Maybe<Blueprint>;
+  createdAt: Scalars['String']['output'];
+  deviceName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  streamName: Scalars['String']['output'];
+  streamParameters: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type StreamConnection = {
+  __typename?: 'StreamConnection';
+  edges: Array<StreamEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type StreamEdge = {
+  __typename?: 'StreamEdge';
+  cursor: Scalars['String']['output'];
+  node: Stream;
+};
+
+export type StreamOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortStreamBy;
+};
 
 export type SubWorkflowParams = {
   __typename?: 'SubWorkflowParams';
@@ -1893,6 +1994,18 @@ export type UpdateScheduleInput = {
   workflowVersion?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamPayload = {
+  __typename?: 'UpdateStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for updating an existing tag */
 export type UpdateTagInput = {
   tagId: Scalars['ID']['input'];
@@ -1916,6 +2029,8 @@ export type Workflow = Node & {
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
   endTime: Maybe<Scalars['String']['output']>;
+  externalInputPayloadStoragePath: Maybe<Scalars['String']['output']>;
+  externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   failedReferenceTaskNames: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasSubworkflows: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -1988,7 +2103,7 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   __typename?: 'WorkflowDefinition';
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
-  description: Maybe<Scalars['String']['output']>;
+  description: Maybe<WorkflowDefinitionDescription>;
   hasSchedule: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   inputParameters: Maybe<Array<Scalars['String']['output']>>;
@@ -2013,6 +2128,17 @@ export type WorkflowDefinitionConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type WorkflowDefinitionDescription = {
+  __typename?: 'WorkflowDefinitionDescription';
+  description: Maybe<Scalars['String']['output']>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type WorkflowDefinitionDescriptionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 export type WorkflowDefinitionEdge = {
   __typename?: 'WorkflowDefinitionEdge';
   cursor: Scalars['String']['output'];
@@ -2023,7 +2149,7 @@ export type WorkflowDefinitionInput = {
   accessPolicy?: InputMaybe<Scalars['JSON']['input']>;
   createTime?: InputMaybe<Scalars['BigInt']['input']>;
   createdBy?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<WorkflowDefinitionDescriptionInput>;
   failureWorkflow?: InputMaybe<Scalars['String']['input']>;
   inputParameters?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   inputTemplate?: InputMaybe<Scalars['JSON']['input']>;
@@ -2104,6 +2230,7 @@ export type WorkflowTask = Node & {
   externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   inputData: Maybe<Scalars['String']['output']>;
+  logs: Maybe<Array<WorkflowTaskLog>>;
   outputData: Maybe<Scalars['String']['output']>;
   pollCount: Maybe<Scalars['Int']['output']>;
   reasonForIncompletion: Maybe<Scalars['String']['output']>;
@@ -2121,6 +2248,12 @@ export type WorkflowTask = Node & {
   taskType: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
   workflowType: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkflowTaskLog = {
+  __typename?: 'WorkflowTaskLog';
+  createdAt: Maybe<Scalars['String']['output']>;
+  message: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkflowTaskStatus =
@@ -2215,6 +2348,7 @@ export type ConductorMutation = {
   __typename?: 'conductorMutation';
   /** Add a new event handler. */
   addEventHandler: Maybe<Scalars['JSON']['output']>;
+  cloneWorkflowDefinition: Scalars['Boolean']['output'];
   /** Create a new workflow definition */
   create: Maybe<Scalars['JSON']['output']>;
   createEventHandler: CreateEventHandlerPayload;
@@ -2227,6 +2361,7 @@ export type ConductorMutation = {
   deleteWorkflowDefinition: DeleteWorkflowDefinitionPayload;
   editEventHandler: EditEventHandlerPayload;
   executeWorkflowByName: Maybe<Scalars['String']['output']>;
+  exportWorkflowDefinition: Maybe<Scalars['JSON']['output']>;
   /** Lists workflows for the given correlation id list */
   getWorkflows: Maybe<Scalars['JSON']['output']>;
   /** Log Task Execution Details */
@@ -2306,6 +2441,13 @@ export type ConductorMutationAddEventHandlerArgs = {
 };
 
 
+export type ConductorMutationCloneWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  workflowToBeCloned: WorkflowDefinitionInput;
+};
+
+
 export type ConductorMutationCreateArgs = {
   input?: InputMaybe<WorkflowDef_Input>;
 };
@@ -2349,6 +2491,12 @@ export type ConductorMutationEditEventHandlerArgs = {
 
 export type ConductorMutationExecuteWorkflowByNameArgs = {
   input: ExecuteWorkflowByNameInput;
+};
+
+
+export type ConductorMutationExportWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -2414,6 +2562,7 @@ export type ConductorMutationRerunArgs = {
 
 export type ConductorMutationRerunExecutedWorkflowArgs = {
   id: Scalars['String']['input'];
+  input?: InputMaybe<RerunWorkflowRequest_Input>;
 };
 
 
@@ -2580,6 +2729,7 @@ export type ConductorQuery = {
   doCheck: Maybe<HealthCheckStatus>;
   eventHandlers: EventHandlerConnection;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
+  externalStorage: Maybe<Scalars['JSON']['output']>;
   /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
   /** Retrieves all workflow definition along with blueprint */
@@ -2682,6 +2832,11 @@ export type ConductorQueryExecutedWorkflowsArgs = {
   orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+};
+
+
+export type ConductorQueryExternalStorageArgs = {
+  path: Scalars['String']['input'];
 };
 
 
@@ -2887,10 +3042,12 @@ export type ConductorQueryWorkflowInstanceDetailArgs = {
 
 export type DeviceInventoryMutation = {
   __typename?: 'deviceInventoryMutation';
+  activateStream: ActivateStreamPayload;
   addBlueprint: AddBlueprintPayload;
   addDevice: AddDevicePayload;
   addLocation: AddLocationPayload;
   addSnapshot: Maybe<AddSnapshotPayload>;
+  addStream: AddStreamPayload;
   addZone: AddZonePayload;
   applySnapshot: ApplySnapshotPayload;
   bulkInstallDevices: BulkInstallDevicePayload;
@@ -2899,12 +3056,15 @@ export type DeviceInventoryMutation = {
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
   createTransaction: CreateTransactionPayload;
+  deactivateStream: DeactivateStreamPayload;
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
+  reconnectKafka: Maybe<IsOkResponse>;
   resetConfig: ResetConfigPayload;
   revertChanges: RevertChangesPayload;
   syncFromNetwork: SyncFromNetworkPayload;
@@ -2913,6 +3073,12 @@ export type DeviceInventoryMutation = {
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateStream: UpdateStreamPayload;
+};
+
+
+export type DeviceInventoryMutationActivateStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -2934,6 +3100,11 @@ export type DeviceInventoryMutationAddLocationArgs = {
 export type DeviceInventoryMutationAddSnapshotArgs = {
   input: AddSnapshotInput;
   transactionId: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryMutationAddStreamArgs = {
+  input: AddStreamInput;
 };
 
 
@@ -2980,6 +3151,11 @@ export type DeviceInventoryMutationCreateTransactionArgs = {
 };
 
 
+export type DeviceInventoryMutationDeactivateStreamArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationDeleteBlueprintArgs = {
   id: Scalars['String']['input'];
 };
@@ -2997,6 +3173,11 @@ export type DeviceInventoryMutationDeleteLabelArgs = {
 
 export type DeviceInventoryMutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
+};
+
+
+export type DeviceInventoryMutationDeleteStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3055,6 +3236,12 @@ export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
 };
 
+
+export type DeviceInventoryMutationUpdateStreamArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
+};
+
 export type DeviceInventoryQuery = {
   __typename?: 'deviceInventoryQuery';
   blueprints: BlueprintConnection;
@@ -3062,9 +3249,11 @@ export type DeviceInventoryQuery = {
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
   devices: DeviceConnection;
+  kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
+  netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
   phyTopologyVersionData: PhyTopologyVersionData;
   ptpDiffSynce: PtpDiffSynce;
@@ -3072,6 +3261,7 @@ export type DeviceInventoryQuery = {
   ptpTopology: Maybe<PtpTopology>;
   ptpTopologyVersionData: PtpTopologyVersionData;
   shortestPath: Array<NetRoutingPathNode>;
+  streams: StreamConnection;
   syncePathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   synceTopology: Maybe<SynceTopology>;
   synceTopologyVersionData: SynceTopologyVersionData;
@@ -3139,6 +3329,11 @@ export type DeviceInventoryQueryLocationsArgs = {
 };
 
 
+export type DeviceInventoryQueryNetTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryQueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3162,6 +3357,16 @@ export type DeviceInventoryQueryPtpTopologyVersionDataArgs = {
 export type DeviceInventoryQueryShortestPathArgs = {
   from: Scalars['String']['input'];
   to: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQueryStreamsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterStreamsInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<StreamOrderByInput>;
 };
 
 
@@ -3195,7 +3400,28 @@ export type DeviceInventoryQueryZonesArgs = {
 
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
+  deviceUsage: Maybe<DeviceUsage>;
+  devicesConnection: Maybe<DevicesConnection>;
+  devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
+};
+
+
+export type DeviceInventorySubscriptionDeviceUsageArgs = {
+  deviceName: Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesConnectionArgs = {
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+  targetDevices: Array<Scalars['String']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesUsageArgs = {
+  deviceNames: Array<Scalars['String']['input']>;
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -3705,6 +3931,18 @@ export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LabelsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } };
 
+export type AddStreamMutationVariables = Exact<{
+  input: AddStreamInput;
+}>;
+
+
+export type AddStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', addStream: { __typename?: 'AddStreamPayload', stream: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } } } };
+
+export type DevicesAndBlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DevicesAndBlueprintsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } }> }, devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string } }> }, blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } } };
+
 export type BlueprintsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3722,7 +3960,7 @@ export type DeviceNameQueryVariables = Exact<{
 }>;
 
 
-export type DeviceNameQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
+export type DeviceNameQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Stream' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
 
 export type DataStoreQueryVariables = Exact<{
   deviceId: Scalars['String']['input'];
@@ -3822,7 +4060,7 @@ export type DevicesQueryVariables = Exact<{
 }>;
 
 
-export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, version: string | null, model: string | null, software: string | null, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type InstallDeviceMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3864,6 +4102,32 @@ export type ExecuteModalWorkflowByNameMutationVariables = Exact<{
 
 export type ExecuteModalWorkflowByNameMutation = { __typename?: 'Mutation', conductor: { __typename?: 'conductorMutation', executeWorkflowByName: string | null } };
 
+export type KafkaHealthCheckQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type KafkaHealthCheckQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', kafkaHealthCheck: { __typename?: 'IsOkResponse', isOk: boolean } | null } };
+
+export type KafkaReconnectMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type KafkaReconnectMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', reconnectKafka: { __typename?: 'IsOkResponse', isOk: boolean } | null } };
+
+export type DevicesUsageSubscriptionVariables = Exact<{
+  deviceNames: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type DevicesUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesUsage: { __typename?: 'DeviceListUsage', devicesUsage: Array<{ __typename?: 'DevicesUsage', cpuLoad: number | null, deviceName: string, memoryLoad: number | null }> } | null } };
+
+export type DevicesConnectionSubscriptionVariables = Exact<{
+  targetDevices: Array<Scalars['String']['input']> | Scalars['String']['input'];
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type DevicesConnectionSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesConnection: { __typename?: 'DevicesConnection', deviceStatuses: Array<{ __typename?: 'DeviceStatus', deviceName: string | null, status: string | null } | null> | null } | null } };
+
 export type ModalWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3874,7 +4138,7 @@ export type BlueprintQueryVariables = Exact<{
 }>;
 
 
-export type BlueprintQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', blueprint: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', name: string, template: string, id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
+export type BlueprintQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', blueprint: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', name: string, template: string, id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
 
 export type UpdateBlueprintMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3889,7 +4153,7 @@ export type DeviceQueryVariables = Exact<{
 }>;
 
 
-export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', device: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', name: string, serviceState: DeviceServiceState, model: string | null, vendor: string | null, address: string | null, deviceSize: DeviceSize, mountParameters: string | null, id: string, zone: { __typename?: 'Zone', id: string, name: string }, labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
+export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', device: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', name: string, serviceState: DeviceServiceState, model: string | null, vendor: string | null, address: string | null, deviceSize: DeviceSize, mountParameters: string | null, id: string, zone: { __typename?: 'Zone', id: string, name: string }, labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
 
 export type UpdateDeviceMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -3898,6 +4162,54 @@ export type UpdateDeviceMutationVariables = Exact<{
 
 
 export type UpdateDeviceMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateDevice: { __typename?: 'UpdateDevicePayload', device: { __typename?: 'Device', id: string, name: string, model: string | null, vendor: string | null, address: string | null, isInstalled: boolean, zone: { __typename?: 'Zone', id: string, name: string } } | null } } };
+
+export type StreamQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type StreamQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', stream: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', streamName: string, deviceName: string, streamParameters: string | null, id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null, streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } }> }, devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string } }> }, blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } } };
+
+export type UpdateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
+}>;
+
+
+export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
+
+export type StreamsQueryVariables = Exact<{
+  streamName?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<StreamOrderByInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+
+export type ActivateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ActivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', activateStream: { __typename?: 'ActivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
+
+export type DeactivateStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeactivateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deactivateStream: { __typename?: 'DeactivateStreamPayload', stream: { __typename?: 'Stream', id: string, createdAt: string, isActive: boolean } } } };
+
+export type DeleteStreamMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteStream: { __typename?: 'DeleteStreamPayload', stream: { __typename?: 'Stream', id: string } | null } } };
 
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 

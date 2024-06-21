@@ -3,9 +3,10 @@ import { AuthContext } from './api-helpers';
 
 export type ApiConfig = {
   url: string;
-  authContext?: AuthContext;
+  authContext: AuthContext;
 };
 
 export type GraphQLApiClient = {
   clientOptions: Omit<ClientOptions, 'exchanges'>;
+  authContext: AuthContext;
 };

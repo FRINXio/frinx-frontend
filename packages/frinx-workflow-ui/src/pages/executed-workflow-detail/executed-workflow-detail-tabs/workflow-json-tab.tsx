@@ -2,11 +2,11 @@ import React, { FC } from 'react';
 import { Box, Stack, IconButton, Button, Text, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
 import { Editor, omitDeep } from '@frinx/shared';
-import { ExecutedWorkflowDetailQuery } from '../../../__generated__/graphql';
+import { ControlExecutedWorkflowSubscription } from '../../../__generated__/graphql';
 
 type Props = {
   isEscaped: boolean;
-  result: NonNullable<ExecutedWorkflowDetailQuery['conductor']['node']>;
+  result: NonNullable<ControlExecutedWorkflowSubscription['conductor']['controlExecutedWorkflow']>;
   copyToClipBoard: (value: Record<string, unknown>) => void;
   onEscapeChange: (isEscaped: boolean) => void;
 };

@@ -45,7 +45,7 @@ const GammaApp: VoidFunctionComponent = () => {
       onTransactionRefresh={() => {
         setHasTransactionError(false);
       }}
-      deviceInventoryClient={InventoryApi.create({ url: inventoryApiURL }).client}
+      deviceInventoryClient={InventoryApi.create({ url: inventoryApiURL, authContext }).client}
       wsUrl={wsURL}
     >
       <App />

@@ -97,6 +97,16 @@ export type AddSnapshotPayload = {
   snapshot: Maybe<Snapshot>;
 };
 
+export type AddStreamInput = {
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+};
+
+export type AddStreamPayload = {
+  __typename?: 'AddStreamPayload';
+  stream: Stream;
+};
+
 export type AddZoneInput = {
   name: Scalars['String']['input'];
 };
@@ -211,7 +221,6 @@ export type ApplySnapshotInput = {
 export type ApplySnapshotPayload = {
   __typename?: 'ApplySnapshotPayload';
   isOk: Scalars['Boolean']['output'];
-  output: Scalars['String']['output'];
 };
 
 export type BaseGraphNode = {
@@ -643,6 +652,7 @@ export type Device = Node & {
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
+  version: Maybe<Scalars['String']['output']>;
   zone: Zone;
 };
 
@@ -667,6 +677,11 @@ export type DeviceEdge = {
   node: Device;
 };
 
+export type DeviceListUsage = {
+  __typename?: 'DeviceListUsage';
+  devicesUsage: Array<Maybe<DevicesUsage>>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -686,6 +701,19 @@ export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
   | 'MANUAL';
+
+export type DeviceUsage = {
+  __typename?: 'DeviceUsage';
+  cpuLoad: Scalars['Float']['output'];
+  memoryLoad: Scalars['Float']['output'];
+};
+
+export type DevicesUsage = {
+  __typename?: 'DevicesUsage';
+  cpuLoad: Scalars['Float']['output'];
+  deviceName: Scalars['String']['output'];
+  memoryLoad: Scalars['Float']['output'];
+};
 
 export type DiffData = {
   __typename?: 'DiffData';
@@ -833,6 +861,10 @@ export type FilterLabelsInput = {
   name: Scalars['String']['input'];
 };
 
+export type FilterStreamsInput = {
+  streamName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type FilterTaskDefinitionsInput = {
   keyword?: InputMaybe<Scalars['String']['input']>;
 };
@@ -882,17 +914,9 @@ export type GraphNodeCoordinatesInput = {
 
 export type GraphNodeInterface = {
   __typename?: 'GraphNodeInterface';
-  details: Maybe<GraphNodeInterfaceDetails>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   status: GraphEdgeStatus;
-};
-
-export type GraphNodeInterfaceDetails = {
-  __typename?: 'GraphNodeInterfaceDetails';
-  adminOperStatus: Maybe<Scalars['String']['output']>;
-  ptpStatus: Maybe<Scalars['String']['output']>;
-  ptsfUnusable: Maybe<Scalars['String']['output']>;
 };
 
 export type GraphVersionEdge = {
@@ -1039,6 +1063,12 @@ export type NetTopology = {
   nodes: Array<NetNode>;
 };
 
+export type NetTopologyVersionData = {
+  __typename?: 'NetTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
+  nodes: Array<NetNode>;
+};
+
 export type Node = {
   id: Scalars['ID']['output'];
 };
@@ -1064,6 +1094,12 @@ export type PageInfo = {
 export type PaginationArgs = {
   size: Scalars['Int']['input'];
   start: Scalars['Int']['input'];
+};
+
+export type PhyTopologyVersionData = {
+  __typename?: 'PhyTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
+  nodes: Array<GraphVersionNode>;
 };
 
 export type PollData = {
@@ -1134,7 +1170,7 @@ export type PtpGraphNode = {
   __typename?: 'PtpGraphNode';
   coordinates: GraphNodeCoordinates;
   id: Scalars['ID']['output'];
-  interfaces: Array<GraphNodeInterface>;
+  interfaces: Array<PtpGraphNodeInterface>;
   labels: Maybe<Array<Scalars['String']['output']>>;
   name: Scalars['String']['output'];
   nodeId: Scalars['String']['output'];
@@ -1142,9 +1178,30 @@ export type PtpGraphNode = {
   status: GraphEdgeStatus;
 };
 
+export type PtpGraphNodeInterface = {
+  __typename?: 'PtpGraphNodeInterface';
+  details: Maybe<PtpGraphNodeInterfaceDetails>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type PtpGraphNodeInterfaceDetails = {
+  __typename?: 'PtpGraphNodeInterfaceDetails';
+  adminOperStatus: Scalars['String']['output'];
+  ptpStatus: Scalars['String']['output'];
+  ptsfUnusable: Scalars['String']['output'];
+};
+
 export type PtpTopology = {
   __typename?: 'PtpTopology';
   edges: Array<GraphEdge>;
+  nodes: Array<PtpGraphNode>;
+};
+
+export type PtpTopologyVersionData = {
+  __typename?: 'PtpTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
   nodes: Array<PtpGraphNode>;
 };
 
@@ -1369,6 +1426,10 @@ export type SortResourcePoolsInput = {
   field?: InputMaybe<ResourcePoolOrderField>;
 };
 
+export type SortStreamBy =
+  | 'createdAt'
+  | 'streamName';
+
 export type SortTasksBy = {
   _fake?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1412,6 +1473,33 @@ export type Status =
   | 'TERMINATED'
   | 'TIMED_OUT'
   | 'UNKNOWN';
+
+export type Stream = Node & {
+  __typename?: 'Stream';
+  createdAt: Scalars['String']['output'];
+  deviceName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  streamName: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type StreamConnection = {
+  __typename?: 'StreamConnection';
+  edges: Array<StreamEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type StreamEdge = {
+  __typename?: 'StreamEdge';
+  cursor: Scalars['String']['output'];
+  node: Stream;
+};
+
+export type StreamOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortStreamBy;
+};
 
 export type SubWorkflowParams = {
   __typename?: 'SubWorkflowParams';
@@ -1483,6 +1571,12 @@ export type SynceGraphNodeInterfaceDetails = {
 export type SynceTopology = {
   __typename?: 'SynceTopology';
   edges: Array<GraphEdge>;
+  nodes: Array<SynceGraphNode>;
+};
+
+export type SynceTopologyVersionData = {
+  __typename?: 'SynceTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
   nodes: Array<SynceGraphNode>;
 };
 
@@ -1751,12 +1845,6 @@ export type TopologyLayer =
   | 'EthTopology'
   | 'PhysicalTopology'
   | 'PtpTopology';
-
-export type TopologyVersionData = {
-  __typename?: 'TopologyVersionData';
-  edges: Array<GraphVersionEdge>;
-  nodes: Array<GraphVersionNode>;
-};
 
 export type Transaction = {
   __typename?: 'Transaction';
@@ -2085,6 +2173,7 @@ export type WorkflowTask = Node & {
   externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   inputData: Maybe<Scalars['String']['output']>;
+  logs: Maybe<Array<WorkflowTaskLog>>;
   outputData: Maybe<Scalars['String']['output']>;
   pollCount: Maybe<Scalars['Int']['output']>;
   reasonForIncompletion: Maybe<Scalars['String']['output']>;
@@ -2102,6 +2191,12 @@ export type WorkflowTask = Node & {
   taskType: Maybe<Scalars['String']['output']>;
   updatedAt: Maybe<Scalars['String']['output']>;
   workflowType: Maybe<Scalars['String']['output']>;
+};
+
+export type WorkflowTaskLog = {
+  __typename?: 'WorkflowTaskLog';
+  createdAt: Maybe<Scalars['String']['output']>;
+  message: Maybe<Scalars['String']['output']>;
 };
 
 export type WorkflowTaskStatus =
@@ -2208,6 +2303,7 @@ export type ConductorMutation = {
   deleteWorkflowDefinition: DeleteWorkflowDefinitionPayload;
   editEventHandler: EditEventHandlerPayload;
   executeWorkflowByName: Maybe<Scalars['String']['output']>;
+  exportWorkflowDefinition: Maybe<Scalars['JSON']['output']>;
   /** Lists workflows for the given correlation id list */
   getWorkflows: Maybe<Scalars['JSON']['output']>;
   /** Log Task Execution Details */
@@ -2333,6 +2429,12 @@ export type ConductorMutationExecuteWorkflowByNameArgs = {
 };
 
 
+export type ConductorMutationExportWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type ConductorMutationGetWorkflowsArgs = {
   includeClosed?: InputMaybe<Scalars['Boolean']['input']>;
   includeTasks?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2395,6 +2497,7 @@ export type ConductorMutationRerunArgs = {
 
 export type ConductorMutationRerunExecutedWorkflowArgs = {
   id: Scalars['String']['input'];
+  input?: InputMaybe<RerunWorkflowRequest_Input>;
 };
 
 
@@ -2872,6 +2975,7 @@ export type DeviceInventoryMutation = {
   addDevice: AddDevicePayload;
   addLocation: AddLocationPayload;
   addSnapshot: Maybe<AddSnapshotPayload>;
+  addStream: AddStreamPayload;
   addZone: AddZonePayload;
   applySnapshot: ApplySnapshotPayload;
   bulkInstallDevices: BulkInstallDevicePayload;
@@ -2886,6 +2990,7 @@ export type DeviceInventoryMutation = {
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
+  reconnectKafka: Maybe<IsOkResponse>;
   resetConfig: ResetConfigPayload;
   revertChanges: RevertChangesPayload;
   syncFromNetwork: SyncFromNetworkPayload;
@@ -2915,6 +3020,11 @@ export type DeviceInventoryMutationAddLocationArgs = {
 export type DeviceInventoryMutationAddSnapshotArgs = {
   input: AddSnapshotInput;
   transactionId: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryMutationAddStreamArgs = {
+  input: AddStreamInput;
 };
 
 
@@ -3043,19 +3153,22 @@ export type DeviceInventoryQuery = {
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
   devices: DeviceConnection;
+  kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
   netTopology: Maybe<NetTopology>;
+  netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
-  phyTopologyVersionData: TopologyVersionData;
+  phyTopologyVersionData: PhyTopologyVersionData;
   ptpDiffSynce: PtpDiffSynce;
   ptpPathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   ptpTopology: Maybe<PtpTopology>;
-  ptpTopologyVersionData: TopologyVersionData;
+  ptpTopologyVersionData: PtpTopologyVersionData;
   shortestPath: Array<NetRoutingPathNode>;
+  streams: StreamConnection;
   syncePathToGrandMaster: Maybe<Array<Scalars['String']['output']>>;
   synceTopology: Maybe<SynceTopology>;
-  synceTopologyVersionData: TopologyVersionData;
+  synceTopologyVersionData: SynceTopologyVersionData;
   topology: Maybe<Topology>;
   topologyCommonNodes: Maybe<TopologyCommonNodes>;
   topologyVersions: Maybe<Array<Scalars['String']['output']>>;
@@ -3120,6 +3233,11 @@ export type DeviceInventoryQueryLocationsArgs = {
 };
 
 
+export type DeviceInventoryQueryNetTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryQueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3143,6 +3261,16 @@ export type DeviceInventoryQueryPtpTopologyVersionDataArgs = {
 export type DeviceInventoryQueryShortestPathArgs = {
   from: Scalars['String']['input'];
   to: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQueryStreamsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterStreamsInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<StreamOrderByInput>;
 };
 
 
@@ -3176,7 +3304,21 @@ export type DeviceInventoryQueryZonesArgs = {
 
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
+  deviceUsage: Maybe<DeviceUsage>;
+  devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
+};
+
+
+export type DeviceInventorySubscriptionDeviceUsageArgs = {
+  deviceName: Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesUsageArgs = {
+  deviceNames: Array<Scalars['String']['input']>;
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -3648,6 +3790,14 @@ export type VersionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type VersionsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyVersions: Array<string> | null } };
 
+export type SelectedNodeUsageSubscriptionVariables = Exact<{
+  deviceName: Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type SelectedNodeUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', deviceUsage: { __typename?: 'DeviceUsage', cpuLoad: number, memoryLoad: number } | null } };
+
 export type UpdatePositionMutationVariables = Exact<{
   input: UpdateGraphNodeCoordinatesInput;
 }>;
@@ -3710,36 +3860,43 @@ export type TopologyQueryVariables = Exact<{
 
 export type TopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topology: { __typename?: 'Topology', nodes: Array<{ __typename?: 'GraphNode', id: string, name: string, deviceType: string | null, softwareVersion: string | null, device: { __typename?: 'Device', id: string, name: string, isInstalled: boolean, createdAt: string, serviceState: DeviceServiceState, deviceSize: DeviceSize } | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
-export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
-
 export type TopologyVersionDataQueryVariables = Exact<{
   version: Scalars['String']['input'];
 }>;
 
 
-export type TopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', phyTopologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+export type TopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', phyTopologyVersionData: { __typename?: 'PhyTopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
 
 export type PtpTopologyVersionDataQueryVariables = Exact<{
   version: Scalars['String']['input'];
 }>;
 
 
-export type PtpTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+export type PtpTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopologyVersionData: { __typename?: 'PtpTopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'PtpGraphNode', id: string, name: string, interfaces: Array<{ __typename?: 'PtpGraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
 
 export type SynceTopologyVersionDataQueryVariables = Exact<{
   version: Scalars['String']['input'];
 }>;
 
 
-export type SynceTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopologyVersionData: { __typename?: 'TopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'GraphVersionNode', id: string, name: string, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+export type SynceTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopologyVersionData: { __typename?: 'SynceTopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'SynceGraphNode', id: string, name: string, interfaces: Array<{ __typename?: 'SynceGraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+
+export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+
+export type NetTopologyVersionDataQueryVariables = Exact<{
+  version: Scalars['String']['input'];
+}>;
+
+
+export type NetTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopologyVersionData: { __typename?: 'NetTopologyVersionData', nodes: Array<{ __typename?: 'NetNode', id: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } } };
 
 export type PtpTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'GraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'GraphNodeInterfaceDetails', ptpStatus: string | null, adminOperStatus: string | null, ptsfUnusable: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string, domain: number, ptpProfile: string, clockId: string, parentClockId: string, gmClockId: string, clockClass: number | null, clockAccuracy: string | null, clockVariance: string | null, timeRecoveryStatus: string | null, globalPriority: number | null, userPriority: number | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'PtpGraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'PtpGraphNodeInterfaceDetails', ptpStatus: string, adminOperStatus: string, ptsfUnusable: string } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string, domain: number, ptpProfile: string, clockId: string, parentClockId: string, gmClockId: string, clockClass: number | null, clockAccuracy: string | null, clockVariance: string | null, timeRecoveryStatus: string | null, globalPriority: number | null, userPriority: number | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 

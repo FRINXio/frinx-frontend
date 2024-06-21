@@ -1,5 +1,6 @@
 import { Button, chakra, Flex, FormControl, FormLabel, HStack, Input, Select } from '@chakra-ui/react';
 import { useFormik } from 'formik';
+import moment from 'moment';
 import React, { FC } from 'react';
 import WorkflowStatusLabel from '../../components/workflow-status-label/workflow-status-label';
 import { WorkflowStatus } from '../../__generated__/graphql';
@@ -93,14 +94,20 @@ const ExecutedWorkflowsFilters: FC<Props> = ({ onSearchBoxSubmit, initialSearchV
           <Input
             background="white"
             name="from"
-            value={values.from ?? ''}
+            value={values.from ? moment(new Date(values.from)).format('yyyy-MM-DDTHH:mm') : ''}
             onChange={handleChange}
             type="datetime-local"
           />
         </FormControl>
         <FormControl>
           <FormLabel>Start Time (To)</FormLabel>
-          <Input background="white" name="to" value={values.to ?? ''} onChange={handleChange} type="datetime-local" />
+          <Input
+            background="white"
+            name="to"
+            value={values.to ? moment(new Date(values.to)).format('yyyy-MM-DDTHH:mm') : ''}
+            onChange={handleChange}
+            type="datetime-local"
+          />
         </FormControl>
         <HStack justifyContent="flex-end" alignSelf="flex-end">
           <Button

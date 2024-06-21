@@ -2,6 +2,7 @@ import { Client, gql } from 'urql';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
 import {
   BackupGraphNode,
+  BackupNetGraphNode,
   GraphEdge,
   GraphNetNode,
   GraphNode,
@@ -14,13 +15,12 @@ import { CustomDispatch } from './use-thunk-reducer';
 import {
   NetTopologyQuery,
   NetTopologyQueryVariables,
-  // PtpGraphNode,
+  NetTopologyVersionDataQuery,
+  NetTopologyVersionDataQueryVariables,
   PtpTopologyQuery,
   PtpTopologyQueryVariables,
-  // SynceGraphNode,
   PtpTopologyVersionDataQuery,
   PtpTopologyVersionDataQueryVariables,
-  // SynceGraphNode,
   SynceTopologyQuery,
   SynceTopologyQueryVariables,
   SynceTopologyVersionDataQuery,
@@ -56,9 +56,19 @@ export type BackupNodesEdgesPayload = {
   edges: GraphEdge[];
 };
 
+export type BackupNetNodesEdgesPayload = {
+  nodes: BackupNetGraphNode[];
+  edges: GraphEdge[];
+};
+
 export type LabelItem = {
   label: string;
   value: string;
+};
+
+export type SetDeviceUsagePayload = {
+  cpuLoad: number;
+  memoryLoad: number;
 };
 
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
@@ -110,6 +120,10 @@ export type StateAction =
   | {
       type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES';
       payload: BackupNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_NET_BACKUP_NODES_AND_EDGES';
+      payload: BackupNetNodesEdgesPayload;
     }
   | {
       type: 'SET_MODE';
@@ -201,7 +215,14 @@ export type StateAction =
       isVisible: boolean;
     }
   | { type: 'PAN_TOPOLOGY'; panDelta: Position }
-  | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number };
+  | { type: 'ZOOM_TOPOLOGY'; zoomDelta: number }
+  | {
+      type: 'SET_SELECTED_NODE_USAGE';
+      payload: {
+        deviceName: string;
+        deviceUsage?: SetDeviceUsagePayload | null;
+      };
+    };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -237,47 +258,6 @@ const TOPOLOGY_QUERY = gql`
         }
         edges {
           id
-          source {
-            nodeId
-            interface
-          }
-          target {
-            nodeId
-            interface
-          }
-        }
-      }
-    }
-  }
-`;
-const NET_TOPOLOGY_QUERY = gql`
-  query NetTopology {
-    deviceInventory {
-      netTopology {
-        nodes {
-          id
-          nodeId
-          name
-          interfaces {
-            id
-            name
-          }
-          networks {
-            id
-            subnet
-            coordinates {
-              x
-              y
-            }
-          }
-          coordinates {
-            x
-            y
-          }
-        }
-        edges {
-          id
-          weight
           source {
             nodeId
             interface
@@ -384,6 +364,88 @@ const SYNCE_TOPOLOGY_VERSION_DATA_QUERY = gql`
           coordinates {
             x
             y
+          }
+        }
+      }
+    }
+  }
+`;
+
+const NET_TOPOLOGY_QUERY = gql`
+  query NetTopology {
+    deviceInventory {
+      netTopology {
+        nodes {
+          id
+          nodeId
+          name
+          interfaces {
+            id
+            name
+          }
+          networks {
+            id
+            subnet
+            coordinates {
+              x
+              y
+            }
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+        edges {
+          id
+          weight
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+      }
+    }
+  }
+`;
+
+const NET_TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query NetTopologyVersionData($version: String!) {
+    deviceInventory {
+      netTopologyVersionData(version: $version) {
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            name
+          }
+          networks {
+            id
+            subnet
+            coordinates {
+              x
+              y
+            }
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
           }
         }
       }
@@ -684,6 +746,13 @@ export function setBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateA
   };
 }
 
+export function setNetBackupNodesAndEdges(payload: BackupNetNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_NET_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
 export function setPtpBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
   return {
     type: 'SET_PTP_BACKUP_NODES_AND_EDGES',
@@ -779,6 +848,37 @@ export function getSynceBackupNodesAndEdges(
             nodes: data.data?.deviceInventory.synceTopologyVersionData.nodes ?? [],
             edges:
               data.data?.deviceInventory.synceTopologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
+          }),
+        );
+      });
+  };
+}
+
+export function getNetBackupNodesAndEdges(
+  client: Client,
+  version: string,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<NetTopologyVersionDataQuery, NetTopologyVersionDataQueryVariables>(
+        NET_TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setNetBackupNodesAndEdges({
+            nodes: data.data?.deviceInventory.netTopologyVersionData.nodes ?? [],
+            edges:
+              data.data?.deviceInventory.netTopologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],
@@ -929,5 +1029,15 @@ export function zoomTopology(zoomDelta: number): StateAction {
   return {
     type: 'ZOOM_TOPOLOGY',
     zoomDelta,
+  };
+}
+
+export function setSelectedNodeLoad(deviceName: string, payload?: SetDeviceUsagePayload | null): StateAction {
+  return {
+    type: 'SET_SELECTED_NODE_USAGE',
+    payload: {
+      deviceName,
+      deviceUsage: payload,
+    },
   };
 }

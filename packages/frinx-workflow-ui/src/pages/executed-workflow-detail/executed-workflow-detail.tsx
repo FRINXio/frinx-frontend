@@ -66,7 +66,6 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
           name
           ownerEmail
           restartable
-          tasksJson
           hasSchedule
           description {
             description
@@ -213,6 +212,9 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const [tabIndex, setTabIndex] = useState(0);
   const toast = useToast();
   const navigate = useNavigate();
+
+  console.log('test');
+
   const [{ data: executedWorkflowDetail, error: executedWorkflowDetailError, fetching }, reexecuteSubscription] =
     useSubscription<
       ControlExecutedWorkflowSubscription,
@@ -236,6 +238,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
   const [, rerunWorkflow] = useMutation<RerunEditedWorkflowMutation, RerunEditedWorkflowMutationVariables>(
     RERUN_WORKFLOW_MUTATION,
   );
+  console.log('test2');
 
   if (workflowId == null) {
     return <Text>Workflow id is not defined</Text>;
@@ -447,6 +450,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
       });
   };
 
+  console.log('test3');
+
   // TODO: FIXME
   // some propery typing or helper function
   const clientWorkflow: ClientWorkflow | null =
@@ -458,6 +463,8 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
           timeoutSeconds: executedWorkflow.workflowDefinition.timeoutSeconds ?? 0,
         }
       : null;
+
+  console.log('test4');
 
   return (
     <Container maxWidth="container.xl">

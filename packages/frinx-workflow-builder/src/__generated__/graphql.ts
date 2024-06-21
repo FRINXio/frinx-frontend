@@ -103,8 +103,10 @@ export type AddSnapshotPayload = {
 };
 
 export type AddStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deviceName: Scalars['String']['input'];
   streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddStreamPayload = {
@@ -623,6 +625,11 @@ export type DeleteSnapshotPayload = {
   snapshot: Maybe<Snapshot>;
 };
 
+export type DeleteStreamPayload = {
+  __typename?: 'DeleteStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for deleting an existing tag */
 export type DeleteTagInput = {
   tagId: Scalars['ID']['input'];
@@ -659,6 +666,7 @@ export type Device = Node & {
   name: Scalars['String']['output'];
   port: Maybe<Scalars['Int']['output']>;
   serviceState: DeviceServiceState;
+  software: Maybe<Scalars['String']['output']>;
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
@@ -687,6 +695,11 @@ export type DeviceEdge = {
   node: Device;
 };
 
+export type DeviceListUsage = {
+  __typename?: 'DeviceListUsage';
+  devicesUsage: Array<DevicesUsage>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -706,6 +719,30 @@ export type DeviceSource =
   | 'DISCOVERED'
   | 'IMPORTED'
   | 'MANUAL';
+
+export type DeviceStatus = {
+  __typename?: 'DeviceStatus';
+  deviceName: Maybe<Scalars['String']['output']>;
+  status: Maybe<Scalars['String']['output']>;
+};
+
+export type DeviceUsage = {
+  __typename?: 'DeviceUsage';
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
+
+export type DevicesConnection = {
+  __typename?: 'DevicesConnection';
+  deviceStatuses: Maybe<Array<Maybe<DeviceStatus>>>;
+};
+
+export type DevicesUsage = {
+  __typename?: 'DevicesUsage';
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  deviceName: Scalars['String']['output'];
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
 
 export type DiffData = {
   __typename?: 'DiffData';
@@ -1131,14 +1168,14 @@ export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
   clockAccuracy: Maybe<Scalars['String']['output']>;
   clockClass: Maybe<Scalars['Int']['output']>;
-  clockId: Scalars['String']['output'];
-  clockType: Scalars['String']['output'];
+  clockId: Maybe<Scalars['String']['output']>;
+  clockType: Maybe<Scalars['String']['output']>;
   clockVariance: Maybe<Scalars['String']['output']>;
-  domain: Scalars['Int']['output'];
+  domain: Maybe<Scalars['Int']['output']>;
   globalPriority: Maybe<Scalars['Int']['output']>;
-  gmClockId: Scalars['String']['output'];
-  parentClockId: Scalars['String']['output'];
-  ptpProfile: Scalars['String']['output'];
+  gmClockId: Maybe<Scalars['String']['output']>;
+  parentClockId: Maybe<Scalars['String']['output']>;
+  ptpProfile: Maybe<Scalars['String']['output']>;
   timeRecoveryStatus: Maybe<Scalars['String']['output']>;
   userPriority: Maybe<Scalars['Int']['output']>;
 };
@@ -1468,11 +1505,13 @@ export type Status =
 
 export type Stream = Node & {
   __typename?: 'Stream';
+  blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String']['output'];
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
   streamName: Scalars['String']['output'];
+  streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
 };
 
@@ -1953,6 +1992,18 @@ export type UpdateScheduleInput = {
   workflowContext?: InputMaybe<Scalars['String']['input']>;
   workflowName?: InputMaybe<Scalars['String']['input']>;
   workflowVersion?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamPayload = {
+  __typename?: 'UpdateStreamPayload';
+  stream: Maybe<Stream>;
 };
 
 /** Input parameters for updating an existing tag */
@@ -3010,6 +3061,7 @@ export type DeviceInventoryMutation = {
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   reconnectKafka: Maybe<IsOkResponse>;
@@ -3021,6 +3073,7 @@ export type DeviceInventoryMutation = {
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateStream: UpdateStreamPayload;
 };
 
 
@@ -3123,6 +3176,11 @@ export type DeviceInventoryMutationDeleteSnapshotArgs = {
 };
 
 
+export type DeviceInventoryMutationDeleteStreamArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationImportCsvArgs = {
   input: CsvImportInput;
 };
@@ -3176,6 +3234,12 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
+};
+
+
+export type DeviceInventoryMutationUpdateStreamArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -3336,7 +3400,28 @@ export type DeviceInventoryQueryZonesArgs = {
 
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
+  deviceUsage: Maybe<DeviceUsage>;
+  devicesConnection: Maybe<DevicesConnection>;
+  devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
+};
+
+
+export type DeviceInventorySubscriptionDeviceUsageArgs = {
+  deviceName: Scalars['String']['input'];
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesConnectionArgs = {
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+  targetDevices: Array<Scalars['String']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesUsageArgs = {
+  deviceNames: Array<Scalars['String']['input']>;
+  refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

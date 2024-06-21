@@ -19,11 +19,13 @@ import {
   usePagination,
   Pagination,
   ConfirmDeleteModal,
+  KafkaHealthCheckToolbar,
+  usePerformanceMonitoring,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
-import React, { FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { FormEvent, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { gql, useMutation, useQuery } from 'urql';
+import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
 import { ModalWorkflow } from '../../helpers/convert';
 import {
@@ -38,8 +40,16 @@ import {
   FilterLabelsQuery,
   InstallDeviceMutation,
   InstallDeviceMutationVariables,
+  KafkaHealthCheckQuery,
+  KafkaHealthCheckQueryVariables,
   UninstallDeviceMutation,
   UninstallDeviceMutationVariables,
+  KafkaReconnectMutation,
+  KafkaReconnectMutationVariables,
+  DevicesUsageSubscription,
+  DevicesUsageSubscriptionVariables,
+  DevicesConnectionSubscriptionVariables,
+  DevicesConnectionSubscription,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -74,6 +84,9 @@ const DEVICES_QUERY = gql`
             createdAt
             isInstalled
             serviceState
+            version
+            model
+            software
             zone {
               id
               name
@@ -164,6 +177,53 @@ const EXECUTE_MODAL_WORKFLOW_MUTATION = gql`
   }
 `;
 
+const KAFKA_HEALTHCHECK_QUERY = gql`
+  query KafkaHealthCheck {
+    deviceInventory {
+      kafkaHealthCheck {
+        isOk
+      }
+    }
+  }
+`;
+
+const KAFKA_RECONNECT_MUTATION = gql`
+  mutation KafkaReconnect {
+    deviceInventory {
+      reconnectKafka {
+        isOk
+      }
+    }
+  }
+`;
+
+const DEVICES_USAGE_SUBSCRIPTION = gql`
+  subscription DevicesUsage($deviceNames: [String!]!, $refreshEverySec: Int) {
+    deviceInventory {
+      devicesUsage(deviceNames: $deviceNames, refreshEverySec: $refreshEverySec) {
+        devicesUsage {
+          cpuLoad
+          deviceName
+          memoryLoad
+        }
+      }
+    }
+  }
+`;
+
+const DEVICES_STATUS_SUBSCRIPTION = gql`
+  subscription DevicesConnection($targetDevices: [String!]!, $connectionTimeout: Int) {
+    deviceInventory {
+      devicesConnection(targetDevices: $targetDevices, connectionTimeout: $connectionTimeout) {
+        deviceStatuses {
+          deviceName
+          status
+        }
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -174,6 +234,7 @@ type Sorting = {
 const Form = chakra('form');
 
 const DeviceList: VoidFunctionComponent = () => {
+  const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
   const context = useMemo(() => ({ additionalTypenames: ['Device'] }), []);
   const deleteModalDisclosure = useDisclosure();
   const { addToastNotification } = useNotifications();
@@ -198,6 +259,13 @@ const DeviceList: VoidFunctionComponent = () => {
     context,
   });
   const [{ data: labelsData }] = useQuery<FilterLabelsQuery>({ query: LABELS_QUERY, context });
+  const [{ data: isKafkaOk, error: kafkaHealthCheckError, fetching: isLoadingKafkaStatus }] = useQuery<
+    KafkaHealthCheckQuery,
+    KafkaHealthCheckQueryVariables
+  >({ query: KAFKA_HEALTHCHECK_QUERY });
+  const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
+    KAFKA_RECONNECT_MUTATION,
+  );
   const [, installDevice] = useMutation<InstallDeviceMutation, InstallDeviceMutationVariables>(INSTALL_DEVICE_MUTATION);
   const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
     UNINSTALL_DEVICE_MUTATION,
@@ -210,8 +278,50 @@ const DeviceList: VoidFunctionComponent = () => {
   const [, bulkInstallation] = useMutation<BulkInstallDevicesMutation, BulkInstallDevicesMutationVariables>(
     BULK_INSTALL_DEVICES_MUTATION,
   );
+  const [{ data: devicesUsage }] = useSubscription<DevicesUsageSubscriptionVariables, DevicesUsageSubscription>({
+    query: DEVICES_USAGE_SUBSCRIPTION,
+    variables: {
+      deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
+      refreshEverySec: 5,
+    },
+    pause: !isPerformanceMonitoringEnabled,
+  });
+
+  const deviceInstallStatuses = deviceData?.deviceInventory.devices.edges.map((device) => ({
+    name: device.node.name,
+    isInstalled: device.node.isInstalled,
+  }));
+
+  const [{ data: devicesConnection }] = useSubscription<
+    DevicesConnectionSubscriptionVariables,
+    DevicesConnectionSubscription
+  >({
+    query: DEVICES_STATUS_SUBSCRIPTION,
+    variables: {
+      connectionTimeout: 10,
+      targetDevices: deviceInstallStatuses?.filter((device) => device.isInstalled).map((device) => device.name) ?? [],
+    },
+    pause: !isPerformanceMonitoringEnabled,
+  });
+
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
+
+  const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
+
+  useEffect(() => {
+    let kafkaToolbarTimeout: NodeJS.Timeout;
+
+    if (kafkaHealthCheckToolbar.isOpen && isKafkaOk?.deviceInventory.kafkaHealthCheck?.isOk) {
+      kafkaToolbarTimeout = setTimeout(() => {
+        kafkaHealthCheckToolbar.onClose();
+      }, 5000);
+    }
+
+    return () => {
+      clearTimeout(kafkaToolbarTimeout);
+    };
+  }, [kafkaHealthCheckToolbar, isKafkaOk]);
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
@@ -487,6 +597,17 @@ const DeviceList: VoidFunctionComponent = () => {
   const areSelectedAll =
     deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
 
+  if (isLoadingKafkaStatus) {
+    return (
+      <Container maxWidth="container.xl">
+        <Alert status="info">
+          <AlertIcon />
+          <AlertTitle>Checking Kafka status...</AlertTitle>
+        </Alert>
+      </Container>
+    );
+  }
+
   if (deviceData == null && error) {
     return (
       <Container maxWidth="container.xl">
@@ -507,6 +628,33 @@ const DeviceList: VoidFunctionComponent = () => {
 
   return (
     <>
+      {kafkaHealthCheckToolbar.isOpen && (
+        <KafkaHealthCheckToolbar
+          mt={-10}
+          onClose={kafkaHealthCheckToolbar.onClose}
+          isKafkaHealthy={isKafkaOk?.deviceInventory.kafkaHealthCheck?.isOk ?? false}
+          isKafkaHealthyError={kafkaHealthCheckError?.message}
+          onReconnect={() =>
+            reconnectKafka({})
+              .then(() => {
+                addToastNotification({
+                  type: 'success',
+                  title: 'Success',
+                  content: 'Kafka reconnected successfuly',
+                });
+                kafkaHealthCheckToolbar.onClose();
+              })
+              .catch(() => {
+                addToastNotification({
+                  type: 'error',
+                  title: 'Error',
+                  content: 'Kafka reconnection failed',
+                });
+                kafkaHealthCheckToolbar.onOpen();
+              })
+          }
+        />
+      )}
       {isImportModalOpen && (
         <ImportCSVModal
           onClose={() => {
@@ -604,8 +752,11 @@ const DeviceList: VoidFunctionComponent = () => {
           </Flex>
         </Flex>
         <DeviceTable
+          deviceInstallStatuses={deviceInstallStatuses}
+          devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
+          devicesUsage={devicesUsage}
           areSelectedAll={areSelectedAll}
           onSelectAll={handleSelectionOfAllDevices}
           selectedDevices={selectedDevices}
@@ -616,6 +767,7 @@ const DeviceList: VoidFunctionComponent = () => {
           onDeleteBtnClick={handleDeleteBtnClick}
           installLoadingMap={installLoadingMap}
           onDeviceSelection={handleDeviceSelection}
+          isPerformanceMonitoringEnabled={isPerformanceMonitoringEnabled}
         />
         <Pagination
           onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}
