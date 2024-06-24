@@ -36,7 +36,6 @@ const config = {
   devInventoryWsURL: optionalEnvString('DEV_INVENTORY_WS_URL'),
   inventoryWsSchema: envString('INVENTORY_WS_SCHEMA'),
   inventoryWsPath: envString('INVENTORY_WS_PATH'),
-  uniresourceApiURL: envString('RESOURCE_MANAGER_API_URL'),
   uniconfigApiDocsURL: envString('UNICONFIG_API_DOCS_URL'),
   uniflowApiDocsURL: envString('WORKFLOW_MANAGER_API_DOCS_URL'),
   commitHash: envString('COMMIT_HASH'),

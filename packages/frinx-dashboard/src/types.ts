@@ -8,7 +8,6 @@ export type GlobalConfig = Readonly<{
   inventoryWsPath: string;
   devInventoryWsURL: string;
   inventoryWsSchema: string;
-  uniresourceApiURL: string;
   uniflowApiDocsURL: string;
   commitHash: string;
   isPerformanceMonitoringEnabled: boolean;
