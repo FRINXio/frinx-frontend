@@ -4,7 +4,7 @@ import { useConfig } from './config.provider';
 import { authContext } from './auth-helpers';
 
 const ResourceManagerApp: FC = () => {
-  const { uniresourceApiURL } = useConfig();
+  const { inventoryApiURL } = useConfig();
   const [components, setComponents] = useState<typeof import('@frinx/resource-manager') | null>(null);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const ResourceManagerApp: FC = () => {
   const { ResourceManagerAppProvider, ResourceManagerApp: App } = components;
 
   return (
-    <ResourceManagerAppProvider client={ResourceManagerApi.create({ url: uniresourceApiURL, authContext }).client}>
+    <ResourceManagerAppProvider client={ResourceManagerApi.create({ url: inventoryApiURL, authContext }).client}>
       <App />
     </ResourceManagerAppProvider>
   );
