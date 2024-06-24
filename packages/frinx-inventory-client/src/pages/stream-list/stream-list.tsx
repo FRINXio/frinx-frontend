@@ -4,6 +4,7 @@ import {
   AlertIcon,
   AlertTitle,
   Button,
+  chakra,
   Container,
   Flex,
   Heading,
@@ -24,7 +25,11 @@ import {
   StreamsQuery,
   StreamsQueryVariables,
 } from '../../__generated__/graphql';
+import BulkActions from './bulk-actions';
+import DeleteSelectedStreamsModal from './delete-selected-modal';
 import StreamTable from './stream-table';
+
+const Form = chakra('form');
 
 const STREAMS_QUERY = gql`
   query Streams(
@@ -115,6 +120,7 @@ const StreamList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Stream'] }), []);
   const { addToastNotification } = useNotifications();
   const deleteModalDisclosure = useDisclosure();
+  const deleteSelectedStreamsModal = useDisclosure();
   const [orderBy, setOrderBy] = useState<Sorting | null>(null);
   const [streamIdToDelete, setStreamIdToDelete] = useState<string | null>(null);
   // TODO: will be implemented laterdeletedStream.streamName
@@ -170,8 +176,16 @@ const StreamList: VoidFunctionComponent = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSelectionOfAllStreams = (checked: boolean) => {
-    // eslint-disable-next-line no-console
-    console.log('select all streams');
+    if (checked) {
+      if (streamData != null) {
+        const streamId = streamData.deviceInventory.streams.edges
+          .filter(({ node }) => !node.isActive)
+          .map(({ node }) => node.id);
+        setSelectedStreams(new Set(streamId));
+      }
+    } else {
+      setSelectedStreams(new Set());
+    }
   };
 
   const handleStreamInstall = (streamId: string) => {
@@ -297,8 +311,22 @@ const StreamList: VoidFunctionComponent = () => {
     deleteStreams([unwrap(streamIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
   };
 
-  // TODO: will be implemented later
-  const areSelectedAll = false;
+  const handleSelectedStreamsDelete = () => {
+    deleteStreams([...selectedStreams]).finally(() => deleteSelectedStreamsModal.onClose());
+  };
+
+  const handleBulkActivate = () => {
+    // eslint-disable-next-line no-console
+    console.log('bulk activate');
+  };
+
+  const handleBulkDisable = () => {
+    // eslint-disable-next-line no-console
+    console.log('bulk disable');
+  };
+
+  const areSelectedAll =
+    streamData?.deviceInventory.streams.edges.filter(({ node }) => !node.isActive).length === selectedStreams.size;
 
   if (streamData == null && error) {
     return (
@@ -318,6 +346,11 @@ const StreamList: VoidFunctionComponent = () => {
 
   return (
     <>
+      <DeleteSelectedStreamsModal
+        onConfirm={handleSelectedStreamsDelete}
+        isOpen={deleteSelectedStreamsModal.isOpen}
+        onClose={deleteSelectedStreamsModal.onClose}
+      />
       <ConfirmDeleteModal
         isOpen={deleteModalDisclosure.isOpen}
         onClose={deleteModalDisclosure.onClose}
@@ -336,6 +369,17 @@ const StreamList: VoidFunctionComponent = () => {
               Add stream
             </Button>
           </HStack>
+        </Flex>
+        <Flex justify="space-between">
+          <Form display="flex">{/* here goes filter form */}</Form>
+          <Flex width="50%" justify="flex-end">
+            <BulkActions
+              onActivateButtonClick={handleBulkActivate}
+              onDisableButtonClick={handleBulkDisable}
+              onDeleteButtonClick={deleteSelectedStreamsModal.onOpen}
+              areButtonsDisabled={selectedStreams.size === 0}
+            />
+          </Flex>
         </Flex>
         <StreamTable
           data-cy="stream-table"
