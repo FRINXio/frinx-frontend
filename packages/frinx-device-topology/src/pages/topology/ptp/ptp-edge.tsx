@@ -2,8 +2,16 @@ import { chakra, Box, Theme, useTheme } from '@chakra-ui/react';
 import get from 'lodash/get';
 import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
 import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
-import { getCurvePath, getInterfaceStatusColor, Line, Position, GraphPtpNodeInterface } from '../graph.helpers';
-import { getEdgeColor } from '../../../components/edge/edge.helpers';
+import {
+  getCurvePath,
+  getInterfaceStatusColor,
+  Line,
+  Position,
+  GraphNetNode,
+  GraphPtpNodeInterface,
+} from '../graph.helpers';
+import { getEdgeColor, findCommonNetSubnet, getNetSubnetCoordinates } from '../../../components/edge/edge.helpers';
+import { useStateContext } from '../../../state.provider';
 
 type Props = {
   edge: GraphEdgeWithDiff;
@@ -17,6 +25,7 @@ type Props = {
   isWeightVisible?: boolean;
   isGmPath?: boolean;
   weight: number | null;
+  netNodes?: GraphNetNode[];
 };
 
 const G = chakra('g');
@@ -24,6 +33,7 @@ const Circle = chakra('circle');
 const Text = chakra('text');
 
 const Edge: VoidFunctionComponent<Props> = ({
+  netNodes,
   edge,
   ptpInterfaceMap,
   isActive,
@@ -36,6 +46,8 @@ const Edge: VoidFunctionComponent<Props> = ({
   isGmPath,
   weight,
 }) => {
+  const { state } = useStateContext();
+  const { selectedEdge } = state;
   const { start, end } = linePoints;
   const [weightPosition, setWeightPosition] = useState<Position | null>(null);
   const edgeRef = useRef<SVGPathElement>(null);
@@ -54,6 +66,9 @@ const Edge: VoidFunctionComponent<Props> = ({
     }
   }, [isActive, isWeightVisible]);
 
+  const subnetCoordinates = getNetSubnetCoordinates(netNodes || [], edge);
+  const subnetValue = findCommonNetSubnet(netNodes || [], edge);
+  const isSelectedEdge = selectedEdge?.id === edge.id;
   const interfaceDetails = ptpInterfaceMap.get(edge.source.interface)?.details ?? null;
 
   return isActive ? (
@@ -125,6 +140,7 @@ const Edge: VoidFunctionComponent<Props> = ({
         borderWidth={3}
         transition="all .2s ease-in-out"
       />
+      <Text>{subnetValue}</Text>
       {isWeightVisible && (
         <G
           transform={`translate3d(${(start.x + end.x) / 2}px, ${(start.y + end.y) / 2}px, 0)`}
@@ -140,6 +156,14 @@ const Edge: VoidFunctionComponent<Props> = ({
           />
           <Text textAnchor="middle" y="5">
             {weight}
+          </Text>
+        </G>
+      )}
+      {isSelectedEdge && (
+        <G transform={`translate3d(${subnetCoordinates.x}px, ${subnetCoordinates.y}px, 0)`}>
+          <Circle r={4} fill="back" transition="all .2s ease-in-out" />
+          <Text key={edge.id} transform="translate3d(-45px, -5px, 0)" fontSize={15} bg="red">
+            {subnetValue}
           </Text>
         </G>
       )}

@@ -27,6 +27,12 @@ const GammaApp: VoidFunctionComponent = () => {
     });
   }, [uniflowApiURL, unistoreApiURL]);
 
+  useEffect(() => {
+    authContext.eventEmitter.once('FORBIDDEN', () => {
+      setHasTransactionError(true);
+    });
+  }, []);
+
   if (components == null) {
     return null;
   }

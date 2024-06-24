@@ -37,6 +37,7 @@ const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
 
+// <<<<<<< HEAD
 const NodeIcon: VoidFunctionComponent<Props> = memo(
   ({
     positions,
@@ -59,6 +60,7 @@ const NodeIcon: VoidFunctionComponent<Props> = memo(
     const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups).filter((item) =>
       selectedNode ? item[0].includes(selectedNode.name) : true,
     );
+
     const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties(node.device?.deviceSize ?? 'MEDIUM');
     const nodeColor =
       isSelected && isShowingLoad ? `${getDeviceUsageColor(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad)}.500` : 'gray.500';

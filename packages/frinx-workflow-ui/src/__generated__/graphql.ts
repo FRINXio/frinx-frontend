@@ -44,6 +44,11 @@ export type Action_Input = {
   start_workflow?: InputMaybe<StartWorkflow_Input>;
 };
 
+export type ActivateStreamPayload = {
+  __typename?: 'ActivateStreamPayload';
+  stream: Stream;
+};
+
 export type AddBlueprintInput = {
   name: Scalars['String']['input'];
   template: Scalars['String']['input'];
@@ -98,8 +103,10 @@ export type AddSnapshotPayload = {
 };
 
 export type AddStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deviceName: Scalars['String']['input'];
   streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddStreamPayload = {
@@ -554,6 +561,11 @@ export type DataStore = {
   snapshots: Array<Snapshot>;
 };
 
+export type DeactivateStreamPayload = {
+  __typename?: 'DeactivateStreamPayload';
+  stream: Stream;
+};
+
 /** Input parameters for deleting an existing allocation strategy */
 export type DeleteAllocationStrategyInput = {
   allocationStrategyId: Scalars['ID']['input'];
@@ -613,6 +625,11 @@ export type DeleteSnapshotPayload = {
   snapshot: Maybe<Snapshot>;
 };
 
+export type DeleteStreamPayload = {
+  __typename?: 'DeleteStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for deleting an existing tag */
 export type DeleteTagInput = {
   tagId: Scalars['ID']['input'];
@@ -649,6 +666,7 @@ export type Device = Node & {
   name: Scalars['String']['output'];
   port: Maybe<Scalars['Int']['output']>;
   serviceState: DeviceServiceState;
+  software: Maybe<Scalars['String']['output']>;
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
@@ -679,7 +697,7 @@ export type DeviceEdge = {
 
 export type DeviceListUsage = {
   __typename?: 'DeviceListUsage';
-  devicesUsage: Array<Maybe<DevicesUsage>>;
+  devicesUsage: Array<DevicesUsage>;
 };
 
 export type DeviceOrderByInput = {
@@ -702,17 +720,28 @@ export type DeviceSource =
   | 'IMPORTED'
   | 'MANUAL';
 
+export type DeviceStatus = {
+  __typename?: 'DeviceStatus';
+  deviceName: Maybe<Scalars['String']['output']>;
+  status: Maybe<Scalars['String']['output']>;
+};
+
 export type DeviceUsage = {
   __typename?: 'DeviceUsage';
-  cpuLoad: Scalars['Float']['output'];
-  memoryLoad: Scalars['Float']['output'];
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
+
+export type DevicesConnection = {
+  __typename?: 'DevicesConnection';
+  deviceStatuses: Maybe<Array<Maybe<DeviceStatus>>>;
 };
 
 export type DevicesUsage = {
   __typename?: 'DevicesUsage';
-  cpuLoad: Scalars['Float']['output'];
+  cpuLoad: Maybe<Scalars['Float']['output']>;
   deviceName: Scalars['String']['output'];
-  memoryLoad: Scalars['Float']['output'];
+  memoryLoad: Maybe<Scalars['Float']['output']>;
 };
 
 export type DiffData = {
@@ -1139,14 +1168,14 @@ export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
   clockAccuracy: Maybe<Scalars['String']['output']>;
   clockClass: Maybe<Scalars['Int']['output']>;
-  clockId: Scalars['String']['output'];
-  clockType: Scalars['String']['output'];
+  clockId: Maybe<Scalars['String']['output']>;
+  clockType: Maybe<Scalars['String']['output']>;
   clockVariance: Maybe<Scalars['String']['output']>;
-  domain: Scalars['Int']['output'];
+  domain: Maybe<Scalars['Int']['output']>;
   globalPriority: Maybe<Scalars['Int']['output']>;
-  gmClockId: Scalars['String']['output'];
-  parentClockId: Scalars['String']['output'];
-  ptpProfile: Scalars['String']['output'];
+  gmClockId: Maybe<Scalars['String']['output']>;
+  parentClockId: Maybe<Scalars['String']['output']>;
+  ptpProfile: Maybe<Scalars['String']['output']>;
   timeRecoveryStatus: Maybe<Scalars['String']['output']>;
   userPriority: Maybe<Scalars['Int']['output']>;
 };
@@ -1476,10 +1505,13 @@ export type Status =
 
 export type Stream = Node & {
   __typename?: 'Stream';
+  blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String']['output'];
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
   streamName: Scalars['String']['output'];
+  streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
 };
 
@@ -1962,6 +1994,18 @@ export type UpdateScheduleInput = {
   workflowVersion?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamPayload = {
+  __typename?: 'UpdateStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for updating an existing tag */
 export type UpdateTagInput = {
   tagId: Scalars['ID']['input'];
@@ -2304,6 +2348,7 @@ export type ConductorMutation = {
   __typename?: 'conductorMutation';
   /** Add a new event handler. */
   addEventHandler: Maybe<Scalars['JSON']['output']>;
+  cloneWorkflowDefinition: Scalars['Boolean']['output'];
   /** Create a new workflow definition */
   create: Maybe<Scalars['JSON']['output']>;
   createEventHandler: CreateEventHandlerPayload;
@@ -2393,6 +2438,13 @@ export type ConductorMutation = {
 
 export type ConductorMutationAddEventHandlerArgs = {
   input?: InputMaybe<EventHandler_Input>;
+};
+
+
+export type ConductorMutationCloneWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  workflowToBeCloned: WorkflowDefinitionInput;
 };
 
 
@@ -2990,6 +3042,7 @@ export type ConductorQueryWorkflowInstanceDetailArgs = {
 
 export type DeviceInventoryMutation = {
   __typename?: 'deviceInventoryMutation';
+  activateStream: ActivateStreamPayload;
   addBlueprint: AddBlueprintPayload;
   addDevice: AddDevicePayload;
   addLocation: AddLocationPayload;
@@ -3003,10 +3056,12 @@ export type DeviceInventoryMutation = {
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
   createTransaction: CreateTransactionPayload;
+  deactivateStream: DeactivateStreamPayload;
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   reconnectKafka: Maybe<IsOkResponse>;
@@ -3018,6 +3073,12 @@ export type DeviceInventoryMutation = {
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateStream: UpdateStreamPayload;
+};
+
+
+export type DeviceInventoryMutationActivateStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3090,6 +3151,11 @@ export type DeviceInventoryMutationCreateTransactionArgs = {
 };
 
 
+export type DeviceInventoryMutationDeactivateStreamArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationDeleteBlueprintArgs = {
   id: Scalars['String']['input'];
 };
@@ -3107,6 +3173,11 @@ export type DeviceInventoryMutationDeleteLabelArgs = {
 
 export type DeviceInventoryMutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
+};
+
+
+export type DeviceInventoryMutationDeleteStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3163,6 +3234,12 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
+};
+
+
+export type DeviceInventoryMutationUpdateStreamArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -3324,6 +3401,7 @@ export type DeviceInventoryQueryZonesArgs = {
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
   deviceUsage: Maybe<DeviceUsage>;
+  devicesConnection: Maybe<DevicesConnection>;
   devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
 };
@@ -3332,6 +3410,12 @@ export type DeviceInventorySubscription = {
 export type DeviceInventorySubscriptionDeviceUsageArgs = {
   deviceName: Scalars['String']['input'];
   refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesConnectionArgs = {
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+  targetDevices: Array<Scalars['String']['input']>;
 };
 
 
@@ -3898,7 +3982,7 @@ export type ControlExecutedWorkflowSubscriptionVariables = Exact<{
 }>;
 
 
-export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', conductor: { __typename?: 'ConductorSubscription', controlExecutedWorkflow: { __typename?: 'Workflow', endTime: string | null, startTime: string | null, status: WorkflowStatus | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, endTime: string | null, startTime: string | null, updatedAt: string | null, status: WorkflowTaskStatus | null, taskType: string | null, subWorkflowId: string | null, referenceTaskName: string | null }> | null } } };
+export type ControlExecutedWorkflowSubscription = { __typename?: 'Subscription', conductor: { __typename?: 'ConductorSubscription', controlExecutedWorkflow: { __typename?: 'Workflow', id: string, createdBy: string | null, updatedBy: string | null, createdAt: string | null, updatedAt: string | null, status: WorkflowStatus | null, parentId: string | null, ownerApp: string | null, input: string | null, output: string | null, reasonForIncompletion: string | null, failedReferenceTaskNames: Array<string | null> | null, originalId: string | null, variables: string | null, lastRetriedTime: string | null, startTime: string | null, endTime: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, correlationId: string | null, workflowDefinition: { __typename?: 'WorkflowDefinition', id: string, version: number, name: string, ownerEmail: string | null, restartable: boolean, tasksJson: any | null, hasSchedule: boolean, createdAt: string | null, updatedAt: string | null, createdBy: string | null, updatedBy: string | null, inputParameters: Array<string> | null, timeoutPolicy: TimeoutPolicy | null, timeoutSeconds: number | null, description: { __typename?: 'WorkflowDefinitionDescription', description: string | null, labels: Array<string> | null } | null, outputParameters: Array<{ __typename?: 'OutputParameters', key: string, value: string }> | null } | null, tasks: Array<{ __typename?: 'WorkflowTask', id: string, taskType: string | null, referenceTaskName: string | null, status: WorkflowTaskStatus | null, retryCount: number | null, startTime: string | null, endTime: string | null, updatedAt: string | null, scheduledTime: string | null, taskDefName: string | null, workflowType: string | null, retried: boolean | null, executed: boolean | null, taskId: string | null, reasonForIncompletion: string | null, taskDefinition: string | null, subWorkflowId: string | null, inputData: string | null, outputData: string | null, externalOutputPayloadStoragePath: string | null, externalInputPayloadStoragePath: string | null, callbackAfterSeconds: number | null, seq: number | null, pollCount: number | null, logs: Array<{ __typename?: 'WorkflowTaskLog', createdAt: string | null, message: string | null }> | null }> | null } } };
 
 export type RerunEditedWorkflowMutationVariables = Exact<{
   input: ExecuteWorkflowByNameInput;

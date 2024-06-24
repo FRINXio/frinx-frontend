@@ -21,9 +21,9 @@ export function omitDeep<T extends Record<string, unknown>>(
     return omit(obj, key);
   }
 
-  if (!containsKey && containsObject) {
-    return omitDeep(obj, key);
-  }
+  // if (!containsKey && containsObject) {
+  //   return omitDeep(obj, key);
+  // }
 
   const objWithoutKey: Record<string, unknown> = omit(obj, key);
   const objWithoutKeyValues = Object.values(objWithoutKey);

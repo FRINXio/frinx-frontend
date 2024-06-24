@@ -1,4 +1,4 @@
-import { Box, Container, Heading } from '@chakra-ui/react';
+import { Box, Container, Heading, Progress } from '@chakra-ui/react';
 import {
   convertTaskToExtendedTask,
   jsonParse,
@@ -10,7 +10,6 @@ import {
   ClientWorkflowWithTasks,
   TaskDefinition,
 } from '@frinx/shared';
-import { saveAs } from 'file-saver';
 import React, { useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useParams } from 'react-router-dom';
@@ -31,6 +30,8 @@ import {
   WorkflowDefinitionListQueryVariables,
   WorkflowDefinitionQuery,
   WorkflowDefinitionQueryVariables,
+  ExportWorkflowDefinitionMutation,
+  ExportWorkflowDefinitionMutationVariables,
 } from './__generated__/graphql';
 
 type Props = {
@@ -152,14 +153,18 @@ const WORKFLOW_DELETE_MUTATION = gql`
   }
 `;
 
-const CREATE_WORKFLOW_DEFINITION_MUTATION = gql`
-  mutation CloneWorkflow($input: CreateWorkflowDefinitionInput!) {
+const CLONE_WORKFLOW_DEFINITION_MUTATION = gql`
+  mutation CloneWorkflow($input: WorkflowDefinitionInput!, $newName: String!, $newVersion: Int!) {
     conductor {
-      createWorkflowDefinition(input: $input) {
-        workflowDefinition {
-          id
-        }
-      }
+      cloneWorkflowDefinition(workflowToBeCloned: $input, name: $newName, version: $newVersion)
+    }
+  }
+`;
+
+const EXPORT_WORKFLOW_MUTATION = gql`
+  mutation ExportWorkflowDefinition($name: String!, $version: Int) {
+    conductor {
+      exportWorkflowDefinition(name: $name, version: $version)
     }
   }
 `;
@@ -178,7 +183,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
 
   const [shouldCreateWorkflow, setShouldCreateWorkflow] = useState(false);
 
-  const [{ data: workflowListData }] = useQuery<WorkflowDefinitionListQuery, WorkflowDefinitionListQueryVariables>({
+  const [{ data: workflowListData, fetching: isLoadingWorkflowDefinitions }] = useQuery<
+    WorkflowDefinitionListQuery,
+    WorkflowDefinitionListQueryVariables
+  >({
     query: WORKFLOW_DEFINITIONS_LIST_QUERY,
     variables: {
       filter: { keyword: workflowFilter },
@@ -188,7 +196,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     },
   });
 
-  const [{ data: workflowData }] = useQuery<WorkflowDefinitionQuery, WorkflowDefinitionQueryVariables>({
+  const [{ data: workflowData, fetching: isLoadingWorkflow }] = useQuery<
+    WorkflowDefinitionQuery,
+    WorkflowDefinitionQueryVariables
+  >({
     query: WORKFLOW_DEFINITION_DETAIL_QUERY,
     variables: {
       nodeId: workflowId ?? '', // query with empty string nodeId wont be called, because query is paused in that case
@@ -202,7 +213,7 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   );
 
   const [, cloneWorkflow] = useMutation<CloneWorkflowMutation, CloneWorkflowMutationVariables>(
-    CREATE_WORKFLOW_DEFINITION_MUTATION,
+    CLONE_WORKFLOW_DEFINITION_MUTATION,
   );
 
   const [, deleteWorkflow] = useMutation<
@@ -214,6 +225,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
     ExecuteWorkflowByNameBuilderMutation,
     ExecuteWorkflowByNameBuilderMutationVariables
   >(EXECUTE_WORKFLOW_MUTATION);
+
+  const [, exportWorkflow] = useMutation<ExportWorkflowDefinitionMutation, ExportWorkflowDefinitionMutationVariables>(
+    EXPORT_WORKFLOW_MUTATION,
+  );
 
   const { addToastNotification } = useNotifications();
 
@@ -263,43 +278,50 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
   };
 
   const handleFileExport = (wf: ClientWorkflowWithTasks) => {
-    const apiWorkflow = {
-      ...wf,
-      outputParameters: wf.outputParameters?.reduce(
-        (acc, param) => ({
-          ...acc,
-          [param.key]: param.value,
-        }),
-        {},
-      ),
-    };
-    const parsedWf = JSON.stringify(apiWorkflow, null, 2);
-    const textEncoder = new TextEncoder();
-    const arrayBuffer = textEncoder.encode(parsedWf);
-    const file = new Blob([arrayBuffer], { type: 'application/octet-stream' });
-    saveAs(file, `${wf.name}_v${wf.version}.json`);
+    exportWorkflow({
+      name: wf.name,
+      version: wf.version,
+    })
+      .then((res) => {
+        if (!res.error) {
+          const workflowDefinition = res.data?.conductor.exportWorkflowDefinition;
+
+          const file = new Blob([JSON.stringify(workflowDefinition, null, 2)], { type: 'application/json' });
+          const a = document.createElement('a');
+          const url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = `${wf.name}.json`;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 0);
+        }
+
+        if (res.error) {
+          addToastNotification({ content: res.error.message, type: 'error' });
+        }
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem to export selected workflow', type: 'error' });
+      });
   };
 
   const handleWorkflowClone = async (wf: ClientWorkflowWithTasks, wfName: string) => {
-    const { hasSchedule, id, createdAt, updatedAt, labels, timeoutPolicy, ...wfData } = wf;
-    const updatedWorkflow = {
-      ...wfData,
-      name: wfName,
-      tasks: JSON.stringify(wf.tasks),
-      timeoutPolicy: timeoutPolicy ?? undefined,
-      outputParameters: wf.outputParameters?.reduce(
-        (acc, curr) => ({
-          ...acc,
-          [curr.key]: curr.value,
-        }),
-        {},
-      ),
-      description: { description: wf.description, labels: wf.labels },
-      tasksJson: undefined,
-    };
-
     try {
-      const result = await cloneWorkflow({ input: { workflowDefinition: updatedWorkflow } });
+      const result = await cloneWorkflow({
+        input: {
+          ...wf,
+          description: {
+            description: wf.description,
+            labels: wf.labels,
+          },
+          tasks: JSON.stringify(wf.tasks),
+        },
+        newName: wfName,
+        newVersion: 1,
+      });
       if (result.error != null) {
         throw new Error(result.error.message);
       }
@@ -354,6 +376,10 @@ const Root: VoidFunctionComponent<Props> = ({ onClose }) => {
       ...editedWorkflow,
     }));
   };
+
+  if (isLoadingWorkflowDefinitions || isLoadingWorkflow) {
+    return <Progress size="xs" isIndeterminate mt={-10} />;
+  }
 
   if (!workflowListData) {
     return null;

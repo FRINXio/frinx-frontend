@@ -10,7 +10,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { ClientWorkflowWithTasks, Editor, removeGraphqlSpecsFromWorkflow } from '@frinx/shared';
+import { ClientWorkflowWithTasks, Editor, omitDeep } from '@frinx/shared';
 
 type ModalProps = {
   isOpen: boolean;
@@ -28,7 +28,7 @@ const DefinitionModal: VoidFunctionComponent<ModalProps> = ({ isOpen, onClose, w
         <ModalHeader>{workflow?.name}</ModalHeader>
         <ModalBody>
           <Editor
-            defaultValue={JSON.stringify(removeGraphqlSpecsFromWorkflow(workflow), null, 2)}
+            defaultValue={JSON.stringify(omitDeep(workflow, ['id', '__typename', 'tasksJson']), null, 2)}
             width="100%"
             options={{
               copyWithSyntaxHighlighting: false,
