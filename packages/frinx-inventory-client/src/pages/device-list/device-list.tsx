@@ -262,7 +262,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const [{ data: isKafkaOk, error: kafkaHealthCheckError, fetching: isLoadingKafkaStatus }] = useQuery<
     KafkaHealthCheckQuery,
     KafkaHealthCheckQueryVariables
-  >({ query: KAFKA_HEALTHCHECK_QUERY });
+  >({ query: KAFKA_HEALTHCHECK_QUERY, pause: !isPerformanceMonitoringEnabled });
   const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
     KAFKA_RECONNECT_MUTATION,
   );
@@ -597,7 +597,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const areSelectedAll =
     deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
 
-  if (isLoadingKafkaStatus) {
+  if (isPerformanceMonitoringEnabled && isLoadingKafkaStatus) {
     return (
       <Container maxWidth="container.xl">
         <Alert status="info">
@@ -628,7 +628,7 @@ const DeviceList: VoidFunctionComponent = () => {
 
   return (
     <>
-      {kafkaHealthCheckToolbar.isOpen && (
+      {isPerformanceMonitoringEnabled && kafkaHealthCheckToolbar.isOpen && (
         <KafkaHealthCheckToolbar
           mt={-10}
           onClose={kafkaHealthCheckToolbar.onClose}
