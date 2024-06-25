@@ -45,6 +45,7 @@ type Props = {
   installLoadingMap: Record<string, boolean>;
   isPerformanceMonitoringEnabled: boolean;
   onSort: (sortedBy: SortedBy) => void;
+  onDeviceDiscoveryBtnClick: (deviceId: string) => void;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onDeleteBtnClick: (deviceId: string) => void;
@@ -60,6 +61,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   devicesUsage,
   selectedDevices,
   onSort,
+  onDeviceDiscoveryBtnClick,
   onInstallButtonClick,
   onUninstallButtonClick,
   onDeleteBtnClick,
@@ -119,7 +121,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               cursor="pointer"
               onClick={() => onSort('createdAt')}
             >
-              <Text>Created</Text>
+              <Text>Discovered</Text>
               {orderBy?.sortKey === 'createdAt' && (
                 <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
               )}
@@ -176,7 +178,12 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td>
                 <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
-                  <Text data-cy={`device-created-at-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
+                  <Text
+                    data-cy={`device-created-at-${device.name}`}
+                    as="span"
+                    fontSize="sm"
+                    color={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
+                  >
                     {formatDistanceToNow(localDate)} ago
                   </Text>
                 </Tooltip>
@@ -204,6 +211,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td minWidth={200}>
                 <HStack spacing={2}>
+                  <IconButton
+                    data-cy={`device-rediscover-${device.name}`}
+                    aria-label="rediscover"
+                    size="sm"
+                    icon={<Icon size={12} as={FeatherIcon} icon="search" />}
+                    as={isInstalled ? Link : 'button'}
+                    onClick={() => onDeviceDiscoveryBtnClick(device.id)}
+                  />
+
                   <IconButton
                     data-cy={`device-settings-${device.name}`}
                     aria-label="config"

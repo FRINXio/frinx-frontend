@@ -11,6 +11,7 @@ import {
   Heading,
   HStack,
   useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
 import {
   ExecuteWorkflowModal,
@@ -278,14 +279,14 @@ const DeviceList: VoidFunctionComponent = () => {
   const [, bulkInstallation] = useMutation<BulkInstallDevicesMutation, BulkInstallDevicesMutationVariables>(
     BULK_INSTALL_DEVICES_MUTATION,
   );
-  const [{ data: devicesUsage }] = useSubscription<DevicesUsageSubscriptionVariables, DevicesUsageSubscription>({
-    query: DEVICES_USAGE_SUBSCRIPTION,
-    variables: {
-      deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
-      refreshEverySec: 5,
-    },
-    pause: !isPerformanceMonitoringEnabled,
-  });
+  // const [{ data: devicesUsage }] = useSubscription<DevicesUsageSubscriptionVariables, DevicesUsageSubscription>({
+  //   query: DEVICES_USAGE_SUBSCRIPTION,
+  //   variables: {
+  //     deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
+  //     refreshEverySec: 5,
+  //   },
+  //   pause: !isPerformanceMonitoringEnabled,
+  // });
 
   const deviceInstallStatuses = deviceData?.deviceInventory.devices.edges.map((device) => ({
     name: device.node.name,
@@ -593,6 +594,14 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
+  const handleDeviceDiscoveryBtnClick = (deviceId: string) => {
+    console.log(deviceId);
+  };
+
+  const handleRediscoverSelectedDevices = () => {
+    console.log(...selectedDevices);
+  };
+
   const labels = labelsData?.deviceInventory.labels?.edges ?? [];
   const areSelectedAll =
     deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
@@ -712,7 +721,7 @@ const DeviceList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
-        <Flex justify="space-between">
+        <VStack alignItems="flex-start" gap="10px" mb="10">
           <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
             <Box flex={1}>
               <DeviceFilter
@@ -725,11 +734,10 @@ const DeviceList: VoidFunctionComponent = () => {
             <Box flex={1} marginLeft="2">
               <DeviceSearch text={searchText || ''} onChange={setSearchText} />
             </Box>
-            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+            <Button data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
               Search
             </Button>
             <Button
-              mb={6}
               data-cy="clear-button"
               onClick={clearFilter}
               colorScheme="red"
@@ -740,28 +748,30 @@ const DeviceList: VoidFunctionComponent = () => {
               Clear
             </Button>
           </Form>
-          <Flex width="50%" justify="flex-end">
+          <Flex width="50%" justify="flex-start">
             <BulkActions
               onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
               onInstallButtonClick={handleInstallSelectedDevices}
+              onRediscoverButtonClick={handleRediscoverSelectedDevices}
               areButtonsDisabled={selectedDevices.size === 0 || isBeingInstalled}
               onWorkflowButtonClick={() => {
                 setIsSendingToWorkflows(true);
               }}
             />
           </Flex>
-        </Flex>
+        </VStack>
         <DeviceTable
           deviceInstallStatuses={deviceInstallStatuses}
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
-          devicesUsage={devicesUsage}
+          // devicesUsage={devicesUsage}
           areSelectedAll={areSelectedAll}
           onSelectAll={handleSelectionOfAllDevices}
           selectedDevices={selectedDevices}
           orderBy={orderBy}
           onSort={handleSort}
+          onDeviceDiscoveryBtnClick={handleDeviceDiscoveryBtnClick}
           onInstallButtonClick={handleOnDeviceInstall}
           onUninstallButtonClick={handleUninstallButtonClick}
           onDeleteBtnClick={handleDeleteBtnClick}
