@@ -279,6 +279,7 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         onExecutedOperation(executedWorkflow.id);
 
         navigate(`../${result.data.conductor.executeWorkflowByName}`, { replace: true });
+        setTabIndex(0);
 
         addToastNotification({
           title: 'Workflow rerun succeeded',
