@@ -60,10 +60,10 @@ export function makeArrayFromValue<T>(value?: T | T[] | null): T[] {
 }
 
 export function parseBoolean(value?: string | null): boolean {
-  if (value === 'true') {
-    return true;
-  } else {
+  if (value === 'false') {
     return false;
+  } else {
+    return true;
   }
 }
 
