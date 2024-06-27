@@ -4211,6 +4211,20 @@ export type DeleteStreamMutationVariables = Exact<{
 
 export type DeleteStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteStream: { __typename?: 'DeleteStreamPayload', stream: { __typename?: 'Stream', id: string } | null } } };
 
+export type BulkActivateStreamsMutationVariables = Exact<{
+  input: BulkInstallDevicesInput;
+}>;
+
+
+export type BulkActivateStreamsMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', bulkInstallDevices: { __typename?: 'BulkInstallDevicePayload', installedDevices: Array<{ __typename?: 'Device', id: string }> } } };
+
+export type BulkDeactivateStreamsMutationVariables = Exact<{
+  input: BulkUninstallDevicesInput;
+}>;
+
+
+export type BulkDeactivateStreamsMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', bulkUninstallDevices: { __typename?: 'BulkUninstallDevicePayload', uninstalledDevices: Array<{ __typename?: 'Device', id: string }> } } };
+
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 

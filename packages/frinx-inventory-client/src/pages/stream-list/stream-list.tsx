@@ -18,6 +18,10 @@ import { gql, useMutation, useQuery } from 'urql';
 import {
   ActivateStreamMutation,
   ActivateStreamMutationVariables,
+  BulkActivateStreamsMutation,
+  BulkActivateStreamsMutationVariables,
+  BulkDeactivateStreamsMutation,
+  BulkDeactivateStreamsMutationVariables,
   DeactivateStreamMutation,
   DeactivateStreamMutationVariables,
   DeleteStreamMutation,
@@ -109,6 +113,30 @@ const DELETE_STREAM_MUTATION = gql`
   }
 `;
 
+const BULK_ACTIVATE_STREAMS_MUTATION = gql`
+  mutation BulkActivateStreams($input: BulkInstallDevicesInput!) {
+    deviceInventory {
+      bulkInstallDevices(input: $input) {
+        installedDevices {
+          id
+        }
+      }
+    }
+  }
+`;
+
+const BULK_DEACTIVATE_STREAMS_MUTATION = gql`
+  mutation BulkDeactivateStreams($input: BulkUninstallDevicesInput!) {
+    deviceInventory {
+      bulkUninstallDevices(input: $input) {
+        uninstalledDevices {
+          id
+        }
+      }
+    }
+  }
+`;
+
 type SortedBy = 'streamName' | 'deviceName' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -148,6 +176,12 @@ const StreamList: VoidFunctionComponent = () => {
     DEACTIVATE_STREAM_MUTATION,
   );
   const [, deleteStream] = useMutation<DeleteStreamMutation, DeleteStreamMutationVariables>(DELETE_STREAM_MUTATION);
+  const [, bulkInstallation] = useMutation<BulkActivateStreamsMutation, BulkActivateStreamsMutationVariables>(
+    BULK_ACTIVATE_STREAMS_MUTATION,
+  );
+  const [, bulkUninstallation] = useMutation<BulkDeactivateStreamsMutation, BulkDeactivateStreamsMutationVariables>(
+    BULK_DEACTIVATE_STREAMS_MUTATION,
+  );
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
@@ -307,22 +341,122 @@ const StreamList: VoidFunctionComponent = () => {
       });
   };
 
+  const handleActivateSelectedStreams = () => {
+    setActivateLoadingMap((m) => {
+      return {
+        ...m,
+        ...[...selectedStreams].reduce((acc, streamId) => {
+          return {
+            ...acc,
+            [streamId]: true,
+          };
+        }, {}),
+      };
+    });
+    bulkInstallation({
+      input: {
+        deviceIds: [...selectedStreams],
+      },
+    })
+      .then((res) => {
+        if (res.error != null || res.data == null) {
+          throw new Error(res.error?.message ?? 'Problem with bulk activation of streams');
+        }
+
+        if (res.data?.deviceInventory.bulkInstallDevices.installedDevices.length === 0) {
+          throw new Error('No streams were installed');
+        }
+
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Streams activated successfuly',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Bulk activation of streams has failed',
+        });
+      })
+      .finally(() => {
+        setActivateLoadingMap((m) => {
+          return {
+            ...m,
+            ...[...selectedStreams].reduce((acc, streamId) => {
+              return {
+                ...acc,
+                [streamId]: false,
+              };
+            }, {}),
+          };
+        });
+        setSelectedStreams(new Set());
+      });
+  };
+
+  const handleDeactivateSelectedStreams = () => {
+    setActivateLoadingMap((m) => {
+      return {
+        ...m,
+        ...[...selectedStreams].reduce((acc, streamId) => {
+          return {
+            ...acc,
+            [streamId]: true,
+          };
+        }, {}),
+      };
+    });
+    bulkUninstallation({
+      input: {
+        deviceIds: [...selectedStreams],
+      },
+    })
+      .then((res) => {
+        if (res.error != null || res.data == null) {
+          throw new Error(res.error?.message ?? 'Problem with bulk activation of streams');
+        }
+
+        if (res.data?.deviceInventory.bulkUninstallDevices.uninstalledDevices.length === 0) {
+          throw new Error('No streams were uninstalled');
+        }
+
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Streams deactivated successfuly',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Bulk deactivation of streams has failed',
+        });
+      })
+      .finally(() => {
+        setActivateLoadingMap((m) => {
+          return {
+            ...m,
+            ...[...selectedStreams].reduce((acc, streamId) => {
+              return {
+                ...acc,
+                [streamId]: false,
+              };
+            }, {}),
+          };
+        });
+        setSelectedStreams(new Set());
+      });
+  };
+
   const handleStreamDelete = () => {
     deleteStreams([unwrap(streamIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
   };
 
   const handleSelectedStreamsDelete = () => {
     deleteStreams([...selectedStreams]).finally(() => deleteSelectedStreamsModal.onClose());
-  };
-
-  const handleBulkActivate = () => {
-    // eslint-disable-next-line no-console
-    console.log('bulk activate');
-  };
-
-  const handleBulkDisable = () => {
-    // eslint-disable-next-line no-console
-    console.log('bulk disable');
   };
 
   const areSelectedAll =
@@ -374,8 +508,8 @@ const StreamList: VoidFunctionComponent = () => {
           <Form display="flex">{/* here goes filter form */}</Form>
           <Flex width="50%" justify="flex-end">
             <BulkActions
-              onActivateButtonClick={handleBulkActivate}
-              onDisableButtonClick={handleBulkDisable}
+              onActivateButtonClick={handleActivateSelectedStreams}
+              onDisableButtonClick={handleDeactivateSelectedStreams}
               onDeleteButtonClick={deleteSelectedStreamsModal.onOpen}
               areButtonsDisabled={selectedStreams.size === 0}
             />
