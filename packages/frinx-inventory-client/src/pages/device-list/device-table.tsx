@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom';
 import { getDeviceUsageColor, getLocalDateFromUTC, getDeviceUsage } from '@frinx/shared';
 import { DevicesQuery, DevicesUsageSubscription } from '../../__generated__/graphql';
 import InstallButton from './install-button';
+import { isDeviceOnUniconfigLayer } from '../../helpers/device';
 
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
@@ -136,7 +137,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
       </Thead>
       <Tbody>
         {devices.map(({ node: device }) => {
-          const { isInstalled } = device;
+          const { isInstalled, mountParameters } = device;
+          const isOnUniconfigLayer = isDeviceOnUniconfigLayer(mountParameters);
           const localDate = getLocalDateFromUTC(device.createdAt);
           const isLoading = installLoadingMap[device.id] ?? false;
           const isUnknown = device.model == null && device.software == null && device.version == null;
@@ -208,8 +210,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     data-cy={`device-settings-${device.name}`}
                     aria-label="config"
                     size="sm"
-                    isDisabled={!isInstalled}
-                    disabled={!isInstalled}
+                    isDisabled={!isInstalled || !isOnUniconfigLayer}
+                    disabled={!isInstalled || !isOnUniconfigLayer}
                     icon={<Icon size={12} as={FeatherIcon} icon="settings" />}
                     as={isInstalled ? Link : 'button'}
                     {...(isInstalled ? { to: `../config/${device.id}` } : {})}
