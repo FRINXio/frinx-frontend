@@ -657,6 +657,7 @@ export type Device = Node & {
   blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String']['output'];
   deviceSize: DeviceSize;
+  discoveredAt: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   isInstalled: Scalars['Boolean']['output'];
   labels: LabelConnection;
@@ -687,6 +688,12 @@ export type DeviceConnection = {
   edges: Array<DeviceEdge>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
+};
+
+export type DeviceDiscoveryPayload = {
+  __typename?: 'DeviceDiscoveryPayload';
+  deviceID: Scalars['String']['output'];
+  discoveredAt: Maybe<Scalars['String']['output']>;
 };
 
 export type DeviceEdge = {
@@ -3072,6 +3079,7 @@ export type DeviceInventoryMutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
+  updateDiscoveredAt: Array<DeviceDiscoveryPayload>;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
   updateStream: UpdateStreamPayload;
 };
@@ -3229,6 +3237,11 @@ export type DeviceInventoryMutationUpdateDataStoreArgs = {
 export type DeviceInventoryMutationUpdateDeviceArgs = {
   id: Scalars['String']['input'];
   input: UpdateDeviceInput;
+};
+
+
+export type DeviceInventoryMutationUpdateDiscoveredAtArgs = {
+  deviceIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -4060,7 +4073,7 @@ export type DevicesQueryVariables = Exact<{
 }>;
 
 
-export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, createdAt: string, isInstalled: boolean, serviceState: DeviceServiceState, version: string | null, model: string | null, software: string | null, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, address: string | null, createdAt: string, discoveredAt: string | null, isInstalled: boolean, serviceState: DeviceServiceState, version: string | null, model: string | null, software: string | null, zone: { __typename?: 'Zone', id: string, name: string } } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type InstallDeviceMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -4127,6 +4140,11 @@ export type DevicesConnectionSubscriptionVariables = Exact<{
 
 
 export type DevicesConnectionSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', devicesConnection: { __typename?: 'DevicesConnection', deviceStatuses: Array<{ __typename?: 'DeviceStatus', deviceName: string | null, status: string | null } | null> | null } | null } };
+
+export type DiscoveryWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DiscoveryWorkflowsQuery = { __typename?: 'Query', conductor: { __typename?: 'conductorQuery', getAll: Array<{ __typename?: 'WorkflowDef', name: string, version: number | null } | null> | null } };
 
 export type ModalWorkflowsQueryVariables = Exact<{ [key: string]: never; }>;
 

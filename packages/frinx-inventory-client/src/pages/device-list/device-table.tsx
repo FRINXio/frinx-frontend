@@ -45,7 +45,7 @@ type Props = {
   installLoadingMap: Record<string, boolean>;
   isPerformanceMonitoringEnabled: boolean;
   onSort: (sortedBy: SortedBy) => void;
-  onDeviceDiscoveryBtnClick: (deviceId: string) => void;
+  onDeviceDiscoveryBtnClick: (deviceId: string | null) => void;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onDeleteBtnClick: (deviceId: string) => void;
@@ -138,8 +138,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
       </Thead>
       <Tbody>
         {devices.map(({ node: device }) => {
-          const { isInstalled } = device;
-          const localDate = getLocalDateFromUTC(device.createdAt);
+          const { isInstalled, discoveredAt } = device;
+          const localDate = discoveredAt ? getLocalDateFromUTC(discoveredAt) : null;
           const isLoading = installLoadingMap[device.id] ?? false;
           const isUnknown = device.model == null && device.software == null && device.version == null;
 
@@ -177,14 +177,14 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </Text>
               </Td>
               <Td>
-                <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
+                <Tooltip label={localDate ? format(localDate, 'dd/MM/yyyy, k:mm') : 'unknown'}>
                   <Text
                     data-cy={`device-created-at-${device.name}`}
                     as="span"
                     fontSize="sm"
                     color={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
                   >
-                    {formatDistanceToNow(localDate)} ago
+                    {localDate ? `${formatDistanceToNow(localDate)} ago` : 'UNKNOWN'}
                   </Text>
                 </Tooltip>
               </Td>
@@ -217,7 +217,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     size="sm"
                     icon={<Icon size={12} as={FeatherIcon} icon="search" />}
                     as={isInstalled ? Link : 'button'}
-                    onClick={() => onDeviceDiscoveryBtnClick(device.id)}
+                    onClick={() => onDeviceDiscoveryBtnClick(device.address)}
                   />
 
                   <IconButton

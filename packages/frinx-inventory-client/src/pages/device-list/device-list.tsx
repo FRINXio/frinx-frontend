@@ -51,6 +51,7 @@ import {
   DevicesUsageSubscriptionVariables,
   DevicesConnectionSubscriptionVariables,
   DevicesConnectionSubscription,
+  DiscoveryWorkflowsQuery,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -82,7 +83,9 @@ const DEVICES_QUERY = gql`
           node {
             id
             name
+            address
             createdAt
+            discoveredAt
             isInstalled
             serviceState
             version
@@ -225,6 +228,17 @@ const DEVICES_STATUS_SUBSCRIPTION = gql`
   }
 `;
 
+const DISCOVERY_WORKFLOWS = gql`
+  query DiscoveryWorkflows {
+    conductor {
+      getAll {
+        name
+        version
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -264,6 +278,9 @@ const DeviceList: VoidFunctionComponent = () => {
     KafkaHealthCheckQuery,
     KafkaHealthCheckQueryVariables
   >({ query: KAFKA_HEALTHCHECK_QUERY, pause: !isPerformanceMonitoringEnabled });
+  const [{ data: workflowsData }] = useQuery<DiscoveryWorkflowsQuery>({
+    query: DISCOVERY_WORKFLOWS,
+  });
   const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
     KAFKA_RECONNECT_MUTATION,
   );
@@ -279,14 +296,21 @@ const DeviceList: VoidFunctionComponent = () => {
   const [, bulkInstallation] = useMutation<BulkInstallDevicesMutation, BulkInstallDevicesMutationVariables>(
     BULK_INSTALL_DEVICES_MUTATION,
   );
-  // const [{ data: devicesUsage }] = useSubscription<DevicesUsageSubscriptionVariables, DevicesUsageSubscription>({
-  //   query: DEVICES_USAGE_SUBSCRIPTION,
-  //   variables: {
-  //     deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
-  //     refreshEverySec: 5,
-  //   },
-  //   pause: !isPerformanceMonitoringEnabled,
-  // });
+  const [{ data: devicesUsage }] = useSubscription<DevicesUsageSubscriptionVariables, DevicesUsageSubscription>({
+    query: DEVICES_USAGE_SUBSCRIPTION,
+    variables: {
+      deviceNames: deviceData?.deviceInventory.devices.edges.map(({ node }) => node.name) ?? [],
+      refreshEverySec: 5,
+    },
+    pause: !isPerformanceMonitoringEnabled,
+  });
+
+  const deviceInductionManagerWorkflow = (workflowsData?.conductor.getAll || []).find(
+    (wf) => wf?.name === 'device_induction_manager',
+  );
+  const bulkInductionManagerWorkflow = (workflowsData?.conductor.getAll || []).find(
+    (wf) => wf?.name === 'bulk_device_induction_manager',
+  );
 
   const deviceInstallStatuses = deviceData?.deviceInventory.devices.edges.map((device) => ({
     name: device.node.name,
@@ -594,12 +618,65 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
-  const handleDeviceDiscoveryBtnClick = (deviceId: string) => {
-    console.log(deviceId);
+  const handleDeviceDiscoveryBtnClick = (deviceAdress: string | null) => {
+    if (deviceAdress == null) {
+      addToastNotification({
+        content: 'We cannot execute undefined workflow',
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    return executeWorkflow({
+      input: {
+        workflowName: 'device_induction_manager',
+        workflowVersion: deviceInductionManagerWorkflow?.version,
+        inputParameters: JSON.stringify(deviceAdress),
+      },
+    })
+      .then((res) => {
+        addToastNotification({ content: 'Device successfully discovered', type: 'success' });
+        return res.data?.conductor.executeWorkflowByName;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem discovering the device', type: 'error' });
+        return null;
+      });
   };
 
   const handleRediscoverSelectedDevices = () => {
-    console.log(...selectedDevices);
+    const devices = deviceData?.deviceInventory.devices.edges.filter((device) =>
+      [...selectedDevices].includes(device.node.id),
+    );
+    const ips = (devices || []).map((device) => device.node.address);
+
+    const inputParameters = {
+      /* eslint-disable @typescript-eslint/naming-convention */
+      /* eslint-disable object-shorthand */
+
+      ips_and_ports: {
+        ips: ips.map((ip) => ({ ip: ip })),
+      },
+    };
+    /* eslint-enable object-shorthand */
+    /* eslint-enable @typescript-eslint/naming-convention */
+
+    return executeWorkflow({
+      input: {
+        workflowName: 'bulk_device_induction_manager',
+        workflowVersion: bulkInductionManagerWorkflow?.version,
+        inputParameters: JSON.stringify(inputParameters),
+      },
+    })
+      .then((res) => {
+        addToastNotification({ content: 'Device successfully discovered', type: 'success' });
+        return res.data?.conductor.executeWorkflowByName;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem discovering the device', type: 'error' });
+        return null;
+      });
   };
 
   const labels = labelsData?.deviceInventory.labels?.edges ?? [];
@@ -765,7 +842,7 @@ const DeviceList: VoidFunctionComponent = () => {
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
-          // devicesUsage={devicesUsage}
+          devicesUsage={devicesUsage}
           areSelectedAll={areSelectedAll}
           onSelectAll={handleSelectionOfAllDevices}
           selectedDevices={selectedDevices}
