@@ -29,3 +29,34 @@ export const getDeviceUsage = (cpuLoad?: number | null, memoryLoad?: number | nu
 
   return DeviceUsageWatermark.UNKNOWN;
 };
+
+export const isDeviceOnUniconfigLayer = (mountParameters: string | null): boolean => {
+  if (!mountParameters) {
+    return false;
+  }
+
+  const parsedMountParameters = JSON.parse(mountParameters);
+
+  if (
+    'cli' in parsedMountParameters &&
+    'uniconfig-config:install-uniconfig-node-enabled' in parsedMountParameters.cli
+  ) {
+    return parsedMountParameters.cli['uniconfig-config:install-uniconfig-node-enabled'];
+  }
+
+  if (
+    'netconf' in parsedMountParameters &&
+    'uniconfig-config:install-uniconfig-node-enabled' in parsedMountParameters.netconf
+  ) {
+    return parsedMountParameters.netconf['uniconfig-config:install-uniconfig-node-enabled'];
+  }
+
+  if (
+    'gnmi' in parsedMountParameters &&
+    'uniconfig-config:install-uniconfig-node-enabled' in parsedMountParameters.gnmi
+  ) {
+    return parsedMountParameters.gnmi['uniconfig-config:install-uniconfig-node-enabled'];
+  }
+
+  return true;
+};

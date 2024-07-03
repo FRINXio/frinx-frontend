@@ -14,7 +14,7 @@ type Props = {
 const LinkOverlayComponent: FC<{ isLinkExternal?: boolean; path: string }> = ({ isLinkExternal, path, children }) => {
   if (isLinkExternal) {
     return (
-      <LinkOverlay as="a" href={path}>
+      <LinkOverlay as="a" href={path} target="_blank">
         {children}
       </LinkOverlay>
     );

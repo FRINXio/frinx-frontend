@@ -95,6 +95,7 @@ const DEVICES_QUERY = gql`
               id
               name
             }
+            mountParameters
           }
         }
         pageInfo {
