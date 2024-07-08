@@ -757,7 +757,7 @@ const DeviceList: VoidFunctionComponent = () => {
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
-          devicesUsage={devicesUsage}
+          devicesUsage={devicesUsage?.deviceInventory.devicesUsage?.devicesUsage ?? []}
           areSelectedAll={areSelectedAll}
           onSelectAll={handleSelectionOfAllDevices}
           selectedDevices={selectedDevices}
