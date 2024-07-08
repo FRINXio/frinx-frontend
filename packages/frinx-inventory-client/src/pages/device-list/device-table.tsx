@@ -19,7 +19,7 @@ import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { getDeviceUsageColor, getLocalDateFromUTC, getDeviceUsage, omitNullValue } from '@frinx/shared';
-import { Device, DevicesQuery, DevicesUsage, DevicesUsageSubscription, DeviceUsage } from '../../__generated__/graphql';
+import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
 
@@ -103,14 +103,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   onSelectAll,
   isPerformanceMonitoringEnabled,
 }) => {
-  console.log('connection', devicesConnection);
-  const deviceStatuses2 = isPerformanceMonitoringEnabled
+  const deviceStatuses = isPerformanceMonitoringEnabled
     ? mergeDeviceStatuses(deviceInstallStatuses ?? [], devicesUsage, devicesConnection ?? [])
     : new Map<string, DeviceStatus>();
-
-  const deviceStatusArray = Array.from(deviceStatuses2);
-  console.log(deviceStatusArray);
-  console.log(deviceStatusArray.filter((s) => s[0] === 'PM2'));
 
   return (
     <Table background="white" size="lg">
@@ -159,10 +154,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           const localDate = getLocalDateFromUTC(device.createdAt);
           const isLoading = installLoadingMap[device.id] ?? false;
           const isUnknown = device.model == null && device.software == null && device.version == null;
-          const deviceStatus = deviceStatuses2.get(name);
-          if (device.name === 'PM2') {
-            console.log(deviceStatus);
-          }
+          const deviceStatus = deviceStatuses.get(name);
 
           return (
             <Tr key={device.id}>
