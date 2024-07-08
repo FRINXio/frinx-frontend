@@ -299,7 +299,7 @@ const DeviceList: VoidFunctionComponent = () => {
   >({
     query: DEVICES_STATUS_SUBSCRIPTION,
     variables: {
-      connectionTimeout: 1,
+      connectionTimeout: 5,
       targetDevices: deviceInstallStatuses?.filter((device) => device.isInstalled).map((device) => device.name) ?? [],
     },
     pause: !isPerformanceMonitoringEnabled,
