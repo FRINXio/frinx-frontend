@@ -18,8 +18,8 @@ import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { getDeviceUsageColor, getLocalDateFromUTC, getDeviceUsage } from '@frinx/shared';
-import { DevicesQuery, DevicesUsageSubscription } from '../../__generated__/graphql';
+import { getDeviceUsageColor, getLocalDateFromUTC, getDeviceUsage, omitNullValue } from '@frinx/shared';
+import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
 
@@ -34,13 +34,46 @@ type DeviceInstallStatus = {
   name: string;
   isInstalled: boolean;
 };
+type DeviceStatus = {
+  name: string;
+  isInstalled: boolean;
+  connection: string | null;
+  usageCpuLoad: number | null;
+  memoryLoad: number | null;
+};
+
+function mergeDeviceStatuses(
+  devices: DeviceInstallStatus[],
+  usage: DevicesUsage[],
+  connection: DevicesConnection[],
+): Map<string, DeviceStatus> {
+  const usageMap = new Map(usage.map((u) => [u.deviceName, u]));
+  const connectionMap = new Map(
+    connection
+      .filter(omitNullValue)
+      .filter((c) => c.deviceName != null)
+      .map((c) => [c.deviceName, c]),
+  );
+
+  const mergedStatuses = devices.map((d) => {
+    return {
+      name: d.name,
+      isInstalled: d.isInstalled,
+      connection: connectionMap.get(d.name)?.status ?? null,
+      usageCpuLoad: usageMap.get(d.name)?.cpuLoad ?? null,
+      memoryLoad: usageMap.get(d.name)?.memoryLoad ?? null,
+    };
+  });
+
+  return new Map(mergedStatuses.map((s) => [s.name, s]));
+}
 
 type Props = {
   deviceInstallStatuses?: DeviceInstallStatus[];
   devicesConnection?: DevicesConnection[] | null;
   orderBy: OrderBy;
   devices: DevicesQuery['deviceInventory']['devices']['edges'];
-  devicesUsage?: DevicesUsageSubscription | null;
+  devicesUsage: DevicesUsage[];
   selectedDevices: Set<string>;
   areSelectedAll: boolean;
   installLoadingMap: Record<string, boolean>;
@@ -73,29 +106,8 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   isPerformanceMonitoringEnabled,
 }) => {
   const deviceStatuses = isPerformanceMonitoringEnabled
-    ? []
-    : devicesUsage?.deviceInventory.devicesUsage?.devicesUsage.map((deviceUsage) => {
-        const deviceConnection = devicesConnection?.find((device) => device?.deviceName === deviceUsage.deviceName);
-        const deviceInstallStatus = deviceInstallStatuses?.find((device) => device?.name === deviceUsage.deviceName);
-
-        const deviceUsageLevel = getDeviceUsage(
-          deviceUsage?.cpuLoad,
-          deviceUsage?.memoryLoad,
-          deviceConnection?.status,
-          deviceInstallStatus?.isInstalled,
-        );
-        const statusColor = getDeviceUsageColor(
-          deviceUsage?.cpuLoad,
-          deviceUsage?.memoryLoad,
-          deviceConnection?.status,
-        );
-
-        return {
-          deviceName: deviceUsage?.deviceName ?? '',
-          status: deviceUsageLevel,
-          statusColor,
-        };
-      }) ?? [];
+    ? mergeDeviceStatuses(deviceInstallStatuses ?? [], devicesUsage, devicesConnection ?? [])
+    : new Map<string, DeviceStatus>();
 
   return (
     <Table background="white" size="lg">
@@ -139,11 +151,12 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
       </Thead>
       <Tbody>
         {devices.map(({ node: device }) => {
-          const { isInstalled, discoveredAt, mountParameters } = device;
+          const { name, isInstalled, discoveredAt, mountParameters } = device;
           const localDate = discoveredAt ? getLocalDateFromUTC(discoveredAt) : null;
           const isOnUniconfigLayer = isDeviceOnUniconfigLayer(mountParameters);
           const isLoading = installLoadingMap[device.id] ?? false;
           const isUnknown = device.model == null && device.software == null && device.version == null;
+          const deviceStatus = deviceStatuses.get(name);
 
           return (
             <Tr key={device.id}>
@@ -193,9 +206,19 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               <Td>
                 <Badge
                   data-cy={`device-status-${device.name}`}
-                  colorScheme={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
+                  colorScheme={getDeviceUsageColor(
+                    deviceStatus?.usageCpuLoad ?? null,
+                    deviceStatus?.memoryLoad ?? null,
+                    deviceStatus?.connection ?? null,
+                    deviceStatus?.isInstalled ?? false,
+                  )}
                 >
-                  {deviceStatuses.find((d) => d.deviceName === device.name)?.status ?? 'UNKNOWN'}
+                  {getDeviceUsage(
+                    deviceStatus?.usageCpuLoad,
+                    deviceStatus?.memoryLoad,
+                    deviceStatus?.connection,
+                    deviceStatus?.isInstalled,
+                  ) ?? 'UNKNOWN'}
                 </Badge>
               </Td>
               <Td minWidth={200}>

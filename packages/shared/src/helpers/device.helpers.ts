@@ -20,7 +20,7 @@ export const getDeviceUsage = (
   deviceConnection?: string | null,
   deviceInstallStatus?: boolean,
 ) => {
-  if ((cpuLoad == null || memoryLoad == null) && deviceConnection === 'complete' && deviceInstallStatus) {
+  if ((cpuLoad == null || memoryLoad == null) && deviceConnection === 'online' && deviceInstallStatus) {
     return DeviceUsageWatermark.IN_SERVICE;
   }
 
@@ -32,27 +32,31 @@ export const getDeviceUsage = (
     return DeviceUsageWatermark.UNKNOWN;
   }
 
-  if (isHighUsage(cpuLoad) && isHighUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
+  if (isHighUsage(cpuLoad) && isHighUsage(memoryLoad) && deviceConnection === 'online' && deviceInstallStatus) {
     return DeviceUsageWatermark.HIGH;
   }
 
-  if (isHighUsage(cpuLoad) && !isHighUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
+  if (isHighUsage(cpuLoad) && !isHighUsage(memoryLoad) && deviceConnection === 'online' && deviceInstallStatus) {
     return DeviceUsageWatermark.HIGH_CPU;
   }
 
-  if (!isHighUsage(cpuLoad) && isHighUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
+  if (!isHighUsage(cpuLoad) && isHighUsage(memoryLoad) && deviceConnection === 'online' && deviceInstallStatus) {
     return DeviceUsageWatermark.HIGH_MEMORY;
   }
 
-  if (isMediumUsage(cpuLoad) && isMediumUsage(memoryLoad) && deviceConnection === 'complete' && deviceInstallStatus) {
+  if (isMediumUsage(cpuLoad) && isMediumUsage(memoryLoad) && deviceConnection === 'online' && deviceInstallStatus) {
     return DeviceUsageWatermark.MEDIUM;
   }
 
-  if ((isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) && deviceConnection === 'complete' && deviceInstallStatus) {
+  if ((isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) && deviceConnection === 'online' && deviceInstallStatus) {
     return DeviceUsageWatermark.IN_SERVICE;
   }
 
-  if ((isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) && !deviceConnection && deviceInstallStatus) {
+  if (
+    (isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) &&
+    (deviceConnection === 'offline' || !deviceConnection) &&
+    deviceInstallStatus
+  ) {
     return DeviceUsageWatermark.OFFLINE;
   }
 

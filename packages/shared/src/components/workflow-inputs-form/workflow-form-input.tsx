@@ -115,7 +115,7 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
         <NumberInput
           mt={4}
           name={inputParameterKey}
-          value={values[inputParameterKey]}
+          value={values[inputParameterKey] ?? 0}
           onChange={(_, number) => {
             if (Number.isNaN(number)) {
               return onChange(inputParameterKey, 0);
