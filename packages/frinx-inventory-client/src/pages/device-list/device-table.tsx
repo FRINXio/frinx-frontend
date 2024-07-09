@@ -40,6 +40,7 @@ type DeviceStatus = {
   connection: string | null;
   usageCpuLoad: number | null;
   memoryLoad: number | null;
+  statusColor?: string;
 };
 
 function mergeDeviceStatuses(
@@ -197,7 +198,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     data-cy={`device-created-at-${device.name}`}
                     as="span"
                     fontSize="sm"
-                    color={deviceStatuses.find((d) => d.deviceName === device.name)?.statusColor}
+                    color={deviceStatuses.get(device.name)?.statusColor}
                   >
                     {localDate ? `${formatDistanceToNow(localDate)} ago` : 'UNKNOWN'}
                   </Text>
