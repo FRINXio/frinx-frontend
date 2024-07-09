@@ -91,6 +91,7 @@ const DEVICES_QUERY = gql`
               id
               name
             }
+            mountParameters
           }
         }
         pageInfo {
@@ -298,7 +299,7 @@ const DeviceList: VoidFunctionComponent = () => {
   >({
     query: DEVICES_STATUS_SUBSCRIPTION,
     variables: {
-      connectionTimeout: 10,
+      connectionTimeout: 5,
       targetDevices: deviceInstallStatuses?.filter((device) => device.isInstalled).map((device) => device.name) ?? [],
     },
     pause: !isPerformanceMonitoringEnabled,
@@ -756,7 +757,7 @@ const DeviceList: VoidFunctionComponent = () => {
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
-          devicesUsage={devicesUsage}
+          devicesUsage={devicesUsage?.deviceInventory.devicesUsage?.devicesUsage ?? []}
           areSelectedAll={areSelectedAll}
           onSelectAll={handleSelectionOfAllDevices}
           selectedDevices={selectedDevices}
