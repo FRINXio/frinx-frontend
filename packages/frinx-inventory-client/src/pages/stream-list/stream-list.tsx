@@ -418,7 +418,7 @@ const StreamList: VoidFunctionComponent = () => {
           throw new Error(res.error?.message ?? 'Problem with bulk activation of streams');
         }
 
-      if (res.data?.deviceInventory.bulkUninstallStreams.uninstalledStreams.length === 0) {
+        if (res.data?.deviceInventory.bulkUninstallStreams.uninstalledStreams.length === 0) {
           throw new Error('No streams were uninstalled');
         }
 
