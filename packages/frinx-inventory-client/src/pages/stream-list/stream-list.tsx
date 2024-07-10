@@ -114,10 +114,10 @@ const DELETE_STREAM_MUTATION = gql`
 `;
 
 const BULK_ACTIVATE_STREAMS_MUTATION = gql`
-  mutation BulkActivateStreams($input: BulkInstallDevicesInput!) {
+  mutation BulkActivateStreams($input: BulkInstallStreamsInput!) {
     deviceInventory {
-      bulkInstallDevices(input: $input) {
-        installedDevices {
+      bulkInstallStreams(input: $input) {
+        installedStreams {
           id
         }
       }
@@ -126,10 +126,10 @@ const BULK_ACTIVATE_STREAMS_MUTATION = gql`
 `;
 
 const BULK_DEACTIVATE_STREAMS_MUTATION = gql`
-  mutation BulkDeactivateStreams($input: BulkUninstallDevicesInput!) {
+  mutation BulkDeactivateStreams($input: BulkUninstallStreamsInput!) {
     deviceInventory {
-      bulkUninstallDevices(input: $input) {
-        uninstalledDevices {
+      bulkUninstallStreams(input: $input) {
+        uninstalledStreams {
           id
         }
       }
@@ -355,7 +355,7 @@ const StreamList: VoidFunctionComponent = () => {
     });
     bulkInstallation({
       input: {
-        deviceIds: [...selectedStreams],
+        streamIds: [...selectedStreams],
       },
     })
       .then((res) => {
@@ -363,7 +363,7 @@ const StreamList: VoidFunctionComponent = () => {
           throw new Error(res.error?.message ?? 'Problem with bulk activation of streams');
         }
 
-        if (res.data?.deviceInventory.bulkInstallDevices.installedDevices.length === 0) {
+        if (res.data?.deviceInventory.bulkInstallStreams.installedStreams.length === 0) {
           throw new Error('No streams were installed');
         }
 
@@ -410,7 +410,7 @@ const StreamList: VoidFunctionComponent = () => {
     });
     bulkUninstallation({
       input: {
-        deviceIds: [...selectedStreams],
+        streamIds: [...selectedStreams],
       },
     })
       .then((res) => {
@@ -418,7 +418,7 @@ const StreamList: VoidFunctionComponent = () => {
           throw new Error(res.error?.message ?? 'Problem with bulk activation of streams');
         }
 
-        if (res.data?.deviceInventory.bulkUninstallDevices.uninstalledDevices.length === 0) {
+      if (res.data?.deviceInventory.bulkUninstallStreams.uninstalledStreams.length === 0) {
           throw new Error('No streams were uninstalled');
         }
 
