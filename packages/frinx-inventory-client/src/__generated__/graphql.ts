@@ -891,6 +891,8 @@ export type FilterLabelsInput = {
 };
 
 export type FilterStreamsInput = {
+  deviceName?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
   streamName?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -4179,6 +4181,7 @@ export type UpdateStreamMutationVariables = Exact<{
 export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
 
 export type StreamsQueryVariables = Exact<{
+  labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
   streamName?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<StreamOrderByInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -4210,6 +4213,11 @@ export type DeleteStreamMutationVariables = Exact<{
 
 
 export type DeleteStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteStream: { __typename?: 'DeleteStreamPayload', stream: { __typename?: 'Stream', id: string } | null } } };
+
+export type StreamFilterLabelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type StreamFilterLabelsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } };
 
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 
