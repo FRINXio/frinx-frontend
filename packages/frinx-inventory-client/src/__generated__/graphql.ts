@@ -4183,6 +4183,7 @@ export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: {
 export type StreamsQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
   streamName?: InputMaybe<Scalars['String']['input']>;
+  deviceName?: InputMaybe<Scalars['String']['input']>;
   orderBy?: InputMaybe<StreamOrderByInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
