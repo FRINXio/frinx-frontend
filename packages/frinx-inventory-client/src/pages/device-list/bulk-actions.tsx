@@ -5,10 +5,12 @@ type Props = {
   onInstallButtonClick: () => void;
   onDeleteButtonClick: () => void;
   onWorkflowButtonClick: () => void;
+  onRediscoverButtonClick: () => void;
   areButtonsDisabled: boolean;
 };
 
 const BulkActions: VoidFunctionComponent<Props> = ({
+  onRediscoverButtonClick,
   onInstallButtonClick,
   onDeleteButtonClick,
   onWorkflowButtonClick,
@@ -16,6 +18,16 @@ const BulkActions: VoidFunctionComponent<Props> = ({
 }) => {
   return (
     <HStack>
+      <Button
+        data-cy="rediscover-devices"
+        isDisabled={areButtonsDisabled}
+        variant="outline"
+        colorScheme="blue"
+        size="sm"
+        onClick={onRediscoverButtonClick}
+      >
+        Rediscover selected
+      </Button>
       <Button
         data-cy="send-to-workflows"
         isDisabled={areButtonsDisabled}
