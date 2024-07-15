@@ -30,11 +30,11 @@ const SearchByLabelInput: FC<Props> = ({
 
   return (
     // autocomplete lib has some weird styling at the bottom
-    <Box width="100%" position="relative">
+    <Box width="100%" position="relative" mb={-4}>
       <CUIAutoComplete
         label={labelText}
         labelStyleProps={{
-          marginBottom: 0,
+          marginBottom: -2,
         }}
         renderCustomInput={(inputProps) => (
           <Input data-cy="search-by-label" {...inputProps} variant="outline" backgroundColor="white" />

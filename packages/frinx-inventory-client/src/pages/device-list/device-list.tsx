@@ -6,12 +6,19 @@ import {
   Box,
   Button,
   chakra,
+  Checkbox,
   Container,
   Flex,
   Heading,
   HStack,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   useDisclosure,
 } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import {
   ExecuteWorkflowModal,
   unwrap,
@@ -248,6 +255,13 @@ const DeviceList: VoidFunctionComponent = () => {
   const [searchText, setSearchText] = useState<string | null>(null);
   const [deviceNameFilter, setDeviceNameFilter] = useState<string | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [columnsDisplayed, setColumnsDisplayed] = useState([
+    'model/version',
+    'discoveredAt',
+    'deviceStatus',
+    'isInstalled',
+  ]);
+
   const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
   const [{ data: deviceData, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
@@ -309,6 +323,16 @@ const DeviceList: VoidFunctionComponent = () => {
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
+
+  const deviceColumnOptions = ['model/version', 'discoveredAt', 'deviceStatus', 'isInstalled'];
+
+  const handleCheckboxChange = (value: string) => {
+    if (columnsDisplayed.includes(value)) {
+      setColumnsDisplayed(columnsDisplayed.filter((item) => item !== value));
+    } else {
+      setColumnsDisplayed([...columnsDisplayed, value]);
+    }
+  };
 
   useEffect(() => {
     let kafkaToolbarTimeout: NodeJS.Timeout;
@@ -714,19 +738,18 @@ const DeviceList: VoidFunctionComponent = () => {
           </HStack>
         </Flex>
         <Flex justify="space-between">
-          <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
-            <Box flex={1}>
-              <DeviceFilter
-                labels={labels}
-                selectedLabels={selectedLabels || []}
-                onSelectionChange={handleOnSelectionChange}
-                isCreationDisabled
-              />
-            </Box>
+          <Form display="flex" alignItems="flex-end" justifyContent="bottom" width="half" onSubmit={handleSearchSubmit}>
+            <DeviceFilter
+              labels={labels}
+              selectedLabels={selectedLabels || []}
+              onSelectionChange={handleOnSelectionChange}
+              isCreationDisabled
+            />
+
             <Box flex={1} marginLeft="2">
               <DeviceSearch text={searchText || ''} onChange={setSearchText} />
             </Box>
-            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" type="submit">
               Search
             </Button>
             <Button
@@ -736,7 +759,6 @@ const DeviceList: VoidFunctionComponent = () => {
               colorScheme="red"
               variant="outline"
               marginLeft="2"
-              mt={10}
             >
               Clear
             </Button>
@@ -752,6 +774,20 @@ const DeviceList: VoidFunctionComponent = () => {
             />
           </Flex>
         </Flex>
+        <Menu closeOnSelect={false}>
+          <MenuButton mb={5} as={Button} rightIcon={<Icon as={FeatherIcon} size={40} icon='chevron-down' />}>
+            Customize columns
+          </MenuButton>
+          <MenuList>
+            {deviceColumnOptions.map((option) => (
+              <MenuItem key={option}>
+                <Checkbox isChecked={columnsDisplayed.includes(option)} onChange={() => handleCheckboxChange(option)}>
+                  {option}
+                </Checkbox>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
         <DeviceTable
           deviceInstallStatuses={deviceInstallStatuses}
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
@@ -769,6 +805,7 @@ const DeviceList: VoidFunctionComponent = () => {
           installLoadingMap={installLoadingMap}
           onDeviceSelection={handleDeviceSelection}
           isPerformanceMonitoringEnabled={isPerformanceMonitoringEnabled}
+          columnsDisplayed={columnsDisplayed}
         />
         <Pagination
           onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}

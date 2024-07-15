@@ -84,6 +84,7 @@ type Props = {
   onDeleteBtnClick: (deviceId: string) => void;
   onDeviceSelection: (deviceId: string, checked: boolean) => void;
   onSelectAll: (checked: boolean) => void;
+  columnsDisplayed: string[];
 };
 
 const DeviceTable: VoidFunctionComponent<Props> = ({
@@ -102,6 +103,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   areSelectedAll,
   onSelectAll,
   isPerformanceMonitoringEnabled,
+  columnsDisplayed,
 }) => {
   const deviceStatuses = isPerformanceMonitoringEnabled
     ? mergeDeviceStatuses(deviceInstallStatuses ?? [], devicesUsage, devicesConnection ?? [])
@@ -122,28 +124,38 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               )}
             </Flex>
           </Th>
-          <Th>
-            <Text>Model/Version</Text>
-          </Th>
-          <Th>
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              cursor="pointer"
-              onClick={() => onSort('createdAt')}
-            >
-              <Text>Created</Text>
-              {orderBy?.sortKey === 'createdAt' && (
-                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
-              )}
-            </Flex>
-          </Th>
-          <Th>
-            <Flex alignItems="center" justifyContent="space-between" cursor="pointer">
-              <Text>Device Status</Text>
-            </Flex>
-          </Th>
-          <Th>Installation</Th>
+          {columnsDisplayed.includes('model/version') && (
+            <Th>
+              <Text>Model/Version</Text>
+            </Th>
+          )}
+          {columnsDisplayed.includes('discoveredAt') && (
+            <Th>
+              <Flex
+                alignItems="center"
+                justifyContent="space-between"
+                cursor="pointer"
+                onClick={() => onSort('createdAt')}
+              >
+                <Text>Created</Text>
+                {orderBy?.sortKey === 'createdAt' && (
+                  <Icon
+                    as={FeatherIcon}
+                    size={40}
+                    icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'}
+                  />
+                )}
+              </Flex>
+            </Th>
+          )}
+          {columnsDisplayed.includes('deviceStatus') && (
+            <Th>
+              <Flex alignItems="center" justifyContent="space-between" cursor="pointer">
+                <Text>Device Status</Text>
+              </Flex>
+            </Th>
+          )}
+          {columnsDisplayed.includes('isInstalled') && <Th>Installation</Th>}
           <Th>Actions</Th>
         </Tr>
       </Thead>
@@ -184,49 +196,57 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                   )}
                 </HStack>
               </Td>
-              <Td>
-                <Text data-cy="device-name-software" as="span">
-                  {device.model ?? device.software ?? '?'} / {device.version ?? '?'}
-                </Text>
-              </Td>
-              <Td>
-                <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
-                  <Text data-cy={`device-created-at-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
-                    {formatDistanceToNow(localDate)} ago
+              {columnsDisplayed.includes('model/version') && (
+                <Td>
+                  <Text data-cy="device-name-software" as="span">
+                    {device.model ?? device.software ?? '?'} / {device.version ?? '?'}
                   </Text>
-                </Tooltip>
-              </Td>
-              <Td>
-                <Badge
-                  data-cy={`device-status-${device.name}`}
-                  colorScheme={getDeviceUsageColor(
-                    deviceStatus?.usageCpuLoad ?? null,
-                    deviceStatus?.memoryLoad ?? null,
-                    deviceStatus?.connection ?? null,
-                    deviceStatus?.isInstalled ?? false,
-                  )}
-                >
-                  {getDeviceUsage(
-                    deviceStatus?.usageCpuLoad,
-                    deviceStatus?.memoryLoad,
-                    deviceStatus?.connection,
-                    deviceStatus?.isInstalled,
-                  ) ?? 'UNKNOWN'}
-                </Badge>
-              </Td>
-              <Td minWidth={200}>
-                <InstallButton
-                  deviceName={device.name}
-                  isInstalled={isInstalled}
-                  isLoading={isLoading}
-                  onInstalClick={() => {
-                    onInstallButtonClick(device.id);
-                  }}
-                  onUninstallClick={() => {
-                    onUninstallButtonClick(device.id);
-                  }}
-                />
-              </Td>
+                </Td>
+              )}
+              {columnsDisplayed.includes('discoveredAt') && (
+                <Td>
+                  <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
+                    <Text data-cy={`device-created-at-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
+                      {formatDistanceToNow(localDate)} ago
+                    </Text>
+                  </Tooltip>
+                </Td>
+              )}
+              {columnsDisplayed.includes('deviceStatus') && (
+                <Td>
+                  <Badge
+                    data-cy={`device-status-${device.name}`}
+                    colorScheme={getDeviceUsageColor(
+                      deviceStatus?.usageCpuLoad ?? null,
+                      deviceStatus?.memoryLoad ?? null,
+                      deviceStatus?.connection ?? null,
+                      deviceStatus?.isInstalled ?? false,
+                    )}
+                  >
+                    {getDeviceUsage(
+                      deviceStatus?.usageCpuLoad,
+                      deviceStatus?.memoryLoad,
+                      deviceStatus?.connection,
+                      deviceStatus?.isInstalled,
+                    ) ?? 'UNKNOWN'}
+                  </Badge>
+                </Td>
+              )}
+              {columnsDisplayed.includes('isInstalled') && (
+                <Td minWidth={200}>
+                  <InstallButton
+                    deviceName={device.name}
+                    isInstalled={isInstalled}
+                    isLoading={isLoading}
+                    onInstalClick={() => {
+                      onInstallButtonClick(device.id);
+                    }}
+                    onUninstallClick={() => {
+                      onUninstallButtonClick(device.id);
+                    }}
+                  />
+                </Td>
+              )}
               <Td minWidth={200}>
                 <HStack spacing={2}>
                   <IconButton
