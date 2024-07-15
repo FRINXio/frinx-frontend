@@ -24,7 +24,7 @@ export const getDeviceUsage = (
     return DeviceUsageWatermark.IN_SERVICE;
   }
 
-  if ((cpuLoad == null || memoryLoad == null) && !deviceConnection && deviceInstallStatus) {
+  if ((cpuLoad == null || memoryLoad == null) && deviceConnection === 'offline' && deviceInstallStatus) {
     return DeviceUsageWatermark.OFFLINE;
   }
 
@@ -52,11 +52,7 @@ export const getDeviceUsage = (
     return DeviceUsageWatermark.IN_SERVICE;
   }
 
-  if (
-    (isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) &&
-    (deviceConnection === 'offline' || !deviceConnection) &&
-    deviceInstallStatus
-  ) {
+  if ((isLowUsage(cpuLoad) || isLowUsage(memoryLoad)) && deviceConnection === 'offline' && deviceInstallStatus) {
     return DeviceUsageWatermark.OFFLINE;
   }
 
