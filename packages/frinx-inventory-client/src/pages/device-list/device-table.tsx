@@ -200,28 +200,22 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </HStack>
               </Td>
               {columnsDisplayed.includes('model/version') && (
-              <Td>
-                <Text data-cy="device-name-software" as="span">
-                  {device.model ?? device.software ?? '?'} / {device.version ?? '?'}
-                </Text>
-              </Td>
-              <Td>
-                <Tooltip label={localDate ? format(localDate, 'dd/MM/yyyy, k:mm') : 'unknown'}>
-                  <Text
-                    data-cy={`device-created-at-${device.name}`}
-                    as="span"
-                    fontSize="sm"
-                    color={deviceStatuses.get(device.name)?.statusColor}
-                  >
-                    {localDate ? `${formatDistanceToNow(localDate)} ago` : 'UNKNOWN'}
+                <Td>
+                  <Text data-cy="device-name-software" as="span">
+                    {device.model ?? device.software ?? '?'} / {device.version ?? '?'}
                   </Text>
                 </Td>
               )}
               {columnsDisplayed.includes('discoveredAt') && (
                 <Td>
-                  <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
-                    <Text data-cy={`device-created-at-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
-                      {formatDistanceToNow(localDate)} ago
+                  <Tooltip label={localDate ? format(localDate, 'dd/MM/yyyy, k:mm') : 'unknown'}>
+                    <Text
+                      data-cy={`device-created-at-${device.name}`}
+                      as="span"
+                      fontSize="sm"
+                      color={deviceStatuses.get(device.name)?.statusColor}
+                    >
+                      {localDate ? `${formatDistanceToNow(localDate)} ago` : 'UNKNOWN'}
                     </Text>
                   </Tooltip>
                 </Td>

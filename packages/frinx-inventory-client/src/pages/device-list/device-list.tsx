@@ -823,7 +823,7 @@ const DeviceList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
-        <Flex justify="space-between">
+        <VStack align="flex-start">
           <Form display="flex" alignItems="flex-end" justifyContent="bottom" width="half" onSubmit={handleSearchSubmit}>
             <DeviceFilter
               labels={labels}
@@ -839,6 +839,7 @@ const DeviceList: VoidFunctionComponent = () => {
               Search
             </Button>
             <Button
+              mb={6}
               data-cy="clear-button"
               onClick={clearFilter}
               colorScheme="red"
@@ -848,7 +849,7 @@ const DeviceList: VoidFunctionComponent = () => {
               Clear
             </Button>
           </Form>
-          <Flex width="50%" justify="flex-start">
+          <Flex width="50%" mb={4} justify="flex-start">
             <BulkActions
               onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
               onInstallButtonClick={handleInstallSelectedDevices}
@@ -859,9 +860,10 @@ const DeviceList: VoidFunctionComponent = () => {
               }}
             />
           </Flex>
-        </Flex>
+        </VStack>
+
         <Menu closeOnSelect={false}>
-          <MenuButton mb={5} as={Button} rightIcon={<Icon as={FeatherIcon} size={40} icon='chevron-down' />}>
+          <MenuButton mb={5} as={Button} rightIcon={<Icon as={FeatherIcon} size={40} icon="chevron-down" />}>
             Customize columns
           </MenuButton>
           <MenuList>
