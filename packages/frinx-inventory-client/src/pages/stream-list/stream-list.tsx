@@ -104,7 +104,7 @@ const DELETE_STREAM_MUTATION = gql`
   }
 `;
 
-type SortedBy = 'streamName' | 'deviceName' | 'createdAt' | 'serviceState';
+type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;
@@ -129,7 +129,7 @@ const StreamList: VoidFunctionComponent = () => {
     query: STREAMS_QUERY,
     variables: {
       streamName: streamNameFilter,
-      // deviceName: deviceNameFilter,
+      orderBy,
       ...paginationArgs,
     },
     context,

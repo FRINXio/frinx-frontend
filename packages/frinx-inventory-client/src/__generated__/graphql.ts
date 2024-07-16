@@ -692,7 +692,7 @@ export type DeviceConnection = {
 
 export type DeviceDiscoveryPayload = {
   __typename?: 'DeviceDiscoveryPayload';
-  deviceID: Scalars['String']['output'];
+  deviceId: Scalars['String']['output'];
   discoveredAt: Maybe<Scalars['String']['output']>;
 };
 
@@ -1464,6 +1464,7 @@ export type SortResourcePoolsInput = {
 
 export type SortStreamBy =
   | 'createdAt'
+  | 'deviceName'
   | 'streamName';
 
 export type SortTasksBy = {
