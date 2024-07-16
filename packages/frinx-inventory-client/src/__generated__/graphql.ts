@@ -1433,6 +1433,7 @@ export type Snapshot = {
 
 export type SortDeviceBy =
   | 'discoveredAt'
+  | 'modelVersion'
   | 'name'
   | 'serviceState';
 
