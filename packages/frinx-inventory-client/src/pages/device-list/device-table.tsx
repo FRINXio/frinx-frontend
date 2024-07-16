@@ -40,6 +40,7 @@ type DeviceStatus = {
   connection: string | null;
   usageCpuLoad: number | null;
   memoryLoad: number | null;
+  statusColor?: string;
 };
 
 function mergeDeviceStatuses(
@@ -79,6 +80,7 @@ type Props = {
   installLoadingMap: Record<string, boolean>;
   isPerformanceMonitoringEnabled: boolean;
   onSort: (sortedBy: SortedBy) => void;
+  onDeviceDiscoveryBtnClick: (deviceId: string | null) => void;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
   onDeleteBtnClick: (deviceId: string) => void;
@@ -94,6 +96,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   devicesUsage,
   selectedDevices,
   onSort,
+  onDeviceDiscoveryBtnClick,
   onInstallButtonClick,
   onUninstallButtonClick,
   onDeleteBtnClick,
@@ -132,7 +135,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               cursor="pointer"
               onClick={() => onSort('createdAt')}
             >
-              <Text>Created</Text>
+              <Text>Discovered</Text>
               {orderBy?.sortKey === 'createdAt' && (
                 <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
               )}
@@ -149,9 +152,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
       </Thead>
       <Tbody>
         {devices.map(({ node: device }) => {
-          const { name, isInstalled, mountParameters } = device;
+          const { name, isInstalled, discoveredAt, mountParameters } = device;
+          const localDate = discoveredAt ? getLocalDateFromUTC(discoveredAt) : null;
           const isOnUniconfigLayer = isDeviceOnUniconfigLayer(mountParameters);
-          const localDate = getLocalDateFromUTC(device.createdAt);
           const isLoading = installLoadingMap[device.id] ?? false;
           const isUnknown = device.model == null && device.software == null && device.version == null;
           const deviceStatus = deviceStatuses.get(name);
@@ -190,9 +193,14 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 </Text>
               </Td>
               <Td>
-                <Tooltip label={format(localDate, 'dd/MM/yyyy, k:mm')}>
-                  <Text data-cy={`device-created-at-${device.name}`} as="span" fontSize="sm" color="blackAlpha.700">
-                    {formatDistanceToNow(localDate)} ago
+                <Tooltip label={localDate ? format(localDate, 'dd/MM/yyyy, k:mm') : 'unknown'}>
+                  <Text
+                    data-cy={`device-created-at-${device.name}`}
+                    as="span"
+                    fontSize="sm"
+                    color={deviceStatuses.get(device.name)?.statusColor}
+                  >
+                    {localDate ? `${formatDistanceToNow(localDate)} ago` : 'UNKNOWN'}
                   </Text>
                 </Tooltip>
               </Td>
@@ -229,6 +237,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               </Td>
               <Td minWidth={200}>
                 <HStack spacing={2}>
+                  <IconButton
+                    data-cy={`device-rediscover-${device.name}`}
+                    aria-label="rediscover"
+                    size="sm"
+                    icon={<Icon size={12} as={FeatherIcon} icon="search" />}
+                    as={isInstalled ? Link : 'button'}
+                    onClick={() => onDeviceDiscoveryBtnClick(device.address)}
+                  />
+
                   <IconButton
                     data-cy={`device-settings-${device.name}`}
                     aria-label="config"

@@ -11,6 +11,7 @@ import {
   Heading,
   HStack,
   useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
 import {
   ExecuteWorkflowModal,
@@ -50,6 +51,7 @@ import {
   DevicesUsageSubscriptionVariables,
   DevicesConnectionSubscriptionVariables,
   DevicesConnectionSubscription,
+  DiscoveryWorkflowsQuery,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -81,7 +83,9 @@ const DEVICES_QUERY = gql`
           node {
             id
             name
+            address
             createdAt
+            discoveredAt
             isInstalled
             serviceState
             version
@@ -225,6 +229,17 @@ const DEVICES_STATUS_SUBSCRIPTION = gql`
   }
 `;
 
+const DISCOVERY_WORKFLOWS = gql`
+  query DiscoveryWorkflows {
+    conductor {
+      getAll {
+        name
+        version
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -264,6 +279,9 @@ const DeviceList: VoidFunctionComponent = () => {
     KafkaHealthCheckQuery,
     KafkaHealthCheckQueryVariables
   >({ query: KAFKA_HEALTHCHECK_QUERY, pause: !isPerformanceMonitoringEnabled });
+  const [{ data: workflowsData }] = useQuery<DiscoveryWorkflowsQuery>({
+    query: DISCOVERY_WORKFLOWS,
+  });
   const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
     KAFKA_RECONNECT_MUTATION,
   );
@@ -287,6 +305,13 @@ const DeviceList: VoidFunctionComponent = () => {
     },
     pause: !isPerformanceMonitoringEnabled,
   });
+
+  const deviceInductionManagerWorkflow = (workflowsData?.conductor.getAll || []).find(
+    (wf) => wf?.name === 'device_induction_manager',
+  );
+  const bulkInductionManagerWorkflow = (workflowsData?.conductor.getAll || []).find(
+    (wf) => wf?.name === 'bulk_device_induction_manager',
+  );
 
   const deviceInstallStatuses = deviceData?.deviceInventory.devices.edges.map((device) => ({
     name: device.node.name,
@@ -594,6 +619,67 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
+  const handleDeviceDiscoveryBtnClick = (deviceAdress: string | null) => {
+    if (deviceAdress == null) {
+      addToastNotification({
+        content: 'We cannot execute undefined workflow',
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    return executeWorkflow({
+      input: {
+        workflowName: 'device_induction_manager',
+        workflowVersion: deviceInductionManagerWorkflow?.version,
+        inputParameters: JSON.stringify(deviceAdress),
+      },
+    })
+      .then((res) => {
+        addToastNotification({ content: 'Device successfully discovered', type: 'success' });
+        return res.data?.conductor.executeWorkflowByName;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem discovering the device', type: 'error' });
+        return null;
+      });
+  };
+
+  const handleRediscoverSelectedDevices = () => {
+    const devices = deviceData?.deviceInventory.devices.edges.filter((device) =>
+      [...selectedDevices].includes(device.node.id),
+    );
+    const ips = (devices || []).map((device) => device.node.address);
+
+    const inputParameters = {
+      /* eslint-disable @typescript-eslint/naming-convention */
+      /* eslint-disable object-shorthand */
+
+      ips_and_ports: {
+        ips: ips.map((ip) => ({ ip: ip })),
+      },
+    };
+    /* eslint-enable object-shorthand */
+    /* eslint-enable @typescript-eslint/naming-convention */
+
+    return executeWorkflow({
+      input: {
+        workflowName: 'bulk_device_induction_manager',
+        workflowVersion: bulkInductionManagerWorkflow?.version,
+        inputParameters: JSON.stringify(inputParameters),
+      },
+    })
+      .then((res) => {
+        addToastNotification({ content: 'Device successfully discovered', type: 'success' });
+        return res.data?.conductor.executeWorkflowByName;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem discovering the device', type: 'error' });
+        return null;
+      });
+  };
+
   const labels = labelsData?.deviceInventory.labels?.edges ?? [];
   const areSelectedAll =
     deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
@@ -713,7 +799,7 @@ const DeviceList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
-        <Flex justify="space-between">
+        <VStack alignItems="flex-start" gap="10px" mb="10">
           <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
             <Box flex={1}>
               <DeviceFilter
@@ -726,11 +812,10 @@ const DeviceList: VoidFunctionComponent = () => {
             <Box flex={1} marginLeft="2">
               <DeviceSearch text={searchText || ''} onChange={setSearchText} />
             </Box>
-            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+            <Button data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
               Search
             </Button>
             <Button
-              mb={6}
               data-cy="clear-button"
               onClick={clearFilter}
               colorScheme="red"
@@ -741,17 +826,18 @@ const DeviceList: VoidFunctionComponent = () => {
               Clear
             </Button>
           </Form>
-          <Flex width="50%" justify="flex-end">
+          <Flex width="50%" justify="flex-start">
             <BulkActions
               onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
               onInstallButtonClick={handleInstallSelectedDevices}
+              onRediscoverButtonClick={handleRediscoverSelectedDevices}
               areButtonsDisabled={selectedDevices.size === 0 || isBeingInstalled}
               onWorkflowButtonClick={() => {
                 setIsSendingToWorkflows(true);
               }}
             />
           </Flex>
-        </Flex>
+        </VStack>
         <DeviceTable
           deviceInstallStatuses={deviceInstallStatuses}
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
@@ -763,6 +849,7 @@ const DeviceList: VoidFunctionComponent = () => {
           selectedDevices={selectedDevices}
           orderBy={orderBy}
           onSort={handleSort}
+          onDeviceDiscoveryBtnClick={handleDeviceDiscoveryBtnClick}
           onInstallButtonClick={handleOnDeviceInstall}
           onUninstallButtonClick={handleUninstallButtonClick}
           onDeleteBtnClick={handleDeleteBtnClick}

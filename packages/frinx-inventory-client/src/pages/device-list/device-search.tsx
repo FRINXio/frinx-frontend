@@ -12,7 +12,7 @@ const DeviceSearch: VoidFunctionComponent<Props> = ({ text, onChange }) => {
   };
 
   return (
-    <Box mb={6}>
+    <Box>
       <FormLabel htmlFor="device-search">Search device by name</FormLabel>
       <Flex mt={4}>
         <Input
