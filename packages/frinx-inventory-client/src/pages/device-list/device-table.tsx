@@ -23,7 +23,7 @@ import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
 
-type SortedBy = 'name' | 'createdAt' | 'serviceState';
+type SortedBy = 'name' | 'discoveredAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type OrderBy = {
   sortKey: SortedBy;
@@ -138,10 +138,10 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                 alignItems="center"
                 justifyContent="space-between"
                 cursor="pointer"
-                onClick={() => onSort('createdAt')}
+                onClick={() => onSort('discoveredAt')}
               >
-                <Text>Created</Text>
-                {orderBy?.sortKey === 'createdAt' && (
+                <Text>Discovered</Text>
+                {orderBy?.sortKey === 'discoveredAt' && (
                   <Icon
                     as={FeatherIcon}
                     size={40}
