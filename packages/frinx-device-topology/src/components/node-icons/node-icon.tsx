@@ -37,7 +37,6 @@ const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
 
-// <<<<<<< HEAD
 const NodeIcon: VoidFunctionComponent<Props> = memo(
   ({
     positions,
