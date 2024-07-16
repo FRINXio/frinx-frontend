@@ -217,13 +217,15 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                       icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
                       size="sm"
                       className="clp"
-                      onClick={() => copyToClipBoard(task.reasonForIncompletion)}
+                      onClick={() => copyToClipBoard(task.logs)}
                     />
                     <Button size="sm" onClick={() => setIsEscaped((prevState) => !prevState)}>
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
                   </Stack>
-                  <Text>{JSON.stringify(task.logs) || 'No logs'}</Text>
+                  <Text>
+                    {unescapedJSON(isEscaped, task.logs != null ? JSON.stringify(task.logs) : undefined) ?? 'No logs'}
+                  </Text>
                 </Box>
               </TabPanel>
             </TabPanels>

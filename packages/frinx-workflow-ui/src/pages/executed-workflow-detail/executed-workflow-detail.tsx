@@ -64,6 +64,10 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
           id
           version
           name
+<<<<<<< HEAD
+=======
+          tasksJson
+>>>>>>> v6.1.0
           ownerEmail
           restartable
           hasSchedule
@@ -545,7 +549,10 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
               <TabPanel>
                 {executedWorkflow.workflowDefinition && (
                   <WorkflowDiagram
-                    meta={{ ...executedWorkflow.workflowDefinition, tasks: [] }}
+                    meta={{
+                      ...executedWorkflow.workflowDefinition,
+                      tasks: executedWorkflow.workflowDefinition.tasksJson,
+                    }}
                     result={executedWorkflow}
                   />
                 )}

@@ -91,6 +91,7 @@ const DEVICES_QUERY = gql`
               id
               name
             }
+            mountParameters
           }
         }
         pageInfo {
@@ -262,7 +263,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const [{ data: isKafkaOk, error: kafkaHealthCheckError, fetching: isLoadingKafkaStatus }] = useQuery<
     KafkaHealthCheckQuery,
     KafkaHealthCheckQueryVariables
-  >({ query: KAFKA_HEALTHCHECK_QUERY });
+  >({ query: KAFKA_HEALTHCHECK_QUERY, pause: !isPerformanceMonitoringEnabled });
   const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
     KAFKA_RECONNECT_MUTATION,
   );
@@ -298,7 +299,7 @@ const DeviceList: VoidFunctionComponent = () => {
   >({
     query: DEVICES_STATUS_SUBSCRIPTION,
     variables: {
-      connectionTimeout: 10,
+      connectionTimeout: 5,
       targetDevices: deviceInstallStatuses?.filter((device) => device.isInstalled).map((device) => device.name) ?? [],
     },
     pause: !isPerformanceMonitoringEnabled,
@@ -597,7 +598,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const areSelectedAll =
     deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
 
-  if (isLoadingKafkaStatus) {
+  if (isPerformanceMonitoringEnabled && isLoadingKafkaStatus) {
     return (
       <Container maxWidth="container.xl">
         <Alert status="info">
@@ -628,7 +629,7 @@ const DeviceList: VoidFunctionComponent = () => {
 
   return (
     <>
-      {kafkaHealthCheckToolbar.isOpen && (
+      {isPerformanceMonitoringEnabled && kafkaHealthCheckToolbar.isOpen && (
         <KafkaHealthCheckToolbar
           mt={-10}
           onClose={kafkaHealthCheckToolbar.onClose}
@@ -756,7 +757,7 @@ const DeviceList: VoidFunctionComponent = () => {
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
           data-cy="device-table"
           devices={deviceData?.deviceInventory.devices.edges}
-          devicesUsage={devicesUsage}
+          devicesUsage={devicesUsage?.deviceInventory.devicesUsage?.devicesUsage ?? []}
           areSelectedAll={areSelectedAll}
           onSelectAll={handleSelectionOfAllDevices}
           selectedDevices={selectedDevices}

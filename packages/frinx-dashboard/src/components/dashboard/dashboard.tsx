@@ -1,13 +1,48 @@
-import { Box, Container, Flex, Heading, HStack, Image, Text } from '@chakra-ui/react';
+import { Box, Container, Flex, Grid, Heading, Image, Text } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { useConfig } from '../../config.provider';
+import { GlobalConfig } from '../../types';
 import Panel from '../panel/panel';
 import ElisaLogo from './img/elisa-logo.png';
 import InventoryActions from './inventory-actions';
 import UniflowActions from './uniflow-actions';
 
+const isDocumentationVisible = (config: GlobalConfig): boolean => {
+  const {
+    uniconfigApiDocsURL,
+    uniflowApiDocsURL,
+    resourceManagerApiDocsURL,
+    topologyDiscoveryApiDocsURL,
+    performanceMonitorApiDocsURL,
+    inventoryApiURL,
+    isAuthEnabled,
+  } = config;
+  if (
+    !uniflowApiDocsURL &&
+    !uniconfigApiDocsURL &&
+    !resourceManagerApiDocsURL &&
+    !performanceMonitorApiDocsURL &&
+    !topologyDiscoveryApiDocsURL &&
+    (isAuthEnabled || (!isAuthEnabled && !inventoryApiURL))
+  ) {
+    return false;
+  }
+  return true;
+};
+
 const Dashboard: VoidFunctionComponent = () => {
-  const { uniflowApiDocsURL, inventoryApiURL, isAuthEnabled, uniconfigApiDocsURL, commitHash } = useConfig();
+  const config = useConfig();
+  const {
+    uniflowApiDocsURL,
+    inventoryApiURL,
+    isAuthEnabled,
+    uniconfigApiDocsURL,
+    resourceManagerApiDocsURL,
+    performanceMonitorApiDocsURL,
+    topologyDiscoveryApiDocsURL,
+    schellarApiDocsURL,
+    commitHash,
+  } = config;
   return (
     <Flex flexDirection="column" minHeight="calc(100vh - 10px - 64px - 32px)">
       <Container maxWidth={1280} marginBottom={8}>
@@ -30,7 +65,7 @@ const Dashboard: VoidFunctionComponent = () => {
               FRINX services
             </Heading>
           </Box>
-          <HStack spacing={4}>
+          <Grid templateColumns="repeat(3, 1fr)" gap={1.5}>
             <Panel
               label="Workflow manager"
               description="Create, organize and execute workflows."
@@ -50,40 +85,82 @@ const Dashboard: VoidFunctionComponent = () => {
               icon="hard-drive"
               path="/resource-manager"
             />
-          </HStack>
+          </Grid>
         </Box>
-        <Box marginTop={20}>
-          <Box as="header" marginBottom={4}>
-            <Heading as="h2" size="md">
-              Documentation
-            </Heading>
+        {isDocumentationVisible(config) && (
+          <Box marginTop={20}>
+            <Box as="header" marginBottom={4}>
+              <Heading as="h2" size="md">
+                Documentation
+              </Heading>
+            </Box>
+            <Grid templateColumns="repeat(3, 1fr)" gap={1.5}>
+              {uniconfigApiDocsURL && (
+                <Panel
+                  label="UniConfig"
+                  description="Learn more about UniConfig API using Swagger."
+                  icon="book"
+                  path={uniconfigApiDocsURL}
+                  isLinkExternal
+                />
+              )}
+              {uniflowApiDocsURL && (
+                <Panel
+                  label="Workflow manager"
+                  description="Learn more about Workflow manager API using Swagger."
+                  icon="book"
+                  path={uniflowApiDocsURL}
+                  isLinkExternal
+                />
+              )}
+              {isAuthEnabled ? null : (
+                <Panel
+                  label="Device Inventory"
+                  description="Execute and inspect queries with GraphQL Playground."
+                  icon="book"
+                  path={inventoryApiURL}
+                  isLinkExternal
+                />
+              )}
+              {resourceManagerApiDocsURL && (
+                <Panel
+                  label="Resource Manager"
+                  description="Execute and inspect queries with GraphQL Playground."
+                  icon="book"
+                  path={resourceManagerApiDocsURL}
+                  isLinkExternal
+                />
+              )}
+              {performanceMonitorApiDocsURL && (
+                <Panel
+                  label="Performance Monitor"
+                  description="Execute and inspect queries with GraphQL Playground."
+                  icon="book"
+                  path={performanceMonitorApiDocsURL}
+                  isLinkExternal
+                />
+              )}
+              {topologyDiscoveryApiDocsURL && (
+                <Panel
+                  label="Topology Discovery"
+                  description="Execute and inspect queries with GraphQL Playground."
+                  icon="book"
+                  path={topologyDiscoveryApiDocsURL}
+                  isLinkExternal
+                />
+              )}
+              {schellarApiDocsURL && (
+                <Panel
+                  label="Schellar"
+                  description="Execute and inspect queries with GraphQL Playground."
+                  icon="book"
+                  path={schellarApiDocsURL}
+                  isLinkExternal
+                />
+              )}
+            </Grid>
           </Box>
-          <HStack spacing={4}>
-            <Panel
-              label="UniConfig"
-              description="Learn more about UniConfig API using Swagger."
-              icon="book"
-              path={uniconfigApiDocsURL}
-              isLinkExternal
-            />
-            <Panel
-              label="Workflow manager"
-              description="Learn more about Workflow manager API using Swagger."
-              icon="book"
-              path={uniflowApiDocsURL}
-              isLinkExternal
-            />
-            {isAuthEnabled ? null : (
-              <Panel
-                label="Device Inventory"
-                description="Execute and inspect queries with GraphQL Playground."
-                icon="book"
-                path={inventoryApiURL}
-                isLinkExternal
-              />
-            )}
-          </HStack>
-        </Box>
+        )}
       </Container>
       <Box
         as="footer"

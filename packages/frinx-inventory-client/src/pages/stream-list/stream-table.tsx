@@ -91,19 +91,6 @@ const StreamTable: VoidFunctionComponent<Props> = ({
               )}
             </Flex>
           </Th>
-          <Th>
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              cursor="pointer"
-              onClick={() => onSort('serviceState')}
-            >
-              <Text>Service State</Text>
-              {orderBy?.sortKey === 'serviceState' && (
-                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
-              )}
-            </Flex>
-          </Th>
           <Th>Activation</Th>
           <Th>Actions</Th>
         </Tr>
@@ -145,7 +132,6 @@ const StreamTable: VoidFunctionComponent<Props> = ({
                   </Text>
                 </Tooltip>
               </Td>
-              <Td data-cy={`stream-name-${stream.streamName}`}>unkown</Td>
               <Td minWidth={200}>
                 <InstallButton
                   deviceName={stream.streamName}
