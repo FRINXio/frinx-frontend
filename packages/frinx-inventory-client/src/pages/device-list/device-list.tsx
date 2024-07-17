@@ -247,7 +247,7 @@ const DISCOVERY_WORKFLOWS = gql`
   }
 `;
 
-type SortedBy = 'name' | 'discoveredAt' | 'serviceState';
+type SortedBy = 'name' | 'discoveredAt' | 'serviceState' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;

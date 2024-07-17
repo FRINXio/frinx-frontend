@@ -23,7 +23,7 @@ import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
 
-type SortedBy = 'name' | 'discoveredAt' | 'serviceState';
+type SortedBy = 'name' | 'discoveredAt' | 'serviceState' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
 type OrderBy = {
   sortKey: SortedBy;
@@ -129,7 +129,21 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           </Th>
           {columnsDisplayed.includes('model/version') && (
             <Th>
-              <Text>Model/Version</Text>
+              <Flex
+                alignItems="center"
+                justifyContent="space-between"
+                cursor="pointer"
+                onClick={() => onSort('modelVersion')}
+              >
+                <Text>Model/Version</Text>
+                {orderBy?.sortKey === 'modelVersion' && (
+                  <Icon
+                    as={FeatherIcon}
+                    size={40}
+                    icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'}
+                  />
+                )}
+              </Flex>
             </Th>
           )}
           {columnsDisplayed.includes('discoveredAt') && (
@@ -153,7 +167,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           )}
           {columnsDisplayed.includes('deviceStatus') && (
             <Th>
-              <Flex alignItems="center" justifyContent="space-between" cursor="pointer">
+              <Flex alignItems="center" justifyContent="space-between">
                 <Text>Device Status</Text>
               </Flex>
             </Th>
