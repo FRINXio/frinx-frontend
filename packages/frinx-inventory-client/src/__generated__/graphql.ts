@@ -1432,7 +1432,7 @@ export type Snapshot = {
 };
 
 export type SortDeviceBy =
-  | 'createdAt'
+  | 'discoveredAt'
   | 'name'
   | 'serviceState';
 
