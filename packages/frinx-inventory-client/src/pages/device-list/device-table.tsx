@@ -167,7 +167,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
           )}
           {columnsDisplayed.includes('deviceStatus') && (
             <Th>
-              <Flex alignItems="center" justifyContent="space-between" cursor="pointer">
+              <Flex alignItems="center" justifyContent="space-between">
                 <Text>Device Status</Text>
               </Flex>
             </Th>
