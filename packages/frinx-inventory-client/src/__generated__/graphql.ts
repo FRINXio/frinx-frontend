@@ -692,7 +692,7 @@ export type DeviceConnection = {
 
 export type DeviceDiscoveryPayload = {
   __typename?: 'DeviceDiscoveryPayload';
-  deviceID: Scalars['String']['output'];
+  deviceId: Scalars['String']['output'];
   discoveredAt: Maybe<Scalars['String']['output']>;
 };
 
@@ -1434,7 +1434,7 @@ export type Snapshot = {
 };
 
 export type SortDeviceBy =
-  | 'createdAt'
+  | 'discoveredAt'
   | 'name'
   | 'serviceState';
 
