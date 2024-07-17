@@ -6,12 +6,20 @@ import {
   Box,
   Button,
   chakra,
+  Checkbox,
   Container,
   Flex,
   Heading,
   HStack,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import {
   ExecuteWorkflowModal,
   unwrap,
@@ -50,6 +58,7 @@ import {
   DevicesUsageSubscriptionVariables,
   DevicesConnectionSubscriptionVariables,
   DevicesConnectionSubscription,
+  DiscoveryWorkflowsQuery,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -81,7 +90,9 @@ const DEVICES_QUERY = gql`
           node {
             id
             name
+            address
             createdAt
+            discoveredAt
             isInstalled
             serviceState
             version
@@ -225,7 +236,18 @@ const DEVICES_STATUS_SUBSCRIPTION = gql`
   }
 `;
 
-type SortedBy = 'name' | 'createdAt' | 'serviceState';
+const DISCOVERY_WORKFLOWS = gql`
+  query DiscoveryWorkflows {
+    conductor {
+      getAll {
+        name
+        version
+      }
+    }
+  }
+`;
+
+type SortedBy = 'name' | 'discoveredAt' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;
@@ -248,6 +270,13 @@ const DeviceList: VoidFunctionComponent = () => {
   const [searchText, setSearchText] = useState<string | null>(null);
   const [deviceNameFilter, setDeviceNameFilter] = useState<string | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [columnsDisplayed, setColumnsDisplayed] = useState([
+    'model/version',
+    'discoveredAt',
+    'deviceStatus',
+    'isInstalled',
+  ]);
+
   const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
   const [{ data: deviceData, error }] = useQuery<DevicesQuery, DevicesQueryVariables>({
     query: DEVICES_QUERY,
@@ -264,6 +293,9 @@ const DeviceList: VoidFunctionComponent = () => {
     KafkaHealthCheckQuery,
     KafkaHealthCheckQueryVariables
   >({ query: KAFKA_HEALTHCHECK_QUERY, pause: !isPerformanceMonitoringEnabled });
+  const [{ data: workflowsData }] = useQuery<DiscoveryWorkflowsQuery>({
+    query: DISCOVERY_WORKFLOWS,
+  });
   const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
     KAFKA_RECONNECT_MUTATION,
   );
@@ -288,6 +320,13 @@ const DeviceList: VoidFunctionComponent = () => {
     pause: !isPerformanceMonitoringEnabled,
   });
 
+  const deviceInductionManagerWorkflow = (workflowsData?.conductor.getAll || []).find(
+    (wf) => wf?.name === 'device_induction_manager',
+  );
+  const bulkInductionManagerWorkflow = (workflowsData?.conductor.getAll || []).find(
+    (wf) => wf?.name === 'bulk_device_induction_manager',
+  );
+
   const deviceInstallStatuses = deviceData?.deviceInventory.devices.edges.map((device) => ({
     name: device.node.name,
     isInstalled: device.node.isInstalled,
@@ -309,6 +348,16 @@ const DeviceList: VoidFunctionComponent = () => {
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
+
+  const deviceColumnOptions = ['model/version', 'discoveredAt', 'deviceStatus', 'isInstalled'];
+
+  const handleCheckboxChange = (value: string) => {
+    if (columnsDisplayed.includes(value)) {
+      setColumnsDisplayed(columnsDisplayed.filter((item) => item !== value));
+    } else {
+      setColumnsDisplayed([...columnsDisplayed, value]);
+    }
+  };
 
   useEffect(() => {
     let kafkaToolbarTimeout: NodeJS.Timeout;
@@ -594,6 +643,67 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
+  const handleDeviceDiscoveryBtnClick = (deviceAdress: string | null) => {
+    if (deviceAdress == null) {
+      addToastNotification({
+        content: 'We cannot execute undefined workflow',
+        type: 'error',
+      });
+
+      return null;
+    }
+
+    return executeWorkflow({
+      input: {
+        workflowName: 'device_induction_manager',
+        workflowVersion: deviceInductionManagerWorkflow?.version,
+        inputParameters: JSON.stringify(deviceAdress),
+      },
+    })
+      .then((res) => {
+        addToastNotification({ content: 'Device successfully discovered', type: 'success' });
+        return res.data?.conductor.executeWorkflowByName;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem discovering the device', type: 'error' });
+        return null;
+      });
+  };
+
+  const handleRediscoverSelectedDevices = () => {
+    const devices = deviceData?.deviceInventory.devices.edges.filter((device) =>
+      [...selectedDevices].includes(device.node.id),
+    );
+    const ips = (devices || []).map((device) => device.node.address);
+
+    const inputParameters = {
+      /* eslint-disable @typescript-eslint/naming-convention */
+      /* eslint-disable object-shorthand */
+
+      ips_and_ports: {
+        ips: ips.map((ip) => ({ ip: ip })),
+      },
+    };
+    /* eslint-enable object-shorthand */
+    /* eslint-enable @typescript-eslint/naming-convention */
+
+    return executeWorkflow({
+      input: {
+        workflowName: 'bulk_device_induction_manager',
+        workflowVersion: bulkInductionManagerWorkflow?.version,
+        inputParameters: JSON.stringify(inputParameters),
+      },
+    })
+      .then((res) => {
+        addToastNotification({ content: 'Device successfully discovered', type: 'success' });
+        return res.data?.conductor.executeWorkflowByName;
+      })
+      .catch(() => {
+        addToastNotification({ content: 'We have a problem discovering the device', type: 'error' });
+        return null;
+      });
+  };
+
   const labels = labelsData?.deviceInventory.labels?.edges ?? [];
   const areSelectedAll =
     deviceData?.deviceInventory.devices.edges.filter(({ node }) => !node.isInstalled).length === selectedDevices.size;
@@ -713,20 +823,19 @@ const DeviceList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
-        <Flex justify="space-between">
-          <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
-            <Box flex={1}>
-              <DeviceFilter
-                labels={labels}
-                selectedLabels={selectedLabels || []}
-                onSelectionChange={handleOnSelectionChange}
-                isCreationDisabled
-              />
-            </Box>
+        <VStack align="flex-start">
+          <Form display="flex" alignItems="flex-end" justifyContent="bottom" width="half" onSubmit={handleSearchSubmit}>
+            <DeviceFilter
+              labels={labels}
+              selectedLabels={selectedLabels || []}
+              onSelectionChange={handleOnSelectionChange}
+              isCreationDisabled
+            />
+
             <Box flex={1} marginLeft="2">
               <DeviceSearch text={searchText || ''} onChange={setSearchText} />
             </Box>
-            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" type="submit">
               Search
             </Button>
             <Button
@@ -736,22 +845,37 @@ const DeviceList: VoidFunctionComponent = () => {
               colorScheme="red"
               variant="outline"
               marginLeft="2"
-              mt={10}
             >
               Clear
             </Button>
           </Form>
-          <Flex width="50%" justify="flex-end">
+          <Flex width="50%" mb={4} justify="flex-start">
             <BulkActions
               onDeleteButtonClick={deleteSelectedDevicesModal.onOpen}
               onInstallButtonClick={handleInstallSelectedDevices}
+              onRediscoverButtonClick={handleRediscoverSelectedDevices}
               areButtonsDisabled={selectedDevices.size === 0 || isBeingInstalled}
               onWorkflowButtonClick={() => {
                 setIsSendingToWorkflows(true);
               }}
             />
           </Flex>
-        </Flex>
+        </VStack>
+
+        <Menu closeOnSelect={false}>
+          <MenuButton mb={5} as={Button} rightIcon={<Icon as={FeatherIcon} size={40} icon="chevron-down" />}>
+            Customize columns
+          </MenuButton>
+          <MenuList>
+            {deviceColumnOptions.map((option) => (
+              <MenuItem key={option}>
+                <Checkbox isChecked={columnsDisplayed.includes(option)} onChange={() => handleCheckboxChange(option)}>
+                  {option}
+                </Checkbox>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
         <DeviceTable
           deviceInstallStatuses={deviceInstallStatuses}
           devicesConnection={devicesConnection?.deviceInventory.devicesConnection?.deviceStatuses}
@@ -763,12 +887,14 @@ const DeviceList: VoidFunctionComponent = () => {
           selectedDevices={selectedDevices}
           orderBy={orderBy}
           onSort={handleSort}
+          onDeviceDiscoveryBtnClick={handleDeviceDiscoveryBtnClick}
           onInstallButtonClick={handleOnDeviceInstall}
           onUninstallButtonClick={handleUninstallButtonClick}
           onDeleteBtnClick={handleDeleteBtnClick}
           installLoadingMap={installLoadingMap}
           onDeviceSelection={handleDeviceSelection}
           isPerformanceMonitoringEnabled={isPerformanceMonitoringEnabled}
+          columnsDisplayed={columnsDisplayed}
         />
         <Pagination
           onPrevious={previousPage(deviceData.deviceInventory.devices.pageInfo.startCursor)}

@@ -3,16 +3,21 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Box,
   Button,
   chakra,
   Container,
   Flex,
+  FormLabel,
   Heading,
   HStack,
+  Input,
   useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
 import { usePagination, Pagination, useNotifications, ConfirmDeleteModal, unwrap } from '@frinx/shared';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import { Item } from '@frinx/shared/dist/components/autocomplete/autocomplete';
+import React, { ChangeEvent, FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import {
@@ -26,18 +31,20 @@ import {
   DeactivateStreamMutationVariables,
   DeleteStreamMutation,
   DeleteStreamMutationVariables,
+  StreamFilterLabelsQuery,
   StreamsQuery,
   StreamsQueryVariables,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedStreamsModal from './delete-selected-modal';
+import StreamFilter from './stream-filters';
 import StreamTable from './stream-table';
-
-const Form = chakra('form');
 
 const STREAMS_QUERY = gql`
   query Streams(
+    $labels: [String!]
     $streamName: String
+    $deviceName: String
     $orderBy: StreamOrderByInput
     $first: Int
     $after: String
@@ -46,7 +53,7 @@ const STREAMS_QUERY = gql`
   ) {
     deviceInventory {
       streams(
-        filter: { streamName: $streamName }
+        filter: { labels: $labels, deviceName: $deviceName, streamName: $streamName }
         orderBy: $orderBy
         first: $first
         after: $after
@@ -125,6 +132,21 @@ const BULK_ACTIVATE_STREAMS_MUTATION = gql`
   }
 `;
 
+const STREAM_LABELS_QUERY = gql`
+  query StreamFilterLabels {
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 const BULK_DEACTIVATE_STREAMS_MUTATION = gql`
   mutation BulkDeactivateStreams($input: BulkUninstallStreamsInput!) {
     deviceInventory {
@@ -137,12 +159,14 @@ const BULK_DEACTIVATE_STREAMS_MUTATION = gql`
   }
 `;
 
-type SortedBy = 'streamName' | 'deviceName' | 'createdAt' | 'serviceState';
+type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;
   direction: Direction;
 };
+
+const Form = chakra('form');
 
 const StreamList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Stream'] }), []);
@@ -150,6 +174,15 @@ const StreamList: VoidFunctionComponent = () => {
   const deleteModalDisclosure = useDisclosure();
   const deleteSelectedStreamsModal = useDisclosure();
   const [orderBy, setOrderBy] = useState<Sorting | null>(null);
+
+  // filter states
+  const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
+  const [searchStreamName, setSearchStreamName] = useState<string | null>(null);
+  const [searchDeviceName, setSearchDeviceName] = useState<string | null>(null);
+  const [filterStream, setFilterStream] = useState<{ streamName: string | null; deviceName: string | null } | null>(
+    null,
+  );
+
   const [streamIdToDelete, setStreamIdToDelete] = useState<string | null>(null);
   // TODO: will be implemented laterdeletedStream.streamName
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -158,16 +191,19 @@ const StreamList: VoidFunctionComponent = () => {
   const [selectedStreams, setSelectedStreams] = useState<Set<string>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [streamNameFilter, setStreamNameFilter] = useState<string | null>(null);
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
   const [{ data: streamData, error }] = useQuery<StreamsQuery, StreamsQueryVariables>({
     query: STREAMS_QUERY,
     variables: {
       streamName: streamNameFilter,
-      // deviceName: deviceNameFilter,
+      orderBy,
+      labels: selectedLabels.map((label) => label.label),
+      ...filterStream,
       ...paginationArgs,
     },
     context,
   });
+  const [{ data: labelsData }] = useQuery<StreamFilterLabelsQuery>({ query: STREAM_LABELS_QUERY, context });
 
   const [, activateStream] = useMutation<ActivateStreamMutation, ActivateStreamMutationVariables>(
     ACTIVATE_STREAM_MUTATION,
@@ -185,6 +221,26 @@ const StreamList: VoidFunctionComponent = () => {
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
+  };
+
+  const handleOnSelectionChange = (selectedItems?: Item[]) => {
+    if (selectedItems) {
+      setSelectedLabels([...new Set(selectedItems)]);
+    }
+  };
+
+  const clearFilter = () => {
+    setFilterStream(null);
+    setSelectedLabels([]);
+  };
+
+  const handleSearchSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    firstPage();
+    setFilterStream({
+      deviceName: searchDeviceName,
+      streamName: searchStreamName,
+    });
   };
 
   const handleDeleteBtnClick = (streamId: string) => {
@@ -461,6 +517,15 @@ const StreamList: VoidFunctionComponent = () => {
 
   const areSelectedAll =
     streamData?.deviceInventory.streams.edges.filter(({ node }) => !node.isActive).length === selectedStreams.size;
+  const handleSearchDeviceName = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setSearchDeviceName(value);
+  };
+
+  const handleSearchStreamName = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setSearchStreamName(value);
+  };
 
   if (streamData == null && error) {
     return (
@@ -477,6 +542,8 @@ const StreamList: VoidFunctionComponent = () => {
   if (streamData == null) {
     return null;
   }
+
+  const labels = labelsData?.deviceInventory.labels?.edges ?? [];
 
   return (
     <>
@@ -504,9 +571,60 @@ const StreamList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
-        <Flex justify="space-between">
-          <Form display="flex">{/* here goes filter form */}</Form>
-          <Flex width="50%" justify="flex-end">
+        <VStack align="flex-start">
+          <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
+            <Box flex={1}>
+              <StreamFilter
+                labels={labels}
+                selectedLabels={selectedLabels || []}
+                onSelectionChange={handleOnSelectionChange}
+                isCreationDisabled
+              />
+            </Box>
+            <Box flex={1} marginLeft="2">
+              <FormLabel htmlFor="device-search">Search device</FormLabel>
+              <Flex mt={2}>
+                <Input
+                  data-cy="search-by-name"
+                  id="device-search"
+                  type="text"
+                  value={searchDeviceName || ''}
+                  onChange={handleSearchDeviceName}
+                  background="white"
+                  placeholder="Search device"
+                />
+              </Flex>
+            </Box>
+            <Box flex={1} marginLeft="2">
+              <FormLabel htmlFor="stream-search">Search stream</FormLabel>
+              <Flex mt={2}>
+                <Input
+                  data-cy="search-by-name"
+                  id="stream-search"
+                  type="text"
+                  value={searchStreamName || ''}
+                  onChange={handleSearchStreamName}
+                  background="white"
+                  placeholder="Search stream"
+                />
+              </Flex>
+            </Box>
+            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={8} type="submit">
+              Search
+            </Button>
+            <Button
+              mb={6}
+              data-cy="clear-button"
+              onClick={clearFilter}
+              colorScheme="red"
+              variant="outline"
+              marginLeft="2"
+              mt={8}
+            >
+              Clear
+            </Button>
+          </Form>
+          <Flex justify="flex-end" mb="8">
             <BulkActions
               onActivateButtonClick={handleActivateSelectedStreams}
               onDisableButtonClick={handleDeactivateSelectedStreams}
@@ -514,7 +632,7 @@ const StreamList: VoidFunctionComponent = () => {
               areButtonsDisabled={selectedStreams.size === 0}
             />
           </Flex>
-        </Flex>
+        </VStack>
         <StreamTable
           data-cy="stream-table"
           streams={streamData?.deviceInventory.streams.edges}
