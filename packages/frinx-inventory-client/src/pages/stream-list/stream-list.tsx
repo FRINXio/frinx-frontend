@@ -113,6 +113,7 @@ const DELETE_STREAM_MUTATION = gql`
   }
 `;
 
+type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
 const STREAM_LABELS_QUERY = gql`
   query StreamFilterLabels {
     deviceInventory {
@@ -128,7 +129,6 @@ const STREAM_LABELS_QUERY = gql`
   }
 `;
 
-type SortedBy = 'streamName' | 'deviceName' | 'createdAt' | 'serviceState';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;
@@ -163,6 +163,8 @@ const StreamList: VoidFunctionComponent = () => {
   const [{ data: streamData, error }] = useQuery<StreamsQuery, StreamsQueryVariables>({
     query: STREAMS_QUERY,
     variables: {
+      streamName: streamNameFilter,
+      orderBy,
       labels: selectedLabels.map((label) => label.label),
       ...filterStream,
       ...paginationArgs,

@@ -1466,6 +1466,7 @@ export type SortResourcePoolsInput = {
 
 export type SortStreamBy =
   | 'createdAt'
+  | 'deviceName'
   | 'streamName';
 
 export type SortTasksBy = {

@@ -21,7 +21,7 @@ import { Link } from 'react-router-dom';
 import { StreamsQuery } from '../../__generated__/graphql';
 import InstallButton from '../device-list/install-button';
 
-type SortedBy = 'streamName' | 'deviceName' | 'createdAt' | 'serviceState';
+type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
 type Direction = 'ASC' | 'DESC';
 type OrderBy = {
   sortKey: SortedBy;
@@ -76,7 +76,17 @@ const StreamTable: VoidFunctionComponent<Props> = ({
             </Flex>
           </Th>
           <Th>
-            <Text>Device Name</Text>
+            <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              cursor="pointer"
+              onClick={() => onSort('deviceName')}
+            >
+              <Text>Device Name</Text>
+              {orderBy?.sortKey === 'deviceName' && (
+                <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
+              )}
+            </Flex>
           </Th>
           <Th>
             <Flex
