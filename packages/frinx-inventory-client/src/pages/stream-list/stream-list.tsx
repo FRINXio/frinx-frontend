@@ -3,15 +3,20 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Box,
   Button,
+  chakra,
   Container,
   Flex,
+  FormLabel,
   Heading,
   HStack,
+  Input,
   useDisclosure,
 } from '@chakra-ui/react';
 import { usePagination, Pagination, useNotifications, ConfirmDeleteModal, unwrap } from '@frinx/shared';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import { Item } from '@frinx/shared/dist/components/autocomplete/autocomplete';
+import React, { ChangeEvent, FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { gql, useMutation, useQuery } from 'urql';
 import {
@@ -21,14 +26,18 @@ import {
   DeactivateStreamMutationVariables,
   DeleteStreamMutation,
   DeleteStreamMutationVariables,
+  StreamFilterLabelsQuery,
   StreamsQuery,
   StreamsQueryVariables,
 } from '../../__generated__/graphql';
+import StreamFilter from './stream-filters';
 import StreamTable from './stream-table';
 
 const STREAMS_QUERY = gql`
   query Streams(
+    $labels: [String!]
     $streamName: String
+    $deviceName: String
     $orderBy: StreamOrderByInput
     $first: Int
     $after: String
@@ -37,7 +46,7 @@ const STREAMS_QUERY = gql`
   ) {
     deviceInventory {
       streams(
-        filter: { streamName: $streamName }
+        filter: { labels: $labels, deviceName: $deviceName, streamName: $streamName }
         orderBy: $orderBy
         first: $first
         after: $after
@@ -104,18 +113,44 @@ const DELETE_STREAM_MUTATION = gql`
   }
 `;
 
-type SortedBy = 'streamName' | 'deviceName' | 'createdAt' | 'serviceState';
+type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
+const STREAM_LABELS_QUERY = gql`
+  query StreamFilterLabels {
+    deviceInventory {
+      labels {
+        edges {
+          node {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;
   direction: Direction;
 };
 
+const Form = chakra('form');
+
 const StreamList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Stream'] }), []);
   const { addToastNotification } = useNotifications();
   const deleteModalDisclosure = useDisclosure();
   const [orderBy, setOrderBy] = useState<Sorting | null>(null);
+
+  // filter states
+  const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
+  const [searchStreamName, setSearchStreamName] = useState<string | null>(null);
+  const [searchDeviceName, setSearchDeviceName] = useState<string | null>(null);
+  const [filterStream, setFilterStream] = useState<{ streamName: string | null; deviceName: string | null } | null>(
+    null,
+  );
+
   const [streamIdToDelete, setStreamIdToDelete] = useState<string | null>(null);
   // TODO: will be implemented laterdeletedStream.streamName
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -124,16 +159,19 @@ const StreamList: VoidFunctionComponent = () => {
   const [selectedStreams, setSelectedStreams] = useState<Set<string>>(new Set());
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [streamNameFilter, setStreamNameFilter] = useState<string | null>(null);
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
   const [{ data: streamData, error }] = useQuery<StreamsQuery, StreamsQueryVariables>({
     query: STREAMS_QUERY,
     variables: {
       streamName: streamNameFilter,
-      // deviceName: deviceNameFilter,
+      orderBy,
+      labels: selectedLabels.map((label) => label.label),
+      ...filterStream,
       ...paginationArgs,
     },
     context,
   });
+  const [{ data: labelsData }] = useQuery<StreamFilterLabelsQuery>({ query: STREAM_LABELS_QUERY, context });
 
   const [, activateStream] = useMutation<ActivateStreamMutation, ActivateStreamMutationVariables>(
     ACTIVATE_STREAM_MUTATION,
@@ -145,6 +183,26 @@ const StreamList: VoidFunctionComponent = () => {
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
+  };
+
+  const handleOnSelectionChange = (selectedItems?: Item[]) => {
+    if (selectedItems) {
+      setSelectedLabels([...new Set(selectedItems)]);
+    }
+  };
+
+  const clearFilter = () => {
+    setFilterStream(null);
+    setSelectedLabels([]);
+  };
+
+  const handleSearchSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    firstPage();
+    setFilterStream({
+      deviceName: searchDeviceName,
+      streamName: searchStreamName,
+    });
   };
 
   const handleDeleteBtnClick = (streamId: string) => {
@@ -297,6 +355,16 @@ const StreamList: VoidFunctionComponent = () => {
     deleteStreams([unwrap(streamIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
   };
 
+  const handleSearchDeviceName = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setSearchDeviceName(value);
+  };
+
+  const handleSearchStreamName = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setSearchStreamName(value);
+  };
+
   // TODO: will be implemented later
   const areSelectedAll = false;
 
@@ -315,6 +383,8 @@ const StreamList: VoidFunctionComponent = () => {
   if (streamData == null) {
     return null;
   }
+
+  const labels = labelsData?.deviceInventory.labels?.edges ?? [];
 
   return (
     <>
@@ -336,6 +406,63 @@ const StreamList: VoidFunctionComponent = () => {
               Add stream
             </Button>
           </HStack>
+        </Flex>
+        <Flex justify="space-between">
+          <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
+            <Box flex={1}>
+              <StreamFilter
+                labels={labels}
+                selectedLabels={selectedLabels || []}
+                onSelectionChange={handleOnSelectionChange}
+                isCreationDisabled
+              />
+            </Box>
+            <Box flex={1} marginLeft="2">
+              <FormLabel htmlFor="device-search">Search device</FormLabel>
+              <Flex mt={4}>
+                <Input
+                  data-cy="search-by-name"
+                  id="device-search"
+                  type="text"
+                  value={searchDeviceName || ''}
+                  onChange={handleSearchDeviceName}
+                  background="white"
+                  placeholder="Search device"
+                />
+              </Flex>
+            </Box>
+            <Box flex={1} marginLeft="2">
+              <FormLabel htmlFor="stream-search">Search stream</FormLabel>
+              <Flex mt={4}>
+                <Input
+                  data-cy="search-by-name"
+                  id="stream-search"
+                  type="text"
+                  value={searchStreamName || ''}
+                  onChange={handleSearchStreamName}
+                  background="white"
+                  placeholder="Search stream"
+                />
+              </Flex>
+            </Box>
+            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+              Search
+            </Button>
+            <Button
+              mb={6}
+              data-cy="clear-button"
+              onClick={clearFilter}
+              colorScheme="red"
+              variant="outline"
+              marginLeft="2"
+              mt={10}
+            >
+              Clear
+            </Button>
+          </Form>
+          <Flex width="50%" justify="flex-end">
+            {/* here comes bulk actions */}
+          </Flex>
         </Flex>
         <StreamTable
           data-cy="stream-table"
