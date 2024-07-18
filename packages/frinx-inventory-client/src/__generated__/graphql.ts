@@ -275,6 +275,15 @@ export type BulkInstallDevicesInput = {
   deviceIds: Array<Scalars['String']['input']>;
 };
 
+export type BulkInstallStreamPayload = {
+  __typename?: 'BulkInstallStreamPayload';
+  installedStreams: Array<Stream>;
+};
+
+export type BulkInstallStreamsInput = {
+  streamIds: Array<Scalars['String']['input']>;
+};
+
 export type BulkResponse = {
   __typename?: 'BulkResponse';
   bulkErrorResults: Maybe<Scalars['JSON']['output']>;
@@ -288,6 +297,15 @@ export type BulkUninstallDevicePayload = {
 
 export type BulkUninstallDevicesInput = {
   deviceIds: Array<Scalars['String']['input']>;
+};
+
+export type BulkUninstallStreamPayload = {
+  __typename?: 'BulkUninstallStreamPayload';
+  uninstalledStreams: Array<Stream>;
+};
+
+export type BulkUninstallStreamsInput = {
+  streamIds: Array<Scalars['String']['input']>;
 };
 
 export type CsvImport = {
@@ -1435,10 +1453,8 @@ export type Snapshot = {
 
 export type SortDeviceBy =
   | 'discoveredAt'
-  | 'isInstalled'
   | 'modelVersion'
-  | 'name'
-  | 'serviceState';
+  | 'name';
 
 export type SortDirection =
   | 'ASC'
@@ -3063,7 +3079,9 @@ export type DeviceInventoryMutation = {
   addZone: AddZonePayload;
   applySnapshot: ApplySnapshotPayload;
   bulkInstallDevices: BulkInstallDevicePayload;
+  bulkInstallStreams: BulkInstallStreamPayload;
   bulkUninstallDevices: BulkUninstallDevicePayload;
+  bulkUninstallStreams: BulkUninstallStreamPayload;
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
@@ -3137,8 +3155,18 @@ export type DeviceInventoryMutationBulkInstallDevicesArgs = {
 };
 
 
+export type DeviceInventoryMutationBulkInstallStreamsArgs = {
+  input: BulkInstallStreamsInput;
+};
+
+
 export type DeviceInventoryMutationBulkUninstallDevicesArgs = {
   input: BulkUninstallDevicesInput;
+};
+
+
+export type DeviceInventoryMutationBulkUninstallStreamsArgs = {
+  input: BulkUninstallStreamsInput;
 };
 
 
@@ -4236,10 +4264,24 @@ export type DeleteStreamMutationVariables = Exact<{
 
 export type DeleteStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteStream: { __typename?: 'DeleteStreamPayload', stream: { __typename?: 'Stream', id: string } | null } } };
 
+export type BulkActivateStreamsMutationVariables = Exact<{
+  input: BulkInstallStreamsInput;
+}>;
+
+
+export type BulkActivateStreamsMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', bulkInstallStreams: { __typename?: 'BulkInstallStreamPayload', installedStreams: Array<{ __typename?: 'Stream', id: string }> } } };
+
 export type StreamFilterLabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type StreamFilterLabelsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } };
+
+export type BulkDeactivateStreamsMutationVariables = Exact<{
+  input: BulkUninstallStreamsInput;
+}>;
+
+
+export type BulkDeactivateStreamsMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', bulkUninstallStreams: { __typename?: 'BulkUninstallStreamPayload', uninstalledStreams: Array<{ __typename?: 'Stream', id: string }> } } };
 
 export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 
