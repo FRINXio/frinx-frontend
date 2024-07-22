@@ -66,6 +66,8 @@ const STREAMS_QUERY = gql`
             streamName
             deviceName
             createdAt
+            startedAt
+            stoppedAt
             isActive
           }
         }
