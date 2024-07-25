@@ -27,7 +27,7 @@
     "unescape-js": "^1.1.4",
     "urql": "4.0.5",
     "uuid": "9.0.1",
-    "yup": "0.32.11"
+    "yup": "1.4.0"
   },
   "scripts": {
     "dev": "NODE_ENV=development node --no-warnings=ExperimentalWarning ./bin/dev.mjs",
