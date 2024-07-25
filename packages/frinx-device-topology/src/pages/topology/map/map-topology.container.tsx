@@ -4,6 +4,7 @@ import { gql, useQuery } from 'urql';
 import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { defaultMarkerIcon } from '../../../helpers/map-marker-helper';
+import { Box, Heading, Text } from '@chakra-ui/react';
 
 const markerIcon = defaultMarkerIcon();
 
@@ -47,8 +48,29 @@ const MapTopologyContainer: VoidFunctionComponent = () => {
                   icon={markerIcon}
                 >
                   <Popup>
-                    {node?.deviceName}
-                    <br /> Easily customizable.
+                    <Box mt={2}>
+                      <Heading as="h3" fontSize="xs" color="blue.700">
+                        {node?.deviceName}
+                      </Heading>
+                    </Box>
+                    <Box mt={2}>
+                      <Heading as="h4" fontSize="xs">
+                        Location name
+                      </Heading>
+                      TODO
+                    </Box>
+                    <Box mt={2}>
+                      <Heading as="h4" fontSize="xs">
+                        Latitude
+                      </Heading>
+                      {node?.geolocation?.latitude}
+                    </Box>
+                    <Box mt={2}>
+                      <Heading as="h4" fontSize="xs">
+                        Longitude
+                      </Heading>
+                      {node?.geolocation?.longitude}
+                    </Box>
                   </Popup>
                 </Marker>
               );
