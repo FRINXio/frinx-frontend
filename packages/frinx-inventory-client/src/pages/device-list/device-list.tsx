@@ -60,6 +60,7 @@ import {
   DevicesConnectionSubscription,
   DiscoveryWorkflowsQuery,
 } from '../../__generated__/graphql';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
 import DeviceFilter from './device-filters';
