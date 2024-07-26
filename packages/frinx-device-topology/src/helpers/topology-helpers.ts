@@ -9,6 +9,11 @@ import {
   PtpGraphNode,
 } from '../pages/topology/graph.helpers';
 import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
+import { LatLngTuple } from 'leaflet';
+
+export const DEFAULT_MAP_CENTER: LatLngTuple = [48.15247287355192, 17.12495675052697];
+
+export const DEFAULT_MAP_ZOOM_LEVEL = 10;
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 

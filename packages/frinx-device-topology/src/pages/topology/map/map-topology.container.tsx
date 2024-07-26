@@ -1,10 +1,12 @@
-import React, { VoidFunctionComponent } from 'react';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { gql, useQuery } from 'urql';
 import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { defaultMarkerIcon } from '../../../helpers/map-marker-helper';
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Box, Heading } from '@chakra-ui/react';
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
+import { LatLngBoundsLiteral } from 'leaflet';
 
 const markerIcon = defaultMarkerIcon();
 
@@ -25,13 +27,49 @@ const GEOMAP_DATA_QUERY = gql`
   }
 `;
 
+// I had to use a wrapping component because the useMap() hook
+// can only be used in a descendant of <MapContainer> 
 const MapTopologyContainer: VoidFunctionComponent = () => {
+
+  return (
+    <MapContainer
+      style={{ height: `calc(100vh - 320px)` }}
+      center={DEFAULT_MAP_CENTER}
+      zoom={DEFAULT_MAP_ZOOM_LEVEL}
+      scrollWheelZoom={true}
+    >
+      <_MapTopologyContainer />
+    </MapContainer>
+  );
+};
+
+// Do not export this component
+const _MapTopologyContainer: VoidFunctionComponent = () => {
+  // const [center, setCenter] = useState(DEFAULT_MAP_CENTER);
+  const map = useMap();
+
   const [{ data: deviceData, error }] = useQuery<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>({
     query: GEOMAP_DATA_QUERY,
   });
 
+
+
+  useEffect(() => {
+    const bounds: LatLngBoundsLiteral | undefined = deviceData?.deviceInventory.deviceMetadata?.nodes
+    ?.filter((node) => node?.geolocation?.latitude && node.geolocation.longitude)
+    .map((node) => [node?.geolocation?.latitude!, node?.geolocation?.longitude!]);
+
+    console.log(bounds);
+
+    if (bounds && bounds.length > 0) {
+      // setCenter(bounds[0]);
+      map.flyToBounds(bounds);
+    }
+  }, [deviceData]);
+  
+
   return (
-    <MapContainer style={{ height: 600 }} center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true}>
+    <>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -43,7 +81,7 @@ const MapTopologyContainer: VoidFunctionComponent = () => {
             .map((node) => {
               return (
                 <Marker
-                  position={[node?.geolocation?.longitude!, node?.geolocation?.latitude!]}
+                  position={[node?.geolocation?.latitude!, node?.geolocation?.longitude!]}
                   key={node?.id}
                   icon={markerIcon}
                 >
@@ -77,7 +115,7 @@ const MapTopologyContainer: VoidFunctionComponent = () => {
             })}
         </MarkerClusterGroup>
       )}
-    </MapContainer>
+    </>
   );
 };
 
