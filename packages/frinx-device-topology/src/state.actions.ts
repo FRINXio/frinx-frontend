@@ -9,6 +9,7 @@ import {
   PtpGraphNode,
   Position,
   SynceGraphNode,
+  MplsGraphNode,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
@@ -48,6 +49,11 @@ export type PtpNodesEdgesPayload = {
 
 export type SynceNodesEdgesPayload = {
   nodes: SynceGraphNode[];
+  edges: GraphEdge[];
+};
+
+export type MplsNodesEdgesPayload = {
+  nodes: MplsGraphNode[];
   edges: GraphEdge[];
 };
 
@@ -205,6 +211,14 @@ export type StateAction =
   | {
       type: 'SET_SELECTED_SYNCE_NODE';
       node: SynceGraphNode | null;
+    }
+  | {
+      type: 'SET_MPLS_NODES_AND_EDGES';
+      payload: MplsNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_SELECTED_MPLS_NODE';
+      node: MplsGraphNode | null;
     }
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
@@ -952,6 +966,13 @@ export function setSelectedPtpNode(node: PtpGraphNode): StateAction {
 export function setSelectedSynceNode(node: SynceGraphNode): StateAction {
   return {
     type: 'SET_SELECTED_SYNCE_NODE',
+    node,
+  };
+}
+
+export function setSelectedMplsNode(node: MplsGraphNode): StateAction {
+  return {
+    type: 'SET_SELECTED_MPLS_NODE',
     node,
   };
 }

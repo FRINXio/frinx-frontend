@@ -83,6 +83,20 @@ export type SynceGraphNode = {
   status: string;
 };
 
+export type MplsGraphNodeDetails = {
+  wtf: string | null;
+};
+
+export type MplsGraphNode = {
+  id: string;
+  name: string;
+  nodeId: string;
+  interfaces: GraphMplsNodeInterface[];
+  coordinates: Position;
+  details: MplsGraphNodeDetails;
+  status: string;
+};
+
 export type SourceTarget = {
   nodeId: string;
   interface: string;
@@ -155,6 +169,17 @@ export type GraphSynceNodeInterface = {
   name: string;
   status: string;
   details: SynceGraphNodeInterfaceDetails | null;
+};
+
+export type MplsGraphNodeInterfaceDetails = {
+  wtf: string | null;
+};
+
+export type GraphMplsNodeInterface = {
+  id: string;
+  name: string;
+  status: string;
+  details: MplsGraphNodeInterfaceDetails | null;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
