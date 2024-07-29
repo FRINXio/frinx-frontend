@@ -17,6 +17,7 @@ const GEOMAP_DATA_QUERY = gql`
         nodes {
           id
           deviceName
+          locationName
           geolocation {
             latitude
             longitude
@@ -77,7 +78,7 @@ const _MapTopologyContainer: VoidFunctionComponent = () => {
       {deviceData && (
         <MarkerClusterGroup chunkedLoading maxClusterRadius={30}>
           {deviceData.deviceInventory.deviceMetadata?.nodes
-            ?.filter((node) => node?.geolocation?.latitude && node.geolocation.longitude)
+            ?.filter((node) => node && node.id && node?.geolocation?.latitude && node.geolocation.longitude)
             .map((node) => {
               return (
                 <Marker
@@ -88,14 +89,14 @@ const _MapTopologyContainer: VoidFunctionComponent = () => {
                   <Popup>
                     <Box mt={2}>
                       <Heading as="h3" fontSize="xs" color="blue.700">
-                        {node?.deviceName}
+                        {node?.deviceName ?? '-'}
                       </Heading>
                     </Box>
                     <Box mt={2}>
                       <Heading as="h4" fontSize="xs">
                         Location name
                       </Heading>
-                      TODO
+                      {node?.locationName ?? '-'}
                     </Box>
                     <Box mt={2}>
                       <Heading as="h4" fontSize="xs">

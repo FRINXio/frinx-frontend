@@ -950,6 +950,7 @@ export type GeoMapDevice = {
   deviceName: Scalars['String']['output'];
   geolocation: Maybe<Geolocation>;
   id: Scalars['ID']['output'];
+  locationName: Maybe<Scalars['String']['output']>;
 };
 
 export type Geolocation = {
@@ -3992,7 +3993,7 @@ export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: 
 export type GeoMapDataQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
+export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
 
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];
