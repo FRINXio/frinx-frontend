@@ -54,16 +54,12 @@ const _MapTopologyContainer: VoidFunctionComponent = () => {
   });
 
 
-
   useEffect(() => {
     const bounds: LatLngBoundsLiteral | undefined = deviceData?.deviceInventory.deviceMetadata?.nodes
     ?.filter((node) => node?.geolocation?.latitude && node.geolocation.longitude)
     .map((node) => [node?.geolocation?.latitude!, node?.geolocation?.longitude!]);
 
-    console.log(bounds);
-
     if (bounds && bounds.length > 0) {
-      // setCenter(bounds[0]);
       map.flyToBounds(bounds);
     }
   }, [deviceData]);
