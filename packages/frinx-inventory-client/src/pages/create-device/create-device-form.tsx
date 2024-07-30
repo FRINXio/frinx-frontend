@@ -15,7 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { Dispatch, SetStateAction, useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor, jsonParse } from '@frinx/shared';
@@ -26,13 +26,19 @@ import {
   DeviceSize as DeviceSizeType,
   Label,
   LabelsQuery,
+  LocationsQuery,
   ZonesQuery,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 import { ServiceState, serviceStateOptions, DeviceSizeEnum, deviceSizeOptions } from '../../helpers/types';
+import { LocationData } from './create-device-page';
 import AddDeviceLocationModal from '../../components/add-device-location-modal';
 
 type Props = {
+  onAddDeviceLocation: () => void;
+  locationData: LocationData;
+  setLocationData: Dispatch<SetStateAction<LocationData>>;
+  locations: LocationsQuery['deviceInventory']['locations']['edges'];
   isSubmitting: boolean;
   zones: ZonesQuery['deviceInventory']['zones']['edges'];
   labels: LabelsQuery['deviceInventory']['labels']['edges'];
@@ -58,6 +64,7 @@ type FormValues = {
   version: string;
   vendor: string;
   port: number;
+  location: string;
 };
 
 const deviceSchema = yup.object({
@@ -73,6 +80,7 @@ const deviceSchema = yup.object({
   deviceType: yup.string(),
   version: yup.string(),
   username: yup.string(),
+  location: yup.string(),
   password: yup.string(),
   deviceSize: yup.lazy((deviceSize) => {
     if (deviceSize === '') {
@@ -107,6 +115,7 @@ const INITIAL_VALUES: FormValues = {
   username: '',
   version: '',
   port: 0,
+  location: '',
 };
 
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
@@ -117,6 +126,10 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   onLabelCreate,
   blueprints,
   isSubmitting,
+  locations,
+  locationData,
+  setLocationData,
+  onAddDeviceLocation,
 }) => {
   const [blueprintParameterValues, setBlueprintParameterValues] = useState<Record<string, string>>({});
   const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
@@ -344,10 +357,10 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
             }}
             value={'Location'}
           >
-            {blueprints.map(({ node: blueprint }) => {
+            {locations.map(({ node: location }) => {
               return (
-                <option key={blueprint.id} value={blueprint.id}>
-                  {blueprint.name}
+                <option key={location.id} value={location.id}>
+                  {location.name}
                 </option>
               );
             })}
@@ -358,9 +371,11 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </HStack>
       </FormControl>
       <AddDeviceLocationModal
+        onAddDeviceLocation={onAddDeviceLocation}
+        locationData={locationData}
+        setLocationData={setLocationData}
         isOpen={addDeviceLocationModalDisclosure.isOpen}
         onClose={addDeviceLocationModalDisclosure.onClose}
-        onConfirmBtnClick={handleDeviceLocationAdd}
         title="Add device location"
       />
       <FormControl>

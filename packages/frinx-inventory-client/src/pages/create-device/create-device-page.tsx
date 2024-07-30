@@ -16,6 +16,10 @@ import {
   Label,
   DeviceServiceState,
   DeviceSize,
+  AddLocationMutation,
+  AddLocationMutationVariables,
+  LocationsQuery,
+  LocationsQueryVariables,
 } from '../../__generated__/graphql';
 import CreateDeviceForm from './create-device-form';
 
@@ -96,6 +100,35 @@ const LABELS_QUERY = gql`
   }
 `;
 
+const ADD_LOCATION_MUTATION = gql`
+  mutation AddLocation($addLocationInput: AddLocationInput!) {
+    deviceInventory {
+      addLocation(input: $addLocationInput) {
+        location {
+          id
+        }
+      }
+    }
+  }
+`;
+
+const LOCATIONS_QUERY = gql`
+  query Locations {
+    deviceInventory {
+      locations {
+        edges {
+          node {
+            id
+            latitude
+            longitude
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 type FormValues = {
   name: string;
   zoneId: string;
@@ -113,19 +146,41 @@ type FormValues = {
   vendor: string;
   port: number;
 };
+export type LocationData = {
+  name: string;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+};
 type Props = {
   onAddDeviceSuccess: () => void;
 };
 type Error = string | null;
 
+export const locationDataInitialState = {
+  name: '',
+  coordinates: {
+    latitude: 0,
+    longitude: 0,
+  },
+};
+
 const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   const [deviceNameError, setDeviceNameError] = useState<Error>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [locationData, setLocationData] = useState<LocationData>(locationDataInitialState);
+
   const { addToastNotification } = useNotifications();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
+  const [, addLocation] = useMutation<AddLocationMutation, AddLocationMutationVariables>(ADD_LOCATION_MUTATION);
+
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
   const [{ data: labelsData }] = useQuery<LabelsQuery, LabelsQueryVariables>({
     query: LABELS_QUERY,
+  });
+  const [{ data: locationsData }] = useQuery<LocationsQuery, LocationsQueryVariables>({
+    query: LOCATIONS_QUERY,
   });
   const [{ data: zonesData, error: zonesError }] = useQuery<ZonesQuery, ZonesQueryVariables>({ query: ZONES_QUERY });
   const [{ data: blueprintsData, error: blueprintsError }] = useQuery<
@@ -138,6 +193,18 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   const handleOnCreateLabel = async (labelName: string): Promise<Label | null> => {
     const result = await createLabel({ input: { name: labelName } });
     return result.data?.deviceInventory.newLabel.label ?? null;
+  };
+
+  const handleAddLocation = () => {
+    addLocation({
+      addLocationInput: locationData,
+    });
+  };
+
+  const handleLocationUpdate = (property: string, value: number) => {
+    setLocationData((prev) => ({
+      ...prev,
+    }));
   };
 
   const handleSubmit = (values: FormValues) => {
@@ -169,7 +236,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   };
 
   const labels = labelsData?.deviceInventory.labels.edges ?? [];
-
+  const locations = locationsData?.deviceInventory.locations.edges ?? [];
   const zones = zonesData?.deviceInventory.zones.edges ?? [];
   const blueprints = blueprintsData?.deviceInventory.blueprints.edges ?? [];
 
@@ -185,6 +252,10 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
 
       <Box background="white" boxShadow="base" px={4} py={2} position="relative">
         <CreateDeviceForm
+          onAddDeviceLocation={handleAddLocation}
+          locationData={locationData}
+          setLocationData={setLocationData}
+          locations={locations}
           deviceNameError={deviceNameError}
           onFormSubmit={handleSubmit}
           zones={zones}
