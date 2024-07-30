@@ -26,16 +26,11 @@ type Props = {
 };
 
 const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation }) => {
-  const marker = useRef<MarkerType>(null);
-  const [initial, setInitial] = useState(true);
+  const [markerRef, setMarkerRef] = useState<MarkerType | null>(null);
 
-  // A hack need to avoid unnecessary opening of popup, only the initial
   useEffect(() => {
-    if (initial && marker?.current) {
-      marker?.current?.openPopup();
-      setInitial(false);
-    }
-  });
+      markerRef?.openPopup();
+  }, [markerRef]);
 
   return (
     <Modal isOpen onClose={onClose} size="5xl" closeOnOverlayClick={false}>
@@ -45,13 +40,22 @@ const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation 
         <ModalCloseButton />
         <ModalBody>
           {deviceLocation.location?.latitude && deviceLocation.location?.longitude ? (
-            <MapContainer center={[deviceLocation.location?.latitude, deviceLocation.location?.longitude]} zoom={13} style={{ height: '60vh' }}>
+            <MapContainer
+              center={[deviceLocation.location?.latitude, deviceLocation.location?.longitude]}
+              zoom={13}
+              style={{ height: '60vh' }}
+            >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <Marker ref={marker} position={[deviceLocation.location?.latitude, deviceLocation.location?.longitude]}>
-                <Popup >
+              <Marker
+                ref={(el) => {
+                  setMarkerRef(el);
+                }}
+                position={[deviceLocation.location?.latitude, deviceLocation.location?.longitude]}
+              >
+                <Popup>
                   <Box mt={2}>
                     <Heading as="h3" fontSize="xs" color="blue.700">
                       {deviceLocation.deviceName ?? '-'}
