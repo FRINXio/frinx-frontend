@@ -13,7 +13,7 @@ import {
   Tooltip,
   Tr,
 } from '@chakra-ui/react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, formatDuration, intervalToDuration } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
 import { getLocalDateFromUTC } from '@frinx/shared';
@@ -101,6 +101,7 @@ const StreamTable: VoidFunctionComponent<Props> = ({
               )}
             </Flex>
           </Th>
+          <Th>Stream Duration</Th>
           <Th>Activation</Th>
           <Th>Actions</Th>
         </Tr>
@@ -109,6 +110,13 @@ const StreamTable: VoidFunctionComponent<Props> = ({
         {streams.map(({ node: stream }) => {
           const { isActive } = stream;
           const localDate = getLocalDateFromUTC(stream.createdAt);
+          const streamDuration = stream.startedAt
+            ? intervalToDuration({
+                start: new Date(stream.startedAt),
+                end: stream.stoppedAt ? new Date(stream.stoppedAt) : Date.now(),
+              })
+            : null;
+
           const isLoading = installLoadingMap[stream.id] ?? false;
 
           return (
@@ -141,6 +149,17 @@ const StreamTable: VoidFunctionComponent<Props> = ({
                     {formatDistanceToNow(localDate)} ago
                   </Text>
                 </Tooltip>
+              </Td>
+
+              <Td>
+                <Text data-cy={`device-started-at-${stream.streamName}`} as="span" fontSize="sm" color="blackAlpha.700">
+                  {streamDuration
+                    ? formatDuration(streamDuration, {
+                        format: ['hours', 'minutes'],
+                        zero: true,
+                      })
+                    : '-'}
+                </Text>
               </Td>
               <Td minWidth={200}>
                 <InstallButton

@@ -23,7 +23,7 @@ import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
 
-type SortedBy = 'name' | 'discoveredAt' | 'serviceState' | 'modelVersion';
+type SortedBy = 'name' | 'discoveredAt' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
 type OrderBy = {
   sortKey: SortedBy;

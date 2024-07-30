@@ -13,6 +13,7 @@ import {
   HStack,
   Input,
   useDisclosure,
+  VStack,
 } from '@chakra-ui/react';
 import { usePagination, Pagination, useNotifications, ConfirmDeleteModal, unwrap } from '@frinx/shared';
 import { Item } from '@frinx/shared/dist/components/autocomplete/autocomplete';
@@ -22,6 +23,10 @@ import { gql, useMutation, useQuery } from 'urql';
 import {
   ActivateStreamMutation,
   ActivateStreamMutationVariables,
+  BulkActivateStreamsMutation,
+  BulkActivateStreamsMutationVariables,
+  BulkDeactivateStreamsMutation,
+  BulkDeactivateStreamsMutationVariables,
   DeactivateStreamMutation,
   DeactivateStreamMutationVariables,
   DeleteStreamMutation,
@@ -30,6 +35,8 @@ import {
   StreamsQuery,
   StreamsQueryVariables,
 } from '../../__generated__/graphql';
+import BulkActions from './bulk-actions';
+import DeleteSelectedStreamsModal from './delete-selected-modal';
 import StreamFilter from './stream-filters';
 import StreamTable from './stream-table';
 
@@ -59,6 +66,8 @@ const STREAMS_QUERY = gql`
             streamName
             deviceName
             createdAt
+            startedAt
+            stoppedAt
             isActive
           }
         }
@@ -113,7 +122,18 @@ const DELETE_STREAM_MUTATION = gql`
   }
 `;
 
-type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
+const BULK_ACTIVATE_STREAMS_MUTATION = gql`
+  mutation BulkActivateStreams($input: BulkInstallStreamsInput!) {
+    deviceInventory {
+      bulkInstallStreams(input: $input) {
+        installedStreams {
+          id
+        }
+      }
+    }
+  }
+`;
+
 const STREAM_LABELS_QUERY = gql`
   query StreamFilterLabels {
     deviceInventory {
@@ -129,6 +149,19 @@ const STREAM_LABELS_QUERY = gql`
   }
 `;
 
+const BULK_DEACTIVATE_STREAMS_MUTATION = gql`
+  mutation BulkDeactivateStreams($input: BulkUninstallStreamsInput!) {
+    deviceInventory {
+      bulkUninstallStreams(input: $input) {
+        uninstalledStreams {
+          id
+        }
+      }
+    }
+  }
+`;
+
+type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
   sortKey: SortedBy;
@@ -141,6 +174,7 @@ const StreamList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Stream'] }), []);
   const { addToastNotification } = useNotifications();
   const deleteModalDisclosure = useDisclosure();
+  const deleteSelectedStreamsModal = useDisclosure();
   const [orderBy, setOrderBy] = useState<Sorting | null>(null);
 
   // filter states
@@ -180,6 +214,12 @@ const StreamList: VoidFunctionComponent = () => {
     DEACTIVATE_STREAM_MUTATION,
   );
   const [, deleteStream] = useMutation<DeleteStreamMutation, DeleteStreamMutationVariables>(DELETE_STREAM_MUTATION);
+  const [, bulkInstallation] = useMutation<BulkActivateStreamsMutation, BulkActivateStreamsMutationVariables>(
+    BULK_ACTIVATE_STREAMS_MUTATION,
+  );
+  const [, bulkUninstallation] = useMutation<BulkDeactivateStreamsMutation, BulkDeactivateStreamsMutationVariables>(
+    BULK_DEACTIVATE_STREAMS_MUTATION,
+  );
 
   const handleSort = (sortKey: SortedBy) => {
     setOrderBy({ sortKey, direction: orderBy?.direction === 'ASC' ? 'DESC' : 'ASC' });
@@ -228,8 +268,16 @@ const StreamList: VoidFunctionComponent = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSelectionOfAllStreams = (checked: boolean) => {
-    // eslint-disable-next-line no-console
-    console.log('select all streams');
+    if (checked) {
+      if (streamData != null) {
+        const streamId = streamData.deviceInventory.streams.edges
+          .filter(({ node }) => !node.isActive)
+          .map(({ node }) => node.id);
+        setSelectedStreams(new Set(streamId));
+      }
+    } else {
+      setSelectedStreams(new Set());
+    }
   };
 
   const handleStreamInstall = (streamId: string) => {
@@ -351,10 +399,126 @@ const StreamList: VoidFunctionComponent = () => {
       });
   };
 
+  const handleActivateSelectedStreams = () => {
+    setActivateLoadingMap((m) => {
+      return {
+        ...m,
+        ...[...selectedStreams].reduce((acc, streamId) => {
+          return {
+            ...acc,
+            [streamId]: true,
+          };
+        }, {}),
+      };
+    });
+    bulkInstallation({
+      input: {
+        streamIds: [...selectedStreams],
+      },
+    })
+      .then((res) => {
+        if (res.error != null || res.data == null) {
+          throw new Error(res.error?.message ?? 'Problem with bulk activation of streams');
+        }
+
+        if (res.data?.deviceInventory.bulkInstallStreams.installedStreams.length === 0) {
+          throw new Error('No streams were installed');
+        }
+
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Streams activated successfuly',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Bulk activation of streams has failed',
+        });
+      })
+      .finally(() => {
+        setActivateLoadingMap((m) => {
+          return {
+            ...m,
+            ...[...selectedStreams].reduce((acc, streamId) => {
+              return {
+                ...acc,
+                [streamId]: false,
+              };
+            }, {}),
+          };
+        });
+        setSelectedStreams(new Set());
+      });
+  };
+
+  const handleDeactivateSelectedStreams = () => {
+    setActivateLoadingMap((m) => {
+      return {
+        ...m,
+        ...[...selectedStreams].reduce((acc, streamId) => {
+          return {
+            ...acc,
+            [streamId]: true,
+          };
+        }, {}),
+      };
+    });
+    bulkUninstallation({
+      input: {
+        streamIds: [...selectedStreams],
+      },
+    })
+      .then((res) => {
+        if (res.error != null || res.data == null) {
+          throw new Error(res.error?.message ?? 'Problem with bulk activation of streams');
+        }
+
+        if (res.data?.deviceInventory.bulkUninstallStreams.uninstalledStreams.length === 0) {
+          throw new Error('No streams were uninstalled');
+        }
+
+        addToastNotification({
+          type: 'success',
+          title: 'Success',
+          content: 'Streams deactivated successfuly',
+        });
+      })
+      .catch(() => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Bulk deactivation of streams has failed',
+        });
+      })
+      .finally(() => {
+        setActivateLoadingMap((m) => {
+          return {
+            ...m,
+            ...[...selectedStreams].reduce((acc, streamId) => {
+              return {
+                ...acc,
+                [streamId]: false,
+              };
+            }, {}),
+          };
+        });
+        setSelectedStreams(new Set());
+      });
+  };
+
   const handleStreamDelete = () => {
     deleteStreams([unwrap(streamIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
   };
 
+  const handleSelectedStreamsDelete = () => {
+    deleteStreams([...selectedStreams]).finally(() => deleteSelectedStreamsModal.onClose());
+  };
+
+  const areSelectedAll =
+    streamData?.deviceInventory.streams.edges.filter(({ node }) => !node.isActive).length === selectedStreams.size;
   const handleSearchDeviceName = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setSearchDeviceName(value);
@@ -364,9 +528,6 @@ const StreamList: VoidFunctionComponent = () => {
     const { value } = event.target;
     setSearchStreamName(value);
   };
-
-  // TODO: will be implemented later
-  const areSelectedAll = false;
 
   if (streamData == null && error) {
     return (
@@ -388,6 +549,11 @@ const StreamList: VoidFunctionComponent = () => {
 
   return (
     <>
+      <DeleteSelectedStreamsModal
+        onConfirm={handleSelectedStreamsDelete}
+        isOpen={deleteSelectedStreamsModal.isOpen}
+        onClose={deleteSelectedStreamsModal.onClose}
+      />
       <ConfirmDeleteModal
         isOpen={deleteModalDisclosure.isOpen}
         onClose={deleteModalDisclosure.onClose}
@@ -407,7 +573,7 @@ const StreamList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
-        <Flex justify="space-between">
+        <VStack align="flex-start">
           <Form display="flex" alignItems="flex-start" width="half" onSubmit={handleSearchSubmit}>
             <Box flex={1}>
               <StreamFilter
@@ -419,7 +585,7 @@ const StreamList: VoidFunctionComponent = () => {
             </Box>
             <Box flex={1} marginLeft="2">
               <FormLabel htmlFor="device-search">Search device</FormLabel>
-              <Flex mt={4}>
+              <Flex mt={2}>
                 <Input
                   data-cy="search-by-name"
                   id="device-search"
@@ -433,7 +599,7 @@ const StreamList: VoidFunctionComponent = () => {
             </Box>
             <Box flex={1} marginLeft="2">
               <FormLabel htmlFor="stream-search">Search stream</FormLabel>
-              <Flex mt={4}>
+              <Flex mt={2}>
                 <Input
                   data-cy="search-by-name"
                   id="stream-search"
@@ -445,7 +611,7 @@ const StreamList: VoidFunctionComponent = () => {
                 />
               </Flex>
             </Box>
-            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={10} type="submit">
+            <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" mt={8} type="submit">
               Search
             </Button>
             <Button
@@ -455,15 +621,20 @@ const StreamList: VoidFunctionComponent = () => {
               colorScheme="red"
               variant="outline"
               marginLeft="2"
-              mt={10}
+              mt={8}
             >
               Clear
             </Button>
           </Form>
-          <Flex width="50%" justify="flex-end">
-            {/* here comes bulk actions */}
+          <Flex justify="flex-end" mb="8">
+            <BulkActions
+              onActivateButtonClick={handleActivateSelectedStreams}
+              onDisableButtonClick={handleDeactivateSelectedStreams}
+              onDeleteButtonClick={deleteSelectedStreamsModal.onOpen}
+              areButtonsDisabled={selectedStreams.size === 0}
+            />
           </Flex>
-        </Flex>
+        </VStack>
         <StreamTable
           data-cy="stream-table"
           streams={streamData?.deviceInventory.streams.edges}
