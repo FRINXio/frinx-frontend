@@ -278,7 +278,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     data-cy={`device-map-${device.name}`}
                     aria-label="map"
                     size="sm"
-                    isDisabled={!device.location}
+                    isDisabled={!device.location || !device.location.latitude || !device.location.longitude}
                     icon={<Icon size={12} as={FeatherIcon} icon="map" />}
                     as={isInstalled ? Link : 'button'}
                     onClick={() => onDeviceMapBtnClick({deviceName: device.name, location: device.location})}
