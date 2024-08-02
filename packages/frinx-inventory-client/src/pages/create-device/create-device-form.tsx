@@ -12,7 +12,6 @@ import {
   Spacer,
   Switch,
   useDisclosure,
-  VStack,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { Dispatch, SetStateAction, useState, VoidFunctionComponent } from 'react';
@@ -48,7 +47,7 @@ type Props = {
   deviceNameError: string | null;
 };
 
-type FormValues = {
+export type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string | null;
@@ -64,7 +63,7 @@ type FormValues = {
   version: string;
   vendor: string;
   port: number;
-  location: string;
+  locationId: string;
 };
 
 const deviceSchema = yup.object({
@@ -80,7 +79,7 @@ const deviceSchema = yup.object({
   deviceType: yup.string(),
   version: yup.string(),
   username: yup.string(),
-  location: yup.string(),
+  locationId: yup.string(),
   password: yup.string(),
   deviceSize: yup.lazy((deviceSize) => {
     if (deviceSize === '') {
@@ -115,7 +114,7 @@ const INITIAL_VALUES: FormValues = {
   username: '',
   version: '',
   port: 0,
-  location: '',
+  locationId: '',
 };
 
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
@@ -132,7 +131,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   onAddDeviceLocation,
 }) => {
   const [blueprintParameterValues, setBlueprintParameterValues] = useState<Record<string, string>>({});
-  const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [isUsingBlueprints, setIsUsingBlueprints] = useState(false);
   const addDeviceLocationModalDisclosure = useDisclosure();
 
@@ -178,9 +177,9 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     }
   };
 
-  const handleDeviceLocationAdd = () => {
-    //.finally(() => addDeviceLocationModalDisclosure.onClose());
-    console.log('Location added');
+  const handleOnLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleChange(e);
+    setFieldValue('locationId', e.target.value);
   };
 
   const blueprintParameters = parse(
@@ -344,18 +343,18 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           onSelectionChange={handleOnSelectionChange}
         />
       </FormControl>
-      <FormControl my={6} id="location">
+      <FormControl my={6}>
         <FormLabel>Location</FormLabel>
         <HStack>
           <Select
             data-cy="add-device-location"
-            name="location"
-            id="location"
+            name="locationId"
+            id="locationId"
             placeholder="Select location"
             onChange={(e) => {
-              handleChange(e);
+              handleOnLocationChange(e);
             }}
-            value={'Location'}
+            value={values.locationId}
           >
             {locations.map(({ node: location }) => {
               return (
@@ -365,12 +364,13 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
               );
             })}
           </Select>
-          <Button onClick={addDeviceLocationModalDisclosure.onOpen} colorScheme={'blue'}>
+          <Button onClick={addDeviceLocationModalDisclosure.onOpen} colorScheme="blue">
             +
           </Button>
         </HStack>
       </FormControl>
       <AddDeviceLocationModal
+        locations={locations}
         onAddDeviceLocation={onAddDeviceLocation}
         locationData={locationData}
         setLocationData={setLocationData}

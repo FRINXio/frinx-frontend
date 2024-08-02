@@ -145,6 +145,7 @@ type FormValues = {
   version: string;
   vendor: string;
   port: number;
+  locationId: string;
 };
 export type LocationData = {
   name: string;
@@ -199,12 +200,6 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
     addLocation({
       addLocationInput: locationData,
     });
-  };
-
-  const handleLocationUpdate = (property: string, value: number) => {
-    setLocationData((prev) => ({
-      ...prev,
-    }));
   };
 
   const handleSubmit = (values: FormValues) => {
