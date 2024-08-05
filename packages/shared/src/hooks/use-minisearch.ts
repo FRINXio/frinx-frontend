@@ -41,7 +41,7 @@ const useMinisearch = <T extends { Name: string }>({
     minisearch.addAll(items);
   }, [items, minisearch]);
 
-  const results = searchText.length > 0 ? searchFn() ?? [] : items;
+  const results = searchText.length > 0 ? (searchFn() ?? []) : items;
   return {
     results,
     searchText,

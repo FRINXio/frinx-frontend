@@ -29,7 +29,7 @@ const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation 
   const [markerRef, setMarkerRef] = useState<MarkerType | null>(null);
 
   useEffect(() => {
-      markerRef?.openPopup();
+    markerRef?.openPopup();
   }, [markerRef]);
 
   return (
