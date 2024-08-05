@@ -47,14 +47,14 @@ export type GraphNode = {
 export type PtpGraphNodeDetails = {
   clockAccuracy: string | null;
   clockClass: number | null;
-  clockId: string;
+  clockId: string | null;
   clockType: string | null;
   clockVariance: string | null;
-  domain: number;
+  domain: number | null;
   globalPriority: number | null;
-  gmClockId: string;
-  parentClockId: string;
-  ptpProfile: string;
+  gmClockId: string | null;
+  parentClockId: string | null;
+  ptpProfile: string | null;
   timeRecoveryStatus: string | null;
   userPriority: number | null;
 };
@@ -93,7 +93,7 @@ export type MplsGraphNode = {
   nodeId: string;
   interfaces: GraphMplsNodeInterface[];
   coordinates: Position;
-  details: MplsGraphNodeDetails;
+  // details: MplsGraphNodeDetails;
   status: string;
 };
 
@@ -171,15 +171,10 @@ export type GraphSynceNodeInterface = {
   details: SynceGraphNodeInterfaceDetails | null;
 };
 
-export type MplsGraphNodeInterfaceDetails = {
-  wtf: string | null;
-};
-
 export type GraphMplsNodeInterface = {
   id: string;
   name: string;
   status: string;
-  details: MplsGraphNodeInterfaceDetails | null;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;

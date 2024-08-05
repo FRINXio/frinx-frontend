@@ -3,7 +3,7 @@ import { gql, useClient, useMutation, useQuery } from 'urql';
 import {
   findGmPath,
   getSynceBackupNodesAndEdges,
-  getSynceNodesAndEdges,
+  getMplsNodesAndEdges,
   setGmPathIds,
   setMode,
 } from '../../../state.actions';
@@ -68,9 +68,9 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
   useEffect(() => {
     if (selectedVersion == null) {
       intervalRef.current = window.setInterval(() => {
-        dispatch(getSynceNodesAndEdges(client));
+        dispatch(getMplsNodesAndEdges(client));
       }, 10000);
-      dispatch(getSynceNodesAndEdges(client));
+      dispatch(getMplsNodesAndEdges(client));
     }
 
     return () => {
@@ -94,7 +94,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     updatePosition({
       input: {
         coordinates,
-        layer: 'EthTopology',
+        layer: 'MplsTopology',
       },
     });
   };

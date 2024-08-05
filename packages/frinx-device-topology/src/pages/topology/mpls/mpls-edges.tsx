@@ -21,7 +21,7 @@ type Props = {
 const MplsEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
   const { state, dispatch } = useStateContext();
   const {
-    mplsNodes,
+    // mplsNodes,
     connectedNodeIds,
     selectedNode,
     mplsNodePositions: nodePositions,
@@ -35,7 +35,8 @@ const MplsEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
 
   const [gmEdges, nonGmEdges] = partition(edges, (edge) => isGmPathPredicate(gmPathIds, edge));
   const sortedSynceEdges = [...nonGmEdges, ...gmEdges];
-  const netInterfaceMap = new Map(mplsNodes.flatMap((n) => n.interfaces).map((i) => [i.id, i]));
+  // TODO: will be used in future implementation
+  // const netInterfaceMap = new Map(mplsNodes.flatMap((n) => n.interfaces).map((i) => [i.id, i]));
 
   return (
     <g>
@@ -74,8 +75,6 @@ const MplsEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
 
         return (
           <MplsEdge
-            mplsNodes={mplsNodes}
-            netInterfaceMap={netInterfaceMap}
             controlPoints={controlPoints}
             edge={edge}
             isActive={isActive ?? false}

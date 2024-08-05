@@ -202,16 +202,7 @@ export function getSynceInterfaceNodeColor(
   return 'purple';
 }
 
-export function getMplsInterfaceNodeColor(isQualifiedForUse?: string | null, synceEnabled?: boolean) {
-  if (!synceEnabled) {
-    return 'black';
-  }
-  if (synceEnabled && isQualifiedForUse === 'unknown') {
-    return 'red';
-  }
-  if (synceEnabled && isQualifiedForUse) {
-    return 'green';
-  }
+export function getMplsInterfaceNodeColor() {
   return 'purple';
 }
 

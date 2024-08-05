@@ -105,15 +105,15 @@ export type State = {
   selectedNodeLoad: {
     deviceName: string;
     deviceUsage?: {
-      cpuLoad: number;
-      memoryLoad: number;
+      cpuLoad: number | null;
+      memoryLoad: number | null;
     } | null;
   };
   // isMouseDown: boolean;
 };
 
 export const initialState: State = {
-  topologyLayer: 'LLDP',
+  topologyLayer: 'MPLS',
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -206,6 +206,18 @@ export function stateReducer(state: State, action: StateAction): State {
             nodes: acc.synceNodes,
             edges: acc.synceEdges,
             positionMap: acc.synceNodePositions,
+          },
+          () => 'MEDIUM',
+        );
+        return acc;
+      }
+      case 'UPDATE_MPLS_NODE_POSITION': {
+        acc.mplsNodePositions[action.nodeId] = action.position;
+        acc.mplsInterfaceGroupPositions = getInterfacesPositions<GraphMplsNodeInterface, MplsGraphNode>(
+          {
+            nodes: acc.mplsNodes,
+            edges: acc.mplsEdges,
+            positionMap: acc.mplsNodePositions,
           },
           () => 'MEDIUM',
         );

@@ -1,37 +1,31 @@
 import { Badge, Box, Button, Divider, Flex, Heading, HStack } from '@chakra-ui/react';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { setSelectedEdge } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
-import { GraphSynceNodeInterface, normalizeNodeInterfaceData, SynceGraphNode } from '../graph.helpers';
-import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
+import { GraphMplsNodeInterface, MplsGraphNode } from '../graph.helpers';
 
 type Props = {
   onClose: () => void;
-  node: SynceGraphNode;
+  node: MplsGraphNode;
 };
 
 const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
-  const [activeInterface, setActiveInterface] = useState<GraphSynceNodeInterface | null>(null);
-  const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = React.useState(false);
   const { state, dispatch } = useStateContext();
   const { mplsEdges } = state;
-  const { details } = node;
 
   const { interfaces } = node;
 
-  const handleInterfaceClick = (deviceInterface: GraphSynceNodeInterface) => {
+  const handleInterfaceClick = (deviceInterface: GraphMplsNodeInterface) => {
     const [edge] = mplsEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));
     if (!edge) {
       return;
     }
     dispatch(setSelectedEdge(edge));
-    setActiveInterface(deviceInterface);
   };
 
   const handleClose = () => {
     onClose();
-    setActiveInterface(null);
   };
 
   return (
@@ -56,9 +50,9 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
         </Flex>
         <Box mt={2}>
           <Heading as="h4" fontSize="xs">
-            Selected for use
+            Some detail (???)
           </Heading>
-          {details.selectedForUse}
+          none
         </Box>
         <Divider m={1} />
         <Box mt={2}>
@@ -76,27 +70,12 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             );
           })}
         </Box>
-        <Button
-          marginTop={4}
-          aria-label="show additional"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setIsShowingAdditionalInfo((prev) => !prev);
-          }}
-        >
-          Additional info
-        </Button>
         <HStack spacing={2} marginTop={4}>
           <Button size="sm" onClick={handleClose}>
             Close
           </Button>
         </HStack>
       </Box>
-      {isShowingAdditionalInfo && <DeviceInfoPanelAdditionalInfo additionalInfo={details} />}
-      {activeInterface && (
-        <DeviceInfoPanelAdditionalInfo additionalInfo={normalizeNodeInterfaceData(activeInterface)} />
-      )}
     </HStack>
   );
 };

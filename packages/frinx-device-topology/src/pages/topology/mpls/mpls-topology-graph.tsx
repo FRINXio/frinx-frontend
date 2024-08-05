@@ -1,7 +1,7 @@
 import { Box, Button, Text } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
-import { clearGmPathSearch, setSelectedNode, updateSynceNodePosition } from '../../../state.actions';
+import { clearGmPathSearch, setSelectedNode, updateMplsNodePosition } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './mpls-edges';
 import { height, Position, width, MplsGraphNode } from '../graph.helpers';
@@ -26,8 +26,8 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
   const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
   const {
-    synceEdges: edges,
-    synceNodes: nodes,
+    mplsEdges: edges,
+    mplsNodes: nodes,
     gmPathIds,
     selectedNode,
     unconfirmedSelectedNodeIds,
@@ -40,7 +40,7 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
     }
     const node = unwrap(nodes.find((n) => n.name === deviceName));
     lastPositionRef.current = { deviceName: node.name, position };
-    dispatch(updateSynceNodePosition(deviceName, position));
+    dispatch(updateMplsNodePosition(deviceName, position));
   };
 
   const handleNodePositionUpdateFinish = () => {
