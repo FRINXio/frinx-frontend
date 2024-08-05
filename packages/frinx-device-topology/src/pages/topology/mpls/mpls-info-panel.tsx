@@ -50,7 +50,7 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
         </Flex>
         <Box mt={2}>
           <Heading as="h4" fontSize="xs">
-            Some detail (???)
+            Mpls detail
           </Heading>
           none
         </Box>

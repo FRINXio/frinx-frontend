@@ -428,7 +428,9 @@ export function isTargetingActiveNode<S extends { id: string; name: string }>(
   return targetNodeId === selectedNodeName && !!targetGroup?.interfaces.find((i) => i.id === edge.source.interface);
 }
 
-export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null): string | null {
+export function getNameFromNode(
+  node: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null,
+): string | null {
   if (node == null) {
     return null;
   }
@@ -442,7 +444,7 @@ export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | 
 }
 
 export function ensureNodeHasDevice(
-  value: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null,
+  value: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null,
 ): value is GraphNode {
   return value != null && 'device' in value;
 }

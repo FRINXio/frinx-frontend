@@ -68,7 +68,7 @@ export type State = {
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
-  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode) | null;
+  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -113,7 +113,7 @@ export type State = {
 };
 
 export const initialState: State = {
-  topologyLayer: 'MPLS',
+  topologyLayer: 'LLDP',
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -476,6 +476,20 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'SET_SELECTED_SYNCE_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.synceEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_MPLS_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;
         }

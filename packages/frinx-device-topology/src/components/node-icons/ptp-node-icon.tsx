@@ -4,6 +4,7 @@ import {
   GraphNetNode,
   GraphNode,
   GraphPtpNodeInterface,
+  MplsGraphNode,
   PositionsWithGroupsMap,
   PtpGraphNode,
   SynceGraphNode,
@@ -26,7 +27,7 @@ type Props = {
   node: PtpGraphNodeWithDiff;
   topologyMode: TopologyMode;
   selectedEdge: GraphEdge | null;
-  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
