@@ -281,7 +281,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     isDisabled={!device.location || !device.location.latitude || !device.location.longitude}
                     icon={<Icon size={12} as={FeatherIcon} icon="map" />}
                     as={isInstalled ? Link : 'button'}
-                    onClick={() => onDeviceMapBtnClick({deviceName: device.name, location: device.location})}
+                    onClick={() => onDeviceMapBtnClick({ deviceName: device.name, location: device.location })}
                   />
                   <IconButton
                     data-cy={`device-rediscover-${device.name}`}
