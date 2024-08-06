@@ -20,7 +20,7 @@
     "typegen": "tsc -p ./tsconfig.typegen.json"
   },
   "devDependencies": {
-    "@chakra-ui/react": "2.8.1",
+    "@chakra-ui/react": "2.8.2",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "^2.0.0",
@@ -56,7 +56,7 @@
     "immer": "10.0.2",
     "lodash": "4.17.21",
     "mathjs": "^12.2.1",
-    "urql": "4.0.5",
+    "urql": "4.1.0",
     "uuid": "9.0.1"
   },
   "peerDependencies": {

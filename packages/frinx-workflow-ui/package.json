@@ -25,7 +25,7 @@
     "react-flow-renderer": "10.3.17",
     "react-organizational-chart": "^2.0.0",
     "unescape-js": "^1.1.4",
-    "urql": "4.0.5",
+    "urql": "4.1.0",
     "uuid": "9.0.1",
     "yup": "0.32.11"
   },
@@ -39,7 +39,7 @@
     "type-check": "tsc"
   },
   "devDependencies": {
-    "@chakra-ui/react": "2.8.1",
+    "@chakra-ui/react": "2.8.2",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "^2.0.0",

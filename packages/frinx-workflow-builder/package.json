@@ -33,11 +33,11 @@
     "lodash": "4.17.21",
     "minisearch": "^6.0.0",
     "react-flow-renderer": "10.3.17",
-    "urql": "4.0.5",
+    "urql": "4.1.0",
     "yup": "0.32.11"
   },
   "devDependencies": {
-    "@chakra-ui/react": "2.8.1",
+    "@chakra-ui/react": "2.8.2",
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@frinx/build-scripts": "^2.0.0",
