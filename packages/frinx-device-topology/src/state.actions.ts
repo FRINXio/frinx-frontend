@@ -9,10 +9,13 @@ import {
   PtpGraphNode,
   Position,
   SynceGraphNode,
+  MplsGraphNode,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
+  MplsTopologyQuery,
+  MplsTopologyQueryVariables,
   NetTopologyQuery,
   NetTopologyQueryVariables,
   NetTopologyVersionDataQuery,
@@ -51,6 +54,11 @@ export type SynceNodesEdgesPayload = {
   edges: GraphEdge[];
 };
 
+export type MplsNodesEdgesPayload = {
+  nodes: MplsGraphNode[];
+  edges: GraphEdge[];
+};
+
 export type BackupNodesEdgesPayload = {
   nodes: BackupGraphNode[];
   edges: GraphEdge[];
@@ -67,8 +75,8 @@ export type LabelItem = {
 };
 
 export type SetDeviceUsagePayload = {
-  cpuLoad: number;
-  memoryLoad: number;
+  cpuLoad: number | null;
+  memoryLoad: number | null;
 };
 
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
@@ -90,6 +98,11 @@ export type StateAction =
     }
   | {
       type: 'UPDATE_SYNCE_NODE_POSITION';
+      nodeId: string;
+      position: Position;
+    }
+  | {
+      type: 'UPDATE_MPLS_NODE_POSITION';
       nodeId: string;
       position: Position;
     }
@@ -205,6 +218,14 @@ export type StateAction =
   | {
       type: 'SET_SELECTED_SYNCE_NODE';
       node: SynceGraphNode | null;
+    }
+  | {
+      type: 'SET_MPLS_NODES_AND_EDGES';
+      payload: MplsNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_SELECTED_MPLS_NODE';
+      node: MplsGraphNode | null;
     }
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
@@ -556,6 +577,59 @@ const SYNCE_TOPOLOGY_QUERY = gql`
   }
 `;
 
+const MPLS_TOPOLOGY_QUERY = gql`
+  query MplsTopology {
+    deviceInventory {
+      mplsTopology {
+        nodes {
+          id
+          nodeId
+          name
+          interfaces {
+            id
+            name
+            status
+          }
+          coordinates {
+            x
+            y
+          }
+          status
+          labels
+          mplsDeviceDetails {
+            lspTunnels {
+              lspId
+              fromDevice
+              toDevice
+              uptime
+              signalization
+            }
+            mplsData {
+              lspId
+              inputLabel
+              inputInterface
+              outputLabel
+              outputInterface
+            }
+          }
+        }
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+          weight
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -687,6 +761,40 @@ export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<St
   };
 }
 
+export function setMplsNodesAndEdges(payload: MplsNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_MPLS_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+export function getMplsNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<MplsTopologyQuery, MplsTopologyQueryVariables>(
+        MPLS_TOPOLOGY_QUERY,
+        {},
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes, edges } = data.data?.deviceInventory.mplsTopology ?? { nodes: [], edges: [] };
+        const mplsNodes: MplsGraphNode[] = nodes.map((n) => {
+          const nodeInterfaces = n.interfaces.map((i) => ({
+            ...i,
+          }));
+          return {
+            ...n,
+            interfaces: nodeInterfaces,
+          };
+        });
+        dispatch(setMplsNodesAndEdges({ nodes: mplsNodes, edges }));
+      });
+  };
+}
+
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
@@ -706,6 +814,14 @@ export function updatePtpNodePosition(nodeId: string, position: Position): State
 export function updateSynceNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_SYNCE_NODE_POSITION',
+    nodeId,
+    position,
+  };
+}
+
+export function updateMplsNodePosition(nodeId: string, position: Position): StateAction {
+  return {
+    type: 'UPDATE_MPLS_NODE_POSITION',
     nodeId,
     position,
   };
@@ -952,6 +1068,13 @@ export function setSelectedPtpNode(node: PtpGraphNode): StateAction {
 export function setSelectedSynceNode(node: SynceGraphNode): StateAction {
   return {
     type: 'SET_SELECTED_SYNCE_NODE',
+    node,
+  };
+}
+
+export function setSelectedMplsNode(node: MplsGraphNode): StateAction {
+  return {
+    type: 'SET_SELECTED_MPLS_NODE',
     node,
   };
 }

@@ -11,6 +11,7 @@ import {
   SynceGraphNodeWithDiff,
   getNetNodesWithDiff,
   NetGraphNodeWithDiff,
+  MplsGraphNodeWithDiff,
 } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
@@ -28,6 +29,8 @@ import {
   SynceGraphNode,
   width as topologyWidth,
   height as topologyHeight,
+  GraphMplsNodeInterface,
+  MplsGraphNode,
 } from './pages/topology/graph.helpers';
 import {
   identity,
@@ -41,7 +44,7 @@ import {
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 import { NetInterface, NetNode } from './__generated__/graphql';
 
-export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
+export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'MPLS' | 'Synchronous Ethernet';
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -65,7 +68,7 @@ export type State = {
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
-  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode) | null;
+  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -94,12 +97,16 @@ export type State = {
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
+  mplsNodes: MplsGraphNodeWithDiff[];
+  mplsEdges: GraphEdgeWithDiff[];
+  mplsNodePositions: Record<string, Position>;
+  mplsInterfaceGroupPositions: PositionGroupsMap<GraphMplsNodeInterface>;
   transform: Matrix;
   selectedNodeLoad: {
     deviceName: string;
     deviceUsage?: {
-      cpuLoad: number;
-      memoryLoad: number;
+      cpuLoad: number | null;
+      memoryLoad: number | null;
     } | null;
   };
   // isMouseDown: boolean;
@@ -141,6 +148,10 @@ export const initialState: State = {
   synceEdges: [],
   synceNodePositions: {},
   synceInterfaceGroupPositions: {},
+  mplsNodes: [],
+  mplsEdges: [],
+  mplsNodePositions: {},
+  mplsInterfaceGroupPositions: {},
   transform: identity(),
   selectedNodeLoad: {
     deviceName: '',
@@ -195,6 +206,18 @@ export function stateReducer(state: State, action: StateAction): State {
             nodes: acc.synceNodes,
             edges: acc.synceEdges,
             positionMap: acc.synceNodePositions,
+          },
+          () => 'MEDIUM',
+        );
+        return acc;
+      }
+      case 'UPDATE_MPLS_NODE_POSITION': {
+        acc.mplsNodePositions[action.nodeId] = action.position;
+        acc.mplsInterfaceGroupPositions = getInterfacesPositions<GraphMplsNodeInterface, MplsGraphNode>(
+          {
+            nodes: acc.mplsNodes,
+            edges: acc.mplsEdges,
+            positionMap: acc.mplsNodePositions,
           },
           () => 'MEDIUM',
         );
@@ -397,6 +420,19 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.synceInterfaceGroupPositions = positionMap.interfaceGroups;
         return acc;
       }
+      case 'SET_MPLS_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GraphMplsNodeInterface, MplsGraphNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.mplsNodes = nodes.map((n) => ({ ...n, change: 'NONE' }));
+        acc.mplsEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.mplsNodePositions = positionMap.nodes;
+        acc.mplsInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_TOPOLOGY_LAYER': {
         acc.topologyLayer = action.layer;
         acc.selectedEdge = null;
@@ -440,6 +476,20 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'SET_SELECTED_SYNCE_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.synceEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_MPLS_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;
         }

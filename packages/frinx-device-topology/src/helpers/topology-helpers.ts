@@ -7,6 +7,7 @@ import {
   GraphNode,
   SynceGraphNode,
   PtpGraphNode,
+  MplsGraphNode,
 } from '../pages/topology/graph.helpers';
 import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
 
@@ -21,6 +22,10 @@ export type PtpGraphNodeWithDiff = PtpGraphNode & {
 };
 
 export type SynceGraphNodeWithDiff = SynceGraphNode & {
+  change: Change;
+};
+
+export type MplsGraphNodeWithDiff = MplsGraphNode & {
   change: Change;
 };
 
@@ -194,6 +199,10 @@ export function getSynceInterfaceNodeColor(
   if (synceEnabled && isQualifiedForUse) {
     return 'green';
   }
+  return 'purple';
+}
+
+export function getMplsInterfaceNodeColor() {
   return 'purple';
 }
 
