@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
-import React, { Dispatch, SetStateAction, useState, VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Editor, jsonParse } from '@frinx/shared';
@@ -34,9 +34,7 @@ import { LocationData } from './create-device-page';
 import AddDeviceLocationModal from '../../components/add-device-location-modal';
 
 type Props = {
-  onAddDeviceLocation: () => void;
-  locationData: LocationData;
-  setLocationData: Dispatch<SetStateAction<LocationData>>;
+  onAddDeviceLocation: (locationData: LocationData) => void;
   locations: LocationsQuery['deviceInventory']['locations']['edges'];
   isSubmitting: boolean;
   zones: ZonesQuery['deviceInventory']['zones']['edges'];
@@ -126,8 +124,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   blueprints,
   isSubmitting,
   locations,
-  locationData,
-  setLocationData,
   onAddDeviceLocation,
 }) => {
   const [blueprintParameterValues, setBlueprintParameterValues] = useState<Record<string, string>>({});
@@ -370,10 +366,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </HStack>
       </FormControl>
       <AddDeviceLocationModal
-        locations={locations}
         onAddDeviceLocation={onAddDeviceLocation}
-        locationData={locationData}
-        setLocationData={setLocationData}
         isOpen={addDeviceLocationModalDisclosure.isOpen}
         onClose={addDeviceLocationModalDisclosure.onClose}
         title="Add device location"
@@ -448,7 +441,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}
-            value={isMountParametersValid ? parsedMountParameters : values.mountParameters ?? ''}
+            value={isMountParametersValid ? parsedMountParameters : (values.mountParameters ?? '')}
           />
         </FormControl>
       )}

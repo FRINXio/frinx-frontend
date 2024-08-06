@@ -170,7 +170,6 @@ export const locationDataInitialState = {
 const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
   const [deviceNameError, setDeviceNameError] = useState<Error>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [locationData, setLocationData] = useState<LocationData>(locationDataInitialState);
 
   const { addToastNotification } = useNotifications();
   const [, addDevice] = useMutation<AddDeviceMutation, AddDeviceMutationVariables>(ADD_DEVICE_MUTATION);
@@ -196,7 +195,7 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
     return result.data?.deviceInventory.newLabel.label ?? null;
   };
 
-  const handleAddLocation = () => {
+  const handleAddLocation = (locationData: LocationData) => {
     addLocation({
       addLocationInput: locationData,
     });
@@ -248,8 +247,6 @@ const CreateDevicePage: FC<Props> = ({ onAddDeviceSuccess }) => {
       <Box background="white" boxShadow="base" px={4} py={2} position="relative">
         <CreateDeviceForm
           onAddDeviceLocation={handleAddLocation}
-          locationData={locationData}
-          setLocationData={setLocationData}
           locations={locations}
           deviceNameError={deviceNameError}
           onFormSubmit={handleSubmit}

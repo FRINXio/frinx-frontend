@@ -2,7 +2,6 @@ import {
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
@@ -12,19 +11,18 @@ import {
   Stack,
   Box,
   FormErrorMessage,
+  Flex,
 } from '@chakra-ui/react';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { LatLngExpression, LatLngTuple } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { debounce } from 'lodash';
-import React, { Dispatch, FC, SetStateAction, useEffect, useRef, useState } from 'react';
-import { LocationData, locationDataInitialState } from '../pages/create-device/create-device-page';
-import { LocationsQuery } from '../__generated__/graphql';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { LocationData } from '../pages/create-device/create-device-page';
 
 type Props = {
-  locations: LocationsQuery['deviceInventory']['locations']['edges'];
-  onAddDeviceLocation: () => void;
-  locationData: LocationData;
-  setLocationData: Dispatch<SetStateAction<LocationData>>;
+  onAddDeviceLocation: (locationData: LocationData) => void;
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -34,92 +32,59 @@ type MapUpdaterProps = {
   position: LatLngExpression;
 };
 
-type Coordinates = {
+type FormValues = {
+  name: string;
   latitude: string;
   longitude: string;
 };
 
-const AddDeviceLocationModal: FC<Props> = ({
-  isOpen,
-  onClose,
-  title,
-  locationData,
-  setLocationData,
-  onAddDeviceLocation,
-  locations,
-}) => {
+const AddLocationSchema = yup.object().shape({
+  name: yup.string().required('Location name is required'),
+  latitude: yup.number().typeError('Please enter a number').required('Please enter a number from 0 to 90'),
+  longitude: yup.number().typeError('Please enter a number').required('Please enter a number from 0 to 90'),
+});
+
+const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDeviceLocation }) => {
   const cancelRef = useRef<HTMLElement | null>(null);
 
-  const [coordinates, setCoordinates] = useState<Coordinates>({ latitude: '', longitude: '' });
   const [mapPosition, setMapPosition] = useState<LatLngTuple>([51.505, -0.09]);
-  const [inputErrors, setInputErrors] = useState({
+
+  const INITIAL_VALUES = {
     name: '',
     latitude: '',
     longitude: '',
-  });
-  const locationNames = locations.map((location) => location.node.name);
-
-  const validateInputs = () => {
-    const newErrors = { latitude: '', longitude: '', name: '' };
-
-    if (!coordinates.latitude || Number.isNaN(parseFloat(coordinates.latitude))) {
-      newErrors.latitude = 'Please enter a valid number from 0 to 90';
-    }
-    if (!coordinates.longitude || Number.isNaN(parseFloat(coordinates.longitude))) {
-      newErrors.longitude = 'Please enter a valid number from 0 to 90';
-    }
-    if (!locationData.name.trim()) {
-      newErrors.name = 'Name cannot be empty';
-    }
-    if (locationNames.includes(locationData.name.trim())) {
-      newErrors.name = 'Location with this name alredy exists';
-    }
-
-    setInputErrors(newErrors);
-
-    return !newErrors.name && !newErrors.longitude && !newErrors.latitude;
   };
 
-  const updatePosition = debounce((lat: string, lng: string) => {
+  const { values, handleSubmit, resetForm, handleChange, errors } = useFormik<FormValues>({
+    initialValues: INITIAL_VALUES,
+    validationSchema: AddLocationSchema,
+    onSubmit: (data) => {
+      const locationInput = {
+        name: data.name,
+        coordinates: {
+          latitude: parseFloat(data.latitude),
+          longitude: parseFloat(data.longitude),
+        },
+      };
+      onAddDeviceLocation(locationInput);
+      onClose();
+    },
+  });
+
+  const updatePosition = debounce((lat: number, lng: number) => {
     if (lat && lng && !Number.isNaN(Number(lat)) && !Number.isNaN(Number(lng))) {
-      setMapPosition([parseFloat(lat), parseFloat(lng)]);
+      setMapPosition([lat, lng]);
     }
   }, 2000);
 
   useEffect(() => {
-    updatePosition(coordinates.latitude, coordinates.longitude);
-    setLocationData((prev) => ({
-      ...prev,
-      coordinates: {
-        latitude: parseFloat(coordinates.latitude),
-        longitude: parseFloat(coordinates.longitude),
-      },
-    }));
-  }, [coordinates.latitude, coordinates.longitude, updatePosition, setLocationData]);
+    updatePosition(parseFloat(values.latitude), parseFloat(values.longitude));
+  }, [values.latitude, values.longitude, updatePosition]);
 
   const handleCancel = () => {
     setMapPosition([51.505, -0.09]);
-    setCoordinates({ latitude: '', longitude: '' });
-    setLocationData(locationDataInitialState);
-    setInputErrors({
-      name: '',
-      latitude: '',
-      longitude: '',
-    });
     onClose();
-  };
-
-  const handleSubmit = () => {
-    if (validateInputs()) {
-      onAddDeviceLocation();
-      setInputErrors({
-        name: '',
-        latitude: '',
-        longitude: '',
-      });
-      setCoordinates({ latitude: '', longitude: '' });
-      onClose();
-    }
+    resetForm();
   };
 
   const MapUpdater: React.FC<MapUpdaterProps> = ({ position }) => {
@@ -142,74 +107,58 @@ const AddDeviceLocationModal: FC<Props> = ({
             {title}
           </AlertDialogHeader>
           <AlertDialogBody>
-            <Box mb={8}>
-              <FormControl isInvalid={!!inputErrors.name}>
-                <FormLabel htmlFor="name">Location name</FormLabel>
-                <Input
-                  name="name"
-                  onChange={(e) =>
-                    setLocationData({
-                      ...locationData,
-                      name: e.target.value.trim(),
-                    })
-                  }
-                  value={locationData.name}
-                  placeholder="Enter name"
+            <form onSubmit={handleSubmit}>
+              <Box mb={8}>
+                <FormControl isInvalid={!!errors.name}>
+                  <FormLabel htmlFor="name">Location name</FormLabel>
+                  <Input name="name" onChange={handleChange} value={values.name} placeholder="Enter name" />
+                  {errors.name && <FormErrorMessage>{errors.name}</FormErrorMessage>}
+                </FormControl>
+                <Stack direction="row" spacing={4} mt={4}>
+                  <FormControl isInvalid={!!errors.latitude}>
+                    <FormLabel>Latitude</FormLabel>
+                    <Input
+                      name="latitude"
+                      onChange={handleChange}
+                      value={values.latitude || ''}
+                      placeholder="Enter number"
+                    />
+                    {errors.latitude && <FormErrorMessage>{errors.latitude}</FormErrorMessage>}
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.longitude}>
+                    <FormLabel>Longitude</FormLabel>
+                    <Input
+                      name="longitude"
+                      onChange={handleChange}
+                      value={values.longitude || ''}
+                      placeholder="Enter number"
+                    />
+                    {errors.longitude && <FormErrorMessage>{errors.longitude}</FormErrorMessage>}
+                  </FormControl>
+                </Stack>
+              </Box>
+              <MapContainer style={{ height: 540, width: 800 }} center={mapPosition} zoom={20} scrollWheelZoom>
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {inputErrors.name && <FormErrorMessage>{inputErrors.name}</FormErrorMessage>}
-              </FormControl>
-              <Stack direction="row" spacing={4} mt={4}>
-                <FormControl isInvalid={!!inputErrors.latitude}>
-                  <FormLabel>Latitude</FormLabel>
-                  <Input
-                    onChange={(e) => {
-                      setCoordinates((prev) => ({
-                        ...prev,
-                        latitude: e.target.value,
-                      }));
-                    }}
-                    value={coordinates.latitude}
-                    placeholder="Enter number"
-                  />
-                  {inputErrors.latitude && <FormErrorMessage>{inputErrors.latitude}</FormErrorMessage>}
-                </FormControl>
-                <FormControl isInvalid={!!inputErrors.longitude}>
-                  <FormLabel>Longitude</FormLabel>
-                  <Input
-                    onChange={(e) => {
-                      setCoordinates((prev) => ({
-                        ...prev,
-                        longitude: e.target.value,
-                      }));
-                    }}
-                    value={coordinates.longitude}
-                    placeholder="Enter number"
-                  />
-                  {inputErrors.longitude && <FormErrorMessage>{inputErrors.longitude}</FormErrorMessage>}
-                </FormControl>
-              </Stack>
-            </Box>
-            <MapContainer style={{ height: 540, width: 800 }} center={mapPosition} zoom={20} scrollWheelZoom>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <Marker position={mapPosition}>
-                <Popup>
-                  A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-              </Marker>
-              <MapUpdater position={mapPosition} />
-            </MapContainer>
+                <Marker position={mapPosition}>
+                  <Popup>
+                    A pretty CSS3 popup. <br /> Easily customizable.
+                  </Popup>
+                </Marker>
+                <MapUpdater position={mapPosition} />
+              </MapContainer>
+              <Flex justify="end" my={5}>
+                <Button data-cy="device-cancel-delete" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button data-cy="device-confirm-delete" colorScheme="blue" type="submit" marginLeft={4}>
+                  Add
+                </Button>
+              </Flex>
+            </form>
           </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button data-cy="device-cancel-delete" onClick={handleCancel}>
-              Cancel
-            </Button>
-            <Button data-cy="device-confirm-delete" colorScheme="blue" onClick={handleSubmit} marginLeft={4}>
-              Add
-            </Button>
-          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialogOverlay>
     </AlertDialog>
