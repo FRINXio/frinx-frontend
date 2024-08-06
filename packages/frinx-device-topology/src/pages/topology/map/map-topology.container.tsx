@@ -1,12 +1,12 @@
-import React, { useEffect, useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, VoidFunctionComponent } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { gql, useQuery } from 'urql';
-import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { defaultMarkerIcon } from '../../../helpers/map-marker-helper';
 import { Box, Heading } from '@chakra-ui/react';
+import { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
+import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
+import { defaultMarkerIcon } from '../../../helpers/map-marker-helper';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
-import { LatLngBoundsLiteral } from 'leaflet';
 
 const markerIcon = defaultMarkerIcon();
 
@@ -28,39 +28,24 @@ const GEOMAP_DATA_QUERY = gql`
   }
 `;
 
-// I had to use a wrapping component because the useMap() hook
-// can only be used in a descendant of <MapContainer>
-const MapTopologyContainer: VoidFunctionComponent = () => {
-  return (
-    <MapContainer
-      style={{ height: `calc(100vh - 320px)` }}
-      center={DEFAULT_MAP_CENTER}
-      zoom={DEFAULT_MAP_ZOOM_LEVEL}
-      scrollWheelZoom={true}
-    >
-      <_MapTopologyContainer />
-    </MapContainer>
-  );
-};
-
 // Do not export this component
-const _MapTopologyContainer: VoidFunctionComponent = () => {
+const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   // const [center, setCenter] = useState(DEFAULT_MAP_CENTER);
   const map = useMap();
 
-  const [{ data: deviceData, error }] = useQuery<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>({
+  const [{ data: deviceData }] = useQuery<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>({
     query: GEOMAP_DATA_QUERY,
   });
 
   useEffect(() => {
     const bounds: LatLngBoundsLiteral | undefined = deviceData?.deviceInventory.deviceMetadata?.nodes
-      ?.filter((node) => node?.geolocation?.latitude && node.geolocation.longitude)
-      .map((node) => [node?.geolocation?.latitude!, node?.geolocation?.longitude!]);
+      ?.map((node) => [node?.geolocation?.latitude, node?.geolocation?.longitude] as LatLngTuple)
+      .filter((tuplet) => tuplet !== undefined);
 
     if (bounds && bounds.length > 0) {
       map.flyToBounds(bounds);
     }
-  }, [deviceData]);
+  }, [deviceData, map]);
 
   return (
     <>
@@ -70,12 +55,11 @@ const _MapTopologyContainer: VoidFunctionComponent = () => {
       />
       {deviceData && (
         <MarkerClusterGroup chunkedLoading maxClusterRadius={30}>
-          {deviceData.deviceInventory.deviceMetadata?.nodes
-            ?.filter((node) => node && node.id && node?.geolocation?.latitude && node.geolocation.longitude)
-            .map((node) => {
+          {deviceData.deviceInventory.deviceMetadata?.nodes?.map((node) => {
+            if (node?.geolocation?.latitude && node?.geolocation?.longitude) {
               return (
                 <Marker
-                  position={[node?.geolocation?.latitude!, node?.geolocation?.longitude!]}
+                  position={[node.geolocation.latitude, node.geolocation.longitude]}
                   key={node?.id}
                   icon={markerIcon}
                 >
@@ -106,10 +90,28 @@ const _MapTopologyContainer: VoidFunctionComponent = () => {
                   </Popup>
                 </Marker>
               );
-            })}
+            }
+
+            return undefined;
+          })}
         </MarkerClusterGroup>
       )}
     </>
+  );
+};
+
+// I had to use a wrapping component because the useMap() hook
+// can only be used in a descendant of <MapContainer>
+const MapTopologyContainer: VoidFunctionComponent = () => {
+  return (
+    <MapContainer
+      style={{ height: `calc(100vh - 320px)` }}
+      center={DEFAULT_MAP_CENTER}
+      zoom={DEFAULT_MAP_ZOOM_LEVEL}
+      scrollWheelZoom
+    >
+      <MapTopologyContainerDescendant />
+    </MapContainer>
   );
 };
 

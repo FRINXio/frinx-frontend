@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
+import { LatLngTuple } from 'leaflet';
 import {
   BackupGraphNode,
   BackupNetGraphNode,
@@ -9,7 +10,6 @@ import {
   PtpGraphNode,
 } from '../pages/topology/graph.helpers';
 import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
-import { LatLngTuple } from 'leaflet';
 
 // TODO make these 2 constants env. variables
 export const DEFAULT_MAP_CENTER: LatLngTuple = [48.15247287355192, 17.12495675052697]; // Bratislava
