@@ -11,7 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Marker as MarkerType } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
