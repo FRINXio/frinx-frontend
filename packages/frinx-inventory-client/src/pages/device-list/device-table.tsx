@@ -22,6 +22,7 @@ import { getDeviceUsageColor, getLocalDateFromUTC, getDeviceUsage, omitNullValue
 import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
+import { DeviceLocation } from './device-map-modal';
 
 type SortedBy = 'name' | 'discoveredAt' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
@@ -80,6 +81,7 @@ type Props = {
   installLoadingMap: Record<string, boolean>;
   isPerformanceMonitoringEnabled: boolean;
   onSort: (sortedBy: SortedBy) => void;
+  onDeviceMapBtnClick: (deviceLocation: DeviceLocation | null) => void;
   onDeviceDiscoveryBtnClick: (deviceId: string | null) => void;
   onInstallButtonClick: (deviceId: string) => void;
   onUninstallButtonClick: (deviceId: string) => void;
@@ -97,6 +99,7 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
   devicesUsage,
   selectedDevices,
   onSort,
+  onDeviceMapBtnClick,
   onDeviceDiscoveryBtnClick,
   onInstallButtonClick,
   onUninstallButtonClick,
@@ -271,6 +274,15 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
               )}
               <Td minWidth={200}>
                 <HStack spacing={2}>
+                  <IconButton
+                    data-cy={`device-map-${device.name}`}
+                    aria-label="map"
+                    size="sm"
+                    isDisabled={!device.location || !device.location.latitude || !device.location.longitude}
+                    icon={<Icon size={12} as={FeatherIcon} icon="map" />}
+                    as={isInstalled ? Link : 'button'}
+                    onClick={() => onDeviceMapBtnClick({deviceName: device.name, location: device.location})}
+                  />
                   <IconButton
                     data-cy={`device-rediscover-${device.name}`}
                     aria-label="rediscover"
