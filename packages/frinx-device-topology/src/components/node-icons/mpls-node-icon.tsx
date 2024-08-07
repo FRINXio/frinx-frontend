@@ -1,68 +1,59 @@
 import { chakra } from '@chakra-ui/react';
 import React, { PointerEvent, VoidFunctionComponent } from 'react';
+import { MplsGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import {
+  GraphMplsNodeInterface,
   GraphNetNode,
   GraphNode,
-  GraphPtpNodeInterface,
   MplsGraphNode,
   PositionsWithGroupsMap,
   PtpGraphNode,
   SynceGraphNode,
 } from '../../pages/topology/graph.helpers';
-import { PtpGraphNodeWithDiff } from '../../helpers/topology-helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
 import NodeIconImage from './node-icon-image';
-import { getDeviceNodeTransformProperties, getNodeBackgroundColor, getNodeInterfaceGroups } from './node-icon.helpers';
+import { getDeviceNodeTransformProperties, getNodeInterfaceGroups, getNodeBackgroundColor } from './node-icon.helpers';
 import NodeInterface from './node-interface';
 
 type Props = {
-  isPtpDiffSynceShown: boolean;
-  ptpDiffSynceIds: string[];
-  positions: PositionsWithGroupsMap<GraphPtpNodeInterface>;
+  positions: PositionsWithGroupsMap<GraphMplsNodeInterface>;
   isFocused: boolean;
-  isSelected: boolean;
   isSelectedForGmPath: boolean;
   isGmPath: boolean;
-  node: PtpGraphNodeWithDiff;
+  node: MplsGraphNodeWithDiff;
   topologyMode: TopologyMode;
-  selectedEdge: GraphEdge | null;
-  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
+  selectedEdge: GraphEdge | null;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null;
+  isSelected: boolean;
 };
 
 const G = chakra('g');
 const Circle = chakra('circle');
 const Text = chakra('text');
 
-const PtpNodeIcon: VoidFunctionComponent<Props> = ({
+const MplsNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
-  isPtpDiffSynceShown,
-  ptpDiffSynceIds,
   isFocused,
-  isSelected,
   isSelectedForGmPath,
   isGmPath,
   node,
   topologyMode,
-  selectedEdge,
-  selectedNode,
   onPointerDown,
   onPointerMove,
   onPointerUp,
+  selectedEdge,
+  selectedNode,
+  isSelected,
 }) => {
   const { x, y } = positions.nodes[node.name];
   const interfaceGroups = getNodeInterfaceGroups(node.name, positions.interfaceGroups).filter((item) =>
     selectedNode ? item[0].includes(selectedNode.name) : true,
   );
   const { circleDiameter, sizeTransform } = getDeviceNodeTransformProperties('MEDIUM');
-
-  const ptpNodeBackgroundColor =
-    isPtpDiffSynceShown && ptpDiffSynceIds?.includes(node.nodeId)
-      ? 'red.200'
-      : getNodeBackgroundColor({ isSelected, change: node.change });
 
   return (
     <G
@@ -83,9 +74,15 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
       <G>
         <Circle
           r={`${circleDiameter / 2}px`}
-          fill={ptpNodeBackgroundColor}
+          fill={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
           strokeWidth={1}
-          stroke={ptpNodeBackgroundColor}
+          stroke={getNodeBackgroundColor({
+            isSelected,
+            change: node.change,
+          })}
         />
       </G>
       <Text
@@ -121,6 +118,7 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
           const iPosition = data.position;
           const sourceInterface = data.interfaces.find((i) => i.id === selectedEdge?.source.interface);
           const targetInterface = data.interfaces.find((i) => i.id === selectedEdge?.target.interface);
+
           return (
             <NodeInterface
               key={group}
@@ -139,4 +137,4 @@ const PtpNodeIcon: VoidFunctionComponent<Props> = ({
   );
 };
 
-export default PtpNodeIcon;
+export default MplsNodeIcon;

@@ -5,6 +5,7 @@ import {
   GraphNetNode,
   GraphNode,
   GraphSynceNodeInterface,
+  MplsGraphNode,
   PositionsWithGroupsMap,
   PtpGraphNode,
   SynceGraphNode,
@@ -26,7 +27,7 @@ type Props = {
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;
   onPointerUp: (event: PointerEvent<SVGRectElement>) => void;
   selectedEdge: GraphEdge | null;
-  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null;
   isSelected: boolean;
 };
 
