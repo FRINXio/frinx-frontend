@@ -21,13 +21,14 @@ export function getAvailableAllocatedResources(
   const poolsData = pools?.resourceManager.QueryRootResourcePools.edges.map((e) => {
     return e?.node;
   });
-  return poolsData?.flatMap((resourcePool) =>
-    resourcePool?.Resources.map((resource) => ({
-      Name: `${resource.Properties[Object.keys(resource.Properties)[0]]}`,
-      id: resource.id,
-      parentId: resource.ParentPool.id,
-      hasNestedPools: resource.NestedPool !== null,
-    })).filter(({ parentId, hasNestedPools }) => parentId === parentPoolId && hasNestedPools === false),
+  return poolsData?.flatMap(
+    (resourcePool) =>
+      resourcePool?.Resources.map((resource) => ({
+        Name: `${resource.Properties[Object.keys(resource.Properties)[0]]}`,
+        id: resource.id,
+        parentId: resource.ParentPool.id,
+        hasNestedPools: resource.NestedPool !== null,
+      })).filter(({ parentId, hasNestedPools }) => parentId === parentPoolId && hasNestedPools === false),
   );
 }
 

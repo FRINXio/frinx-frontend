@@ -210,7 +210,7 @@ const EditStreamForm: VoidFunctionComponent<Props> = ({
             onChange={(value) => {
               setFieldValue('streamParameters', value);
             }}
-            value={isStreamParametersValid ? parsedStreamParameters : (values.streamParameters ?? '')}
+            value={isStreamParametersValid ? parsedStreamParameters : values.streamParameters ?? ''}
           />
         </FormControl>
       )}

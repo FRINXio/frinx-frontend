@@ -214,7 +214,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           onChange={(value) => {
             setFieldValue('mountParameters', value);
           }}
-          value={isMountParametersValid ? parsedMountParameters : (values.mountParameters ?? '')}
+          value={isMountParametersValid ? parsedMountParameters : values.mountParameters ?? ''}
         />
       </FormControl>
 

@@ -441,7 +441,7 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
             onChange={(value) => {
               setFieldValue('mountParameters', value);
             }}
-            value={isMountParametersValid ? parsedMountParameters : (values.mountParameters ?? '')}
+            value={isMountParametersValid ? parsedMountParameters : values.mountParameters ?? ''}
           />
         </FormControl>
       )}
