@@ -36,8 +36,8 @@ export function findCommonNetSubnet(netNodes: GraphNetNode[], edge: GraphEdgeWit
   const netNodeSource = (netNodes || []).filter((node: GraphNetNode) => node.name === edge.source.nodeId)[0];
   const netNodeTarget = (netNodes || []).filter((node: GraphNetNode) => node.name === edge.target.nodeId)[0];
 
-  const commonSubnet = (netNodeSource?.networks || []).find(
-    (sourceNode) => netNodeTarget?.networks.some((targetNetwork) => targetNetwork.subnet === sourceNode.subnet),
+  const commonSubnet = (netNodeSource?.networks || []).find((sourceNode) =>
+    netNodeTarget?.networks.some((targetNetwork) => targetNetwork.subnet === sourceNode.subnet),
   );
   return commonSubnet ? commonSubnet.subnet : null;
 }
