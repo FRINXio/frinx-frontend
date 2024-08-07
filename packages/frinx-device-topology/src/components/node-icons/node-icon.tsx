@@ -9,6 +9,7 @@ import {
   PositionsWithGroupsMap,
   PtpGraphNode,
   SynceGraphNode,
+  MplsGraphNode,
 } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { DeviceUsage, GraphEdge } from '../../__generated__/graphql';
@@ -23,7 +24,7 @@ type Props = {
   isFocused: boolean;
   isSelectedForCommonSearch: boolean;
   node: GraphNodeWithDiff;
-  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null;
   topologyMode: TopologyMode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
   onPointerMove: (event: PointerEvent<SVGRectElement>) => void;

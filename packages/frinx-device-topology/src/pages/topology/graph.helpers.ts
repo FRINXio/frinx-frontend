@@ -47,14 +47,14 @@ export type GraphNode = {
 export type PtpGraphNodeDetails = {
   clockAccuracy: string | null;
   clockClass: number | null;
-  clockId: string;
+  clockId: string | null;
   clockType: string | null;
   clockVariance: string | null;
-  domain: number;
+  domain: number | null;
   globalPriority: number | null;
-  gmClockId: string;
-  parentClockId: string;
-  ptpProfile: string;
+  gmClockId: string | null;
+  parentClockId: string | null;
+  ptpProfile: string | null;
   timeRecoveryStatus: string | null;
   userPriority: number | null;
 };
@@ -80,6 +80,20 @@ export type SynceGraphNode = {
   interfaces: GraphSynceNodeInterface[];
   coordinates: Position;
   details: SynceGraphNodeDetails;
+  status: string;
+};
+
+export type MplsGraphNodeDetails = {
+  wtf: string | null;
+};
+
+export type MplsGraphNode = {
+  id: string;
+  name: string;
+  nodeId: string;
+  interfaces: GraphMplsNodeInterface[];
+  coordinates: Position;
+  // details: MplsGraphNodeDetails;
   status: string;
 };
 
@@ -155,6 +169,12 @@ export type GraphSynceNodeInterface = {
   name: string;
   status: string;
   details: SynceGraphNodeInterfaceDetails | null;
+};
+
+export type GraphMplsNodeInterface = {
+  id: string;
+  name: string;
+  status: string;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
@@ -408,7 +428,9 @@ export function isTargetingActiveNode<S extends { id: string; name: string }>(
   return targetNodeId === selectedNodeName && !!targetGroup?.interfaces.find((i) => i.id === edge.source.interface);
 }
 
-export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null): string | null {
+export function getNameFromNode(
+  node: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null,
+): string | null {
   if (node == null) {
     return null;
   }
@@ -422,7 +444,7 @@ export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | 
 }
 
 export function ensureNodeHasDevice(
-  value: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null,
+  value: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null,
 ): value is GraphNode {
   return value != null && 'device' in value;
 }
