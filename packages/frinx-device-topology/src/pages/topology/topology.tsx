@@ -9,6 +9,7 @@ import NetTopologyContainer from './net/net-topology.container';
 import PtpTopologyContainer from './ptp/ptp-topology.container';
 import TopologyContainer from './lldp/topology.container';
 import SynceTopologyContainer from './synce/synce-topology.container';
+import MplsTopologyContainer from './mpls/mpls-topology.container';
 import MapTopologyContainer from './map/map-topology.container';
 
 const Topology: VoidFunctionComponent = () => {
@@ -31,7 +32,7 @@ const Topology: VoidFunctionComponent = () => {
               dispatch(setTopologyLayer(event.target.value as TopologyLayer));
             }}
           >
-            {['LLDP', 'BGP-LS', 'PTP', 'Synchronous Ethernet', 'Map'].map((option) => (
+            {['LLDP', 'BGP-LS', 'PTP', 'MPLS', 'Synchronous Ethernet', 'Map'].map((option) => (
               <option value={option} key={option}>
                 {option}
               </option>
@@ -73,6 +74,7 @@ const Topology: VoidFunctionComponent = () => {
         {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
         {topologyLayer === 'PTP' && <PtpTopologyContainer isPtpDiffSynceShown={isSynceDiffVisible} />}
         {topologyLayer === 'Synchronous Ethernet' && <SynceTopologyContainer />}
+        {topologyLayer === 'MPLS' && <MplsTopologyContainer />}
         {topologyLayer === 'Map' && <MapTopologyContainer />}
       </Box>
     </Container>

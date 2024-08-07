@@ -1098,6 +1098,55 @@ export type LocationEdge = {
   node: Location;
 };
 
+export type LspTunnel = {
+  __typename?: 'LspTunnel';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  signalization: Maybe<Signalization>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsData = {
+  __typename?: 'MplsData';
+  inputInterface: Maybe<Scalars['String']['output']>;
+  inputLabel: Maybe<Scalars['Int']['output']>;
+  lspId: Scalars['String']['output'];
+  outputInterface: Maybe<Scalars['String']['output']>;
+  outputLabel: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsDeviceDetails = {
+  __typename?: 'MplsDeviceDetails';
+  lspTunnels: Maybe<Array<Maybe<LspTunnel>>>;
+  mplsData: Maybe<Array<Maybe<MplsData>>>;
+};
+
+export type MplsGraphNode = {
+  __typename?: 'MplsGraphNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID']['output'];
+  interfaces: Array<MplsGraphNodeInterface>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  mplsDeviceDetails: MplsDeviceDetails;
+  name: Scalars['String']['output'];
+  nodeId: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsGraphNodeInterface = {
+  __typename?: 'MplsGraphNodeInterface';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsTopology = {
+  __typename?: 'MplsTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<MplsGraphNode>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
@@ -1467,6 +1516,10 @@ export type SearchResultWorkflowSummary = {
   results: Maybe<Array<Maybe<WorkflowSummary>>>;
   totalHits: Maybe<Scalars['BigInt']['output']>;
 };
+
+export type Signalization =
+  | 'LDP'
+  | 'RSVP';
 
 export type SkipTaskRequest_Input = {
   taskInput?: InputMaybe<Scalars['JSON']['input']>;
@@ -1931,6 +1984,7 @@ export type TopologyCommonNodes = {
 
 export type TopologyLayer =
   | 'EthTopology'
+  | 'MplsTopology'
   | 'PhysicalTopology'
   | 'PtpTopology';
 
@@ -3327,6 +3381,7 @@ export type DeviceInventoryQuery = {
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
+  mplsTopology: Maybe<MplsTopology>;
   netTopology: Maybe<NetTopology>;
   netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
@@ -3990,6 +4045,20 @@ export type TopologyCommonNodesQueryVariables = Exact<{
 
 export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null } };
 
+export type UpdateSyncePositionMutationVariables = Exact<{
+  input: UpdateGraphNodeCoordinatesInput;
+}>;
+
+
+export type UpdateSyncePositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
+
+export type GetSynceGrandMasterPathQueryVariables = Exact<{
+  deviceFrom: Scalars['String']['input'];
+}>;
+
+
+export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
+
 export type GeoMapDataQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4021,20 +4090,6 @@ export type GetPtpDiffSynceQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPtpDiffSynceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpDiffSynce: { __typename?: 'PtpDiffSynce', edges: Array<{ __typename?: 'PtpDiffSynceEdges', node: { __typename?: 'PtpDiffSynceNode', id: string } }> } } };
-
-export type UpdateSyncePositionMutationVariables = Exact<{
-  input: UpdateGraphNodeCoordinatesInput;
-}>;
-
-
-export type UpdateSyncePositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
-
-export type GetSynceGrandMasterPathQueryVariables = Exact<{
-  deviceFrom: Scalars['String']['input'];
-}>;
-
-
-export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
 
 export type TopologyQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -4085,3 +4140,8 @@ export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'SynceGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus, details: { __typename?: 'SynceGraphNodeInterfaceDetails', synceEnabled: boolean | null, rxQualityLevel: string | null, qualifiedForUse: string | null, notQualifiedDueTo: string | null, notSelectedDueTo: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+
+export type MplsTopologyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'MplsDeviceDetails', lspTunnels: Array<{ __typename?: 'LspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'MplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
