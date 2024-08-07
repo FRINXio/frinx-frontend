@@ -10,6 +10,7 @@ import {
   GraphNode,
   PtpGraphNode,
   SynceGraphNode,
+  MplsGraphNode,
 } from '../../pages/topology/graph.helpers';
 import { TopologyMode } from '../../state.actions';
 import { GraphEdge } from '../../__generated__/graphql';
@@ -32,7 +33,7 @@ type Props = {
   selectedEdge: GraphEdge | null;
   onClick: (node: GraphNetNode) => void;
   isWeightVisible: boolean;
-  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null;
+  selectedNode: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null;
 };
 
 type NetNodeNetworks = {

@@ -44,6 +44,11 @@ export type Action_Input = {
   start_workflow?: InputMaybe<StartWorkflow_Input>;
 };
 
+export type ActivateStreamPayload = {
+  __typename?: 'ActivateStreamPayload';
+  stream: Stream;
+};
+
 export type AddBlueprintInput = {
   name: Scalars['String']['input'];
   template: Scalars['String']['input'];
@@ -60,6 +65,7 @@ export type AddDeviceInput = {
   deviceSize?: InputMaybe<DeviceSize>;
   deviceType?: InputMaybe<Scalars['String']['input']>;
   labelIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  locationId?: InputMaybe<Scalars['String']['input']>;
   model?: InputMaybe<Scalars['String']['input']>;
   mountParameters?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -78,7 +84,8 @@ export type AddDevicePayload = {
 };
 
 export type AddLocationInput = {
-  countryId: Scalars['String']['input'];
+  coordinates: Coordinates;
+  countryId?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -98,8 +105,10 @@ export type AddSnapshotPayload = {
 };
 
 export type AddStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
   deviceName: Scalars['String']['input'];
   streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AddStreamPayload = {
@@ -268,6 +277,15 @@ export type BulkInstallDevicesInput = {
   deviceIds: Array<Scalars['String']['input']>;
 };
 
+export type BulkInstallStreamPayload = {
+  __typename?: 'BulkInstallStreamPayload';
+  installedStreams: Array<Stream>;
+};
+
+export type BulkInstallStreamsInput = {
+  streamIds: Array<Scalars['String']['input']>;
+};
+
 export type BulkResponse = {
   __typename?: 'BulkResponse';
   bulkErrorResults: Maybe<Scalars['JSON']['output']>;
@@ -281,6 +299,15 @@ export type BulkUninstallDevicePayload = {
 
 export type BulkUninstallDevicesInput = {
   deviceIds: Array<Scalars['String']['input']>;
+};
+
+export type BulkUninstallStreamPayload = {
+  __typename?: 'BulkUninstallStreamPayload';
+  uninstalledStreams: Array<Stream>;
+};
+
+export type BulkUninstallStreamsInput = {
+  streamIds: Array<Scalars['String']['input']>;
 };
 
 export type CsvImport = {
@@ -342,6 +369,11 @@ export type ConductorSubscription = {
 
 export type ConductorSubscriptionControlExecutedWorkflowArgs = {
   workflowId: Scalars['String']['input'];
+};
+
+export type Coordinates = {
+  latitude: Scalars['Float']['input'];
+  longitude: Scalars['Float']['input'];
 };
 
 export type Country = Node & {
@@ -554,6 +586,11 @@ export type DataStore = {
   snapshots: Array<Snapshot>;
 };
 
+export type DeactivateStreamPayload = {
+  __typename?: 'DeactivateStreamPayload';
+  stream: Stream;
+};
+
 /** Input parameters for deleting an existing allocation strategy */
 export type DeleteAllocationStrategyInput = {
   allocationStrategyId: Scalars['ID']['input'];
@@ -613,6 +650,11 @@ export type DeleteSnapshotPayload = {
   snapshot: Maybe<Snapshot>;
 };
 
+export type DeleteStreamPayload = {
+  __typename?: 'DeleteStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for deleting an existing tag */
 export type DeleteTagInput = {
   tagId: Scalars['ID']['input'];
@@ -640,6 +682,7 @@ export type Device = Node & {
   blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String']['output'];
   deviceSize: DeviceSize;
+  discoveredAt: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   isInstalled: Scalars['Boolean']['output'];
   labels: LabelConnection;
@@ -649,6 +692,7 @@ export type Device = Node & {
   name: Scalars['String']['output'];
   port: Maybe<Scalars['Int']['output']>;
   serviceState: DeviceServiceState;
+  software: Maybe<Scalars['String']['output']>;
   source: DeviceSource;
   updatedAt: Scalars['String']['output'];
   vendor: Maybe<Scalars['String']['output']>;
@@ -671,6 +715,12 @@ export type DeviceConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type DeviceDiscoveryPayload = {
+  __typename?: 'DeviceDiscoveryPayload';
+  deviceId: Scalars['String']['output'];
+  discoveredAt: Maybe<Scalars['String']['output']>;
+};
+
 export type DeviceEdge = {
   __typename?: 'DeviceEdge';
   cursor: Scalars['String']['output'];
@@ -679,7 +729,12 @@ export type DeviceEdge = {
 
 export type DeviceListUsage = {
   __typename?: 'DeviceListUsage';
-  devicesUsage: Array<Maybe<DevicesUsage>>;
+  devicesUsage: Array<DevicesUsage>;
+};
+
+export type DeviceMetadata = {
+  __typename?: 'DeviceMetadata';
+  nodes: Maybe<Array<Maybe<GeoMapDevice>>>;
 };
 
 export type DeviceOrderByInput = {
@@ -702,17 +757,28 @@ export type DeviceSource =
   | 'IMPORTED'
   | 'MANUAL';
 
+export type DeviceStatus = {
+  __typename?: 'DeviceStatus';
+  deviceName: Maybe<Scalars['String']['output']>;
+  status: Maybe<Scalars['String']['output']>;
+};
+
 export type DeviceUsage = {
   __typename?: 'DeviceUsage';
-  cpuLoad: Scalars['Float']['output'];
-  memoryLoad: Scalars['Float']['output'];
+  cpuLoad: Maybe<Scalars['Float']['output']>;
+  memoryLoad: Maybe<Scalars['Float']['output']>;
+};
+
+export type DevicesConnection = {
+  __typename?: 'DevicesConnection';
+  deviceStatuses: Maybe<Array<Maybe<DeviceStatus>>>;
 };
 
 export type DevicesUsage = {
   __typename?: 'DevicesUsage';
-  cpuLoad: Scalars['Float']['output'];
+  cpuLoad: Maybe<Scalars['Float']['output']>;
   deviceName: Scalars['String']['output'];
-  memoryLoad: Scalars['Float']['output'];
+  memoryLoad: Maybe<Scalars['Float']['output']>;
 };
 
 export type DiffData = {
@@ -862,6 +928,8 @@ export type FilterLabelsInput = {
 };
 
 export type FilterStreamsInput = {
+  deviceName?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
   streamName?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -875,6 +943,20 @@ export type FilterTopologyInput = {
 
 export type FilterZonesInput = {
   name: Scalars['String']['input'];
+};
+
+export type GeoMapDevice = {
+  __typename?: 'GeoMapDevice';
+  deviceName: Scalars['String']['output'];
+  geolocation: Maybe<Geolocation>;
+  id: Scalars['ID']['output'];
+  locationName: Maybe<Scalars['String']['output']>;
+};
+
+export type Geolocation = {
+  __typename?: 'Geolocation';
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
 };
 
 export type GraphEdge = {
@@ -994,9 +1076,11 @@ export type LabelEdge = {
 
 export type Location = Node & {
   __typename?: 'Location';
-  country: Scalars['String']['output'];
+  country: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  latitude: Maybe<Scalars['Float']['output']>;
+  longitude: Maybe<Scalars['Float']['output']>;
   name: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
 };
@@ -1012,6 +1096,55 @@ export type LocationEdge = {
   __typename?: 'LocationEdge';
   cursor: Scalars['String']['output'];
   node: Location;
+};
+
+export type LspTunnel = {
+  __typename?: 'LspTunnel';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  signalization: Maybe<Signalization>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsData = {
+  __typename?: 'MplsData';
+  inputInterface: Maybe<Scalars['String']['output']>;
+  inputLabel: Maybe<Scalars['Int']['output']>;
+  lspId: Scalars['String']['output'];
+  outputInterface: Maybe<Scalars['String']['output']>;
+  outputLabel: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsDeviceDetails = {
+  __typename?: 'MplsDeviceDetails';
+  lspTunnels: Maybe<Array<Maybe<LspTunnel>>>;
+  mplsData: Maybe<Array<Maybe<MplsData>>>;
+};
+
+export type MplsGraphNode = {
+  __typename?: 'MplsGraphNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID']['output'];
+  interfaces: Array<MplsGraphNodeInterface>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  mplsDeviceDetails: MplsDeviceDetails;
+  name: Scalars['String']['output'];
+  nodeId: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsGraphNodeInterface = {
+  __typename?: 'MplsGraphNodeInterface';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsTopology = {
+  __typename?: 'MplsTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<MplsGraphNode>;
 };
 
 export type Mutation = {
@@ -1139,14 +1272,14 @@ export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
   clockAccuracy: Maybe<Scalars['String']['output']>;
   clockClass: Maybe<Scalars['Int']['output']>;
-  clockId: Scalars['String']['output'];
-  clockType: Scalars['String']['output'];
+  clockId: Maybe<Scalars['String']['output']>;
+  clockType: Maybe<Scalars['String']['output']>;
   clockVariance: Maybe<Scalars['String']['output']>;
-  domain: Scalars['Int']['output'];
+  domain: Maybe<Scalars['Int']['output']>;
   globalPriority: Maybe<Scalars['Int']['output']>;
-  gmClockId: Scalars['String']['output'];
-  parentClockId: Scalars['String']['output'];
-  ptpProfile: Scalars['String']['output'];
+  gmClockId: Maybe<Scalars['String']['output']>;
+  parentClockId: Maybe<Scalars['String']['output']>;
+  ptpProfile: Maybe<Scalars['String']['output']>;
   timeRecoveryStatus: Maybe<Scalars['String']['output']>;
   userPriority: Maybe<Scalars['Int']['output']>;
 };
@@ -1384,6 +1517,10 @@ export type SearchResultWorkflowSummary = {
   totalHits: Maybe<Scalars['BigInt']['output']>;
 };
 
+export type Signalization =
+  | 'LDP'
+  | 'RSVP';
+
 export type SkipTaskRequest_Input = {
   taskInput?: InputMaybe<Scalars['JSON']['input']>;
   taskOutput?: InputMaybe<Scalars['JSON']['input']>;
@@ -1396,9 +1533,9 @@ export type Snapshot = {
 };
 
 export type SortDeviceBy =
-  | 'createdAt'
-  | 'name'
-  | 'serviceState';
+  | 'discoveredAt'
+  | 'modelVersion'
+  | 'name';
 
 export type SortDirection =
   | 'ASC'
@@ -1428,6 +1565,7 @@ export type SortResourcePoolsInput = {
 
 export type SortStreamBy =
   | 'createdAt'
+  | 'deviceName'
   | 'streamName';
 
 export type SortTasksBy = {
@@ -1476,10 +1614,15 @@ export type Status =
 
 export type Stream = Node & {
   __typename?: 'Stream';
+  blueprint: Maybe<Blueprint>;
   createdAt: Scalars['String']['output'];
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  isActive: Scalars['Boolean']['output'];
+  startedAt: Maybe<Scalars['String']['output']>;
+  stoppedAt: Maybe<Scalars['String']['output']>;
   streamName: Scalars['String']['output'];
+  streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
 };
 
@@ -1843,6 +1986,7 @@ export type TopologyCommonNodes = {
 
 export type TopologyLayer =
   | 'EthTopology'
+  | 'MplsTopology'
   | 'PhysicalTopology'
   | 'PtpTopology';
 
@@ -1962,6 +2106,18 @@ export type UpdateScheduleInput = {
   workflowVersion?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateStreamInput = {
+  blueprintId?: InputMaybe<Scalars['String']['input']>;
+  deviceName: Scalars['String']['input'];
+  streamName: Scalars['String']['input'];
+  streamParameters?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateStreamPayload = {
+  __typename?: 'UpdateStreamPayload';
+  stream: Maybe<Stream>;
+};
+
 /** Input parameters for updating an existing tag */
 export type UpdateTagInput = {
   tagId: Scalars['ID']['input'];
@@ -1985,6 +2141,8 @@ export type Workflow = Node & {
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
   endTime: Maybe<Scalars['String']['output']>;
+  externalInputPayloadStoragePath: Maybe<Scalars['String']['output']>;
+  externalOutputPayloadStoragePath: Maybe<Scalars['String']['output']>;
   failedReferenceTaskNames: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   hasSubworkflows: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
@@ -2057,7 +2215,7 @@ export type WorkflowDefinition = BaseWorkflowDefinition & Node & {
   __typename?: 'WorkflowDefinition';
   createdAt: Maybe<Scalars['String']['output']>;
   createdBy: Maybe<Scalars['String']['output']>;
-  description: Maybe<Scalars['String']['output']>;
+  description: Maybe<WorkflowDefinitionDescription>;
   hasSchedule: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   inputParameters: Maybe<Array<Scalars['String']['output']>>;
@@ -2082,6 +2240,17 @@ export type WorkflowDefinitionConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type WorkflowDefinitionDescription = {
+  __typename?: 'WorkflowDefinitionDescription';
+  description: Maybe<Scalars['String']['output']>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type WorkflowDefinitionDescriptionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  labels?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 export type WorkflowDefinitionEdge = {
   __typename?: 'WorkflowDefinitionEdge';
   cursor: Scalars['String']['output'];
@@ -2092,7 +2261,7 @@ export type WorkflowDefinitionInput = {
   accessPolicy?: InputMaybe<Scalars['JSON']['input']>;
   createTime?: InputMaybe<Scalars['BigInt']['input']>;
   createdBy?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<WorkflowDefinitionDescriptionInput>;
   failureWorkflow?: InputMaybe<Scalars['String']['input']>;
   inputParameters?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   inputTemplate?: InputMaybe<Scalars['JSON']['input']>;
@@ -2291,6 +2460,7 @@ export type ConductorMutation = {
   __typename?: 'conductorMutation';
   /** Add a new event handler. */
   addEventHandler: Maybe<Scalars['JSON']['output']>;
+  cloneWorkflowDefinition: Scalars['Boolean']['output'];
   /** Create a new workflow definition */
   create: Maybe<Scalars['JSON']['output']>;
   createEventHandler: CreateEventHandlerPayload;
@@ -2380,6 +2550,13 @@ export type ConductorMutation = {
 
 export type ConductorMutationAddEventHandlerArgs = {
   input?: InputMaybe<EventHandler_Input>;
+};
+
+
+export type ConductorMutationCloneWorkflowDefinitionArgs = {
+  name: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  workflowToBeCloned: WorkflowDefinitionInput;
 };
 
 
@@ -2664,6 +2841,7 @@ export type ConductorQuery = {
   doCheck: Maybe<HealthCheckStatus>;
   eventHandlers: EventHandlerConnection;
   executedWorkflows: Maybe<ExecutedWorkflowConnection>;
+  externalStorage: Maybe<Scalars['JSON']['output']>;
   /** Retrieves workflow definition along with blueprint */
   get: Maybe<WorkflowDef>;
   /** Retrieves all workflow definition along with blueprint */
@@ -2766,6 +2944,11 @@ export type ConductorQueryExecutedWorkflowsArgs = {
   orderBy?: InputMaybe<ExecutedWorkflowsOrderByInput>;
   pagination?: InputMaybe<PaginationArgs>;
   searchQuery?: InputMaybe<ExecutedWorkflowSearchInput>;
+};
+
+
+export type ConductorQueryExternalStorageArgs = {
+  path: Scalars['String']['input'];
 };
 
 
@@ -2971,6 +3154,7 @@ export type ConductorQueryWorkflowInstanceDetailArgs = {
 
 export type DeviceInventoryMutation = {
   __typename?: 'deviceInventoryMutation';
+  activateStream: ActivateStreamPayload;
   addBlueprint: AddBlueprintPayload;
   addDevice: AddDevicePayload;
   addLocation: AddLocationPayload;
@@ -2979,15 +3163,19 @@ export type DeviceInventoryMutation = {
   addZone: AddZonePayload;
   applySnapshot: ApplySnapshotPayload;
   bulkInstallDevices: BulkInstallDevicePayload;
+  bulkInstallStreams: BulkInstallStreamPayload;
   bulkUninstallDevices: BulkUninstallDevicePayload;
+  bulkUninstallStreams: BulkUninstallStreamPayload;
   closeTransaction: CloseTransactionPayload;
   commitConfig: CommitConfigPayload;
   createLabel: CreateLabelPayload;
   createTransaction: CreateTransactionPayload;
+  deactivateStream: DeactivateStreamPayload;
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
+  deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
   installDevice: InstallDevicePayload;
   reconnectKafka: Maybe<IsOkResponse>;
@@ -2998,7 +3186,14 @@ export type DeviceInventoryMutation = {
   updateBlueprint: UpdateBlueprintPayload;
   updateDataStore: UpdateDataStorePayload;
   updateDevice: UpdateDevicePayload;
+  updateDiscoveredAt: Array<DeviceDiscoveryPayload>;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateStream: UpdateStreamPayload;
+};
+
+
+export type DeviceInventoryMutationActivateStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3044,8 +3239,18 @@ export type DeviceInventoryMutationBulkInstallDevicesArgs = {
 };
 
 
+export type DeviceInventoryMutationBulkInstallStreamsArgs = {
+  input: BulkInstallStreamsInput;
+};
+
+
 export type DeviceInventoryMutationBulkUninstallDevicesArgs = {
   input: BulkUninstallDevicesInput;
+};
+
+
+export type DeviceInventoryMutationBulkUninstallStreamsArgs = {
+  input: BulkUninstallStreamsInput;
 };
 
 
@@ -3071,6 +3276,11 @@ export type DeviceInventoryMutationCreateTransactionArgs = {
 };
 
 
+export type DeviceInventoryMutationDeactivateStreamArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationDeleteBlueprintArgs = {
   id: Scalars['String']['input'];
 };
@@ -3088,6 +3298,11 @@ export type DeviceInventoryMutationDeleteLabelArgs = {
 
 export type DeviceInventoryMutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
+};
+
+
+export type DeviceInventoryMutationDeleteStreamArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3142,8 +3357,19 @@ export type DeviceInventoryMutationUpdateDeviceArgs = {
 };
 
 
+export type DeviceInventoryMutationUpdateDiscoveredAtArgs = {
+  deviceIds: Array<Scalars['String']['input']>;
+};
+
+
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
+};
+
+
+export type DeviceInventoryMutationUpdateStreamArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateStreamInput;
 };
 
 export type DeviceInventoryQuery = {
@@ -3152,10 +3378,12 @@ export type DeviceInventoryQuery = {
   calculatedDiff: CalculatedDiffPayload;
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
+  deviceMetadata: Maybe<DeviceMetadata>;
   devices: DeviceConnection;
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
+  mplsTopology: Maybe<MplsTopology>;
   netTopology: Maybe<NetTopology>;
   netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
@@ -3305,6 +3533,7 @@ export type DeviceInventoryQueryZonesArgs = {
 export type DeviceInventorySubscription = {
   __typename?: 'deviceInventorySubscription';
   deviceUsage: Maybe<DeviceUsage>;
+  devicesConnection: Maybe<DevicesConnection>;
   devicesUsage: Maybe<DeviceListUsage>;
   uniconfigShell: Maybe<Scalars['String']['output']>;
 };
@@ -3313,6 +3542,12 @@ export type DeviceInventorySubscription = {
 export type DeviceInventorySubscriptionDeviceUsageArgs = {
   deviceName: Scalars['String']['input'];
   refreshEverySec?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventorySubscriptionDevicesConnectionArgs = {
+  connectionTimeout?: InputMaybe<Scalars['Int']['input']>;
+  targetDevices: Array<Scalars['String']['input']>;
 };
 
 
@@ -3796,7 +4031,7 @@ export type SelectedNodeUsageSubscriptionVariables = Exact<{
 }>;
 
 
-export type SelectedNodeUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', deviceUsage: { __typename?: 'DeviceUsage', cpuLoad: number, memoryLoad: number } | null } };
+export type SelectedNodeUsageSubscription = { __typename?: 'Subscription', deviceInventory: { __typename?: 'deviceInventorySubscription', deviceUsage: { __typename?: 'DeviceUsage', cpuLoad: number | null, memoryLoad: number | null } | null } };
 
 export type UpdatePositionMutationVariables = Exact<{
   input: UpdateGraphNodeCoordinatesInput;
@@ -3811,6 +4046,25 @@ export type TopologyCommonNodesQueryVariables = Exact<{
 
 
 export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null } };
+
+export type GeoMapDataQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
+
+export type UpdateSyncePositionMutationVariables = Exact<{
+  input: UpdateGraphNodeCoordinatesInput;
+}>;
+
+
+export type UpdateSyncePositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
+
+export type GetSynceGrandMasterPathQueryVariables = Exact<{
+  deviceFrom: Scalars['String']['input'];
+}>;
+
+
+export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
 
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];
@@ -3838,20 +4092,6 @@ export type GetPtpDiffSynceQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetPtpDiffSynceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpDiffSynce: { __typename?: 'PtpDiffSynce', edges: Array<{ __typename?: 'PtpDiffSynceEdges', node: { __typename?: 'PtpDiffSynceNode', id: string } }> } } };
-
-export type UpdateSyncePositionMutationVariables = Exact<{
-  input: UpdateGraphNodeCoordinatesInput;
-}>;
-
-
-export type UpdateSyncePositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
-
-export type GetSynceGrandMasterPathQueryVariables = Exact<{
-  deviceFrom: Scalars['String']['input'];
-}>;
-
-
-export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
 
 export type TopologyQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -3896,9 +4136,14 @@ export type NetTopologyVersionDataQuery = { __typename?: 'Query', deviceInventor
 export type PtpTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'PtpGraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'PtpGraphNodeInterfaceDetails', ptpStatus: string, adminOperStatus: string, ptsfUnusable: string } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string, domain: number, ptpProfile: string, clockId: string, parentClockId: string, gmClockId: string, clockClass: number | null, clockAccuracy: string | null, clockVariance: string | null, timeRecoveryStatus: string | null, globalPriority: number | null, userPriority: number | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type PtpTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpTopology: { __typename?: 'PtpTopology', nodes: Array<{ __typename?: 'PtpGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'PtpGraphNodeInterface', id: string, status: GraphEdgeStatus, name: string, details: { __typename?: 'PtpGraphNodeInterfaceDetails', ptpStatus: string, adminOperStatus: string, ptsfUnusable: string } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, ptpDeviceDetails: { __typename?: 'PtpDeviceDetails', clockType: string | null, domain: number | null, ptpProfile: string | null, clockId: string | null, parentClockId: string | null, gmClockId: string | null, clockClass: number | null, clockAccuracy: string | null, clockVariance: string | null, timeRecoveryStatus: string | null, globalPriority: number | null, userPriority: number | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type SynceTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopology: { __typename?: 'SynceTopology', nodes: Array<{ __typename?: 'SynceGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'SynceGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus, details: { __typename?: 'SynceGraphNodeInterfaceDetails', synceEnabled: boolean | null, rxQualityLevel: string | null, qualifiedForUse: string | null, notQualifiedDueTo: string | null, notSelectedDueTo: string | null } | null }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, synceDeviceDetails: { __typename?: 'SynceDeviceDetails', selectedForUse: string | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+
+export type MplsTopologyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'MplsDeviceDetails', lspTunnels: Array<{ __typename?: 'LspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'MplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };

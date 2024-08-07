@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
+import { LatLngTuple } from 'leaflet';
 import {
   BackupGraphNode,
   BackupNetGraphNode,
@@ -7,8 +8,13 @@ import {
   GraphNode,
   SynceGraphNode,
   PtpGraphNode,
+  MplsGraphNode,
 } from '../pages/topology/graph.helpers';
 import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
+
+// TODO make these 2 constants env. variables
+export const DEFAULT_MAP_CENTER: LatLngTuple = [48.15247287355192, 17.12495675052697]; // Bratislava
+export const DEFAULT_MAP_ZOOM_LEVEL = 10;
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -21,6 +27,10 @@ export type PtpGraphNodeWithDiff = PtpGraphNode & {
 };
 
 export type SynceGraphNodeWithDiff = SynceGraphNode & {
+  change: Change;
+};
+
+export type MplsGraphNodeWithDiff = MplsGraphNode & {
   change: Change;
 };
 
@@ -194,6 +204,10 @@ export function getSynceInterfaceNodeColor(
   if (synceEnabled && isQualifiedForUse) {
     return 'green';
   }
+  return 'purple';
+}
+
+export function getMplsInterfaceNodeColor() {
   return 'purple';
 }
 
