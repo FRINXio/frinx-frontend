@@ -1566,8 +1566,6 @@ export type Stream = Node & {
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
-  startedAt: Maybe<Scalars['String']['output']>;
-  stoppedAt: Maybe<Scalars['String']['output']>;
   streamName: Scalars['String']['output'];
   streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
@@ -4008,6 +4006,18 @@ export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LabelsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } };
 
+export type AddLocationMutationVariables = Exact<{
+  addLocationInput: AddLocationInput;
+}>;
+
+
+export type AddLocationMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', addLocation: { __typename?: 'AddLocationPayload', location: { __typename?: 'Location', id: string } } } };
+
+export type LocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LocationsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, latitude: number | null, longitude: number | null, name: string } }> } } };
+
 export type AddStreamMutationVariables = Exact<{
   input: AddStreamInput;
 }>;
@@ -4272,7 +4282,7 @@ export type StreamsQueryVariables = Exact<{
 }>;
 
 
-export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, startedAt: string | null, stoppedAt: string | null, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type ActivateStreamMutationVariables = Exact<{
   id: Scalars['String']['input'];
