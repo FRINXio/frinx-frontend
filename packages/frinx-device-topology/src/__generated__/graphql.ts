@@ -1619,6 +1619,8 @@ export type Stream = Node & {
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
+  startedAt: Maybe<Scalars['String']['output']>;
+  stoppedAt: Maybe<Scalars['String']['output']>;
   streamName: Scalars['String']['output'];
   streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
@@ -4045,6 +4047,11 @@ export type TopologyCommonNodesQueryVariables = Exact<{
 
 export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null } };
 
+export type GeoMapDataQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
+
 export type UpdateSyncePositionMutationVariables = Exact<{
   input: UpdateGraphNodeCoordinatesInput;
 }>;
@@ -4058,11 +4065,6 @@ export type GetSynceGrandMasterPathQueryVariables = Exact<{
 
 
 export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
-
-export type GeoMapDataQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
 
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];
