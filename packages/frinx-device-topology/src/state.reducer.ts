@@ -44,7 +44,7 @@ import {
 import { LabelItem, StateAction, TopologyMode } from './state.actions';
 import { NetInterface, NetNode } from './__generated__/graphql';
 
-export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet' | 'Map';
+export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'MPLS' | 'Synchronous Ethernet' | 'Map';
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
