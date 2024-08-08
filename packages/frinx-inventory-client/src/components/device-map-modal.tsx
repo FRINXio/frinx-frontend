@@ -16,7 +16,7 @@ import { Marker as MarkerType } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
 export type DeviceLocation = {
-  deviceName: string;
+  deviceName?: string;
   location: { name: string; latitude: number | null; longitude: number | null } | null;
 };
 
@@ -58,15 +58,15 @@ const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation 
                 <Popup>
                   <Box mt={2}>
                     <Heading as="h3" fontSize="xs" color="blue.700">
-                      {deviceLocation.deviceName ?? '-'}
+                      {deviceLocation.deviceName ?? deviceLocation.location?.name ?? '-'}
                     </Heading>
                   </Box>
-                  <Box mt={2}>
+                  {deviceLocation.deviceName && <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Location name
                     </Heading>
                     {deviceLocation.location?.name ?? '-'}
-                  </Box>
+                  </Box>}
                   <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Latitude

@@ -66,7 +66,7 @@ import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
 import WorkflowListModal from './workflow-list-modal';
-import DeviceMapModal, { DeviceLocation } from './device-map-modal';
+import DeviceMapModal, { DeviceLocation } from '../../components/device-map-modal';
 
 const DEVICES_QUERY = gql`
   query Devices(

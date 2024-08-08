@@ -22,7 +22,7 @@ import { getDeviceUsageColor, getLocalDateFromUTC, getDeviceUsage, omitNullValue
 import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
-import { DeviceLocation } from './device-map-modal';
+import { DeviceLocation } from '../../components/device-map-modal';
 
 type SortedBy = 'name' | 'discoveredAt' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';

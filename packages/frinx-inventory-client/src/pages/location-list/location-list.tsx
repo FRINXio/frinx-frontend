@@ -18,19 +18,20 @@ import {
 import { getLocalDateFromUTC, useNotifications } from '@frinx/shared';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
   CloseTransactionMutation,
   CloseTransactionMutationVariables,
-  LocationsQuery,
-  LocationsQueryVariables,
+  LocationListQuery,
+  LocationListQueryVariables,
   RevertChangesMutation,
   RevertChangesMutationVariables,
 } from '../../__generated__/graphql';
+import DeviceMapModal, { DeviceLocation } from '../../components/device-map-modal';
 
-const LOCATIONS_QUERY = gql`
-  query Locations {
+const LOCATION_LIST_QUERY = gql`
+  query LocationList {
     deviceInventory {
       locations {
         edges {
@@ -72,8 +73,8 @@ const LocationList: VoidFunctionComponent = () => {
   // const [selectedLocation, setSelectedLocation] = useState<
   //   LocationsQuery['deviceInventory']['locations'][0] | null
   // >(null);
-  const [{ data: locationQData, error }] = useQuery<LocationsQuery, LocationsQueryVariables>({
-    query: LOCATIONS_QUERY,
+  const [{ data: locationQData, error }] = useQuery<LocationListQuery, LocationListQueryVariables>({
+    query: LOCATION_LIST_QUERY,
     requestPolicy: 'network-only',
   });
   const [{ fetching: isMutationFetching }, revertChanges] = useMutation<
@@ -84,6 +85,12 @@ const LocationList: VoidFunctionComponent = () => {
     CLOSE_TRANSACTION_MUTATION,
   );
 
+  const [locationToShowOnMap, setLocationToShowOnMap] = useState<DeviceLocation | null>(null);
+
+  const handleLocationMapBtnClick = (deviceLocation: DeviceLocation | null) => {
+    setLocationToShowOnMap(deviceLocation);
+  };
+
   if (locationQData == null || error != null) {
     return null;
   }
@@ -91,6 +98,14 @@ const LocationList: VoidFunctionComponent = () => {
 
   return (
     <>
+      {locationToShowOnMap != null && (
+        <DeviceMapModal
+          deviceLocation={locationToShowOnMap}
+          onClose={() => {
+            setLocationToShowOnMap(null);
+          }}
+        />
+      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
@@ -153,9 +168,7 @@ const LocationList: VoidFunctionComponent = () => {
                             aria-label="Map"
                             isLoading={isMutationFetching}
                             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
-                            onClick={() => {
-                              // setSelectedTransaction(transaction);
-                            }}
+                            onClick={() => handleLocationMapBtnClick({ location: location })}
                           />
                         </Tooltip>
                         <Tooltip label="Edit">

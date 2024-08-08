@@ -1098,6 +1098,55 @@ export type LocationEdge = {
   node: Location;
 };
 
+export type LspTunnel = {
+  __typename?: 'LspTunnel';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  signalization: Maybe<Signalization>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsData = {
+  __typename?: 'MplsData';
+  inputInterface: Maybe<Scalars['String']['output']>;
+  inputLabel: Maybe<Scalars['Int']['output']>;
+  lspId: Scalars['String']['output'];
+  outputInterface: Maybe<Scalars['String']['output']>;
+  outputLabel: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsDeviceDetails = {
+  __typename?: 'MplsDeviceDetails';
+  lspTunnels: Maybe<Array<Maybe<LspTunnel>>>;
+  mplsData: Maybe<Array<Maybe<MplsData>>>;
+};
+
+export type MplsGraphNode = {
+  __typename?: 'MplsGraphNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID']['output'];
+  interfaces: Array<MplsGraphNodeInterface>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  mplsDeviceDetails: MplsDeviceDetails;
+  name: Scalars['String']['output'];
+  nodeId: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsGraphNodeInterface = {
+  __typename?: 'MplsGraphNodeInterface';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsTopology = {
+  __typename?: 'MplsTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<MplsGraphNode>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
@@ -1467,6 +1516,10 @@ export type SearchResultWorkflowSummary = {
   results: Maybe<Array<Maybe<WorkflowSummary>>>;
   totalHits: Maybe<Scalars['BigInt']['output']>;
 };
+
+export type Signalization =
+  | 'LDP'
+  | 'RSVP';
 
 export type SkipTaskRequest_Input = {
   taskInput?: InputMaybe<Scalars['JSON']['input']>;
@@ -1933,6 +1986,7 @@ export type TopologyCommonNodes = {
 
 export type TopologyLayer =
   | 'EthTopology'
+  | 'MplsTopology'
   | 'PhysicalTopology'
   | 'PtpTopology';
 
@@ -3329,6 +3383,7 @@ export type DeviceInventoryQuery = {
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
+  mplsTopology: Maybe<MplsTopology>;
   netTopology: Maybe<NetTopology>;
   netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
@@ -4272,6 +4327,26 @@ export type UpdateStreamMutationVariables = Exact<{
 
 export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
 
+export type LocationListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LocationListQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, name: string, createdAt: string, updatedAt: string, latitude: number | null, longitude: number | null, country: string | null } }> } } };
+
+export type RevertChangesMutationVariables = Exact<{
+  transactionId: Scalars['String']['input'];
+}>;
+
+
+export type RevertChangesMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', revertChanges: { __typename?: 'RevertChangesPayload', isOk: boolean } } };
+
+export type CloseTransactionListMutationVariables = Exact<{
+  deviceId: Scalars['String']['input'];
+  transactionId: Scalars['String']['input'];
+}>;
+
+
+export type CloseTransactionListMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } } };
+
 export type StreamsQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
   streamName?: InputMaybe<Scalars['String']['input']>;
@@ -4330,21 +4405,6 @@ export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type TransactionsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', transactions: Array<{ __typename?: 'Transaction', transactionId: string, lastCommitTime: string, changes: Array<{ __typename?: 'TransactionChange', device: { __typename?: 'Device', id: string, name: string }, diff: Array<{ __typename?: 'TransactionDiff', path: string, dataBefore: string | null, dataAfter: string | null }> }> }> } };
-
-export type RevertChangesMutationVariables = Exact<{
-  transactionId: Scalars['String']['input'];
-}>;
-
-
-export type RevertChangesMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', revertChanges: { __typename?: 'RevertChangesPayload', isOk: boolean } } };
-
-export type CloseTransactionListMutationVariables = Exact<{
-  deviceId: Scalars['String']['input'];
-  transactionId: Scalars['String']['input'];
-}>;
-
-
-export type CloseTransactionListMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } } };
 
 export type TerminalSubscriptionVariables = Exact<{
   sessionId: Scalars['String']['input'];
