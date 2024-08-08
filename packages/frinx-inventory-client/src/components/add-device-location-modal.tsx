@@ -150,9 +150,7 @@ const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDevice
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <Marker position={parsedMapPosition}>
-                  <Popup>
-                    Choose location either by clicking on the map or entering coordinates.
-                  </Popup>
+                  <Popup>Choose location either by clicking on the map or entering coordinates.</Popup>
                 </Marker>
                 <MapUpdater position={parsedMapPosition} />
                 <LocationMarker />
