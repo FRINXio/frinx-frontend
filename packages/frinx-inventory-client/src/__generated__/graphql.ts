@@ -4008,6 +4008,18 @@ export type LabelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LabelsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } };
 
+export type AddLocationMutationVariables = Exact<{
+  addLocationInput: AddLocationInput;
+}>;
+
+
+export type AddLocationMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', addLocation: { __typename?: 'AddLocationPayload', location: { __typename?: 'Location', id: string } } } };
+
+export type LocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LocationsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, latitude: number | null, longitude: number | null, name: string } }> } } };
+
 export type AddStreamMutationVariables = Exact<{
   input: AddStreamInput;
 }>;
