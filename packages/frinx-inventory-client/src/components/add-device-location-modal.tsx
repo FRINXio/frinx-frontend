@@ -144,14 +144,14 @@ const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDevice
                   </FormControl>
                 </Stack>
               </Box>
-              <MapContainer style={{ height: 540, width: 800 }} center={parsedMapPosition} zoom={20} scrollWheelZoom>
+              <MapContainer style={{ height: '60vh', width: 800 }} center={parsedMapPosition} zoom={20} scrollWheelZoom>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 <Marker position={parsedMapPosition}>
                   <Popup>
-                    A pretty CSS3 popup. <br /> Easily customizable.
+                    Choose location either by clicking on the map or entering coordinates.
                   </Popup>
                 </Marker>
                 <MapUpdater position={parsedMapPosition} />
