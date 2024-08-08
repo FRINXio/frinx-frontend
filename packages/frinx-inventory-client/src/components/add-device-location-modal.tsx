@@ -15,9 +15,8 @@ import {
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { LatLngExpression, LatLngTuple } from 'leaflet';
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
-import { debounce } from 'lodash';
+import { LatLngTuple } from 'leaflet';
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { LocationData } from '../pages/create-device/create-device-page';
 
@@ -29,7 +28,7 @@ type Props = {
 };
 
 type MapUpdaterProps = {
-  position: LatLngExpression;
+  position: LatLngTuple;
 };
 
 type FormValues = {
@@ -40,30 +39,24 @@ type FormValues = {
 
 const AddLocationSchema = yup.object().shape({
   name: yup.string().required('Location name is required'),
-  latitude: yup.number().typeError('Please enter a number').required('Please enter a number from 0 to 90'),
-  longitude: yup.number().typeError('Please enter a number').required('Please enter a number from 0 to 90'),
+  latitude: yup.number().typeError('Please enter a number').required('Please enter a number'),
+  longitude: yup.number().typeError('Please enter a number').required('Please enter a number'),
 });
 
 const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDeviceLocation }) => {
   const cancelRef = useRef<HTMLElement | null>(null);
+  const [shouldFlyTo, setShouldFlyTo] = useState(false);
+  const INITIAL_VALUES = { name: '', latitude: '', longitude: '' };
 
-  const [mapPosition, setMapPosition] = useState<LatLngTuple>([51.505, -0.09]);
-
-  const INITIAL_VALUES = {
-    name: '',
-    latitude: '',
-    longitude: '',
-  };
-
-  const { values, handleSubmit, resetForm, handleChange, errors } = useFormik<FormValues>({
+  const { values, handleSubmit, resetForm, handleChange, errors, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: AddLocationSchema,
     onSubmit: (data) => {
       const locationInput = {
         name: data.name,
         coordinates: {
-          latitude: parseFloat(data.latitude),
-          longitude: parseFloat(data.longitude),
+          latitude: parseFloat(data.latitude.toString()),
+          longitude: parseFloat(data.longitude.toString()),
         },
       };
       onAddDeviceLocation(locationInput);
@@ -71,33 +64,41 @@ const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDevice
     },
   });
 
-  const updatePosition = debounce((lat: number, lng: number) => {
-    if (lat && lng && !Number.isNaN(Number(lat)) && !Number.isNaN(Number(lng))) {
-      setMapPosition([lat, lng]);
-    }
-  }, 2000);
-
-  useEffect(() => {
-    updatePosition(parseFloat(values.latitude), parseFloat(values.longitude));
-  }, [values.latitude, values.longitude, updatePosition]);
-
   const handleCancel = () => {
-    setMapPosition([51.505, -0.09]);
     onClose();
     resetForm();
   };
 
   const MapUpdater: React.FC<MapUpdaterProps> = ({ position }) => {
     const map = useMap();
-
     useEffect(() => {
-      map.flyTo(position, map.getZoom(), {
-        animate: true,
-      });
+      if (shouldFlyTo) {
+        map.flyTo(position, map.getZoom(), { animate: true });
+        setShouldFlyTo(false);
+      }
     }, [position, map]);
+    return null;
+  };
+
+  const LocationMarker = () => {
+    useMapEvents({
+      click(e) {
+        const { lat, lng } = e.latlng;
+        setFieldValue('latitude', lat.toFixed(6));
+        setFieldValue('longitude', lng.toFixed(6));
+        setShouldFlyTo(false);
+      },
+      dragstart() {
+        setShouldFlyTo(false);
+      },
+      zoomstart() {
+        setShouldFlyTo(false);
+      },
+    });
 
     return null;
   };
+  const parsedMapPosition: LatLngTuple = [parseFloat(values.latitude) || 0, parseFloat(values.longitude) || 0];
 
   return (
     <AlertDialog isOpen={isOpen} onClose={handleCancel} leastDestructiveRef={cancelRef}>
@@ -119,7 +120,10 @@ const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDevice
                     <FormLabel>Latitude</FormLabel>
                     <Input
                       name="latitude"
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setShouldFlyTo(true);
+                      }}
                       value={values.latitude || ''}
                       placeholder="Enter number"
                     />
@@ -129,7 +133,10 @@ const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDevice
                     <FormLabel>Longitude</FormLabel>
                     <Input
                       name="longitude"
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setShouldFlyTo(true);
+                      }}
                       value={values.longitude || ''}
                       placeholder="Enter number"
                     />
@@ -137,17 +144,18 @@ const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDevice
                   </FormControl>
                 </Stack>
               </Box>
-              <MapContainer style={{ height: 540, width: 800 }} center={mapPosition} zoom={20} scrollWheelZoom>
+              <MapContainer style={{ height: 540, width: 800 }} center={parsedMapPosition} zoom={20} scrollWheelZoom>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <Marker position={mapPosition}>
+                <Marker position={parsedMapPosition}>
                   <Popup>
                     A pretty CSS3 popup. <br /> Easily customizable.
                   </Popup>
                 </Marker>
-                <MapUpdater position={mapPosition} />
+                <MapUpdater position={parsedMapPosition} />
+                <LocationMarker />
               </MapContainer>
               <Flex justify="end" my={5}>
                 <Button data-cy="device-cancel-delete" onClick={handleCancel}>
