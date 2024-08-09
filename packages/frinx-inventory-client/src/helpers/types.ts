@@ -14,6 +14,7 @@ export type Device = {
   serviceState: ServiceState;
   mountParameters: string | null;
   deviceSize: DeviceSize;
+  locationId?: string;
 };
 
 // eslint-disable-next-line no-shadow
