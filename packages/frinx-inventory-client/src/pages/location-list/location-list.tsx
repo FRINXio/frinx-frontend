@@ -14,8 +14,11 @@ import {
   Tooltip,
   Tr,
   HStack,
+  Button,
+  useDisclosure,
+  chakra,
 } from '@chakra-ui/react';
-import { getLocalDateFromUTC, useNotifications } from '@frinx/shared';
+import { getLocalDateFromUTC, Pagination, useNotifications, usePagination } from '@frinx/shared';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
@@ -29,6 +32,8 @@ import {
   RevertChangesMutationVariables,
 } from '../../__generated__/graphql';
 import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
+import AddDeviceLocationModal from '../../components/add-device-location-modal';
+import { LocationData } from '../create-device/create-device-page';
 
 const LOCATION_LIST_QUERY = gql`
   query LocationList {
@@ -44,6 +49,12 @@ const LOCATION_LIST_QUERY = gql`
             longitude
             country
           }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
         }
       }
     }
@@ -68,6 +79,8 @@ const CLOSE_TRANSACTION_MUTATION = gql`
   }
 `;
 
+const Form = chakra('form');
+
 const LocationList: VoidFunctionComponent = () => {
   const { addToastNotification } = useNotifications();
   // const [selectedLocation, setSelectedLocation] = useState<
@@ -86,9 +99,18 @@ const LocationList: VoidFunctionComponent = () => {
   );
 
   const [locationToShowOnMap, setLocationToShowOnMap] = useState<LocationModal | null>(null);
+  const addLocationModalDisclosure = useDisclosure();
+  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
 
   const handleLocationMapBtnClick = (deviceLocation: LocationModal | null) => {
     setLocationToShowOnMap(deviceLocation);
+  };
+
+  const handleAddLocation = (locationData: LocationData) => {
+    // addLocation({
+    //   addLocationInput: locationData,
+    // });
+    console.log(locationData);
   };
 
   if (locationQData == null || error != null) {
@@ -106,11 +128,23 @@ const LocationList: VoidFunctionComponent = () => {
           }}
         />
       )}
+      <AddDeviceLocationModal
+        onAddDeviceLocation={handleAddLocation}
+        isOpen={addLocationModalDisclosure.isOpen}
+        onClose={addLocationModalDisclosure.onClose}
+        title="Add location"
+      />
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
             Locations
           </Heading>
+          <HStack spacing={2} marginLeft="auto">
+            <Button data-cy="add-location" colorScheme="blue"
+              onClick={addLocationModalDisclosure.onOpen}>
+              Add Location
+            </Button>
+          </HStack>
         </Flex>
         <Box>
           <Table background="white" size="lg">
@@ -201,6 +235,12 @@ const LocationList: VoidFunctionComponent = () => {
               })}
             </Tbody>
           </Table>
+          <Pagination
+            onPrevious={previousPage(locations.pageInfo.startCursor)}
+            onNext={nextPage(locations.pageInfo.endCursor)}
+            hasNextPage={locations.pageInfo.hasNextPage}
+            hasPreviousPage={locations.pageInfo.hasPreviousPage}
+          />
         </Box>
       </Container>
     </>

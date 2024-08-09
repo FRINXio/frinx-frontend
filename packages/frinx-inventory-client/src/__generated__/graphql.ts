@@ -4330,7 +4330,7 @@ export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: {
 export type LocationListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type LocationListQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, name: string, createdAt: string, updatedAt: string, latitude: number | null, longitude: number | null, country: string | null } }> } } };
+export type LocationListQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, name: string, createdAt: string, updatedAt: string, latitude: number | null, longitude: number | null, country: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type RevertChangesMutationVariables = Exact<{
   transactionId: Scalars['String']['input'];
