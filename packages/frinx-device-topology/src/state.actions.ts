@@ -1,3 +1,4 @@
+import { omitNullValue } from '@frinx/shared';
 import { Client, gql } from 'urql';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
 import {
@@ -10,10 +11,12 @@ import {
   Position,
   SynceGraphNode,
   MplsGraphNode,
+  MplsGraphNodeDetails,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
+  MplsDeviceDetails,
   MplsTopologyQuery,
   MplsTopologyQueryVariables,
   NetTopologyQuery,
@@ -610,6 +613,9 @@ const MPLS_TOPOLOGY_QUERY = gql`
               inputInterface
               outputLabel
               outputInterface
+              operState
+              ldpPrefix
+              mplsOperation
             }
           }
         }
@@ -768,6 +774,15 @@ export function setMplsNodesAndEdges(payload: MplsNodesEdgesPayload): StateActio
   };
 }
 
+function getMplsDetails(mplsDetails: MplsDeviceDetails): MplsGraphNodeDetails {
+  const { mplsData, lspTunnels } = mplsDetails;
+
+  return {
+    mplsData: mplsData?.filter(omitNullValue) ?? [],
+    lspTunnels: lspTunnels?.filter(omitNullValue) ?? [],
+  };
+}
+
 export function getMplsNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
   return (dispatch) => {
     client
@@ -787,6 +802,7 @@ export function getMplsNodesAndEdges(client: Client): ReturnType<ThunkAction<Sta
           }));
           return {
             ...n,
+            details: getMplsDetails(n.mplsDeviceDetails),
             interfaces: nodeInterfaces,
           };
         });

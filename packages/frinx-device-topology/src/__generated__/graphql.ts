@@ -617,6 +617,11 @@ export type DeleteLabelPayload = {
   label: Maybe<Label>;
 };
 
+export type DeleteLocationPayload = {
+  __typename?: 'DeleteLocationPayload';
+  location: Location;
+};
+
 /** Input entity for deleting a pool */
 export type DeleteResourcePoolInput = {
   resourcePoolId: Scalars['ID']['input'];
@@ -1111,7 +1116,10 @@ export type MplsData = {
   __typename?: 'MplsData';
   inputInterface: Maybe<Scalars['String']['output']>;
   inputLabel: Maybe<Scalars['Int']['output']>;
+  ldpPrefix: Maybe<Scalars['String']['output']>;
   lspId: Scalars['String']['output'];
+  mplsOperation: Maybe<Scalars['String']['output']>;
+  operState: Maybe<Scalars['String']['output']>;
   outputInterface: Maybe<Scalars['String']['output']>;
   outputLabel: Maybe<Scalars['Int']['output']>;
 };
@@ -2081,6 +2089,17 @@ export type UpdateGraphNodeCoordinatesInput = {
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']['output']>;
+};
+
+export type UpdateLocationInput = {
+  coordinates: Coordinates;
+  countryId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type UpdateLocationPayload = {
+  __typename?: 'UpdateLocationPayload';
+  location: Location;
 };
 
 /** Input parameters updating the name of a resource-type */
@@ -3174,6 +3193,7 @@ export type DeviceInventoryMutation = {
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
+  deleteLocation: DeleteLocationPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
   deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
@@ -3188,6 +3208,7 @@ export type DeviceInventoryMutation = {
   updateDevice: UpdateDevicePayload;
   updateDiscoveredAt: Array<DeviceDiscoveryPayload>;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateLocation: UpdateLocationPayload;
   updateStream: UpdateStreamPayload;
 };
 
@@ -3296,6 +3317,11 @@ export type DeviceInventoryMutationDeleteLabelArgs = {
 };
 
 
+export type DeviceInventoryMutationDeleteLocationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
 };
@@ -3364,6 +3390,12 @@ export type DeviceInventoryMutationUpdateDiscoveredAtArgs = {
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
+};
+
+
+export type DeviceInventoryMutationUpdateLocationArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateLocationInput;
 };
 
 
@@ -4146,4 +4178,4 @@ export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __ty
 export type MplsTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'MplsDeviceDetails', lspTunnels: Array<{ __typename?: 'LspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'MplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'MplsDeviceDetails', lspTunnels: Array<{ __typename?: 'LspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'MplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null, operState: string | null, ldpPrefix: string | null, mplsOperation: string | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
