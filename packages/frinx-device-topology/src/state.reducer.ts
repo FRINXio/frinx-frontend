@@ -113,7 +113,7 @@ export type State = {
 };
 
 export const initialState: State = {
-  topologyLayer: 'LLDP',
+  topologyLayer: 'MPLS',
   mode: 'NORMAL',
   nodes: [],
   edges: [],
