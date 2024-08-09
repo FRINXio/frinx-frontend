@@ -18,7 +18,7 @@ import {
   useDisclosure,
   chakra,
 } from '@chakra-ui/react';
-import { getLocalDateFromUTC, Pagination, useNotifications, usePagination } from '@frinx/shared';
+import { ConfirmDeleteModal, getLocalDateFromUTC, Pagination, useNotifications, usePagination } from '@frinx/shared';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
@@ -100,6 +100,8 @@ const LocationList: VoidFunctionComponent = () => {
 
   const [locationToShowOnMap, setLocationToShowOnMap] = useState<LocationModal | null>(null);
   const addLocationModalDisclosure = useDisclosure();
+  const deleteModalDisclosure = useDisclosure();
+  const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
 
   const handleLocationMapBtnClick = (deviceLocation: LocationModal | null) => {
@@ -111,6 +113,15 @@ const LocationList: VoidFunctionComponent = () => {
     //   addLocationInput: locationData,
     // });
     console.log(locationData);
+  };
+
+  const handleDeleteBtnClick = (streamId: string) => {
+    setLocationIdToDelete(streamId);
+    deleteModalDisclosure.onOpen();
+  };
+
+  const handleLocationDelete = () => {
+    // deleteStreams([unwrap(streamIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
   };
 
   if (locationQData == null || error != null) {
@@ -134,6 +145,14 @@ const LocationList: VoidFunctionComponent = () => {
         onClose={addLocationModalDisclosure.onClose}
         title="Add location"
       />
+      <ConfirmDeleteModal
+        isOpen={deleteModalDisclosure.isOpen}
+        onClose={deleteModalDisclosure.onClose}
+        onConfirmBtnClick={handleLocationDelete}
+        title="Delete location"
+      >
+      Are you sure? You can&apos;t undo this action afterwards.
+    </ConfirmDeleteModal>
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
@@ -224,7 +243,7 @@ const LocationList: VoidFunctionComponent = () => {
                             isLoading={isMutationFetching}
                             icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
                             onClick={() => {
-                              // setSelectedTransaction(transaction);
+                              handleDeleteBtnClick(location.id);
                             }}
                           />
                         </Tooltip>
