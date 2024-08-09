@@ -13,7 +13,7 @@ import {
   Select,
   Spacer,
 } from '@chakra-ui/react';
-import { Editor, jsonParse } from '@frinx/shared';
+import { Autocomplete, Editor, jsonParse } from '@frinx/shared';
 
 import { Device, DeviceSizeEnum, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
 import {
@@ -127,6 +127,25 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
 
   const parsedMountParameters = jsonParse(values.mountParameters);
   const isMountParametersValid = parsedMountParameters != null && typeof parsedMountParameters === 'string';
+  const locationOptions = locations.map(({ node: location }) => ({
+    label: location.name,
+    value: location.name,
+  }));
+
+  const locationList = locations.map((l) => l.node);
+
+  const handleLocationChange = (locationName?: string | null) => {
+    if (locationName) {
+      const location = locationList.find((loc) => loc.name === locationName)?.id;
+      setFieldValue('locationId', location);
+    }
+  };
+
+  const location = locationList.find((loc) => loc.id === values.locationId);
+  const selectedLocation = {
+    label: location?.name || '',
+    value: location?.name || '',
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -216,22 +235,11 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       <FormControl my={6}>
         <FormLabel>Location</FormLabel>
         <HStack>
-          <Select
-            data-cy="add-device-location"
-            name="locationId"
-            id="locationId"
-            placeholder="Select location"
-            onChange={handleChange}
-            value={values.locationId || ''}
-          >
-            {locations.map(({ node: location }) => {
-              return (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              );
-            })}
-          </Select>
+          <Autocomplete
+            items={locationOptions}
+            onChange={(e) => handleLocationChange(e?.value)}
+            selectedItem={selectedLocation}
+          />
         </HStack>
       </FormControl>
       <FormControl my={6}>
