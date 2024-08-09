@@ -234,13 +234,11 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       </FormControl>
       <FormControl my={6}>
         <FormLabel>Location</FormLabel>
-        <HStack>
-          <Autocomplete
-            items={locationOptions}
-            onChange={(e) => handleLocationChange(e?.value)}
-            selectedItem={selectedLocation}
-          />
-        </HStack>
+        <Autocomplete
+          items={locationOptions}
+          onChange={(e) => handleLocationChange(e?.value)}
+          selectedItem={selectedLocation}
+        />
       </FormControl>
       <FormControl my={6}>
         <FormLabel data-cy="ace-editor">Mount parameters</FormLabel>
