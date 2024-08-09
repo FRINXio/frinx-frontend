@@ -28,7 +28,7 @@ import {
   RevertChangesMutation,
   RevertChangesMutationVariables,
 } from '../../__generated__/graphql';
-import DeviceMapModal, { DeviceLocation } from '../../components/device-map-modal';
+import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
 
 const LOCATION_LIST_QUERY = gql`
   query LocationList {
@@ -85,9 +85,9 @@ const LocationList: VoidFunctionComponent = () => {
     CLOSE_TRANSACTION_MUTATION,
   );
 
-  const [locationToShowOnMap, setLocationToShowOnMap] = useState<DeviceLocation | null>(null);
+  const [locationToShowOnMap, setLocationToShowOnMap] = useState<LocationModal | null>(null);
 
-  const handleLocationMapBtnClick = (deviceLocation: DeviceLocation | null) => {
+  const handleLocationMapBtnClick = (deviceLocation: LocationModal | null) => {
     setLocationToShowOnMap(deviceLocation);
   };
 
@@ -99,8 +99,8 @@ const LocationList: VoidFunctionComponent = () => {
   return (
     <>
       {locationToShowOnMap != null && (
-        <DeviceMapModal
-          deviceLocation={locationToShowOnMap}
+        <LocationMapModal
+          locationModal={locationToShowOnMap}
           onClose={() => {
             setLocationToShowOnMap(null);
           }}

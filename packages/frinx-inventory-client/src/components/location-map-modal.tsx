@@ -15,17 +15,17 @@ import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Marker as MarkerType } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
-export type DeviceLocation = {
-  deviceName?: string;
+export type LocationModal = {
+  title?: string;
   location: { name: string; latitude: number | null; longitude: number | null } | null;
 };
 
 type Props = {
   onClose: () => void;
-  deviceLocation: DeviceLocation;
+  locationModal: LocationModal;
 };
 
-const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation }) => {
+const LocationMapModal: VoidFunctionComponent<Props> = ({ onClose, locationModal }) => {
   const [markerRef, setMarkerRef] = useState<MarkerType | null>(null);
 
   useEffect(() => {
@@ -36,12 +36,12 @@ const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation 
     <Modal isOpen onClose={onClose} size="5xl" closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{deviceLocation.deviceName}</ModalHeader>
+        <ModalHeader>{locationModal.title ?? locationModal.location?.name}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {deviceLocation.location?.latitude && deviceLocation.location?.longitude ? (
+          {locationModal.location?.latitude && locationModal.location?.longitude ? (
             <MapContainer
-              center={[deviceLocation.location?.latitude, deviceLocation.location?.longitude]}
+              center={[locationModal.location.latitude, locationModal.location.longitude]}
               zoom={13}
               style={{ height: '60vh' }}
             >
@@ -53,31 +53,31 @@ const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation 
                 ref={(el) => {
                   setMarkerRef(el);
                 }}
-                position={[deviceLocation.location?.latitude, deviceLocation.location?.longitude]}
+                position={[locationModal.location.latitude, locationModal.location.longitude]}
               >
                 <Popup>
                   <Box mt={2}>
                     <Heading as="h3" fontSize="xs" color="blue.700">
-                      {deviceLocation.deviceName ?? deviceLocation.location?.name ?? '-'}
+                      {locationModal.title ?? locationModal.location.name}
                     </Heading>
                   </Box>
-                  {deviceLocation.deviceName && <Box mt={2}>
+                  {locationModal.title && <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Location name
                     </Heading>
-                    {deviceLocation.location?.name ?? '-'}
+                    {locationModal.location.name ?? '-'}
                   </Box>}
                   <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Latitude
                     </Heading>
-                    {deviceLocation.location?.latitude}
+                    {locationModal.location.latitude}
                   </Box>
                   <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Longitude
                     </Heading>
-                    {deviceLocation.location?.longitude}
+                    {locationModal.location.longitude}
                   </Box>
                 </Popup>
               </Marker>
@@ -87,13 +87,13 @@ const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation 
               <Heading as="h3" fontSize="sm">
                 Location name
               </Heading>
-              {deviceLocation.location?.name ?? '-'}
+              {locationModal.location?.name ?? '-'}
             </Box>
           )}
         </ModalBody>
         <ModalFooter>
           <HStack>
-            <Button data-cy="device-map-modal-close" onClick={onClose}>
+            <Button data-cy="location-map-modal-close" onClick={onClose}>
               Close
             </Button>
           </HStack>
@@ -103,4 +103,4 @@ const DeviceMapModal: VoidFunctionComponent<Props> = ({ onClose, deviceLocation 
   );
 };
 
-export default DeviceMapModal;
+export default LocationMapModal;
