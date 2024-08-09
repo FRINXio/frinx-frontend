@@ -617,6 +617,11 @@ export type DeleteLabelPayload = {
   label: Maybe<Label>;
 };
 
+export type DeleteLocationPayload = {
+  __typename?: 'DeleteLocationPayload';
+  location: Location;
+};
+
 /** Input entity for deleting a pool */
 export type DeleteResourcePoolInput = {
   resourcePoolId: Scalars['ID']['input'];
@@ -1098,6 +1103,55 @@ export type LocationEdge = {
   node: Location;
 };
 
+export type LspTunnel = {
+  __typename?: 'LspTunnel';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  signalization: Maybe<Signalization>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsData = {
+  __typename?: 'MplsData';
+  inputInterface: Maybe<Scalars['String']['output']>;
+  inputLabel: Maybe<Scalars['Int']['output']>;
+  lspId: Scalars['String']['output'];
+  outputInterface: Maybe<Scalars['String']['output']>;
+  outputLabel: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsDeviceDetails = {
+  __typename?: 'MplsDeviceDetails';
+  lspTunnels: Maybe<Array<Maybe<LspTunnel>>>;
+  mplsData: Maybe<Array<Maybe<MplsData>>>;
+};
+
+export type MplsGraphNode = {
+  __typename?: 'MplsGraphNode';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['ID']['output'];
+  interfaces: Array<MplsGraphNodeInterface>;
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  mplsDeviceDetails: MplsDeviceDetails;
+  name: Scalars['String']['output'];
+  nodeId: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsGraphNodeInterface = {
+  __typename?: 'MplsGraphNodeInterface';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  status: GraphEdgeStatus;
+};
+
+export type MplsTopology = {
+  __typename?: 'MplsTopology';
+  edges: Array<GraphEdge>;
+  nodes: Array<MplsGraphNode>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
@@ -1468,6 +1522,10 @@ export type SearchResultWorkflowSummary = {
   totalHits: Maybe<Scalars['BigInt']['output']>;
 };
 
+export type Signalization =
+  | 'LDP'
+  | 'RSVP';
+
 export type SkipTaskRequest_Input = {
   taskInput?: InputMaybe<Scalars['JSON']['input']>;
   taskOutput?: InputMaybe<Scalars['JSON']['input']>;
@@ -1566,6 +1624,8 @@ export type Stream = Node & {
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
+  startedAt: Maybe<Scalars['String']['output']>;
+  stoppedAt: Maybe<Scalars['String']['output']>;
   streamName: Scalars['String']['output'];
   streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
@@ -1931,6 +1991,7 @@ export type TopologyCommonNodes = {
 
 export type TopologyLayer =
   | 'EthTopology'
+  | 'MplsTopology'
   | 'PhysicalTopology'
   | 'PtpTopology';
 
@@ -2025,6 +2086,17 @@ export type UpdateGraphNodeCoordinatesInput = {
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']['output']>;
+};
+
+export type UpdateLocationInput = {
+  coordinates: Coordinates;
+  countryId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type UpdateLocationPayload = {
+  __typename?: 'UpdateLocationPayload';
+  location: Location;
 };
 
 /** Input parameters updating the name of a resource-type */
@@ -3118,6 +3190,7 @@ export type DeviceInventoryMutation = {
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
+  deleteLocation: DeleteLocationPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
   deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
@@ -3132,6 +3205,7 @@ export type DeviceInventoryMutation = {
   updateDevice: UpdateDevicePayload;
   updateDiscoveredAt: Array<DeviceDiscoveryPayload>;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateLocation: UpdateLocationPayload;
   updateStream: UpdateStreamPayload;
 };
 
@@ -3240,6 +3314,11 @@ export type DeviceInventoryMutationDeleteLabelArgs = {
 };
 
 
+export type DeviceInventoryMutationDeleteLocationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
 };
@@ -3311,6 +3390,12 @@ export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
 };
 
 
+export type DeviceInventoryMutationUpdateLocationArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateLocationInput;
+};
+
+
 export type DeviceInventoryMutationUpdateStreamArgs = {
   id: Scalars['String']['input'];
   input: UpdateStreamInput;
@@ -3327,6 +3412,7 @@ export type DeviceInventoryQuery = {
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
+  mplsTopology: Maybe<MplsTopology>;
   netTopology: Maybe<NetTopology>;
   netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
@@ -4282,7 +4368,7 @@ export type StreamsQueryVariables = Exact<{
 }>;
 
 
-export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, startedAt: string | null, stoppedAt: string | null, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type ActivateStreamMutationVariables = Exact<{
   id: Scalars['String']['input'];
