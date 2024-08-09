@@ -16,7 +16,14 @@ import {
 import { Editor, jsonParse } from '@frinx/shared';
 
 import { Device, DeviceSizeEnum, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
-import { DeviceServiceState, Label, LabelsQuery, ZonesQuery, DeviceSize } from '../../__generated__/graphql';
+import {
+  DeviceServiceState,
+  Label,
+  LabelsQuery,
+  ZonesQuery,
+  DeviceSize,
+  LocationsQuery,
+} from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
 type FormValues = {
@@ -28,6 +35,7 @@ type FormValues = {
   vendor: string | null;
   model: string | null;
   address: string | null;
+  locationId: string | null;
 };
 
 type FormLabel = { id: string; name: string };
@@ -38,6 +46,7 @@ type Props = {
   labels: LabelsQuery['deviceInventory']['labels']['edges'];
   zones: ZonesQuery['deviceInventory']['zones']['edges']; // eslint-disable-line react/no-unused-prop-types
   device: FormDevice;
+  locations: LocationsQuery['deviceInventory']['locations']['edges'];
   onUpdate: (values: FormValues) => void;
   onLabelCreate: (label: string) => Promise<Label | null>;
   onCancel: () => void;
@@ -65,7 +74,7 @@ const EditDeviceFormSchema = yup.object().shape({
   }),
 });
 
-const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel }): JSX.Element => {
+const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel, locations }): JSX.Element => {
   const INITIAL_VALUES = useMemo(() => {
     return {
       zoneId: device.zone.id,
@@ -76,6 +85,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       model: device.model ?? '',
       address: device.host ?? '',
       deviceSize: device.deviceSize,
+      locationId: device.locationId ?? null,
     };
   }, [device]);
 
@@ -203,7 +213,27 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           onSelectionChange={handleOnSelectionChange}
         />
       </FormControl>
-
+      <FormControl my={6}>
+        <FormLabel>Location</FormLabel>
+        <HStack>
+          <Select
+            data-cy="add-device-location"
+            name="locationId"
+            id="locationId"
+            placeholder="Select location"
+            onChange={handleChange}
+            value={values.locationId || ''}
+          >
+            {locations.map(({ node: location }) => {
+              return (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              );
+            })}
+          </Select>
+        </HStack>
+      </FormControl>
       <FormControl my={6}>
         <FormLabel data-cy="ace-editor">Mount parameters</FormLabel>
         <Editor

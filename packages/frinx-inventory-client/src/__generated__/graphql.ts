@@ -1566,8 +1566,6 @@ export type Stream = Node & {
   deviceName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isActive: Scalars['Boolean']['output'];
-  startedAt: Maybe<Scalars['String']['output']>;
-  stoppedAt: Maybe<Scalars['String']['output']>;
   streamName: Scalars['String']['output'];
   streamParameters: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
@@ -4247,7 +4245,7 @@ export type DeviceQueryVariables = Exact<{
 }>;
 
 
-export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', device: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', name: string, serviceState: DeviceServiceState, model: string | null, vendor: string | null, address: string | null, deviceSize: DeviceSize, mountParameters: string | null, id: string, zone: { __typename?: 'Zone', id: string, name: string }, labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
+export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', device: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', name: string, serviceState: DeviceServiceState, model: string | null, vendor: string | null, address: string | null, deviceSize: DeviceSize, mountParameters: string | null, id: string, location: { __typename?: 'Location', id: string } | null, zone: { __typename?: 'Zone', id: string, name: string }, labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
 
 export type UpdateDeviceMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -4284,7 +4282,7 @@ export type StreamsQueryVariables = Exact<{
 }>;
 
 
-export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, startedAt: string | null, stoppedAt: string | null, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+export type StreamsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, createdAt: string, isActive: boolean } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
 export type ActivateStreamMutationVariables = Exact<{
   id: Scalars['String']['input'];
