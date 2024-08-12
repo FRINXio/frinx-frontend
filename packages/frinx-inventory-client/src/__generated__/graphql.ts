@@ -617,6 +617,11 @@ export type DeleteLabelPayload = {
   label: Maybe<Label>;
 };
 
+export type DeleteLocationPayload = {
+  __typename?: 'DeleteLocationPayload';
+  location: Location;
+};
+
 /** Input entity for deleting a pool */
 export type DeleteResourcePoolInput = {
   resourcePoolId: Scalars['ID']['input'];
@@ -1111,7 +1116,10 @@ export type MplsData = {
   __typename?: 'MplsData';
   inputInterface: Maybe<Scalars['String']['output']>;
   inputLabel: Maybe<Scalars['Int']['output']>;
+  ldpPrefix: Maybe<Scalars['String']['output']>;
   lspId: Scalars['String']['output'];
+  mplsOperation: Maybe<Scalars['String']['output']>;
+  operState: Maybe<Scalars['String']['output']>;
   outputInterface: Maybe<Scalars['String']['output']>;
   outputLabel: Maybe<Scalars['Int']['output']>;
 };
@@ -2081,6 +2089,17 @@ export type UpdateGraphNodeCoordinatesInput = {
 export type UpdateGraphNodeCoordinatesPayload = {
   __typename?: 'UpdateGraphNodeCoordinatesPayload';
   deviceNames: Array<Scalars['String']['output']>;
+};
+
+export type UpdateLocationInput = {
+  coordinates: Coordinates;
+  countryId?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type UpdateLocationPayload = {
+  __typename?: 'UpdateLocationPayload';
+  location: Location;
 };
 
 /** Input parameters updating the name of a resource-type */
@@ -3174,6 +3193,7 @@ export type DeviceInventoryMutation = {
   deleteBlueprint: DeleteBlueprintPayload;
   deleteDevice: DeleteDevicePayload;
   deleteLabel: DeleteLabelPayload;
+  deleteLocation: DeleteLocationPayload;
   deleteSnapshot: Maybe<DeleteSnapshotPayload>;
   deleteStream: DeleteStreamPayload;
   importCSV: Maybe<CsvImport>;
@@ -3188,6 +3208,7 @@ export type DeviceInventoryMutation = {
   updateDevice: UpdateDevicePayload;
   updateDiscoveredAt: Array<DeviceDiscoveryPayload>;
   updateGraphNodeCoordinates: UpdateGraphNodeCoordinatesPayload;
+  updateLocation: UpdateLocationPayload;
   updateStream: UpdateStreamPayload;
 };
 
@@ -3296,6 +3317,11 @@ export type DeviceInventoryMutationDeleteLabelArgs = {
 };
 
 
+export type DeviceInventoryMutationDeleteLocationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryMutationDeleteSnapshotArgs = {
   input: DeleteSnapshotInput;
 };
@@ -3364,6 +3390,12 @@ export type DeviceInventoryMutationUpdateDiscoveredAtArgs = {
 
 export type DeviceInventoryMutationUpdateGraphNodeCoordinatesArgs = {
   input: UpdateGraphNodeCoordinatesInput;
+};
+
+
+export type DeviceInventoryMutationUpdateLocationArgs = {
+  id: Scalars['String']['input'];
+  input: UpdateLocationInput;
 };
 
 
@@ -4332,20 +4364,12 @@ export type LocationListQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LocationListQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, name: string, createdAt: string, updatedAt: string, latitude: number | null, longitude: number | null, country: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
-export type RevertChangesMutationVariables = Exact<{
-  transactionId: Scalars['String']['input'];
+export type DeleteLocationMutationVariables = Exact<{
+  id: Scalars['String']['input'];
 }>;
 
 
-export type RevertChangesMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', revertChanges: { __typename?: 'RevertChangesPayload', isOk: boolean } } };
-
-export type CloseTransactionListMutationVariables = Exact<{
-  deviceId: Scalars['String']['input'];
-  transactionId: Scalars['String']['input'];
-}>;
-
-
-export type CloseTransactionListMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } } };
+export type DeleteLocationMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteLocation: { __typename?: 'DeleteLocationPayload', location: { __typename?: 'Location', id: string } } } };
 
 export type StreamsQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
@@ -4405,6 +4429,21 @@ export type TransactionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type TransactionsQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', transactions: Array<{ __typename?: 'Transaction', transactionId: string, lastCommitTime: string, changes: Array<{ __typename?: 'TransactionChange', device: { __typename?: 'Device', id: string, name: string }, diff: Array<{ __typename?: 'TransactionDiff', path: string, dataBefore: string | null, dataAfter: string | null }> }> }> } };
+
+export type RevertChangesMutationVariables = Exact<{
+  transactionId: Scalars['String']['input'];
+}>;
+
+
+export type RevertChangesMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', revertChanges: { __typename?: 'RevertChangesPayload', isOk: boolean } } };
+
+export type CloseTransactionListMutationVariables = Exact<{
+  deviceId: Scalars['String']['input'];
+  transactionId: Scalars['String']['input'];
+}>;
+
+
+export type CloseTransactionListMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', closeTransaction: { __typename?: 'CloseTransactionPayload', isOk: boolean } } };
 
 export type TerminalSubscriptionVariables = Exact<{
   sessionId: Scalars['String']['input'];

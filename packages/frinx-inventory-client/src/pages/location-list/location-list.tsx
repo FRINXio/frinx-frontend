@@ -26,6 +26,8 @@ import { gql, useMutation, useQuery } from 'urql';
 import {
   AddLocationMutation,
   AddLocationMutationVariables,
+  DeleteLocationMutation,
+  DeleteLocationMutationVariables,
   LocationListQuery,
   LocationListQueryVariables,
 } from '../../__generated__/graphql';
@@ -71,6 +73,18 @@ const ADD_LOCATION_MUTATION = gql`
   }
 `;
 
+const DELETE_LOCATION_MUTATION = gql`
+  mutation DeleteLocation($id: String!) {
+    deviceInventory {
+      deleteLocation(id: $id) {
+        location {
+          id
+        }
+      }
+    }
+  }
+`;
+
 const Form = chakra('form');
 
 const LocationList: VoidFunctionComponent = () => {
@@ -80,6 +94,7 @@ const LocationList: VoidFunctionComponent = () => {
     requestPolicy: 'network-only',
   });
   const [, addLocation] = useMutation<AddLocationMutation, AddLocationMutationVariables>(ADD_LOCATION_MUTATION);
+  const [, deleteLocation] = useMutation<DeleteLocationMutation, DeleteLocationMutationVariables>(DELETE_LOCATION_MUTATION);
 
   const [locationToShowOnMap, setLocationToShowOnMap] = useState<LocationModal | null>(null);
   const addLocationModalDisclosure = useDisclosure();
@@ -97,13 +112,29 @@ const LocationList: VoidFunctionComponent = () => {
     });
   };
 
-  const handleDeleteBtnClick = (streamId: string) => {
-    setLocationIdToDelete(streamId);
+  const handleDeleteBtnClick = (id: string) => {
+    setLocationIdToDelete(id);
     deleteModalDisclosure.onOpen();
   };
 
-  const handleLocationDelete = () => {
-    // deleteStreams([unwrap(streamIdToDelete)]).finally(() => deleteModalDisclosure.onClose());
+  const deleteLocation2 = async () => {
+    if (locationIdToDelete) {
+      const { data: responseData, error: responseError } = await deleteLocation({ id: locationIdToDelete });
+
+      console.log(responseError);
+  
+      if (responseError != null) {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          content: 'Failed to delete location',
+        });
+      }
+    }
+  };
+
+  const handleLocationDelete = async () => {
+    deleteLocation2().finally(() => deleteModalDisclosure.onClose());
   };
 
   if (locationQData == null || error != null) {
