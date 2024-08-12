@@ -81,7 +81,8 @@ const AddDeviceLocationModal: FC<Props> = ({
   useEffect(() => {
     const locationId = locationList.find((loc) => loc.name === values.name)?.id;
     setLocationFieldValue('locationId', locationId || '');
-  }, [onAddDeviceLocation, locationList, setLocationFieldValue, values.name]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onAddDeviceLocation]);
 
   const handleCancel = () => {
     onClose();
