@@ -24,12 +24,10 @@ import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
-  CloseTransactionMutation,
-  CloseTransactionMutationVariables,
+  AddLocationMutation,
+  AddLocationMutationVariables,
   LocationListQuery,
   LocationListQueryVariables,
-  RevertChangesMutation,
-  RevertChangesMutationVariables,
 } from '../../__generated__/graphql';
 import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
 import AddDeviceLocationModal from '../../components/add-device-location-modal';
@@ -60,20 +58,14 @@ const LOCATION_LIST_QUERY = gql`
     }
   }
 `;
-const REVERT_CHANGES_MUTATION = gql`
-  mutation RevertChanges($transactionId: String!) {
+
+const ADD_LOCATION_MUTATION = gql`
+  mutation AddLocation($addLocationInput: AddLocationInput!) {
     deviceInventory {
-      revertChanges(transactionId: $transactionId) {
-        isOk
-      }
-    }
-  }
-`;
-const CLOSE_TRANSACTION_MUTATION = gql`
-  mutation CloseTransactionList($deviceId: String!, $transactionId: String!) {
-    deviceInventory {
-      closeTransaction(deviceId: $deviceId, transactionId: $transactionId) {
-        isOk
+      addLocation(input: $addLocationInput) {
+        location {
+          id
+        }
       }
     }
   }
@@ -83,20 +75,11 @@ const Form = chakra('form');
 
 const LocationList: VoidFunctionComponent = () => {
   const { addToastNotification } = useNotifications();
-  // const [selectedLocation, setSelectedLocation] = useState<
-  //   LocationsQuery['deviceInventory']['locations'][0] | null
-  // >(null);
   const [{ data: locationQData, error }] = useQuery<LocationListQuery, LocationListQueryVariables>({
     query: LOCATION_LIST_QUERY,
     requestPolicy: 'network-only',
   });
-  const [{ fetching: isMutationFetching }, revertChanges] = useMutation<
-    RevertChangesMutation,
-    RevertChangesMutationVariables
-  >(REVERT_CHANGES_MUTATION);
-  const [, closeTransaction] = useMutation<CloseTransactionMutation, CloseTransactionMutationVariables>(
-    CLOSE_TRANSACTION_MUTATION,
-  );
+  const [, addLocation] = useMutation<AddLocationMutation, AddLocationMutationVariables>(ADD_LOCATION_MUTATION);
 
   const [locationToShowOnMap, setLocationToShowOnMap] = useState<LocationModal | null>(null);
   const addLocationModalDisclosure = useDisclosure();
@@ -109,10 +92,9 @@ const LocationList: VoidFunctionComponent = () => {
   };
 
   const handleAddLocation = (locationData: LocationData) => {
-    // addLocation({
-    //   addLocationInput: locationData,
-    // });
-    console.log(locationData);
+    addLocation({
+      addLocationInput: locationData,
+    });
   };
 
   const handleDeleteBtnClick = (streamId: string) => {
@@ -219,7 +201,6 @@ const LocationList: VoidFunctionComponent = () => {
                           <IconButton
                             size="sm"
                             aria-label="Map"
-                            isLoading={isMutationFetching}
                             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
                             onClick={() => handleLocationMapBtnClick({ location: location })}
                           />
@@ -228,7 +209,6 @@ const LocationList: VoidFunctionComponent = () => {
                           <IconButton
                             size="sm"
                             aria-label="Edit"
-                            isLoading={isMutationFetching}
                             icon={<Icon as={FeatherIcon} icon="edit" size={20} />}
                             onClick={() => {
                               // setSelectedTransaction(transaction);
@@ -240,7 +220,6 @@ const LocationList: VoidFunctionComponent = () => {
                             colorScheme="red"
                             size="sm"
                             aria-label="Delete"
-                            isLoading={isMutationFetching}
                             icon={<Icon as={FeatherIcon} icon="trash-2" size={20} />}
                             onClick={() => {
                               handleDeleteBtnClick(location.id);
