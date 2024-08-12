@@ -25,6 +25,13 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  locationList: {
+    id: string;
+    latitude: number | null;
+    longitude: number | null;
+    name: string;
+  }[];
+  setLocationFieldValue: (field: 'locationId', value: string) => void;
 };
 
 type MapUpdaterProps = {
@@ -43,7 +50,14 @@ const AddLocationSchema = yup.object().shape({
   longitude: yup.number().typeError('Please enter a number').required('Please enter a number'),
 });
 
-const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDeviceLocation }) => {
+const AddDeviceLocationModal: FC<Props> = ({
+  isOpen,
+  onClose,
+  title,
+  onAddDeviceLocation,
+  setLocationFieldValue,
+  locationList,
+}) => {
   const cancelRef = useRef<HTMLElement | null>(null);
   const [shouldFlyTo, setShouldFlyTo] = useState(false);
   const INITIAL_VALUES = { name: '', latitude: '', longitude: '' };
@@ -63,6 +77,11 @@ const AddDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, onAddDevice
       onClose();
     },
   });
+
+  useEffect(() => {
+    const locationId = locationList.find((loc) => loc.name === values.name)?.id;
+    setLocationFieldValue('locationId', locationId || '');
+  }, [onAddDeviceLocation, locationList, setLocationFieldValue, values.name]);
 
   const handleCancel = () => {
     onClose();

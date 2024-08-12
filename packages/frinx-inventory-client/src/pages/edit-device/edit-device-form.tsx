@@ -5,16 +5,19 @@ import { Item } from 'chakra-ui-autocomplete';
 import {
   Button,
   Divider,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
+  Icon,
+  IconButton,
   Input,
   Select,
   Spacer,
 } from '@chakra-ui/react';
 import { Autocomplete, Editor, jsonParse } from '@frinx/shared';
-
+import FeatherIcon from 'feather-icons-react';
 import { Device, DeviceSizeEnum, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
 import {
   DeviceServiceState,
@@ -234,11 +237,19 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       </FormControl>
       <FormControl my={6}>
         <FormLabel>Location</FormLabel>
-        <Autocomplete
-          items={locationOptions}
-          onChange={(e) => handleLocationChange(e?.value)}
-          selectedItem={selectedLocation}
-        />
+        <Flex gap="5px">
+          <Autocomplete
+            items={locationOptions}
+            onChange={(e) => handleLocationChange(e?.value)}
+            selectedItem={selectedLocation}
+          />
+          <IconButton
+            aria-label="x-square"
+            icon={<Icon size={12} as={FeatherIcon} icon="x-square" />}
+            onClick={() => setFieldValue('locationId', null)}
+            colorScheme="red"
+          />
+        </Flex>
       </FormControl>
       <FormControl my={6}>
         <FormLabel data-cy="ace-editor">Mount parameters</FormLabel>

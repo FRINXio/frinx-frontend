@@ -7,6 +7,8 @@ import {
   Grid,
   GridItem,
   HStack,
+  Icon,
+  IconButton,
   Input,
   Select,
   Spacer,
@@ -18,6 +20,7 @@ import React, { useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
 import { Autocomplete, Editor, jsonParse } from '@frinx/shared';
+import FeatherIcon from 'feather-icons-react';
 import parse from 'json-templates';
 import {
   DeviceBlueprintsQuery,
@@ -189,7 +192,15 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     value: location.name,
   }));
 
-  const locationList = locations.map((l) => l.node);
+  const locationList = locations.map((l) => {
+    const { id, name, latitude, longitude } = l.node;
+    return {
+      id,
+      name,
+      latitude,
+      longitude,
+    };
+  });
 
   const handleLocationChange = (locationName?: string | null) => {
     if (locationName) {
@@ -367,6 +378,12 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <Button onClick={addDeviceLocationModalDisclosure.onOpen} colorScheme="blue">
             +
           </Button>
+          <IconButton
+            aria-label="x-square"
+            icon={<Icon size={12} as={FeatherIcon} icon="x-square" />}
+            onClick={() => setFieldValue('locationId', null)}
+            colorScheme="red"
+          />
         </HStack>
       </FormControl>
       <AddDeviceLocationModal
@@ -374,6 +391,8 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         isOpen={addDeviceLocationModalDisclosure.isOpen}
         onClose={addDeviceLocationModalDisclosure.onClose}
         title="Add device location"
+        locationList={locationList}
+        setLocationFieldValue={setFieldValue}
       />
       <FormControl>
         <FormLabel>Use blueprint?</FormLabel>
