@@ -7,6 +7,8 @@ import {
   Grid,
   GridItem,
   HStack,
+  Icon,
+  IconButton,
   Input,
   Select,
   Spacer,
@@ -17,7 +19,8 @@ import { useFormik } from 'formik';
 import React, { useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
-import { Editor, jsonParse } from '@frinx/shared';
+import { Autocomplete, Editor, jsonParse } from '@frinx/shared';
+import FeatherIcon from 'feather-icons-react';
 import parse from 'json-templates';
 import {
   DeviceBlueprintsQuery,
@@ -173,11 +176,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
     }
   };
 
-  const handleOnLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    handleChange(e);
-    setFieldValue('locationId', e.target.value);
-  };
-
   const blueprintParameters = parse(
     blueprints.find((blueprint) => blueprint.node.id === values.blueprintId)?.node.template ?? {},
   ).parameters.map(({ key }) => key);
@@ -188,6 +186,34 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
 
   const parsedMountParameters = jsonParse(values.mountParameters);
   const isMountParametersValid = parsedMountParameters != null && typeof parsedMountParameters === 'string';
+
+  const locationOptions = locations.map(({ node: location }) => ({
+    label: location.name,
+    value: location.name,
+  }));
+
+  const locationList = locations.map((l) => {
+    const { id, name, latitude, longitude } = l.node;
+    return {
+      id,
+      name,
+      latitude,
+      longitude,
+    };
+  });
+
+  const handleLocationChange = (locationName?: string | null) => {
+    if (locationName) {
+      const location = locationList.find((loc) => loc.name === locationName)?.id;
+      setFieldValue('locationId', location);
+    }
+  };
+
+  const location = locationList.find((loc) => loc.id === values.locationId);
+  const selectedLocation = {
+    label: location?.name || '',
+    value: location?.name || '',
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -342,27 +368,22 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
       <FormControl my={6}>
         <FormLabel>Location</FormLabel>
         <HStack>
-          <Select
-            data-cy="add-device-location"
-            name="locationId"
-            id="locationId"
-            placeholder="Select location"
+          <Autocomplete
+            items={locationOptions}
             onChange={(e) => {
-              handleOnLocationChange(e);
+              handleLocationChange(e?.value);
             }}
-            value={values.locationId}
-          >
-            {locations.map(({ node: location }) => {
-              return (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              );
-            })}
-          </Select>
+            selectedItem={selectedLocation}
+          />
           <Button onClick={addDeviceLocationModalDisclosure.onOpen} colorScheme="blue">
             +
           </Button>
+          <IconButton
+            aria-label="x-square"
+            icon={<Icon size={12} as={FeatherIcon} icon="x-square" />}
+            onClick={() => setFieldValue('locationId', null)}
+            colorScheme="red"
+          />
         </HStack>
       </FormControl>
       <AddDeviceLocationModal
@@ -370,6 +391,8 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         isOpen={addDeviceLocationModalDisclosure.isOpen}
         onClose={addDeviceLocationModalDisclosure.onClose}
         title="Add device location"
+        locationList={locationList}
+        setLocationFieldValue={setFieldValue}
       />
       <FormControl>
         <FormLabel>Use blueprint?</FormLabel>
