@@ -4359,7 +4359,12 @@ export type UpdateStreamMutationVariables = Exact<{
 
 export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
 
-export type LocationListQueryVariables = Exact<{ [key: string]: never; }>;
+export type LocationListQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
 export type LocationListQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, name: string, createdAt: string, updatedAt: string, latitude: number | null, longitude: number | null, country: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
