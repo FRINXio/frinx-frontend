@@ -84,7 +84,27 @@ export type SynceGraphNode = {
 };
 
 export type MplsGraphNodeDetails = {
-  wtf: string | null;
+  mplsData: MplsData[];
+  lspTunnels: LspTunnel[];
+};
+
+export type MplsData = {
+  lspId: string;
+  inputLabel: number | null;
+  inputInterface: string | null;
+  outputLabel: number | null;
+  outputInterface: string | null;
+  operState: string | null;
+  mplsOperation: string | null;
+  ldpPrefix: string | null;
+};
+
+export type LspTunnel = {
+  lspId: string;
+  fromDevice: string | null;
+  toDevice: string | null;
+  signalization: string | null;
+  uptime: number | null;
 };
 
 export type MplsGraphNode = {
@@ -93,7 +113,7 @@ export type MplsGraphNode = {
   nodeId: string;
   interfaces: GraphMplsNodeInterface[];
   coordinates: Position;
-  // details: MplsGraphNodeDetails;
+  details: MplsGraphNodeDetails;
   status: string;
 };
 
