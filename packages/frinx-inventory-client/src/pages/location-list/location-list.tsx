@@ -18,10 +18,10 @@ import {
   useDisclosure,
   chakra,
 } from '@chakra-ui/react';
-import { ConfirmDeleteModal, getLocalDateFromUTC, Pagination, useNotifications, usePagination } from '@frinx/shared';
+import { ConfirmDeleteModal, getLocalDateFromUTC, Pagination, usePagination } from '@frinx/shared';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
   AddLocationMutation,
@@ -39,9 +39,9 @@ import AddDeviceLocationModal, { FormValues } from '../../components/add-device-
 import { LocationData } from '../create-device/create-device-page';
 
 const LOCATION_LIST_QUERY = gql`
-  query LocationList {
+  query LocationList($first: Int, $last: Int, $after: String, $before: String) {
     deviceInventory {
-      locations {
+      locations(first: $first, last: $last, after: $after, before: $before) {
         edges {
           node {
             id
@@ -103,10 +103,14 @@ const DELETE_LOCATION_MUTATION = gql`
 const Form = chakra('form');
 
 const LocationList: VoidFunctionComponent = () => {
-  const { addToastNotification } = useNotifications();
+  const context = useMemo(() => ({ additionalTypenames: ['Location'] }), []);
+  const [paginationArgs, { nextPage, previousPage }] = usePagination();
   const [{ data: locationQData, error }] = useQuery<LocationListQuery, LocationListQueryVariables>({
     query: LOCATION_LIST_QUERY,
-    requestPolicy: 'network-only',
+    variables: {
+      ...paginationArgs,
+    },
+    context,
   });
   const [, addLocation] = useMutation<AddLocationMutation, AddLocationMutationVariables>(ADD_LOCATION_MUTATION);
   const [, updateLocation] = useMutation<UpdateLocationMutation, UpdateLocationMutationVariables>(
@@ -121,7 +125,6 @@ const LocationList: VoidFunctionComponent = () => {
   const editLocationModalDisclosure = useDisclosure();
   const deleteModalDisclosure = useDisclosure();
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
-  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
   const [locationToEdit, setLocationToEdit] = useState<FormValues>();
 
   const handleMapBtnClick = (deviceLocation: LocationModal | null) => {
@@ -169,17 +172,6 @@ const LocationList: VoidFunctionComponent = () => {
     return null;
   }
   const { locations } = locationQData.deviceInventory;
-  const locationList = locations.edges.map((l) => {
-    const { id, name, latitude, longitude } = l.node;
-    return {
-      id,
-      name,
-      latitude,
-      longitude,
-    };
-  });
-
-  const buttonProps = addLocationModalDisclosure.getButtonProps();
 
   return (
     <>

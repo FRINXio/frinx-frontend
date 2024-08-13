@@ -67,6 +67,8 @@ const AddDeviceLocationModal: FC<Props> = ({
   const [shouldFlyTo, setShouldFlyTo] = useState(false);
   const INITIAL_VALUES = { name: '', latitude: '', longitude: '' };
 
+  const [parsedMapPosition, setParsedMapPosition] = useState<LatLngTuple>([0, 0]);
+
   const { values, handleSubmit, resetForm, handleChange, errors, setFieldValue } = useFormik<FormValues>({
     enableReinitialize: true,
     initialValues: initialLocation ?? INITIAL_VALUES,
@@ -89,6 +91,13 @@ const AddDeviceLocationModal: FC<Props> = ({
       onClose();
     },
   });
+
+  useEffect(() => {
+    if (values.latitude && values.longitude) {
+      setShouldFlyTo(true);
+      setParsedMapPosition([parseFloat(values.latitude), parseFloat(values.longitude)]);
+    }
+  }, [values]);
 
   useEffect(() => {
     const locationId = locationList.find((loc) => loc.name === values.name)?.id;
@@ -130,7 +139,6 @@ const AddDeviceLocationModal: FC<Props> = ({
 
     return null;
   };
-  const parsedMapPosition: LatLngTuple = [parseFloat(values.latitude) || 0, parseFloat(values.longitude) || 0];
 
   return (
     <AlertDialog isOpen={isOpen} onClose={handleCancel} leastDestructiveRef={cancelRef}>
