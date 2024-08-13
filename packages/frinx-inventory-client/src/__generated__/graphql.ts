@@ -4364,6 +4364,14 @@ export type LocationListQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type LocationListQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, name: string, createdAt: string, updatedAt: string, latitude: number | null, longitude: number | null, country: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
+export type UpdateLocationMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateLocationInput;
+}>;
+
+
+export type UpdateLocationMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateLocation: { __typename?: 'UpdateLocationPayload', location: { __typename?: 'Location', id: string } } } };
+
 export type DeleteLocationMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;

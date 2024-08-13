@@ -61,12 +61,14 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({ onClose, locationModal
                       {locationModal.title ?? locationModal.location.name}
                     </Heading>
                   </Box>
-                  {locationModal.title && <Box mt={2}>
-                    <Heading as="h4" fontSize="xs">
-                      Location name
-                    </Heading>
-                    {locationModal.location.name ?? '-'}
-                  </Box>}
+                  {locationModal.title && (
+                    <Box mt={2}>
+                      <Heading as="h4" fontSize="xs">
+                        Location name
+                      </Heading>
+                      {locationModal.location.name ?? '-'}
+                    </Box>
+                  )}
                   <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Latitude

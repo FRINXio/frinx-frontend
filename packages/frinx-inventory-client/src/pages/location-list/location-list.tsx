@@ -28,11 +28,14 @@ import {
   AddLocationMutationVariables,
   DeleteLocationMutation,
   DeleteLocationMutationVariables,
+  Location,
   LocationListQuery,
   LocationListQueryVariables,
+  UpdateLocationMutation,
+  UpdateLocationMutationVariables,
 } from '../../__generated__/graphql';
 import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
-import AddDeviceLocationModal from '../../components/add-device-location-modal';
+import AddDeviceLocationModal, { FormValues } from '../../components/add-device-location-modal';
 import { LocationData } from '../create-device/create-device-page';
 
 const LOCATION_LIST_QUERY = gql`
@@ -73,6 +76,18 @@ const ADD_LOCATION_MUTATION = gql`
   }
 `;
 
+const UPDATE_LOCATION_MUTATION = gql`
+  mutation UpdateLocation($id: String!, $input: UpdateLocationInput!) {
+    deviceInventory {
+      updateLocation(id: $id, input: $input) {
+        location {
+          id
+        }
+      }
+    }
+  }
+`;
+
 const DELETE_LOCATION_MUTATION = gql`
   mutation DeleteLocation($id: String!) {
     deviceInventory {
@@ -94,16 +109,40 @@ const LocationList: VoidFunctionComponent = () => {
     requestPolicy: 'network-only',
   });
   const [, addLocation] = useMutation<AddLocationMutation, AddLocationMutationVariables>(ADD_LOCATION_MUTATION);
-  const [, deleteLocation] = useMutation<DeleteLocationMutation, DeleteLocationMutationVariables>(DELETE_LOCATION_MUTATION);
+  const [, updateLocation] = useMutation<UpdateLocationMutation, UpdateLocationMutationVariables>(
+    UPDATE_LOCATION_MUTATION,
+  );
+  const [, deleteLocation] = useMutation<DeleteLocationMutation, DeleteLocationMutationVariables>(
+    DELETE_LOCATION_MUTATION,
+  );
 
   const [locationToShowOnMap, setLocationToShowOnMap] = useState<LocationModal | null>(null);
   const addLocationModalDisclosure = useDisclosure();
+  const editLocationModalDisclosure = useDisclosure();
   const deleteModalDisclosure = useDisclosure();
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
+  const [locationToEdit, setLocationToEdit] = useState<FormValues>();
 
-  const handleLocationMapBtnClick = (deviceLocation: LocationModal | null) => {
+  const handleMapBtnClick = (deviceLocation: LocationModal | null) => {
     setLocationToShowOnMap(deviceLocation);
+  };
+
+  const handleEditBtnClick = (location: Location) => {
+    if (location.latitude && location.longitude) {
+      setLocationToEdit({
+        id: location.id,
+        name: location.name,
+        latitude: location.latitude.toString(),
+        longitude: location.longitude.toString(),
+      });
+      editLocationModalDisclosure.onOpen();
+    }
+  };
+
+  const handleDeleteBtnClick = (id: string) => {
+    setLocationIdToDelete(id);
+    deleteModalDisclosure.onOpen();
   };
 
   const handleAddLocation = (locationData: LocationData) => {
@@ -112,35 +151,35 @@ const LocationList: VoidFunctionComponent = () => {
     });
   };
 
-  const handleDeleteBtnClick = (id: string) => {
-    setLocationIdToDelete(id);
-    deleteModalDisclosure.onOpen();
+  const handleEditLocation = (id: string, locationData: LocationData) => {
+    updateLocation({
+      id: id,
+      input: locationData,
+    });
   };
 
-  const deleteLocation2 = async () => {
+  const handleLocationDelete = () => {
     if (locationIdToDelete) {
-      const { data: responseData, error: responseError } = await deleteLocation({ id: locationIdToDelete });
-
-      console.log(responseError);
-  
-      if (responseError != null) {
-        addToastNotification({
-          type: 'error',
-          title: 'Error',
-          content: 'Failed to delete location',
-        });
-      }
+      deleteLocation({ id: locationIdToDelete });
     }
-  };
-
-  const handleLocationDelete = async () => {
-    deleteLocation2().finally(() => deleteModalDisclosure.onClose());
+    deleteModalDisclosure.onClose();
   };
 
   if (locationQData == null || error != null) {
     return null;
   }
   const { locations } = locationQData.deviceInventory;
+  const locationList = locations.edges.map((l) => {
+    const { id, name, latitude, longitude } = l.node;
+    return {
+      id,
+      name,
+      latitude,
+      longitude,
+    };
+  });
+
+  const buttonProps = addLocationModalDisclosure.getButtonProps();
 
   return (
     <>
@@ -157,6 +196,17 @@ const LocationList: VoidFunctionComponent = () => {
         isOpen={addLocationModalDisclosure.isOpen}
         onClose={addLocationModalDisclosure.onClose}
         title="Add location"
+        locationList={[]}
+        setLocationFieldValue={() => {}}
+      />
+      <AddDeviceLocationModal
+        isOpen={editLocationModalDisclosure.isOpen}
+        onClose={editLocationModalDisclosure.onClose}
+        title="Edit location"
+        locationList={[]}
+        setLocationFieldValue={() => {}}
+        initialLocation={locationToEdit}
+        onEditLocation={handleEditLocation}
       />
       <ConfirmDeleteModal
         isOpen={deleteModalDisclosure.isOpen}
@@ -164,16 +214,15 @@ const LocationList: VoidFunctionComponent = () => {
         onConfirmBtnClick={handleLocationDelete}
         title="Delete location"
       >
-      Are you sure? You can&apos;t undo this action afterwards.
-    </ConfirmDeleteModal>
+        Are you sure? You can&apos;t undo this action afterwards.
+      </ConfirmDeleteModal>
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
             Locations
           </Heading>
           <HStack spacing={2} marginLeft="auto">
-            <Button data-cy="add-location" colorScheme="blue"
-              onClick={addLocationModalDisclosure.onOpen}>
+            <Button data-cy="add-location" colorScheme="blue" onClick={addLocationModalDisclosure.onOpen}>
               Add Location
             </Button>
           </HStack>
@@ -217,14 +266,10 @@ const LocationList: VoidFunctionComponent = () => {
                       </Tooltip>
                     </Td>
                     <Td>
-                      <Text as="span">
-                        {location.latitude}
-                      </Text>
+                      <Text as="span">{location.latitude}</Text>
                     </Td>
                     <Td>
-                      <Text as="span">
-                        {location.longitude}
-                      </Text>
+                      <Text as="span">{location.longitude}</Text>
                     </Td>
                     <Td>
                       <HStack spacing={2}>
@@ -233,7 +278,7 @@ const LocationList: VoidFunctionComponent = () => {
                             size="sm"
                             aria-label="Map"
                             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
-                            onClick={() => handleLocationMapBtnClick({ location: location })}
+                            onClick={() => handleMapBtnClick({ location: location })}
                           />
                         </Tooltip>
                         <Tooltip label="Edit">
@@ -242,7 +287,7 @@ const LocationList: VoidFunctionComponent = () => {
                             aria-label="Edit"
                             icon={<Icon as={FeatherIcon} icon="edit" size={20} />}
                             onClick={() => {
-                              // setSelectedTransaction(transaction);
+                              handleEditBtnClick(location);
                             }}
                           />
                         </Tooltip>
