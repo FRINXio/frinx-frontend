@@ -16,7 +16,6 @@ import {
   HStack,
   Button,
   useDisclosure,
-  chakra,
 } from '@chakra-ui/react';
 import { ConfirmDeleteModal, getLocalDateFromUTC, Pagination, usePagination } from '@frinx/shared';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -100,8 +99,6 @@ const DELETE_LOCATION_MUTATION = gql`
   }
 `;
 
-const Form = chakra('form');
-
 const LocationList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Location'] }), []);
   const [paginationArgs, { nextPage, previousPage }] = usePagination();
@@ -156,7 +153,7 @@ const LocationList: VoidFunctionComponent = () => {
 
   const handleEditLocation = (id: string, locationData: LocationData) => {
     updateLocation({
-      id: id,
+      id,
       input: locationData,
     });
   };
@@ -270,7 +267,7 @@ const LocationList: VoidFunctionComponent = () => {
                             size="sm"
                             aria-label="Map"
                             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
-                            onClick={() => handleMapBtnClick({ location: location })}
+                            onClick={() => handleMapBtnClick({ location })}
                           />
                         </Tooltip>
                         <Tooltip label="Edit">
