@@ -21,7 +21,7 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 import { LocationData } from '../pages/create-device/create-device-page';
 
 type Props = {
-  onAddDeviceLocation: (locationData: LocationData) => void;
+  onAddDeviceLocation?: (locationData: LocationData) => void;
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -32,13 +32,16 @@ type Props = {
     name: string;
   }[];
   setLocationFieldValue: (field: 'locationId', value: string) => void;
+  initialLocation?: FormValues;
+  onEditLocation?: (id: string, locationData: LocationData) => void;
 };
 
 type MapUpdaterProps = {
   position: LatLngTuple;
 };
 
-type FormValues = {
+export type FormValues = {
+  id?: string;
   name: string;
   latitude: string;
   longitude: string;
@@ -57,13 +60,18 @@ const AddDeviceLocationModal: FC<Props> = ({
   onAddDeviceLocation,
   setLocationFieldValue,
   locationList,
+  initialLocation,
+  onEditLocation,
 }) => {
   const cancelRef = useRef<HTMLElement | null>(null);
   const [shouldFlyTo, setShouldFlyTo] = useState(false);
   const INITIAL_VALUES = { name: '', latitude: '', longitude: '' };
 
+  const [parsedMapPosition, setParsedMapPosition] = useState<LatLngTuple>([0, 0]);
+
   const { values, handleSubmit, resetForm, handleChange, errors, setFieldValue } = useFormik<FormValues>({
-    initialValues: INITIAL_VALUES,
+    enableReinitialize: true,
+    initialValues: initialLocation ?? INITIAL_VALUES,
     validationSchema: AddLocationSchema,
     onSubmit: (data) => {
       const locationInput = {
@@ -73,10 +81,23 @@ const AddDeviceLocationModal: FC<Props> = ({
           longitude: parseFloat(data.longitude.toString()),
         },
       };
-      onAddDeviceLocation(locationInput);
+      if (onEditLocation) {
+        if (initialLocation?.id) {
+          onEditLocation(initialLocation.id, locationInput);
+        }
+      } else if (onAddDeviceLocation) {
+        onAddDeviceLocation(locationInput);
+      }
       onClose();
     },
   });
+
+  useEffect(() => {
+    if (values.latitude && values.longitude) {
+      setShouldFlyTo(true);
+      setParsedMapPosition([parseFloat(values.latitude), parseFloat(values.longitude)]);
+    }
+  }, [values]);
 
   useEffect(() => {
     const locationId = locationList.find((loc) => loc.name === values.name)?.id;
@@ -118,7 +139,6 @@ const AddDeviceLocationModal: FC<Props> = ({
 
     return null;
   };
-  const parsedMapPosition: LatLngTuple = [parseFloat(values.latitude) || 0, parseFloat(values.longitude) || 0];
 
   return (
     <AlertDialog isOpen={isOpen} onClose={handleCancel} leastDestructiveRef={cancelRef}>
@@ -180,7 +200,7 @@ const AddDeviceLocationModal: FC<Props> = ({
                   Cancel
                 </Button>
                 <Button data-cy="device-confirm-delete" colorScheme="blue" type="submit" marginLeft={4}>
-                  Add
+                  {initialLocation ? 'Save changes' : 'Add'}
                 </Button>
               </Flex>
             </form>

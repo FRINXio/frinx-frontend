@@ -1116,7 +1116,10 @@ export type MplsData = {
   __typename?: 'MplsData';
   inputInterface: Maybe<Scalars['String']['output']>;
   inputLabel: Maybe<Scalars['Int']['output']>;
+  ldpPrefix: Maybe<Scalars['String']['output']>;
   lspId: Scalars['String']['output'];
+  mplsOperation: Maybe<Scalars['String']['output']>;
+  operState: Maybe<Scalars['String']['output']>;
   outputInterface: Maybe<Scalars['String']['output']>;
   outputLabel: Maybe<Scalars['Int']['output']>;
 };
@@ -4355,6 +4358,31 @@ export type UpdateStreamMutationVariables = Exact<{
 
 
 export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
+
+export type LocationListQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type LocationListQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', locations: { __typename?: 'LocationConnection', edges: Array<{ __typename?: 'LocationEdge', node: { __typename?: 'Location', id: string, name: string, createdAt: string, updatedAt: string, latitude: number | null, longitude: number | null, country: string | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
+
+export type UpdateLocationMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateLocationInput;
+}>;
+
+
+export type UpdateLocationMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateLocation: { __typename?: 'UpdateLocationPayload', location: { __typename?: 'Location', id: string } } } };
+
+export type DeleteLocationMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteLocationMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', deleteLocation: { __typename?: 'DeleteLocationPayload', location: { __typename?: 'Location', id: string } } } };
 
 export type StreamsQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
