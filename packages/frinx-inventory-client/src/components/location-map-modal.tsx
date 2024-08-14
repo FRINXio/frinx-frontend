@@ -12,8 +12,9 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
-import { Marker as MarkerType } from 'leaflet';
+import L, { Marker as MarkerType } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { DEFAULT_ICON } from '../helpers/map';
 
 export type LocationModal = {
   title?: string;
@@ -54,6 +55,7 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({ onClose, locationModal
                   setMarkerRef(el);
                 }}
                 position={[locationModal.location.latitude, locationModal.location.longitude]}
+                icon={DEFAULT_ICON}
               >
                 <Popup>
                   <Box mt={2}>

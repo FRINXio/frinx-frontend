@@ -5,10 +5,8 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Box, Heading } from '@chakra-ui/react';
 import { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
 import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
-import { defaultMarkerIcon } from '../../../helpers/map-marker-helper';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
-
-const markerIcon = defaultMarkerIcon();
+import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 
 const GEOMAP_DATA_QUERY = gql`
   query GeoMapDataQuery {
@@ -61,7 +59,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                 <Marker
                   position={[node.geolocation.latitude, node.geolocation.longitude]}
                   key={node?.id}
-                  icon={markerIcon}
+                  icon={DEFAULT_ICON}
                 >
                   <Popup>
                     <Box mt={2}>
