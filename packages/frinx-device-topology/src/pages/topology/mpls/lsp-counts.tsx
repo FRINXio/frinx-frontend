@@ -1,27 +1,8 @@
-import { chakra } from '@chakra-ui/react';
-import { partition } from 'lodash';
-import React, { useEffect, useRef, useState, VoidFunctionComponent } from 'react';
-import { getEdgeColor } from '../../../components/edge/edge.helpers';
-import { getMplsInterfaceNodeColor, GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
-import { setSelectedEdge } from '../../../state.actions';
+import React, { VoidFunctionComponent } from 'react';
+import { GraphEdgeWithDiff } from '../../../helpers/topology-helpers';
 import { useStateContext } from '../../../state.provider';
-import {
-  getControlPoints,
-  getCurvePath,
-  getLinePoints,
-  getNameFromNode,
-  isGmPathPredicate,
-  isTargetingActiveNode,
-  LspCount,
-  Position,
-} from '../graph.helpers';
+import { getLinePoints, getNameFromNode, isTargetingActiveNode, LspCount } from '../graph.helpers';
 import LspCountItem from './lsp-count-item';
-import MplsEdge from './mpls-edge';
-
-const EDGE_GAP = 75;
-const G = chakra('g');
-const Circle = chakra('circle');
-const Text = chakra('text');
 
 type Props = {
   edges: GraphEdgeWithDiff[];
@@ -29,51 +10,19 @@ type Props = {
 };
 
 const LspCounts: VoidFunctionComponent<Props> = ({ edges, lspCounts }) => {
-  const edgeRef = useRef<SVGPathElement>(null);
-  const [incomingPosition, setIncomingPosition] = useState<Position | null>(null);
-  const [outcomingPosition, setOutcomingPosition] = useState<Position | null>(null);
-  const { state, dispatch } = useStateContext();
+  const { state } = useStateContext();
   const {
-    // mplsNodes,
     connectedNodeIds,
     selectedNode,
     mplsNodePositions: nodePositions,
     mplsInterfaceGroupPositions: interfaceGroupPositions,
-    gmPathIds,
   } = state;
-
-  const [gmEdges, nonGmEdges] = partition(edges, (edge) => isGmPathPredicate(gmPathIds, edge));
-  const sortedSynceEdges = [...nonGmEdges, ...gmEdges];
-
-  // useEffect(() => {
-  //   console.log(edgeRef);
-  //   if (edgeRef.current) {
-  //     const path = edgeRef.current;
-  //     const totalLength = path.getTotalLength();
-  //     console.log('total length: ', totalLength);
-
-  //     const incomingDomPoint = path.getPointAtLength(totalLength / 2);
-  //     setIncomingPosition({
-  //       x: incomingDomPoint.x,
-  //       y: incomingDomPoint.y,
-  //     });
-
-  //     const outcomingDomPoint = path.getPointAtLength((totalLength / 4) * 3);
-  //     setOutcomingPosition({
-  //       x: outcomingDomPoint.x,
-  //       y: outcomingDomPoint.y,
-  //     });
-  //   }
-  // }, [selectedNode]);
-
-  console.log('edges: ', edges);
-  console.log('lsp counts: ', lspCounts);
 
   const activeEdges = edges.filter((e) =>
     isTargetingActiveNode(e, getNameFromNode(selectedNode), interfaceGroupPositions),
   );
 
-  console.log('activeEdges: ', activeEdges);
+  const lspCountsMap = new Map(lspCounts.map((c) => [c.deviceName, c]));
 
   return (
     <g>
@@ -85,16 +34,12 @@ const LspCounts: VoidFunctionComponent<Props> = ({ edges, lspCounts }) => {
           interfaceGroupPositions,
         });
 
-        if (!linePoints) {
+        const lspCount = lspCountsMap.get(edge.source.nodeId) ?? null;
+        if (!linePoints || !lspCount) {
           return null;
         }
 
-        const { start, end } = linePoints;
-        console.log('path', start, end);
-
-        return (
-          <LspCountItem key={`lsp-count-item-${edge.id}`} edge={edge} linePoints={linePoints} lspCounts={lspCounts} />
-        );
+        return <LspCountItem key={`lsp-count-item-${edge.id}`} linePoints={linePoints} lspCount={lspCount} />;
       })}
     </g>
   );

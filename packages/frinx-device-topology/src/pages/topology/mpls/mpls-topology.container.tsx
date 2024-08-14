@@ -1,13 +1,7 @@
 import { omitNullValue } from '@frinx/shared';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
-import {
-  findGmPath,
-  getSynceBackupNodesAndEdges,
-  getMplsNodesAndEdges,
-  setMode,
-  setLspCounts,
-} from '../../../state.actions';
+import { getSynceBackupNodesAndEdges, getMplsNodesAndEdges, setMode, setLspCounts } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
   GetMplsLspCountQuery,
@@ -52,10 +46,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     UPDATE_POSITION_MUTATION,
   );
 
-  const [{ data: lspCountData, fetching: isLspCountFetching }] = useQuery<
-    GetMplsLspCountQuery,
-    GetMplsLspCountQueryVariables
-  >({
+  const [{ data: lspCountData }] = useQuery<GetMplsLspCountQuery, GetMplsLspCountQueryVariables>({
     query: GET_MPLS_LPS_COUNT,
     requestPolicy: 'network-only',
     variables: {
@@ -73,13 +64,13 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
         .filter(omitNullValue)
         .map(getLspCounts) ?? [];
     dispatch(setLspCounts(lspCounts));
-  }, [dispatch, selectedNode]);
+  }, [dispatch, lspCountData]);
 
   useEffect(() => {
     if (selectedVersion == null) {
-      // intervalRef.current = window.setInterval(() => {
-      //   dispatch(getMplsNodesAndEdges(client));
-      // }, 10000);
+      intervalRef.current = window.setInterval(() => {
+        dispatch(getMplsNodesAndEdges(client));
+      }, 10000);
       dispatch(getMplsNodesAndEdges(client));
     }
 
@@ -139,17 +130,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     };
   }, [handleKeyDown, handleKeyUp]);
 
-  const handleSearchClick = () => {
-    dispatch(findGmPath());
-  };
-
-  return (
-    <MplsTopologyGraph
-      onNodePositionUpdate={handleNodePositionUpdate}
-      // onGrandMasterPathSearch={handleSearchClick}
-      isLspCountFetching={isLspCountFetching}
-    />
-  );
+  return <MplsTopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />;
 };
 
 export default MplsTopologyContainer;

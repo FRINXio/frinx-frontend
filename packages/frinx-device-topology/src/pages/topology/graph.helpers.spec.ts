@@ -57,10 +57,18 @@ describe('graph helpers', () => {
     expect(distance).toBeCloseTo(1.414);
   });
   test('test get point at length', () => {
-    const source = { x: 0, y: 0 };
-    const target = { x: 2, y: 2 };
-    const { x, y } = getPointAtLength({ start: source, end: target }, 0.5);
-    expect(x).toBeCloseTo(1);
-    expect(y).toBeCloseTo(1);
+    const source = { x: 5, y: 5 };
+    const target = { x: 3, y: 3 };
+    const { x: x1, y: y1 } = getPointAtLength({ start: source, end: target }, 0.5);
+    expect(x1).toBeCloseTo(4);
+    expect(y1).toBeCloseTo(4);
+
+    const { x: x2, y: y2 } = getPointAtLength({ start: source, end: target }, 0.1);
+    expect(x2).toBeCloseTo(4.8);
+    expect(y2).toBeCloseTo(4.8);
+
+    const { x: x3, y: y3 } = getPointAtLength({ start: source, end: target }, 0.9);
+    expect(x3).toBeCloseTo(3.2);
+    expect(y3).toBeCloseTo(3.2);
   });
 });

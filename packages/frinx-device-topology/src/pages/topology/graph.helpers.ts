@@ -199,7 +199,7 @@ export type GraphMplsNodeInterface = {
 
 export type LspCount = {
   deviceName: string;
-  inconmingLsps: number;
+  incomingLsps: number;
   outcomingLsps: number;
 };
 
@@ -500,7 +500,7 @@ export function normalizeNodeInterfaceData<
 export function getLspCounts(input: MplsLspCountItem): LspCount {
   return {
     deviceName: input.target ?? '',
-    inconmingLsps: input.incomingLsps ?? 0,
+    incomingLsps: input.incomingLsps ?? 0,
     outcomingLsps: input.outcomingLsps ?? 0,
   };
 }
@@ -509,10 +509,8 @@ export function getLspCounts(input: MplsLspCountItem): LspCount {
 export function getPointAtLength(line: Line, distance: number): Position {
   const { start, end } = line;
   const length = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
-  console.log('length: ', length);
   const x = start.x + ((distance * length) / length) * (end.x - start.x);
   const y = start.y + ((distance * length) / length) * (end.y - start.y);
-  console.log('getPointAtLength: ', line, x, y);
   return {
     x,
     y,

@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
-import { clearGmPathSearch, setSelectedNode, updateMplsNodePosition } from '../../../state.actions';
+import { setSelectedNode, updateMplsNodePosition } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './mpls-edges';
 import { height, Position, width, MplsGraphNode } from '../graph.helpers';
@@ -11,11 +11,10 @@ import MplsInfoPanel from './mpls-info-panel';
 import LspCounts from './lsp-counts';
 
 type Props = {
-  isLspCountFetching: boolean;
   onNodePositionUpdate: (positions: { deviceName: string; position: Position }[]) => Promise<void>;
 };
 
-const MplsTopologyGraph: VoidFunctionComponent<Props> = ({ isLspCountFetching, onNodePositionUpdate }) => {
+const MplsTopologyGraph: VoidFunctionComponent<Props> = ({ onNodePositionUpdate }) => {
   const { state, dispatch } = useStateContext();
   const lastPositionRef = useRef<{ deviceName: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
@@ -49,8 +48,6 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({ isLspCountFetching, o
   const handleInfoPanelClose = () => {
     dispatch(setSelectedNode(null));
   };
-
-  console.log('lsp counts container', lspCounts);
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
