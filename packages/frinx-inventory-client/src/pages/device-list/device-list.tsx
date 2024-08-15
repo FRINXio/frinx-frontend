@@ -66,7 +66,7 @@ import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
 import WorkflowListModal from './workflow-list-modal';
-import DeviceMapModal, { DeviceLocation } from './device-map-modal';
+import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
 
 const DEVICES_QUERY = gql`
   query Devices(
@@ -353,7 +353,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
 
-  const [deviceToShowOnMap, setDeviceToShowOnMap] = useState<DeviceLocation | null>(null);
+  const [deviceToShowOnMap, setDeviceToShowOnMap] = useState<LocationModal | null>(null);
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
 
@@ -651,7 +651,7 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
-  const handleDeviceMapBtnClick = (deviceLocation: DeviceLocation | null) => {
+  const handleDeviceMapBtnClick = (deviceLocation: LocationModal | null) => {
     setDeviceToShowOnMap(deviceLocation);
   };
 
@@ -817,8 +817,8 @@ const DeviceList: VoidFunctionComponent = () => {
         />
       )}
       {deviceToShowOnMap != null && (
-        <DeviceMapModal
-          deviceLocation={deviceToShowOnMap}
+        <LocationMapModal
+          locationModal={deviceToShowOnMap}
           onClose={() => {
             setDeviceToShowOnMap(null);
           }}

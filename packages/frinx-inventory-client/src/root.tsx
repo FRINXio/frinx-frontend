@@ -13,6 +13,7 @@ import EditStreamPage from './pages/edit-stream/edit-stream-page';
 import StreamList from './pages/stream-list/stream-list';
 import TransactionList from './pages/transaction-list/transaction-list';
 import UniconfigShellPage from './pages/uniconfig-shell/uniconfig-shell-page';
+import LocationList from './pages/location-list/location-list';
 
 const Root: VoidFunctionComponent = () => {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ const Root: VoidFunctionComponent = () => {
         />
 
         <Route path="transactions" element={<TransactionList />} />
+        <Route path="locations" element={<LocationList />} />
         <Route path="shell" element={<UniconfigShellPage />} />
       </Routes>
     </Suspense>
