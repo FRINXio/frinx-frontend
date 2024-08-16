@@ -65,7 +65,6 @@ const MAX_ZOOM_LEVEL = 20;
 export type State = {
   topologyLayer: TopologyLayer;
   mapTopologyType: MapTopologyType;
-  popupDeviceName: string | null;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
@@ -118,7 +117,6 @@ export type State = {
 export const initialState: State = {
   topologyLayer: 'LLDP',
   mapTopologyType: null,
-  popupDeviceName: null,
   mode: 'NORMAL',
   nodes: [],
   edges: [],
