@@ -93,9 +93,6 @@ export type MapTopologyType =
   | 'MplsTopology'
   | null;
 
-export type MarkerRefs = { [deviceName: string]: LeafletMarker | null };
-export type MarkerRef = { deviceName: string; markerRef: LeafletMarker };
-
 export type StateAction =
   | {
       type: 'SET_NODES_AND_EDGES';
