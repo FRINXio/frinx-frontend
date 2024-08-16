@@ -31,7 +31,6 @@ const GEOMAP_DATA_QUERY = gql`
 const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   const { state } = useStateContext();
   const { mapTopologyType } = state;
-  const markersRef = useRef<{ [key: string]: LeafletMarker | null }>({});
 
   // const [center, setCenter] = useState(DEFAULT_MAP_CENTER);
   const map = useMap();
