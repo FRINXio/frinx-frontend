@@ -30,7 +30,7 @@ const GEOMAP_DATA_QUERY = gql`
 // Do not export this component
 const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   const { state } = useStateContext();
-  const { mapTopologyType, popupDeviceName } = state;
+  const { mapTopologyType } = state;
   const markersRef = useRef<{ [key: string]: LeafletMarker | null }>({});
 
   // const [center, setCenter] = useState(DEFAULT_MAP_CENTER);
@@ -52,15 +52,6 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
       map.flyToBounds(bounds);
     }
   }, [deviceData, map]);
-
-  useEffect(() => {
-    if (popupDeviceName && markersRef.current[popupDeviceName]) {
-      const marker = markersRef.current[popupDeviceName];
-      if (marker) {
-        marker.openPopup();
-      }
-    }
-  }, [popupDeviceName]);
 
   return (
     <>
