@@ -1,6 +1,5 @@
 import { omitNullValue } from '@frinx/shared';
 import { Client, gql } from 'urql';
-import { Marker as LeafletMarker } from 'leaflet';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
 import {
   BackupGraphNode,
