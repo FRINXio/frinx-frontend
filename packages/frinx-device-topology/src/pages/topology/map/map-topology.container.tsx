@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, VoidFunctionComponent } from 'react';
+import React, { useEffect, VoidFunctionComponent } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { gql, useQuery } from 'urql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Box, Heading } from '@chakra-ui/react';
-import { LatLngBoundsLiteral, LatLngTuple, Marker as LeafletMarker } from 'leaflet';
+import { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
 import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
 import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
