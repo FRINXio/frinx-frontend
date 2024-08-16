@@ -1,7 +1,8 @@
-import { Badge, Box, Button, Divider, Flex, Heading, HStack } from '@chakra-ui/react';
+import { Badge, Box, Button, Divider, Flex, Heading, HStack, IconButton, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { setSelectedEdge } from '../../../state.actions';
+import { setMapTopologyType, setSelectedEdge, setTopologyLayer } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { GraphSynceNodeInterface, normalizeNodeInterfaceData, SynceGraphNode } from '../graph.helpers';
 import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
@@ -32,6 +33,11 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const handleClose = () => {
     onClose();
     setActiveInterface(null);
+  };
+
+  const handleShowDeviceOnMap = () => {
+    dispatch(setTopologyLayer('Map'));
+    dispatch(setMapTopologyType('NetworkTopology'));
   };
 
   return (
@@ -76,18 +82,25 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             );
           })}
         </Box>
-        <Button
-          marginTop={4}
-          aria-label="show additional"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setIsShowingAdditionalInfo((prev) => !prev);
-          }}
-        >
-          Additional info
-        </Button>
+
         <HStack spacing={2} marginTop={4}>
+          <Button
+            aria-label="show additional"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsShowingAdditionalInfo((prev) => !prev);
+            }}
+          >
+            Additional info
+          </Button>
+          <IconButton
+            size="sm"
+            aria-label="Map"
+            icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+            onClick={handleShowDeviceOnMap}
+            colorScheme="blue"
+          />
           <Button size="sm" onClick={handleClose}>
             Close
           </Button>

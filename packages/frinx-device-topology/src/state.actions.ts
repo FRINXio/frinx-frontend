@@ -1,5 +1,6 @@
 import { omitNullValue } from '@frinx/shared';
 import { Client, gql } from 'urql';
+import { Marker as LeafletMarker } from 'leaflet';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
 import {
   BackupGraphNode,
@@ -83,6 +84,17 @@ export type SetDeviceUsagePayload = {
 };
 
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
+
+export type MapTopologyType =
+  | 'PhysicalTopology'
+  | 'PtpTopology'
+  | 'EthTopology'
+  | 'NetworkTopology'
+  | 'MplsTopology'
+  | null;
+
+export type MarkerRefs = { [deviceName: string]: LeafletMarker | null };
+export type MarkerRef = { deviceName: string; markerRef: LeafletMarker };
 
 export type StateAction =
   | {
@@ -174,6 +186,10 @@ export type StateAction =
   | {
       type: 'SET_TOPOLOGY_LAYER';
       layer: TopologyLayer;
+    }
+  | {
+      type: 'SET_MAP_TOPOLOGY_TYPE';
+      mapTopologyType: MapTopologyType;
     }
   | {
       type: 'SET_SELECTED_NET_NODE';
@@ -1064,6 +1080,13 @@ export function setTopologyLayer(layer: TopologyLayer): StateAction {
   return {
     type: 'SET_TOPOLOGY_LAYER',
     layer,
+  };
+}
+
+export function setMapTopologyType(mapTopologyType: MapTopologyType): StateAction {
+  return {
+    type: 'SET_MAP_TOPOLOGY_TYPE',
+    mapTopologyType,
   };
 }
 

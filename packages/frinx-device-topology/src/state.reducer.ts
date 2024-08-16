@@ -41,10 +41,11 @@ import {
   scale,
   getZoomLevel,
 } from './pages/topology/transform.helpers';
-import { LabelItem, StateAction, TopologyMode } from './state.actions';
+import { LabelItem, StateAction, TopologyMode, MapTopologyType } from './state.actions';
 import { NetInterface, NetNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'MPLS' | 'Synchronous Ethernet' | 'Map';
+
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -63,6 +64,8 @@ const MAX_ZOOM_LEVEL = 20;
 
 export type State = {
   topologyLayer: TopologyLayer;
+  mapTopologyType: MapTopologyType;
+  popupDeviceName: string | null;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
@@ -114,6 +117,8 @@ export type State = {
 
 export const initialState: State = {
   topologyLayer: 'LLDP',
+  mapTopologyType: null,
+  popupDeviceName: null,
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -163,6 +168,10 @@ export const initialState: State = {
 export function stateReducer(state: State, action: StateAction): State {
   return produce(state, (acc) => {
     switch (action.type) {
+      // case 'SET_POPUP_DEVICE_NAME': {
+      //   acc.popupDeviceName = action.deviceName;
+      //   return acc;
+      // }
       case 'SET_NODES_AND_EDGES': {
         const positionsMap = getDefaultPositionsMap<GraphNodeInterface, GraphNode>(
           { nodes: action.payload.nodes, edges: action.payload.edges },
@@ -239,6 +248,10 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_EDGE': {
         acc.selectedEdge = action.edge;
+        return acc;
+      }
+      case 'SET_MAP_TOPOLOGY_TYPE': {
+        acc.mapTopologyType = action.mapTopologyType;
         return acc;
       }
       case 'SET_SELECTED_LABELS': {
