@@ -1122,7 +1122,10 @@ export type MplsData = {
   __typename?: 'MplsData';
   inputInterface: Maybe<Scalars['String']['output']>;
   inputLabel: Maybe<Scalars['Int']['output']>;
+  ldpPrefix: Maybe<Scalars['String']['output']>;
   lspId: Scalars['String']['output'];
+  mplsOperation: Maybe<Scalars['String']['output']>;
+  operState: Maybe<Scalars['String']['output']>;
   outputInterface: Maybe<Scalars['String']['output']>;
   outputLabel: Maybe<Scalars['Int']['output']>;
 };
