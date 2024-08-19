@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex, Heading, HStack, Icon, Text } from '@chakra-ui/react';
+import { Badge, Box, Button, Flex, Heading, HStack, Icon, Text, IconButton } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
 import React, { VoidFunctionComponent } from 'react';
@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { getDeviceUsage, getDeviceUsageColor, getLocalDateFromUTC, usePerformanceMonitoring } from '@frinx/shared';
 import { Device } from '../../pages/topology/graph.helpers';
 import { DeviceUsage } from '../../__generated__/graphql';
+import { useStateContext } from '../../state.provider';
+import { setMapTopologyType, setTopologyLayer } from '../../state.actions';
 
 type Props = {
   name: string;
@@ -26,10 +28,16 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
   nodeLoad,
   isShowingLoad,
 }) => {
+  const { dispatch } = useStateContext();
+
   const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
   const localDate = device ? getLocalDateFromUTC(device.createdAt) : null;
   const nodeLoadUsage = getDeviceUsage(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad);
   const nodeLoadUsageColor = isShowingLoad ? getDeviceUsageColor(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad) : 'gray';
+  const handleShowDeviceOnMap = () => {
+    dispatch(setTopologyLayer('Map'));
+    dispatch(setMapTopologyType('PhysicalTopology'));
+  };
 
   return (
     <Box>
@@ -78,6 +86,13 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
             Config
           </Button>
         )}
+        <IconButton
+          size="sm"
+          aria-label="Map"
+          icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+          onClick={handleShowDeviceOnMap}
+          colorScheme="blue"
+        />
         <Button size="sm" onClick={onClose}>
           Close
         </Button>
