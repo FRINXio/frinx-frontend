@@ -1058,7 +1058,7 @@ export function getMplsBackupNodesAndEdges(
       .toPromise()
       .then((data) => {
         dispatch(
-          setSynceBackupNodesAndEdges({
+          setMplsBackupNodesAndEdges({
             nodes: data.data?.deviceInventory.mplsTopologyVersionData.nodes ?? [],
             edges:
               data.data?.deviceInventory.mplsTopologyVersionData.edges.map((e) => ({
