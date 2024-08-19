@@ -166,10 +166,6 @@ export const initialState: State = {
 export function stateReducer(state: State, action: StateAction): State {
   return produce(state, (acc) => {
     switch (action.type) {
-      // case 'SET_POPUP_DEVICE_NAME': {
-      //   acc.popupDeviceName = action.deviceName;
-      //   return acc;
-      // }
       case 'SET_NODES_AND_EDGES': {
         const positionsMap = getDefaultPositionsMap<GraphNodeInterface, GraphNode>(
           { nodes: action.payload.nodes, edges: action.payload.edges },
