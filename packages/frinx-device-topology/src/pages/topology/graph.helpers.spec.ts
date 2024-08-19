@@ -1,5 +1,5 @@
 import { assert, describe, expect, test } from 'vitest';
-import { getDistanceBetweenPoints, getPointOnCircle, getPointOnSlope } from './graph.helpers';
+import { getDistanceBetweenPoints, getPointAtLength, getPointOnCircle, getPointOnSlope } from './graph.helpers';
 
 describe('graph helpers', () => {
   test('test edge curve position 0 degrees', () => {
@@ -55,5 +55,20 @@ describe('graph helpers', () => {
     const p2 = { x: 1, y: 1 };
     const distance = getDistanceBetweenPoints(p1, p2);
     expect(distance).toBeCloseTo(1.414);
+  });
+  test('test get point at length', () => {
+    const source = { x: 5, y: 5 };
+    const target = { x: 3, y: 3 };
+    const { x: x1, y: y1 } = getPointAtLength({ start: source, end: target }, 0.5);
+    expect(x1).toBeCloseTo(4);
+    expect(y1).toBeCloseTo(4);
+
+    const { x: x2, y: y2 } = getPointAtLength({ start: source, end: target }, 0.1);
+    expect(x2).toBeCloseTo(4.8);
+    expect(y2).toBeCloseTo(4.8);
+
+    const { x: x3, y: y3 } = getPointAtLength({ start: source, end: target }, 0.9);
+    expect(x3).toBeCloseTo(3.2);
+    expect(y3).toBeCloseTo(3.2);
   });
 });
