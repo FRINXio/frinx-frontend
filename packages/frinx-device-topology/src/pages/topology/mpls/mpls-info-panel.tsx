@@ -1,6 +1,9 @@
-import { Badge, Box, Button, Divider, Flex, Heading, HStack, useDisclosure } from '@chakra-ui/react';
+import { Badge, Box, Button, Divider, Flex, Heading, HStack, useDisclosure, IconButton, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
+import { setMapTopologyType, setTopologyLayer } from '../../../state.actions';
+import { useStateContext } from '../../../state.provider';
 import { MplsGraphNode } from '../graph.helpers';
 import MplsInfoModal, { DetailMode } from './mpls-info-modal';
 
@@ -10,6 +13,8 @@ type Props = {
 };
 
 const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
+  const { dispatch } = useStateContext();
+
   const mplsInfoModal = useDisclosure();
   const [detailMode, setDetailMode] = useState<DetailMode>('mplsData');
 
@@ -25,6 +30,11 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleClose = () => {
     onClose();
+  };
+
+  const handleShowDeviceOnMap = () => {
+    dispatch(setTopologyLayer('Map'));
+    dispatch(setMapTopologyType('MplsTopology'));
   };
 
   return (
@@ -72,6 +82,13 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             </Box>
           </Box>
           <HStack spacing={2} marginTop={4}>
+            <IconButton
+              size="sm"
+              aria-label="Map"
+              icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+              onClick={handleShowDeviceOnMap}
+              colorScheme="blue"
+            />
             <Button size="sm" onClick={handleClose}>
               Close
             </Button>
