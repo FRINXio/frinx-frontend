@@ -8,7 +8,7 @@ const Form = chakra('form');
 const DeviceSearch: VoidFunctionComponent = () => {
   const { dispatch } = useStateContext();
   const [searchText, setSearchText] = useState<string>('');
-  
+
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
   };
@@ -25,7 +25,9 @@ const DeviceSearch: VoidFunctionComponent = () => {
 
   return (
     <Form alignItems="flex-end" justifyContent="bottom" width="half" onSubmit={handleSearchSubmit}>
-      <FormLabel htmlFor="device-search" marginBottom={4}>Search by name:</FormLabel>
+      <FormLabel htmlFor="device-search" marginBottom={4}>
+        Search by name:
+      </FormLabel>
       <Box display="flex">
         <Input
           data-cy="search-by-name"
@@ -39,14 +41,7 @@ const DeviceSearch: VoidFunctionComponent = () => {
         <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" type="submit">
           Search
         </Button>
-        <Button
-          mb={6}
-          data-cy="clear-button"
-          onClick={clearFilter}
-          colorScheme="red"
-          variant="outline"
-          marginLeft="2"
-        >
+        <Button mb={6} data-cy="clear-button" onClick={clearFilter} colorScheme="red" variant="outline" marginLeft="2">
           Clear
         </Button>
       </Box>
