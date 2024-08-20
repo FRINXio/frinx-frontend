@@ -64,6 +64,7 @@ const MIN_ZOOM_LEVEL = 0.01;
 const MAX_ZOOM_LEVEL = 20;
 
 export type State = {
+  mapTopologyDeviceSearch: string | null;
   topologyLayer: TopologyLayer;
   mapTopologyType: MapTopologyType;
   mode: TopologyMode;
@@ -117,6 +118,7 @@ export type State = {
 };
 
 export const initialState: State = {
+  mapTopologyDeviceSearch: null,
   topologyLayer: 'LLDP',
   mapTopologyType: null,
   mode: 'NORMAL',
@@ -249,6 +251,10 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_MAP_TOPOLOGY_TYPE': {
         acc.mapTopologyType = action.mapTopologyType;
+        return acc;
+      }
+      case 'SET_MAP_TOPOLOGY_DEVICE_SEARCH': {
+        acc.mapTopologyDeviceSearch = action.mapTopologyDeviceSearch;
         return acc;
       }
       case 'SET_SELECTED_LABELS': {

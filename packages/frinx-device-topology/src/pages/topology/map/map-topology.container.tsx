@@ -30,7 +30,7 @@ const GEOMAP_DATA_QUERY = gql`
 // Do not export this component
 const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   const { state } = useStateContext();
-  const { mapTopologyType } = state;
+  const { mapTopologyType, mapTopologyDeviceSearch } = state;
 
   // const [center, setCenter] = useState(DEFAULT_MAP_CENTER);
   const map = useMap();
@@ -38,7 +38,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   const [{ data: deviceData }] = useQuery<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>({
     query: GEOMAP_DATA_QUERY,
     variables: {
-      filter: { topologyType: mapTopologyType },
+      filter: { topologyType: mapTopologyType, deviceName: mapTopologyDeviceSearch },
     },
   });
 
