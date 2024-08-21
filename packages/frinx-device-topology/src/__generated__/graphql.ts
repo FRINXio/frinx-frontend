@@ -1173,6 +1173,12 @@ export type MplsTopology = {
   nodes: Array<MplsGraphNode>;
 };
 
+export type MplsTopologyVersionData = {
+  __typename?: 'MplsTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
+  nodes: Array<MplsGraphNode>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
@@ -3447,6 +3453,7 @@ export type DeviceInventoryQuery = {
   locations: LocationConnection;
   mplsLspCount: Maybe<MplsLspCount>;
   mplsTopology: Maybe<MplsTopology>;
+  mplsTopologyVersionData: MplsTopologyVersionData;
   netTopology: Maybe<NetTopology>;
   netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
@@ -3531,6 +3538,11 @@ export type DeviceInventoryQueryLocationsArgs = {
 
 export type DeviceInventoryQueryMplsLspCountArgs = {
   deviceId: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQueryMplsTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
 };
 
 
@@ -4134,13 +4146,6 @@ export type UpdateSyncePositionMutationVariables = Exact<{
 
 export type UpdateSyncePositionMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateGraphNodeCoordinates: { __typename?: 'UpdateGraphNodeCoordinatesPayload', deviceNames: Array<string> } } };
 
-export type GetSynceGrandMasterPathQueryVariables = Exact<{
-  deviceFrom: Scalars['String']['input'];
-}>;
-
-
-export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
-
 export type GetMplsLspCountQueryVariables = Exact<{
   deviceId: Scalars['String']['input'];
 }>;
@@ -4175,6 +4180,13 @@ export type GetPtpDiffSynceQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetPtpDiffSynceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', ptpDiffSynce: { __typename?: 'PtpDiffSynce', edges: Array<{ __typename?: 'PtpDiffSynceEdges', node: { __typename?: 'PtpDiffSynceNode', id: string } }> } } };
 
+export type GetSynceGrandMasterPathQueryVariables = Exact<{
+  deviceFrom: Scalars['String']['input'];
+}>;
+
+
+export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
+
 export type TopologyQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -4202,6 +4214,13 @@ export type SynceTopologyVersionDataQueryVariables = Exact<{
 
 
 export type SynceTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', synceTopologyVersionData: { __typename?: 'SynceTopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'SynceGraphNode', id: string, name: string, interfaces: Array<{ __typename?: 'SynceGraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
+
+export type MplsTopologyVersionDataQueryVariables = Exact<{
+  version: Scalars['String']['input'];
+}>;
+
+
+export type MplsTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopologyVersionData: { __typename?: 'MplsTopologyVersionData', edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }>, nodes: Array<{ __typename?: 'MplsGraphNode', id: string, name: string, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, status: GraphEdgeStatus, name: string }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }> } } };
 
 export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 

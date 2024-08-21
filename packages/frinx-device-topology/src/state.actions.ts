@@ -24,6 +24,8 @@ import {
   MplsDeviceDetails,
   MplsTopologyQuery,
   MplsTopologyQueryVariables,
+  MplsTopologyVersionDataQuery,
+  MplsTopologyVersionDataQueryVariables,
   NetTopologyQuery,
   NetTopologyQueryVariables,
   NetTopologyVersionDataQuery,
@@ -148,6 +150,10 @@ export type StateAction =
     }
   | {
       type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES';
+      payload: BackupNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_MPLS_BACKUP_NODES_AND_EDGES';
       payload: BackupNodesEdgesPayload;
     }
   | {
@@ -395,6 +401,39 @@ const SYNCE_TOPOLOGY_VERSION_DATA_QUERY = gql`
   query SynceTopologyVersionData($version: String!) {
     deviceInventory {
       synceTopologyVersionData(version: $version) {
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+      }
+    }
+  }
+`;
+
+const MPLS_TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query MplsTopologyVersionData($version: String!) {
+    deviceInventory {
+      mplsTopologyVersionData(version: $version) {
         edges {
           id
           source {
@@ -994,6 +1033,13 @@ export function setSynceBackupNodesAndEdges(payload: BackupNodesEdgesPayload): S
   };
 }
 
+export function setMplsBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_MPLS_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
 export function getBackupNodesAndEdges(client: Client, version: string): ReturnType<ThunkAction<StateAction, State>> {
   return (dispatch) => {
     client
@@ -1075,6 +1121,37 @@ export function getSynceBackupNodesAndEdges(
             nodes: data.data?.deviceInventory.synceTopologyVersionData.nodes ?? [],
             edges:
               data.data?.deviceInventory.synceTopologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
+          }),
+        );
+      });
+  };
+}
+
+export function getMplsBackupNodesAndEdges(
+  client: Client,
+  version: string,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<MplsTopologyVersionDataQuery, MplsTopologyVersionDataQueryVariables>(
+        MPLS_TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setMplsBackupNodesAndEdges({
+            nodes: data.data?.deviceInventory.mplsTopologyVersionData.nodes ?? [],
+            edges:
+              data.data?.deviceInventory.mplsTopologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],

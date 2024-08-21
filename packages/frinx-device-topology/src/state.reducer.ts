@@ -12,6 +12,7 @@ import {
   getNetNodesWithDiff,
   NetGraphNodeWithDiff,
   MplsGraphNodeWithDiff,
+  getMplsNodesWithDiff,
 } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
@@ -310,6 +311,20 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.synceEdges = allEdges;
         acc.synceNodePositions = positionsMap.nodes;
         acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_MPLS_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getMplsNodesWithDiff(acc.mplsNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.mplsEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphMplsNodeInterface, MplsGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.mplsNodes = allNodes;
+        acc.mplsEdges = allEdges;
+        acc.mplsNodePositions = positionsMap.nodes;
+        acc.mplsInterfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
       case 'SET_NET_BACKUP_NODES_AND_EDGES': {

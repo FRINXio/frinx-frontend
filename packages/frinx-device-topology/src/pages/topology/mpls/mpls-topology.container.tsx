@@ -1,7 +1,7 @@
 import { omitNullValue } from '@frinx/shared';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
-import { getSynceBackupNodesAndEdges, getMplsNodesAndEdges, setMode, setLspCounts } from '../../../state.actions';
+import { getMplsNodesAndEdges, setMode, setLspCounts, getMplsBackupNodesAndEdges } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
   GetMplsLspCountQuery,
@@ -82,7 +82,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
   useEffect(() => {
     if (selectedVersion != null) {
       window.clearInterval(intervalRef.current);
-      dispatch(getSynceBackupNodesAndEdges(client, selectedVersion));
+      dispatch(getMplsBackupNodesAndEdges(client, selectedVersion));
     }
   }, [client, dispatch, selectedVersion]);
 
