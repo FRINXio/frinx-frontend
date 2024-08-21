@@ -5,15 +5,14 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Box, Heading } from '@chakra-ui/react';
 import { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
 import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
-import { defaultMarkerIcon } from '../../../helpers/map-marker-helper';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
-
-const markerIcon = defaultMarkerIcon();
+import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
+import { useStateContext } from '../../../state.provider';
 
 const GEOMAP_DATA_QUERY = gql`
-  query GeoMapDataQuery {
+  query GeoMapDataQuery($filter: FilterDevicesMetadatasInput) {
     deviceInventory {
-      deviceMetadata {
+      deviceMetadata(filter: $filter) {
         nodes {
           id
           deviceName
@@ -30,11 +29,17 @@ const GEOMAP_DATA_QUERY = gql`
 
 // Do not export this component
 const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
+  const { state } = useStateContext();
+  const { mapTopologyType } = state;
+
   // const [center, setCenter] = useState(DEFAULT_MAP_CENTER);
   const map = useMap();
 
   const [{ data: deviceData }] = useQuery<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>({
     query: GEOMAP_DATA_QUERY,
+    variables: {
+      filter: { topologyType: mapTopologyType },
+    },
   });
 
   useEffect(() => {
@@ -61,7 +66,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                 <Marker
                   position={[node.geolocation.latitude, node.geolocation.longitude]}
                   key={node?.id}
-                  icon={markerIcon}
+                  icon={DEFAULT_ICON}
                 >
                   <Popup>
                     <Box mt={2}>

@@ -921,6 +921,12 @@ export type FilterDevicesInput = {
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type FilterDevicesMetadatasInput = {
+  deviceName?: InputMaybe<Scalars['String']['input']>;
+  polygon?: InputMaybe<PolygonInput>;
+  topologyType?: InputMaybe<TopologyType>;
+};
+
 export type FilterEventHandlerInput = {
   evaluatorType?: InputMaybe<Scalars['String']['input']>;
   event?: InputMaybe<Scalars['String']['input']>;
@@ -1267,6 +1273,10 @@ export type PollData = {
   lastPollTime: Maybe<Scalars['BigInt']['output']>;
   queueName: Maybe<Scalars['String']['output']>;
   workerId: Maybe<Scalars['String']['output']>;
+};
+
+export type PolygonInput = {
+  polygon?: InputMaybe<Array<Array<Array<Scalars['Float']['input']>>>>;
 };
 
 /** Entity representing capacity of a pool */
@@ -2013,6 +2023,13 @@ export type TopologyCommonNodes = {
 export type TopologyLayer =
   | 'EthTopology'
   | 'MplsTopology'
+  | 'PhysicalTopology'
+  | 'PtpTopology';
+
+export type TopologyType =
+  | 'EthTopology'
+  | 'MplsTopology'
+  | 'NetworkTopology'
   | 'PhysicalTopology'
   | 'PtpTopology';
 
@@ -3486,6 +3503,11 @@ export type DeviceInventoryQueryDataStoreArgs = {
 };
 
 
+export type DeviceInventoryQueryDeviceMetadataArgs = {
+  filter?: InputMaybe<FilterDevicesMetadatasInput>;
+};
+
+
 export type DeviceInventoryQueryDevicesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -4109,7 +4131,9 @@ export type TopologyCommonNodesQueryVariables = Exact<{
 
 export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null } };
 
-export type GeoMapDataQueryQueryVariables = Exact<{ [key: string]: never; }>;
+export type GeoMapDataQueryQueryVariables = Exact<{
+  filter?: InputMaybe<FilterDevicesMetadatasInput>;
+}>;
 
 
 export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };

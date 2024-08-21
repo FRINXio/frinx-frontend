@@ -43,10 +43,11 @@ import {
   scale,
   getZoomLevel,
 } from './pages/topology/transform.helpers';
-import { LabelItem, StateAction, TopologyMode } from './state.actions';
+import { LabelItem, StateAction, TopologyMode, MapTopologyType } from './state.actions';
 import { NetInterface, NetNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'MPLS' | 'Synchronous Ethernet' | 'Map';
+
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -65,6 +66,7 @@ const MAX_ZOOM_LEVEL = 20;
 
 export type State = {
   topologyLayer: TopologyLayer;
+  mapTopologyType: MapTopologyType;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
@@ -116,7 +118,8 @@ export type State = {
 };
 
 export const initialState: State = {
-  topologyLayer: 'MPLS',
+  topologyLayer: 'LLDP',
+  mapTopologyType: null,
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -243,6 +246,10 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_EDGE': {
         acc.selectedEdge = action.edge;
+        return acc;
+      }
+      case 'SET_MAP_TOPOLOGY_TYPE': {
+        acc.mapTopologyType = action.mapTopologyType;
         return acc;
       }
       case 'SET_SELECTED_LABELS': {

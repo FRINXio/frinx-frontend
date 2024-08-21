@@ -19,6 +19,7 @@ import { LatLngTuple } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { LocationData } from '../pages/create-device/create-device-page';
+import { DEFAULT_ICON } from '../helpers/map';
 
 type Props = {
   onAddDeviceLocation?: (locationData: LocationData) => void;
@@ -189,7 +190,7 @@ const AddDeviceLocationModal: FC<Props> = ({
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                <Marker position={parsedMapPosition}>
+                <Marker position={parsedMapPosition} icon={DEFAULT_ICON}>
                   <Popup>Choose location either by clicking on the map or entering coordinates.</Popup>
                 </Marker>
                 <MapUpdater position={parsedMapPosition} />

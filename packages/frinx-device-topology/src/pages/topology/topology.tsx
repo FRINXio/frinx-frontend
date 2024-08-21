@@ -11,6 +11,7 @@ import TopologyContainer from './lldp/topology.container';
 import SynceTopologyContainer from './synce/synce-topology.container';
 import MplsTopologyContainer from './mpls/mpls-topology.container';
 import MapTopologyContainer from './map/map-topology.container';
+import TopologyTypeSelect from '../../components/topology-type-select/topology-type-select';
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
@@ -28,6 +29,7 @@ const Topology: VoidFunctionComponent = () => {
           <FormLabel marginBottom={4}>Select layer:</FormLabel>
           <Select
             background="white"
+            value={topologyLayer}
             onChange={(event) => {
               dispatch(setTopologyLayer(event.target.value as TopologyLayer));
             }}
@@ -42,6 +44,11 @@ const Topology: VoidFunctionComponent = () => {
         {topologyLayer !== 'Map' && (
           <Box flex={1}>
             <VersionSelect />
+          </Box>
+        )}
+        {topologyLayer === 'Map' && (
+          <Box flex={1}>
+            <TopologyTypeSelect />
           </Box>
         )}
         {topologyLayer === 'LLDP' && (
