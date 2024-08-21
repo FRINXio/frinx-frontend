@@ -2,7 +2,7 @@ import { Badge, Box, Button, Divider, Flex, Heading, HStack, useDisclosure, Icon
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { setMapTopologyType, setTopologyLayer } from '../../../state.actions';
+import { setMapTopologyType, setSelectedMapDeviceName, setTopologyLayer } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { MplsGraphNode } from '../graph.helpers';
 import MplsInfoModal, { DetailMode } from './mpls-info-modal';
@@ -13,7 +13,9 @@ type Props = {
 };
 
 const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
-  const { dispatch } = useStateContext();
+  const { dispatch, state } = useStateContext();
+
+  const { devicesMetadata } = state;
 
   const mplsInfoModal = useDisclosure();
   const [detailMode, setDetailMode] = useState<DetailMode>('mplsData');
@@ -35,6 +37,7 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
     dispatch(setMapTopologyType('MplsTopology'));
+    dispatch(setSelectedMapDeviceName(node.name));
   };
 
   return (
@@ -86,6 +89,7 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
               size="sm"
               aria-label="Map"
               icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+              isDisabled={!devicesMetadata?.find((device) => device.deviceName === node.name)}
               onClick={handleShowDeviceOnMap}
               colorScheme="blue"
             />

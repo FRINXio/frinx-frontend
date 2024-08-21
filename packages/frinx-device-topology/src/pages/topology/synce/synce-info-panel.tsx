@@ -2,7 +2,12 @@ import { Badge, Box, Button, Divider, Flex, Heading, HStack, IconButton, Icon } 
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { setMapTopologyType, setSelectedEdge, setTopologyLayer } from '../../../state.actions';
+import {
+  setMapTopologyType,
+  setSelectedEdge,
+  setSelectedMapDeviceName,
+  setTopologyLayer,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { GraphSynceNodeInterface, normalizeNodeInterfaceData, SynceGraphNode } from '../graph.helpers';
 import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
@@ -16,7 +21,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const [activeInterface, setActiveInterface] = useState<GraphSynceNodeInterface | null>(null);
   const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = React.useState(false);
   const { state, dispatch } = useStateContext();
-  const { synceEdges } = state;
+  const { synceEdges, devicesMetadata } = state;
   const { details } = node;
 
   const { interfaces } = node;
@@ -37,7 +42,8 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('NetworkTopology'));
+    dispatch(setMapTopologyType('EthTopology'));
+    dispatch(setSelectedMapDeviceName(node.name));
   };
 
   return (
@@ -98,6 +104,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             size="sm"
             aria-label="Map"
             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+            isDisabled={!devicesMetadata?.find((device) => device.deviceName === node.name)}
             onClick={handleShowDeviceOnMap}
             colorScheme="blue"
           />

@@ -117,6 +117,16 @@ export type MplsGraphNode = {
   status: string;
 };
 
+export type DeviceMetadata = {
+  id?: string;
+  deviceName?: string;
+  locationName?: string | null;
+  geolocation: {
+    latitude?: number;
+    longitude?: number;
+  };
+};
+
 export type SourceTarget = {
   nodeId: string;
   interface: string;
@@ -143,6 +153,7 @@ export type GraphNetNode = {
   id: string;
   nodeId: string;
   name: string;
+  phyDeviceName: string | null;
   interfaces: GrahpNetNodeInterface[];
   networks: NetNetwork[];
   coordinates: Position;
@@ -164,6 +175,7 @@ export type GraphPtpNodeInterfaceDetails = {
 export type BackupNetGraphNode = {
   id: string;
   name: string;
+  phyDeviceName: string | null;
   interfaces: GraphNetNodeInterface[];
   networks: NetNetwork[];
   coordinates: Position;

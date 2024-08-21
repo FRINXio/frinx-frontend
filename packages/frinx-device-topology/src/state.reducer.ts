@@ -31,6 +31,7 @@ import {
   height as topologyHeight,
   GraphMplsNodeInterface,
   MplsGraphNode,
+  DeviceMetadata,
 } from './pages/topology/graph.helpers';
 import {
   identity,
@@ -65,6 +66,8 @@ const MAX_ZOOM_LEVEL = 20;
 export type State = {
   topologyLayer: TopologyLayer;
   mapTopologyType: MapTopologyType;
+  selectedMapDeviceName: string | null;
+  devicesMetadata: DeviceMetadata[] | null;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
@@ -117,6 +120,8 @@ export type State = {
 export const initialState: State = {
   topologyLayer: 'LLDP',
   mapTopologyType: null,
+  selectedMapDeviceName: null,
+  devicesMetadata: null,
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -466,6 +471,15 @@ export function stateReducer(state: State, action: StateAction): State {
           ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
         ];
         acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_MAP_DEVICE_NAME': {
+        acc.selectedMapDeviceName = action.deviceName;
+        return acc;
+      }
+
+      case 'SET_DEVICES_METADATA': {
+        acc.devicesMetadata = action.payload;
         return acc;
       }
       case 'SET_SELECTED_PTP_NODE': {
