@@ -418,10 +418,11 @@ export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNe
 
   const deletedBackupNodesWithDiff = backupGraphNodes
     .map((n) => {
-      const { id, name, interfaces, coordinates, networks } = n;
+      const { id, name, interfaces, coordinates, networks, phyDeviceName } = n;
       return {
         id,
         name,
+        phyDeviceName,
         device: {
           id: uuid(),
           deviceSize: 'MEDIUM' as const,
