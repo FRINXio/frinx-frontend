@@ -12,14 +12,20 @@ import {
   SynceGraphNode,
   MplsGraphNode,
   MplsGraphNodeDetails,
+  DeviceMetadata,
   LspCount,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
+  FilterDevicesMetadatasInput,
+  GeoMapDataQueryQuery,
+  GeoMapDataQueryQueryVariables,
   MplsDeviceDetails,
   MplsTopologyQuery,
   MplsTopologyQueryVariables,
+  MplsTopologyVersionDataQuery,
+  MplsTopologyVersionDataQueryVariables,
   NetTopologyQuery,
   NetTopologyQueryVariables,
   NetTopologyVersionDataQuery,
@@ -147,6 +153,10 @@ export type StateAction =
       payload: BackupNodesEdgesPayload;
     }
   | {
+      type: 'SET_MPLS_BACKUP_NODES_AND_EDGES';
+      payload: BackupNodesEdgesPayload;
+    }
+  | {
       type: 'SET_NET_BACKUP_NODES_AND_EDGES';
       payload: BackupNetNodesEdgesPayload;
     }
@@ -217,6 +227,10 @@ export type StateAction =
       alternativePathIndex: number;
     }
   | {
+      type: 'SET_SELECTED_MAP_DEVICE_NAME';
+      deviceName: string | null;
+    }
+  | {
       type: 'SET_WEIGHT_VISIBILITY';
       isVisible: boolean;
     }
@@ -250,6 +264,10 @@ export type StateAction =
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_DEVICES_METADATA';
+      payload: DeviceMetadata[];
     }
   | {
       type: 'SET_SYNCE_DIFF_VISIBILITY';
@@ -416,12 +434,46 @@ const SYNCE_TOPOLOGY_VERSION_DATA_QUERY = gql`
   }
 `;
 
+const MPLS_TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query MplsTopologyVersionData($version: String!) {
+    deviceInventory {
+      mplsTopologyVersionData(version: $version) {
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+      }
+    }
+  }
+`;
+
 const NET_TOPOLOGY_QUERY = gql`
   query NetTopology {
     deviceInventory {
       netTopology {
         nodes {
           id
+          phyDeviceName
           nodeId
           name
           interfaces {
@@ -465,6 +517,7 @@ const NET_TOPOLOGY_VERSION_DATA_QUERY = gql`
         nodes {
           id
           name
+          phyDeviceName
           interfaces {
             id
             name
@@ -657,6 +710,24 @@ const MPLS_TOPOLOGY_QUERY = gql`
   }
 `;
 
+const GEOMAP_DATA_QUERY = gql`
+  query GeoMapDataQuery($filter: FilterDevicesMetadatasInput) {
+    deviceInventory {
+      deviceMetadata(filter: $filter) {
+        nodes {
+          id
+          deviceName
+          locationName
+          geolocation {
+            latitude
+            longitude
+          }
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -832,6 +903,45 @@ export function getMplsNodesAndEdges(client: Client): ReturnType<ThunkAction<Sta
   };
 }
 
+export function setDeviceMetadata(payload: DeviceMetadata[]): StateAction {
+  return {
+    type: 'SET_DEVICES_METADATA',
+    payload,
+  };
+}
+
+export function getDeviceMetadata(
+  client: Client,
+  filter: FilterDevicesMetadatasInput,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>(
+        GEOMAP_DATA_QUERY,
+        { filter },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes } = data.data?.deviceInventory.deviceMetadata ?? { nodes: [] };
+        const metaData: DeviceMetadata[] =
+          nodes?.map((n) => ({
+            id: n?.id,
+            deviceName: n?.deviceName,
+            locationName: n?.locationName,
+            geolocation: {
+              latitude: n?.geolocation?.latitude,
+              longitude: n?.geolocation?.longitude,
+            },
+          })) || [];
+
+        dispatch(setDeviceMetadata(metaData));
+      });
+  };
+}
+
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
@@ -868,6 +978,13 @@ export function setSelectedNode(node: GraphNode | null): StateAction {
   return {
     type: 'SET_SELECTED_NODE',
     node,
+  };
+}
+
+export function setSelectedMapDeviceName(deviceName: string | null): StateAction {
+  return {
+    type: 'SET_SELECTED_MAP_DEVICE_NAME',
+    deviceName,
   };
 }
 
@@ -916,6 +1033,13 @@ export function setPtpBackupNodesAndEdges(payload: BackupNodesEdgesPayload): Sta
 export function setSynceBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
   return {
     type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+export function setMplsBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_MPLS_BACKUP_NODES_AND_EDGES',
     payload,
   };
 }
@@ -1001,6 +1125,37 @@ export function getSynceBackupNodesAndEdges(
             nodes: data.data?.deviceInventory.synceTopologyVersionData.nodes ?? [],
             edges:
               data.data?.deviceInventory.synceTopologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
+          }),
+        );
+      });
+  };
+}
+
+export function getMplsBackupNodesAndEdges(
+  client: Client,
+  version: string,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<MplsTopologyVersionDataQuery, MplsTopologyVersionDataQueryVariables>(
+        MPLS_TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setMplsBackupNodesAndEdges({
+            nodes: data.data?.deviceInventory.mplsTopologyVersionData.nodes ?? [],
+            edges:
+              data.data?.deviceInventory.mplsTopologyVersionData.edges.map((e) => ({
                 ...e,
                 weight: null,
               })) ?? [],

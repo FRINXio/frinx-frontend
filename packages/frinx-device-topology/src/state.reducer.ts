@@ -12,6 +12,7 @@ import {
   getNetNodesWithDiff,
   NetGraphNodeWithDiff,
   MplsGraphNodeWithDiff,
+  getMplsNodesWithDiff,
 } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
@@ -31,6 +32,7 @@ import {
   height as topologyHeight,
   GraphMplsNodeInterface,
   MplsGraphNode,
+  DeviceMetadata,
   LspCount,
 } from './pages/topology/graph.helpers';
 import {
@@ -67,6 +69,8 @@ export type State = {
   mapTopologyDeviceSearch: string | null;
   topologyLayer: TopologyLayer;
   mapTopologyType: MapTopologyType;
+  selectedMapDeviceName: string | null;
+  devicesMetadata: DeviceMetadata[] | null;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
@@ -121,6 +125,8 @@ export const initialState: State = {
   mapTopologyDeviceSearch: null,
   topologyLayer: 'LLDP',
   mapTopologyType: null,
+  selectedMapDeviceName: null,
+  devicesMetadata: null,
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -313,6 +319,20 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
+      case 'SET_MPLS_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getMplsNodesWithDiff(acc.mplsNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.mplsEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphMplsNodeInterface, MplsGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.mplsNodes = allNodes;
+        acc.mplsEdges = allEdges;
+        acc.mplsNodePositions = positionsMap.nodes;
+        acc.mplsInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_NET_BACKUP_NODES_AND_EDGES': {
         const allNodes = getNetNodesWithDiff(acc.netNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.netEdges, action.payload.edges);
@@ -475,6 +495,15 @@ export function stateReducer(state: State, action: StateAction): State {
           ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
         ];
         acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_MAP_DEVICE_NAME': {
+        acc.selectedMapDeviceName = action.deviceName;
+        return acc;
+      }
+
+      case 'SET_DEVICES_METADATA': {
+        acc.devicesMetadata = action.payload;
         return acc;
       }
       case 'SET_SELECTED_PTP_NODE': {

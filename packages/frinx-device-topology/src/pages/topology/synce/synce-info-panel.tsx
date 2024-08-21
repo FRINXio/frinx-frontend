@@ -1,8 +1,15 @@
 import { Badge, Box, Button, Divider, Flex, Heading, HStack, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { setMapTopologyType, setSelectedEdge, setTopologyLayer } from '../../../state.actions';
+import { useClient } from 'urql';
+import {
+  getDeviceMetadata,
+  setMapTopologyType,
+  setSelectedEdge,
+  setSelectedMapDeviceName,
+  setTopologyLayer,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { GraphSynceNodeInterface, normalizeNodeInterfaceData, SynceGraphNode } from '../graph.helpers';
 import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
@@ -16,10 +23,16 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const [activeInterface, setActiveInterface] = useState<GraphSynceNodeInterface | null>(null);
   const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = React.useState(false);
   const { state, dispatch } = useStateContext();
-  const { synceEdges } = state;
+  const { synceEdges, devicesMetadata } = state;
   const { details } = node;
 
   const { interfaces } = node;
+
+  const client = useClient();
+
+  useEffect(() => {
+    dispatch(getDeviceMetadata(client, { topologyType: 'EthTopology' }));
+  }, [client, dispatch]);
 
   const handleInterfaceClick = (deviceInterface: GraphSynceNodeInterface) => {
     const [edge] = synceEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));
@@ -37,7 +50,8 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('NetworkTopology'));
+    dispatch(setMapTopologyType('EthTopology'));
+    dispatch(setSelectedMapDeviceName(node.name));
   };
 
   return (
@@ -98,6 +112,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             size="sm"
             aria-label="Map"
             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+            isDisabled={!devicesMetadata?.find((device) => device.deviceName === node.name)}
             onClick={handleShowDeviceOnMap}
             colorScheme="blue"
           />
