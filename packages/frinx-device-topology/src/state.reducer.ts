@@ -32,6 +32,7 @@ import {
   GraphMplsNodeInterface,
   MplsGraphNode,
   DeviceMetadata,
+  LspCount,
 } from './pages/topology/graph.helpers';
 import {
   identity,
@@ -114,6 +115,7 @@ export type State = {
       memoryLoad: number | null;
     } | null;
   };
+  lspCounts: LspCount[];
   // isMouseDown: boolean;
 };
 
@@ -165,6 +167,7 @@ export const initialState: State = {
     deviceName: '',
     deviceUsage: null,
   },
+  lspCounts: [],
   // isMouseDown: false,
 };
 
@@ -566,6 +569,10 @@ export function stateReducer(state: State, action: StateAction): State {
           deviceUsage: selectedDeviceUsage,
         };
 
+        return acc;
+      }
+      case 'SET_LSP_COUNTS': {
+        acc.lspCounts = action.lspCounts;
         return acc;
       }
       default:

@@ -1,38 +1,25 @@
-import { Box, Button, Text } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
-import { clearGmPathSearch, setSelectedNode, updateMplsNodePosition } from '../../../state.actions';
+import { setSelectedNode, updateMplsNodePosition } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './mpls-edges';
 import { height, Position, width, MplsGraphNode } from '../graph.helpers';
 import BackgroundSvg from '../img/background.svg';
 import MplsNodes from './mpls-nodes';
 import MplsInfoPanel from './mpls-info-panel';
-import { getGmPathHopsCount } from '../../../helpers/topology-helpers';
+import LspCounts from './lsp-counts';
 
 type Props = {
-  isGrandMasterPathFetching: boolean;
   onNodePositionUpdate: (positions: { deviceName: string; position: Position }[]) => Promise<void>;
-  onGrandMasterPathSearch: (nodeIds: string[]) => void;
 };
 
-const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
-  isGrandMasterPathFetching,
-  onNodePositionUpdate,
-  onGrandMasterPathSearch,
-}) => {
+const MplsTopologyGraph: VoidFunctionComponent<Props> = ({ onNodePositionUpdate }) => {
   const { state, dispatch } = useStateContext();
   const lastPositionRef = useRef<{ deviceName: string; position: Position } | null>(null);
   const positionListRef = useRef<{ deviceName: string; position: Position }[]>([]);
   const timeoutRef = useRef<number>();
-  const {
-    mplsEdges: edges,
-    mplsNodes: nodes,
-    gmPathIds,
-    selectedNode,
-    unconfirmedSelectedNodeIds,
-    unconfirmedSelectedGmPathNodeId,
-  } = state;
+  const { mplsEdges: edges, mplsNodes: nodes, selectedNode, lspCounts } = state;
 
   const handleNodePositionUpdate = (deviceName: string, position: Position) => {
     if (timeoutRef.current != null) {
@@ -62,14 +49,6 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
     dispatch(setSelectedNode(null));
   };
 
-  const handleClearGmPath = () => {
-    dispatch(clearGmPathSearch());
-  };
-
-  const handleSearchClick = () => {
-    onGrandMasterPathSearch(unconfirmedSelectedNodeIds);
-  };
-
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
@@ -79,23 +58,9 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
           onNodePositionUpdate={handleNodePositionUpdate}
           onNodePositionUpdateFinish={handleNodePositionUpdateFinish}
         />
+        {selectedNode && <LspCounts edges={edges} lspCounts={lspCounts} />}
       </svg>
       {selectedNode != null && <MplsInfoPanel node={selectedNode as MplsGraphNode} onClose={handleInfoPanelClose} />}
-      {unconfirmedSelectedGmPathNodeId && (
-        <Box position="absolute" top={2} left="2" background="transparent">
-          <Box display="flex" alignItems="center">
-            <Button onClick={handleClearGmPath} marginRight={2}>
-              Clear GM path
-            </Button>
-            <Button onClick={handleSearchClick} isDisabled={isGrandMasterPathFetching} marginRight={2}>
-              Find GM path
-            </Button>
-            {gmPathIds.length > 0 && (
-              <Text fontWeight="600">Number of hops: {getGmPathHopsCount(gmPathIds, 'SynceDevice')}</Text>
-            )}
-          </Box>
-        </Box>
-      )}
     </Box>
   );
 };

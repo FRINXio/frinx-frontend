@@ -1,20 +1,15 @@
+import { omitNullValue } from '@frinx/shared';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
-import {
-  findGmPath,
-  getSynceBackupNodesAndEdges,
-  getMplsNodesAndEdges,
-  setGmPathIds,
-  setMode,
-} from '../../../state.actions';
+import { getSynceBackupNodesAndEdges, getMplsNodesAndEdges, setMode, setLspCounts } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
-  GetSynceGrandMasterPathQuery,
-  GetSynceGrandMasterPathQueryVariables,
+  GetMplsLspCountQuery,
+  GetMplsLspCountQueryVariables,
   UpdateSyncePositionMutation,
   UpdateSyncePositionMutationVariables,
 } from '../../../__generated__/graphql';
-import { height, Position, width } from '../graph.helpers';
+import { getLspCounts, height, Position, width } from '../graph.helpers';
 import MplsTopologyGraph from './mpls-topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
@@ -27,10 +22,16 @@ const UPDATE_POSITION_MUTATION = gql`
   }
 `;
 
-const GET_SYNCE_GM_PATH = gql`
-  query GetSynceGrandMasterPath($deviceFrom: String!) {
+const GET_MPLS_LPS_COUNT = gql`
+  query GetMplsLspCount($deviceId: String!) {
     deviceInventory {
-      syncePathToGrandMaster(deviceFrom: $deviceFrom)
+      mplsLspCount(deviceId: $deviceId) {
+        counts {
+          target
+          incomingLsps
+          outcomingLsps
+        }
+      }
     }
   }
 `;
@@ -39,31 +40,31 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
-  const { topologyLayer, selectedGmPathNodeId, selectedVersion } = state;
+  const { topologyLayer, selectedVersion, selectedNode } = state;
 
   const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
 
-  const [{ data: gmPathData, fetching: isGmPathFetching }] = useQuery<
-    GetSynceGrandMasterPathQuery,
-    GetSynceGrandMasterPathQueryVariables
-  >({
-    query: GET_SYNCE_GM_PATH,
+  const [{ data: lspCountData }] = useQuery<GetMplsLspCountQuery, GetMplsLspCountQueryVariables>({
+    query: GET_MPLS_LPS_COUNT,
     requestPolicy: 'network-only',
     variables: {
-      deviceFrom: selectedGmPathNodeId as string,
+      deviceId: selectedNode?.id as string,
     },
-    pause: selectedGmPathNodeId === null,
+    pause: selectedNode?.id === null,
   });
 
   useEffect(() => {
-    const gmPathDataIds =
-      gmPathData?.deviceInventory.syncePathToGrandMaster?.map((p) => {
-        return p;
-      }) ?? [];
-    dispatch(setGmPathIds(gmPathDataIds));
-  }, [dispatch, gmPathData]);
+    const lspCounts =
+      lspCountData?.deviceInventory.mplsLspCount?.counts
+        ?.map((p) => {
+          return p;
+        })
+        .filter(omitNullValue)
+        .map(getLspCounts) ?? [];
+    dispatch(setLspCounts(lspCounts));
+  }, [dispatch, lspCountData]);
 
   useEffect(() => {
     if (selectedVersion == null) {
@@ -129,17 +130,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     };
   }, [handleKeyDown, handleKeyUp]);
 
-  const handleSearchClick = () => {
-    dispatch(findGmPath());
-  };
-
-  return (
-    <MplsTopologyGraph
-      onNodePositionUpdate={handleNodePositionUpdate}
-      onGrandMasterPathSearch={handleSearchClick}
-      isGrandMasterPathFetching={isGmPathFetching}
-    />
-  );
+  return <MplsTopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />;
 };
 
 export default MplsTopologyContainer;
