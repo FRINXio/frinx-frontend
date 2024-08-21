@@ -1,6 +1,6 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
-import { DeviceSize } from '../../__generated__/graphql';
+import { DeviceSize, MplsLspCountItem } from '../../__generated__/graphql';
 
 export const width = 1248;
 export const height = 600;
@@ -195,6 +195,12 @@ export type GraphMplsNodeInterface = {
   id: string;
   name: string;
   status: string;
+};
+
+export type LspCount = {
+  deviceName: string;
+  incomingLsps: number;
+  outcomingLsps: number;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
@@ -488,5 +494,25 @@ export function normalizeNodeInterfaceData<
     status,
     name,
     ...details,
+  };
+}
+
+export function getLspCounts(input: MplsLspCountItem): LspCount {
+  return {
+    deviceName: input.target ?? '',
+    incomingLsps: input.incomingLsps ?? 0,
+    outcomingLsps: input.outcomingLsps ?? 0,
+  };
+}
+
+// distance is number between 0-1 - thats ratio distance/length
+export function getPointAtLength(line: Line, distance: number): Position {
+  const { start, end } = line;
+  const length = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
+  const x = start.x + ((distance * length) / length) * (end.x - start.x);
+  const y = start.y + ((distance * length) / length) * (end.y - start.y);
+  return {
+    x,
+    y,
   };
 }

@@ -12,6 +12,7 @@ import {
   SynceGraphNode,
   MplsGraphNode,
   MplsGraphNodeDetails,
+  LspCount,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
@@ -258,6 +259,10 @@ export type StateAction =
         deviceName: string;
         deviceUsage?: SetDeviceUsagePayload | null;
       };
+    }
+  | {
+      type: 'SET_LSP_COUNTS';
+      lspCounts: LspCount[];
     };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
@@ -1173,6 +1178,13 @@ export function setGmPathIds(nodeIds: string[]): StateAction {
   return {
     type: 'SET_GM_PATH_IDS',
     nodeIds,
+  };
+}
+
+export function setLspCounts(lspCounts: LspCount[]): StateAction {
+  return {
+    type: 'SET_LSP_COUNTS',
+    lspCounts,
   };
 }
 

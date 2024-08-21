@@ -1155,6 +1155,18 @@ export type MplsGraphNodeInterface = {
   status: GraphEdgeStatus;
 };
 
+export type MplsLspCount = {
+  __typename?: 'MplsLspCount';
+  counts: Maybe<Array<Maybe<MplsLspCountItem>>>;
+};
+
+export type MplsLspCountItem = {
+  __typename?: 'MplsLspCountItem';
+  incomingLsps: Maybe<Scalars['Int']['output']>;
+  outcomingLsps: Maybe<Scalars['Int']['output']>;
+  target: Maybe<Scalars['String']['output']>;
+};
+
 export type MplsTopology = {
   __typename?: 'MplsTopology';
   edges: Array<GraphEdge>;
@@ -3432,6 +3444,7 @@ export type DeviceInventoryQuery = {
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
+  mplsLspCount: Maybe<MplsLspCount>;
   mplsTopology: Maybe<MplsTopology>;
   netTopology: Maybe<NetTopology>;
   netTopologyVersionData: NetTopologyVersionData;
@@ -3512,6 +3525,11 @@ export type DeviceInventoryQueryLocationsArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventoryQueryMplsLspCountArgs = {
+  deviceId: Scalars['String']['input'];
 };
 
 
@@ -4121,6 +4139,13 @@ export type GetSynceGrandMasterPathQueryVariables = Exact<{
 
 
 export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
+
+export type GetMplsLspCountQueryVariables = Exact<{
+  deviceId: Scalars['String']['input'];
+}>;
+
+
+export type GetMplsLspCountQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsLspCount: { __typename?: 'MplsLspCount', counts: Array<{ __typename?: 'MplsLspCountItem', target: string | null, incomingLsps: number | null, outcomingLsps: number | null } | null> | null } | null } };
 
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];
