@@ -1,49 +1,29 @@
-import React, { useEffect, VoidFunctionComponent } from 'react';
+import React, { useEffect, useRef, VoidFunctionComponent, useState } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
-import { gql, useQuery } from 'urql';
+import { useClient } from 'urql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Box, Heading } from '@chakra-ui/react';
 import { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
-import { GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables } from '../../../__generated__/graphql';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
 import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 import { useStateContext } from '../../../state.provider';
+import { getDeviceMetadata } from '../../../state.actions';
 
-const GEOMAP_DATA_QUERY = gql`
-  query GeoMapDataQuery($filter: FilterDevicesMetadatasInput) {
-    deviceInventory {
-      deviceMetadata(filter: $filter) {
-        nodes {
-          id
-          deviceName
-          locationName
-          geolocation {
-            latitude
-            longitude
-          }
-        }
-      }
-    }
-  }
-`;
-
-// Do not export this component
 const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
-  const { state } = useStateContext();
-  const { mapTopologyType } = state;
+  const client = useClient();
+  const { state, dispatch } = useStateContext();
+  const { mapTopologyType, selectedMapDeviceName, devicesMetadata: deviceData } = state;
 
-  // const [center, setCenter] = useState(DEFAULT_MAP_CENTER);
   const map = useMap();
-
-  const [{ data: deviceData }] = useQuery<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>({
-    query: GEOMAP_DATA_QUERY,
-    variables: {
-      filter: { topologyType: mapTopologyType },
-    },
-  });
+  const markerRefs = useRef<Map<string, L.Marker>>(new Map());
+  const [markersReady, setMarkersReady] = useState(false);
 
   useEffect(() => {
-    const bounds: LatLngBoundsLiteral | undefined = deviceData?.deviceInventory.deviceMetadata?.nodes
+    dispatch(getDeviceMetadata(client, { topologyType: mapTopologyType }));
+  }, [client, dispatch, mapTopologyType]);
+
+  useEffect(() => {
+    const bounds: LatLngBoundsLiteral | undefined = deviceData
       ?.map((node) => [node?.geolocation?.latitude, node?.geolocation?.longitude] as LatLngTuple)
       .filter((tuplet) => tuplet !== undefined);
 
@@ -51,6 +31,19 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
       map.flyToBounds(bounds);
     }
   }, [deviceData, map]);
+
+  useEffect(() => {
+    if (deviceData && markerRefs.current.size === deviceData?.length) {
+      setMarkersReady(true);
+      if (markersReady && selectedMapDeviceName && markerRefs.current.size > 0) {
+        const marker = markerRefs.current.get(selectedMapDeviceName);
+        if (marker) {
+          map.setView(marker.getLatLng(), map.getZoom());
+          marker.openPopup();
+        }
+      }
+    }
+  }, [deviceData, selectedMapDeviceName, map, markersReady]);
 
   return (
     <>
@@ -60,13 +53,18 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
       />
       {deviceData && (
         <MarkerClusterGroup chunkedLoading maxClusterRadius={30}>
-          {deviceData.deviceInventory.deviceMetadata?.nodes?.map((node) => {
+          {deviceData?.map((node) => {
             if (node?.geolocation?.latitude && node?.geolocation?.longitude) {
               return (
                 <Marker
                   position={[node.geolocation.latitude, node.geolocation.longitude]}
                   key={node?.id}
                   icon={DEFAULT_ICON}
+                  ref={(ref) => {
+                    if (ref && node.deviceName) {
+                      markerRefs.current.set(node.deviceName, ref);
+                    }
+                  }}
                 >
                   <Popup>
                     <Box mt={2}>
@@ -105,8 +103,6 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   );
 };
 
-// I had to use a wrapping component because the useMap() hook
-// can only be used in a descendant of <MapContainer>
 const MapTopologyContainer: VoidFunctionComponent = () => {
   return (
     <MapContainer

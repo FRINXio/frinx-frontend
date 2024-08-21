@@ -12,11 +12,15 @@ import {
   SynceGraphNode,
   MplsGraphNode,
   MplsGraphNodeDetails,
+  DeviceMetadata,
   LspCount,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
+  FilterDevicesMetadatasInput,
+  GeoMapDataQueryQuery,
+  GeoMapDataQueryQueryVariables,
   MplsDeviceDetails,
   MplsTopologyQuery,
   MplsTopologyQueryVariables,
@@ -213,6 +217,10 @@ export type StateAction =
       alternativePathIndex: number;
     }
   | {
+      type: 'SET_SELECTED_MAP_DEVICE_NAME';
+      deviceName: string | null;
+    }
+  | {
       type: 'SET_WEIGHT_VISIBILITY';
       isVisible: boolean;
     }
@@ -246,6 +254,10 @@ export type StateAction =
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_DEVICES_METADATA';
+      payload: DeviceMetadata[];
     }
   | {
       type: 'SET_SYNCE_DIFF_VISIBILITY';
@@ -418,6 +430,7 @@ const NET_TOPOLOGY_QUERY = gql`
       netTopology {
         nodes {
           id
+          phyDeviceName
           nodeId
           name
           interfaces {
@@ -461,6 +474,7 @@ const NET_TOPOLOGY_VERSION_DATA_QUERY = gql`
         nodes {
           id
           name
+          phyDeviceName
           interfaces {
             id
             name
@@ -653,6 +667,24 @@ const MPLS_TOPOLOGY_QUERY = gql`
   }
 `;
 
+const GEOMAP_DATA_QUERY = gql`
+  query GeoMapDataQuery($filter: FilterDevicesMetadatasInput) {
+    deviceInventory {
+      deviceMetadata(filter: $filter) {
+        nodes {
+          id
+          deviceName
+          locationName
+          geolocation {
+            latitude
+            longitude
+          }
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -828,6 +860,45 @@ export function getMplsNodesAndEdges(client: Client): ReturnType<ThunkAction<Sta
   };
 }
 
+export function setDeviceMetadata(payload: DeviceMetadata[]): StateAction {
+  return {
+    type: 'SET_DEVICES_METADATA',
+    payload,
+  };
+}
+
+export function getDeviceMetadata(
+  client: Client,
+  filter: FilterDevicesMetadatasInput,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>(
+        GEOMAP_DATA_QUERY,
+        { filter },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes } = data.data?.deviceInventory.deviceMetadata ?? { nodes: [] };
+        const metaData: DeviceMetadata[] =
+          nodes?.map((n) => ({
+            id: n?.id,
+            deviceName: n?.deviceName,
+            locationName: n?.locationName,
+            geolocation: {
+              latitude: n?.geolocation?.latitude,
+              longitude: n?.geolocation?.longitude,
+            },
+          })) || [];
+
+        dispatch(setDeviceMetadata(metaData));
+      });
+  };
+}
+
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
@@ -864,6 +935,13 @@ export function setSelectedNode(node: GraphNode | null): StateAction {
   return {
     type: 'SET_SELECTED_NODE',
     node,
+  };
+}
+
+export function setSelectedMapDeviceName(deviceName: string | null): StateAction {
+  return {
+    type: 'SET_SELECTED_MAP_DEVICE_NAME',
+    deviceName,
   };
 }
 

@@ -1,8 +1,15 @@
 import { Badge, Box, Button, Divider, Flex, Heading, HStack, Text, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { VoidFunctionComponent, useState } from 'react';
+import { useClient } from 'urql';
+import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { setMapTopologyType, setSelectedEdge, setTopologyLayer } from '../../../state.actions';
+import {
+  getDeviceMetadata,
+  setMapTopologyType,
+  setSelectedEdge,
+  setSelectedMapDeviceName,
+  setTopologyLayer,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { PtpGraphNode, GraphPtpNodeInterface, normalizeNodeInterfaceData } from '../graph.helpers';
 import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
@@ -15,8 +22,13 @@ type Props = {
 const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = useState(false);
   const { state, dispatch } = useStateContext();
-  const { selectedEdge, ptpEdges } = state;
+  const { selectedEdge, ptpEdges, devicesMetadata } = state;
   const { details, interfaces } = node;
+  const client = useClient();
+
+  useEffect(() => {
+    dispatch(getDeviceMetadata(client, { topologyType: 'PtpTopology' }));
+  }, [client, dispatch]);
 
   const handleInterfaceClick = (deviceInterface: GraphPtpNodeInterface) => {
     const [edge] = ptpEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));
@@ -33,6 +45,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
     dispatch(setMapTopologyType('PtpTopology'));
+    dispatch(setSelectedMapDeviceName(node.name));
   };
 
   const activeInterface = interfaces.filter((i) => i.id === selectedEdge?.source.interface).pop();
@@ -99,6 +112,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             size="sm"
             aria-label="Map"
             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+            isDisabled={!devicesMetadata?.find((device) => device.deviceName === node.name)}
             onClick={handleShowDeviceOnMap}
             colorScheme="blue"
           />
