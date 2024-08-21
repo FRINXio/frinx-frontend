@@ -1,13 +1,14 @@
 import { Badge, Box, Button, Flex, Heading, HStack, Icon, Text, IconButton } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
-import React, { VoidFunctionComponent } from 'react';
+import React, { useEffect, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
+import { useClient } from 'urql';
 import { getDeviceUsage, getDeviceUsageColor, getLocalDateFromUTC, usePerformanceMonitoring } from '@frinx/shared';
 import { Device } from '../../pages/topology/graph.helpers';
 import { DeviceUsage } from '../../__generated__/graphql';
 import { useStateContext } from '../../state.provider';
-import { setMapTopologyType, setSelectedMapDeviceName, setTopologyLayer } from '../../state.actions';
+import { getDeviceMetadata, setMapTopologyType, setSelectedMapDeviceName, setTopologyLayer } from '../../state.actions';
 
 type Props = {
   name: string;
@@ -30,6 +31,12 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
 }) => {
   const { state, dispatch } = useStateContext();
   const { devicesMetadata } = state;
+
+  const client = useClient();
+
+  useEffect(() => {
+    dispatch(getDeviceMetadata(client, { topologyType: 'PhysicalTopology' }));
+  }, [client, dispatch]);
 
   const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
   const localDate = device ? getLocalDateFromUTC(device.createdAt) : null;

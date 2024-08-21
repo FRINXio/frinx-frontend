@@ -53,7 +53,7 @@ const NetInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             size="sm"
             aria-label="Map"
             icon={<Icon as={FeatherIcon} icon="map" size={20} />}
-            isDisabled={!devicesMetadata?.find((device) => device.deviceName === node.name)}
+            isDisabled={!devicesMetadata?.find((device) => device.deviceName === node.phyDeviceName)}
             onClick={handleShowDeviceOnMap}
             colorScheme="blue"
           />

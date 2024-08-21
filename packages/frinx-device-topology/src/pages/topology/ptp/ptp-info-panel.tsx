@@ -1,8 +1,10 @@
 import { Badge, Box, Button, Divider, Flex, Heading, HStack, Text, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { VoidFunctionComponent, useState } from 'react';
+import { useClient } from 'urql';
+import React, { VoidFunctionComponent, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
+  getDeviceMetadata,
   setMapTopologyType,
   setSelectedEdge,
   setSelectedMapDeviceName,
@@ -22,6 +24,11 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const { state, dispatch } = useStateContext();
   const { selectedEdge, ptpEdges, devicesMetadata } = state;
   const { details, interfaces } = node;
+  const client = useClient();
+
+  useEffect(() => {
+    dispatch(getDeviceMetadata(client, { topologyType: 'PtpTopology' }));
+  }, [client, dispatch]);
 
   const handleInterfaceClick = (deviceInterface: GraphPtpNodeInterface) => {
     const [edge] = ptpEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));

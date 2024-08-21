@@ -1,8 +1,10 @@
 import { Badge, Box, Button, Divider, Flex, Heading, HStack, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { useState, VoidFunctionComponent } from 'react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
+import { useClient } from 'urql';
 import {
+  getDeviceMetadata,
   setMapTopologyType,
   setSelectedEdge,
   setSelectedMapDeviceName,
@@ -25,6 +27,12 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const { details } = node;
 
   const { interfaces } = node;
+
+  const client = useClient();
+
+  useEffect(() => {
+    dispatch(getDeviceMetadata(client, { topologyType: 'EthTopology' }));
+  }, [client, dispatch]);
 
   const handleInterfaceClick = (deviceInterface: GraphSynceNodeInterface) => {
     const [edge] = synceEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));
