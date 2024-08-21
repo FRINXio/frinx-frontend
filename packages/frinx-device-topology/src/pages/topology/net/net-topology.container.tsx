@@ -15,6 +15,7 @@ import {
   setMode,
   setSelectedAlternativePath,
   setSelectedEdge,
+  setSelectedNode,
 } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { ShortestPath, ShortestPathInfo } from '../../../state.reducer';
@@ -23,11 +24,13 @@ import {
   getControlPoints,
   getLinePoints,
   getNameFromNode,
+  GraphNetNode,
   height,
   isTargetingActiveNode,
   width,
 } from '../graph.helpers';
 import BackgroundSvg from '../img/background.svg';
+import NetInfoPanel from './net-info-panel';
 import NetNodes from './net-nodes';
 
 const EDGE_GAP = 75;
@@ -170,6 +173,10 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
     dispatch(setSelectedAlternativePath(Number(value)));
   };
 
+  const handleInfoPanelClose = () => {
+    dispatch(setSelectedNode(null));
+  };
+
   const shortestPathInfo = alternativeShortestPaths.at(selectedAlternativeShortestPathIndex) ?? null;
 
   const [shortestPathEdges, nonShortestPathEdges] = partition(netEdges, (edge) =>
@@ -257,6 +264,8 @@ const NetTopologyContainer: VoidFunctionComponent = () => {
           )}
         </Box>
       )}
+      {selectedNode != null && <NetInfoPanel node={selectedNode as GraphNetNode} onClose={handleInfoPanelClose} />}
+
       <Box position="absolute" top={2} right={2}>
         <ActionControls />
       </Box>
