@@ -34,7 +34,7 @@ import {
   UpdateLocationMutationVariables,
 } from '../../__generated__/graphql';
 import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
-import AddDeviceLocationModal, { FormValues } from '../../components/add-device-location-modal';
+import AddDeviceLocationModal from '../../components/add-device-location-modal';
 import { LocationData } from '../create-device/create-device-page';
 import EditDeviceLocationModal, { FormValues as EditFormValues } from '../../components/edit-device-location-modal';
 

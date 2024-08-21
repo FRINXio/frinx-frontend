@@ -85,8 +85,8 @@ const EditDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, initialLoc
     const map = useMap();
     useEffect(() => {
       const animate =
-        position[0] != parseFloat(initialLocation.latitude) || position[1] != parseFloat(initialLocation.longitude);
-      map.flyTo(position, map.getZoom(), { animate: animate });
+        position[0] !== parseFloat(initialLocation.latitude) || position[1] !== parseFloat(initialLocation.longitude);
+      map.flyTo(position, map.getZoom(), { animate });
     }, [position, map]);
     return null;
   };
