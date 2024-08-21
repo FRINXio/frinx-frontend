@@ -36,6 +36,7 @@ import {
 import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
 import AddDeviceLocationModal, { FormValues } from '../../components/add-device-location-modal';
 import { LocationData } from '../create-device/create-device-page';
+import EditDeviceLocationModal, { FormValues as EditFormValues } from '../../components/edit-device-location-modal';
 
 const LOCATION_LIST_QUERY = gql`
   query LocationList($first: Int, $last: Int, $after: String, $before: String) {
@@ -122,7 +123,7 @@ const LocationList: VoidFunctionComponent = () => {
   const editLocationModalDisclosure = useDisclosure();
   const deleteModalDisclosure = useDisclosure();
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
-  const [locationToEdit, setLocationToEdit] = useState<FormValues>();
+  const [locationToEdit, setLocationToEdit] = useState<EditFormValues>();
 
   const handleMapBtnClick = (deviceLocation: LocationModal | null) => {
     setLocationToShowOnMap(deviceLocation);
@@ -188,15 +189,13 @@ const LocationList: VoidFunctionComponent = () => {
         locationList={[]}
         setLocationFieldValue={() => {}}
       />
-      <AddDeviceLocationModal
+      {locationToEdit && <EditDeviceLocationModal
         isOpen={editLocationModalDisclosure.isOpen}
         onClose={editLocationModalDisclosure.onClose}
         title="Edit location"
-        locationList={[]}
-        setLocationFieldValue={() => {}}
         initialLocation={locationToEdit}
         onEditLocation={handleEditLocation}
-      />
+      />}
       <ConfirmDeleteModal
         isOpen={deleteModalDisclosure.isOpen}
         onClose={deleteModalDisclosure.onClose}
