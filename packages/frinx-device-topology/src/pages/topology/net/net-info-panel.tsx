@@ -20,8 +20,8 @@ const NetInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('EthTopology'));
-    dispatch(setSelectedMapDeviceName(node.name));
+    dispatch(setMapTopologyType('NetworkTopology'));
+    dispatch(setSelectedMapDeviceName(node.phyDeviceName));
   };
 
   return (
