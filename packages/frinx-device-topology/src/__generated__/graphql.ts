@@ -4141,6 +4141,13 @@ export type GetSynceGrandMasterPathQueryVariables = Exact<{
 
 export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
 
+export type GetMplsLspCountQueryVariables = Exact<{
+  deviceId: Scalars['String']['input'];
+}>;
+
+
+export type GetMplsLspCountQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsLspCount: { __typename?: 'MplsLspCount', counts: Array<{ __typename?: 'MplsLspCountItem', target: string | null, incomingLsps: number | null, outcomingLsps: number | null } | null> | null } | null } };
+
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];
   to: Scalars['String']['input'];
