@@ -189,13 +189,15 @@ const LocationList: VoidFunctionComponent = () => {
         locationList={[]}
         setLocationFieldValue={() => {}}
       />
-      {locationToEdit && <EditDeviceLocationModal
-        isOpen={editLocationModalDisclosure.isOpen}
-        onClose={editLocationModalDisclosure.onClose}
-        title="Edit location"
-        initialLocation={locationToEdit}
-        onEditLocation={handleEditLocation}
-      />}
+      {locationToEdit && (
+        <EditDeviceLocationModal
+          isOpen={editLocationModalDisclosure.isOpen}
+          onClose={editLocationModalDisclosure.onClose}
+          title="Edit location"
+          initialLocation={locationToEdit}
+          onEditLocation={handleEditLocation}
+        />
+      )}
       <ConfirmDeleteModal
         isOpen={deleteModalDisclosure.isOpen}
         onClose={deleteModalDisclosure.onClose}

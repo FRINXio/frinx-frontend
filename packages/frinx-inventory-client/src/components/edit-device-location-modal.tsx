@@ -46,15 +46,12 @@ const EditLocationSchema = yup.object().shape({
   longitude: yup.number().typeError('Please enter a number').required('Please enter a number'),
 });
 
-const EditDeviceLocationModal: FC<Props> = ({
-  isOpen,
-  onClose,
-  title,
-  initialLocation,
-  onEditLocation,
-}) => {
+const EditDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, initialLocation, onEditLocation }) => {
   const cancelRef = useRef<HTMLElement | null>(null);
-  const [parsedMapPosition, setParsedMapPosition] = useState<LatLngTuple>([parseFloat(initialLocation.latitude), parseFloat(initialLocation.longitude)]);
+  const [parsedMapPosition, setParsedMapPosition] = useState<LatLngTuple>([
+    parseFloat(initialLocation.latitude),
+    parseFloat(initialLocation.longitude),
+  ]);
 
   const { values, handleSubmit, resetForm, handleChange, errors, setFieldValue } = useFormik<FormValues>({
     enableReinitialize: true,
@@ -68,9 +65,9 @@ const EditDeviceLocationModal: FC<Props> = ({
           longitude: parseFloat(data.longitude.toString()),
         },
       };
-          
+
       onEditLocation(initialLocation.id, locationInput);
-          
+
       onClose();
     },
   });
@@ -87,7 +84,8 @@ const EditDeviceLocationModal: FC<Props> = ({
   const MapUpdater: React.FC<MapUpdaterProps> = ({ position }) => {
     const map = useMap();
     useEffect(() => {
-      const animate = position[0] != parseFloat(initialLocation.latitude) || position[1] != parseFloat(initialLocation.longitude);
+      const animate =
+        position[0] != parseFloat(initialLocation.latitude) || position[1] != parseFloat(initialLocation.longitude);
       map.flyTo(position, map.getZoom(), { animate: animate });
     }, [position, map]);
     return null;

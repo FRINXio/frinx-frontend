@@ -78,9 +78,9 @@ const AddDeviceLocationModal: FC<Props> = ({
           longitude: parseFloat(data.longitude.toString()),
         },
       };
-      
+
       onAddDeviceLocation(locationInput);
-        
+
       onClose();
     },
   });
