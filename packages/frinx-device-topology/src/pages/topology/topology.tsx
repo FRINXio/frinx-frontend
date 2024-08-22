@@ -12,6 +12,7 @@ import SynceTopologyContainer from './synce/synce-topology.container';
 import MplsTopologyContainer from './mpls/mpls-topology.container';
 import MapTopologyContainer from './map/map-topology.container';
 import TopologyTypeSelect from '../../components/topology-type-select/topology-type-select';
+import DeviceSearch from '../../components/device-search/device-search';
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
@@ -47,9 +48,12 @@ const Topology: VoidFunctionComponent = () => {
           </Box>
         )}
         {topologyLayer === 'Map' && (
-          <Box flex={1}>
-            <TopologyTypeSelect />
-          </Box>
+          <>
+            <Box flex={1}>
+              <TopologyTypeSelect />
+            </Box>
+            <DeviceSearch />
+          </>
         )}
         {topologyLayer === 'LLDP' && (
           <Box flex={1}>

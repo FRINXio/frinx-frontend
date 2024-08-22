@@ -199,6 +199,10 @@ export type StateAction =
       mapTopologyType: MapTopologyType;
     }
   | {
+      type: 'SET_MAP_TOPOLOGY_DEVICE_SEARCH';
+      mapTopologyDeviceSearch: string | null;
+    }
+  | {
       type: 'SET_SELECTED_NET_NODE';
       node: GraphNetNode | null;
     }
@@ -1243,6 +1247,13 @@ export function setMapTopologyType(mapTopologyType: MapTopologyType): StateActio
   return {
     type: 'SET_MAP_TOPOLOGY_TYPE',
     mapTopologyType,
+  };
+}
+
+export function setMapTopologyDeviceSearch(mapTopologyDeviceSearch: string | null): StateAction {
+  return {
+    type: 'SET_MAP_TOPOLOGY_DEVICE_SEARCH',
+    mapTopologyDeviceSearch,
   };
 }
 

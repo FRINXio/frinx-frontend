@@ -12,15 +12,15 @@ import { getDeviceMetadata } from '../../../state.actions';
 const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   const client = useClient();
   const { state, dispatch } = useStateContext();
-  const { mapTopologyType, selectedMapDeviceName, devicesMetadata: deviceData } = state;
+  const { mapTopologyType, mapTopologyDeviceSearch, selectedMapDeviceName, devicesMetadata: deviceData } = state;
 
   const map = useMap();
   const markerRefs = useRef<Map<string, L.Marker>>(new Map());
   const [markersReady, setMarkersReady] = useState(false);
 
   useEffect(() => {
-    dispatch(getDeviceMetadata(client, { topologyType: mapTopologyType }));
-  }, [client, dispatch, mapTopologyType]);
+    dispatch(getDeviceMetadata(client, { topologyType: mapTopologyType, deviceName: mapTopologyDeviceSearch }));
+  }, [client, dispatch, mapTopologyType, mapTopologyDeviceSearch]);
 
   useEffect(() => {
     const bounds: LatLngBoundsLiteral | undefined = deviceData
@@ -106,7 +106,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
 const MapTopologyContainer: VoidFunctionComponent = () => {
   return (
     <MapContainer
-      style={{ height: `calc(100vh - 320px)` }}
+      style={{ height: `calc(100vh - 320px)`, zIndex: 0 }}
       center={DEFAULT_MAP_CENTER}
       zoom={DEFAULT_MAP_ZOOM_LEVEL}
       scrollWheelZoom
