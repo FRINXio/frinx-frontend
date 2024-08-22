@@ -106,7 +106,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
 const MapTopologyContainer: VoidFunctionComponent = () => {
   return (
     <MapContainer
-      style={{ height: `calc(100vh - 320px)` }}
+      style={{ height: `calc(100vh - 320px)`, zIndex: 0 }}
       center={DEFAULT_MAP_CENTER}
       zoom={DEFAULT_MAP_ZOOM_LEVEL}
       scrollWheelZoom
