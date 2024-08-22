@@ -12,6 +12,7 @@ import {
   getNetNodesWithDiff,
   NetGraphNodeWithDiff,
   MplsGraphNodeWithDiff,
+  getMplsNodesWithDiff,
 } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
@@ -65,6 +66,7 @@ const MIN_ZOOM_LEVEL = 0.01;
 const MAX_ZOOM_LEVEL = 20;
 
 export type State = {
+  mapTopologyDeviceSearch: string | null;
   topologyLayer: TopologyLayer;
   mapTopologyType: MapTopologyType;
   selectedMapDeviceName: string | null;
@@ -120,6 +122,7 @@ export type State = {
 };
 
 export const initialState: State = {
+  mapTopologyDeviceSearch: null,
   topologyLayer: 'LLDP',
   mapTopologyType: null,
   selectedMapDeviceName: null,
@@ -256,6 +259,10 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.mapTopologyType = action.mapTopologyType;
         return acc;
       }
+      case 'SET_MAP_TOPOLOGY_DEVICE_SEARCH': {
+        acc.mapTopologyDeviceSearch = action.mapTopologyDeviceSearch;
+        return acc;
+      }
       case 'SET_SELECTED_LABELS': {
         acc.selectedLabels = action.labels;
         return acc;
@@ -310,6 +317,20 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.synceEdges = allEdges;
         acc.synceNodePositions = positionsMap.nodes;
         acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_MPLS_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getMplsNodesWithDiff(acc.mplsNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.mplsEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphMplsNodeInterface, MplsGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.mplsNodes = allNodes;
+        acc.mplsEdges = allEdges;
+        acc.mplsNodePositions = positionsMap.nodes;
+        acc.mplsInterfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
       case 'SET_NET_BACKUP_NODES_AND_EDGES': {
