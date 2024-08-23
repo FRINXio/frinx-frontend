@@ -100,6 +100,9 @@ export type State = {
   unconfirmedSelectedGmPathNodeId: string | null;
   selectedGmPathNodeId: string | null;
   gmPathIds: string[];
+  unconfirmedSelectedLspPathNodeId: string | null;
+  selectedLspPathNodeId: string | null;
+  lspPathIds: string[];
   synceNodes: SynceGraphNodeWithDiff[];
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
@@ -155,6 +158,9 @@ export const initialState: State = {
   unconfirmedSelectedGmPathNodeId: null,
   selectedGmPathNodeId: null,
   gmPathIds: [],
+  unconfirmedSelectedLspPathNodeId: null,
+  selectedLspPathNodeId: null,
+  lspPathIds: [],
   synceNodes: [],
   synceEdges: [],
   synceNodePositions: {},
@@ -395,6 +401,24 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_GM_PATH_IDS': {
         acc.gmPathIds = action.nodeIds;
+        return acc;
+      }
+      case 'SET_UNCONFIRMED_LSP_NODE_ID': {
+        acc.unconfirmedSelectedLspPathNodeId = action.nodeId;
+        return acc;
+      }
+      case 'FIND_LSP_PATH': {
+        acc.selectedLspPathNodeId = state.unconfirmedSelectedLspPathNodeId;
+        return acc;
+      }
+      case 'CLEAR_LSP_PATH': {
+        acc.unconfirmedSelectedLspPathNodeId = null;
+        acc.selectedLspPathNodeId = null;
+        acc.lspPathIds = [];
+        return acc;
+      }
+      case 'SET_LSP_PATH_IDS': {
+        acc.lspPathIds = action.nodeIds;
         return acc;
       }
       case 'SET_MODE': {

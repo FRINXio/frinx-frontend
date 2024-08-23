@@ -1,9 +1,18 @@
 import { omitNullValue } from '@frinx/shared';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
-import { getMplsNodesAndEdges, setMode, setLspCounts, getMplsBackupNodesAndEdges } from '../../../state.actions';
+import {
+  getMplsNodesAndEdges,
+  setMode,
+  setLspCounts,
+  getMplsBackupNodesAndEdges,
+  findLspPath,
+  setLspPathIds,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
+  GetLspPathQuery,
+  GetLspPathQueryVariables,
   GetMplsLspCountQuery,
   GetMplsLspCountQueryVariables,
   UpdateSyncePositionMutation,
@@ -36,11 +45,27 @@ const GET_MPLS_LPS_COUNT = gql`
   }
 `;
 
+const GET_LSP_PATH = gql`
+  query GetLspPath($deviceId: String!, $lspId: String!) {
+    deviceInventory {
+      lspPath(deviceId: $deviceId, lspId: $lspId) {
+        nodes {
+          nodeId
+          metadata {
+            fromDevice
+            toDevice
+          }
+        }
+      }
+    }
+  }
+`;
+
 const MplsTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
-  const { topologyLayer, selectedVersion, selectedNode } = state;
+  const { topologyLayer, selectedVersion, selectedNode, selectedLspPathNodeId } = state;
 
   const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
@@ -54,6 +79,24 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     },
     pause: selectedNode?.id === null,
   });
+
+  const [{ data: lspPathData, fetching: isLspPathFetching }] = useQuery<GetLspPathQuery, GetLspPathQueryVariables>({
+    query: GET_LSP_PATH,
+    requestPolicy: 'network-only',
+    variables: {
+      deviceId: selectedLspPathNodeId as string,
+      lspId: 'fakeId', // TODO; not implemented
+    },
+    pause: selectedLspPathNodeId === null,
+  });
+
+  useEffect(() => {
+    const lspPathDataIds =
+      lspPathData?.deviceInventory.lspPath?.nodes?.filter(omitNullValue).map((n) => {
+        return n?.nodeId;
+      }) ?? [];
+    dispatch(setLspPathIds(lspPathDataIds));
+  }, [dispatch, lspPathData]);
 
   useEffect(() => {
     const lspCounts =
@@ -104,7 +147,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     (event: KeyboardEvent): void => {
       const { code } = event;
       if (code === 'ShiftLeft' || code === 'ShiftRight') {
-        dispatch(setMode('GM_PATH'));
+        dispatch(setMode('LSP_PATH'));
       }
     },
     [dispatch],
@@ -130,7 +173,17 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     };
   }, [handleKeyDown, handleKeyUp]);
 
-  return <MplsTopologyGraph onNodePositionUpdate={handleNodePositionUpdate} />;
+  const handleSearchClick = () => {
+    dispatch(findLspPath());
+  };
+
+  return (
+    <MplsTopologyGraph
+      onLspPathSearch={handleSearchClick}
+      onNodePositionUpdate={handleNodePositionUpdate}
+      isLspPathFetching={isLspPathFetching}
+    />
+  );
 };
 
 export default MplsTopologyContainer;

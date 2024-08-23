@@ -2,7 +2,11 @@ import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
 import MplsNodeIcon from '../../../components/node-icons/mpls-node-icon';
 import { MplsGraphNodeWithDiff } from '../../../helpers/topology-helpers';
-import { setSelectedMplsNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
+import {
+  setSelectedMplsNode,
+  setUnconfimedNodeIdForGmPathSearch,
+  setUnconfimedNodeIdForLspPathSearch,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { Position, MplsGraphNode } from '../graph.helpers';
 
@@ -28,8 +32,8 @@ const MplsNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate, 
     mplsInterfaceGroupPositions,
     mode,
     selectedEdge,
-    unconfirmedSelectedGmPathNodeId,
-    gmPathIds,
+    unconfirmedSelectedLspPathNodeId,
+    lspPathIds,
     selectedNode,
   } = state;
 
@@ -40,8 +44,8 @@ const MplsNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate, 
   });
 
   const handlePointerDown = (event: React.PointerEvent<SVGRectElement>, node: MplsGraphNode) => {
-    if (mode === 'GM_PATH') {
-      dispatch(setUnconfimedNodeIdForGmPathSearch(node.id));
+    if (mode === 'LSP_PATH') {
+      dispatch(setUnconfimedNodeIdForLspPathSearch(node.id, null));
     } else {
       setIsPointerDown(true);
       setIsMoved(false);
@@ -95,8 +99,8 @@ const MplsNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate, 
           positions={{ nodes: mplsNodePositions, interfaceGroups: mplsInterfaceGroupPositions }}
           isFocused={connectedNodeIds.includes(node.name)}
           isSelected={selectedNode?.id === node.id}
-          isSelectedForGmPath={unconfirmedSelectedGmPathNodeId === node.id}
-          isGmPath={gmPathIds.includes(node.nodeId)}
+          isSelectedForGmPath={unconfirmedSelectedLspPathNodeId === node.id}
+          isLspPath={lspPathIds.includes(node.nodeId)}
           topologyMode={mode}
           node={node}
           selectedEdge={selectedEdge}

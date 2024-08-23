@@ -1109,6 +1109,25 @@ export type LocationEdge = {
   node: Location;
 };
 
+export type LspPath = {
+  __typename?: 'LspPath';
+  nodes: Maybe<Array<Maybe<LspPathItem>>>;
+};
+
+export type LspPathItem = {
+  __typename?: 'LspPathItem';
+  metadata: Maybe<LspPathItemMetadata>;
+  nodeId: Scalars['String']['output'];
+};
+
+export type LspPathItemMetadata = {
+  __typename?: 'LspPathItemMetadata';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  signalization: Maybe<Scalars['String']['output']>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
 export type LspTunnel = {
   __typename?: 'LspTunnel';
   fromDevice: Maybe<Scalars['String']['output']>;
@@ -3451,6 +3470,7 @@ export type DeviceInventoryQuery = {
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
+  lspPath: Maybe<LspPath>;
   mplsLspCount: Maybe<MplsLspCount>;
   mplsTopology: Maybe<MplsTopology>;
   mplsTopologyVersionData: MplsTopologyVersionData;
@@ -3533,6 +3553,12 @@ export type DeviceInventoryQueryLocationsArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type DeviceInventoryQueryLspPathArgs = {
+  deviceId: Scalars['String']['input'];
+  lspId: Scalars['String']['input'];
 };
 
 
@@ -4132,13 +4158,6 @@ export type TopologyCommonNodesQueryVariables = Exact<{
 
 export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null } };
 
-export type GeoMapDataQueryQueryVariables = Exact<{
-  filter?: InputMaybe<FilterDevicesMetadatasInput>;
-}>;
-
-
-export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
-
 export type UpdateSyncePositionMutationVariables = Exact<{
   input: UpdateGraphNodeCoordinatesInput;
 }>;
@@ -4152,6 +4171,14 @@ export type GetMplsLspCountQueryVariables = Exact<{
 
 
 export type GetMplsLspCountQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsLspCount: { __typename?: 'MplsLspCount', counts: Array<{ __typename?: 'MplsLspCountItem', target: string | null, incomingLsps: number | null, outcomingLsps: number | null } | null> | null } | null } };
+
+export type GetLspPathQueryVariables = Exact<{
+  deviceId: Scalars['String']['input'];
+  lspId: Scalars['String']['input'];
+}>;
+
+
+export type GetLspPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', lspPath: { __typename?: 'LspPath', nodes: Array<{ __typename?: 'LspPathItem', nodeId: string, metadata: { __typename?: 'LspPathItemMetadata', fromDevice: string | null, toDevice: string | null } | null } | null> | null } | null } };
 
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];
@@ -4248,3 +4275,10 @@ export type MplsTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'MplsDeviceDetails', lspTunnels: Array<{ __typename?: 'LspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'MplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null, operState: string | null, ldpPrefix: string | null, mplsOperation: string | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+
+export type GeoMapDataQueryQueryVariables = Exact<{
+  filter?: InputMaybe<FilterDevicesMetadatasInput>;
+}>;
+
+
+export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };

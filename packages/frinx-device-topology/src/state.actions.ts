@@ -89,7 +89,7 @@ export type SetDeviceUsagePayload = {
   memoryLoad: number | null;
 };
 
-export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
+export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH' | 'LSP_PATH';
 
 export type MapTopologyType =
   | 'PhysicalTopology'
@@ -241,6 +241,18 @@ export type StateAction =
       type: 'CLEAR_GM_PATH';
     }
   | { type: 'SET_GM_PATH_IDS'; nodeIds: string[] }
+  | {
+      type: 'SET_UNCONFIRMED_LSP_NODE_ID';
+      nodeId: string | null;
+      lspId: string | null;
+    }
+  | {
+      type: 'FIND_LSP_PATH';
+    }
+  | {
+      type: 'CLEAR_LSP_PATH';
+    }
+  | { type: 'SET_LSP_PATH_IDS'; nodeIds: string[] }
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
@@ -1307,6 +1319,33 @@ export function setSynceDiffVisibility(isVisible: boolean): StateAction {
   return {
     type: 'SET_SYNCE_DIFF_VISIBILITY',
     isVisible,
+  };
+}
+
+export function setUnconfimedNodeIdForLspPathSearch(nodeId: string, lspId: string | null): StateAction {
+  return {
+    type: 'SET_UNCONFIRMED_LSP_NODE_ID',
+    nodeId,
+    lspId,
+  };
+}
+
+export function findLspPath(): StateAction {
+  return {
+    type: 'FIND_LSP_PATH',
+  };
+}
+
+export function clearLspPathSearch(): StateAction {
+  return {
+    type: 'CLEAR_LSP_PATH',
+  };
+}
+
+export function setLspPathIds(nodeIds: string[]): StateAction {
+  return {
+    type: 'SET_LSP_PATH_IDS',
+    nodeIds,
   };
 }
 
