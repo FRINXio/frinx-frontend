@@ -20,6 +20,7 @@ import { gql, useQuery } from 'urql';
 import { Editor } from '@frinx/shared';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { ExternalStorageQuery, ExternalStorageQueryVariables } from '../../../__generated__/graphql';
+import { unescapedJSON } from '../../../helpers/utils.helpers';
 
 const EXTERNAL_STORAGE = gql`
   query ExternalStorage($path: String!) {
@@ -78,7 +79,7 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
           )}
           {!fetching && (error || data == null) && <Text>Failed to load external storage payload</Text>}
           {!fetching && data != null && (
-            <Editor value={JSON.stringify(data.conductor.externalStorage)} language="json" />
+            <Editor value={unescapedJSON(isEscaped, data.conductor.externalStorage)} language="json" />
           )}
         </ModalBody>
       </ModalContent>
