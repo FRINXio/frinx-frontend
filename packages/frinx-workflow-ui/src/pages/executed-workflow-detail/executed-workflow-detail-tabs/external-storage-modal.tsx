@@ -65,7 +65,7 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
               icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
               size="sm"
               className="clp"
-              onClick={() => copyToClipBoard(value)}
+              onClick={() => copyToClipBoard(data?.conductor.externalStorage)}
             />
             <Button size="sm" onClick={handleEscapeChange}>
               {isEscaped ? 'Unescape' : 'Escape'}
