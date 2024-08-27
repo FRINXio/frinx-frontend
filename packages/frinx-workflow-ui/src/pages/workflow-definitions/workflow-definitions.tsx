@@ -129,6 +129,7 @@ const WorkflowDefinitions: FC<Props> = ({ onImportSuccess }) => {
       orderBy,
       ...paginationArgs,
     },
+    requestPolicy: 'cache-and-network',
     context,
   });
   const [{ data: labelsData }] = useQuery({
