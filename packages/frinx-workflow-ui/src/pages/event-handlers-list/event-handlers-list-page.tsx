@@ -106,6 +106,7 @@ const EventHandlersListPage: FC = () => {
   );
   const [{ data, fetching, error }] = useQuery<GetEventHandlersQuery, GetEventHandlersQueryVariables>({
     query: EVENT_HANDLERS_QUERY,
+    requestPolicy: 'cache-and-network',
     context: ctx,
     variables: {
       filter: eventHandlersFilter,

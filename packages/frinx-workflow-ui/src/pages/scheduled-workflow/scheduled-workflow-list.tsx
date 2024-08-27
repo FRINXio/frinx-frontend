@@ -146,6 +146,7 @@ function ScheduledWorkflowList() {
   });
   const [{ data: scheduledWorkflows, fetching: isLoadingSchedules, error }] = useQuery<SchedulesQuery>({
     query: SCHEDULED_WORKFLOWS_QUERY,
+    requestPolicy: 'cache-and-network',
   });
   const [, deleteSchedule] = useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(
     DELETE_SCHEDULE_MUTATION,
