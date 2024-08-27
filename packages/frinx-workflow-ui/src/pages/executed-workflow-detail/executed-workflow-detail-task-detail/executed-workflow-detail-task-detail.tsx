@@ -223,9 +223,14 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
                   </Stack>
-                  <Text>
-                    {unescapedJSON(isEscaped, task.logs != null ? JSON.stringify(task.logs) : undefined) ?? 'No logs'}
-                  </Text>
+                  <Textarea
+                    fontFamily="monospace"
+                    value={unescapedJSON(isEscaped, task.logs != null ? task.logs : undefined) ?? 'No logs'}
+                    isReadOnly
+                    id="t_logs"
+                    variant="filled"
+                    minH={600}
+                  />
                 </Box>
               </TabPanel>
             </TabPanels>
