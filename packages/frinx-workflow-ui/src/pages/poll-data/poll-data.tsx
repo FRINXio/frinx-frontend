@@ -55,6 +55,7 @@ const PollDataPage = () => {
 
   const [{ data: pollData }] = useQuery<PollDataQuery, PollDataQueryVariables>({
     query: POLL_DATA_QUERY,
+    requestPolicy: 'cache-and-network',
   });
 
   const pollDataNodes = (pollData?.conductor.getAllPollData ?? [])
