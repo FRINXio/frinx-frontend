@@ -16,6 +16,7 @@ import {
   Textarea,
   HStack,
   Spacer,
+  Badge,
 } from '@chakra-ui/react';
 import { jsonParse } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
@@ -24,6 +25,7 @@ import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { unescapedJSON } from '../../../helpers/utils.helpers';
 import ExternalStorageModal from '../executed-workflow-detail-tabs/external-storage-modal';
 import { ControlExecutedWorkflowSubscription } from '../../../__generated__/graphql';
+import { ArrowForwardIcon, CheckCircleIcon, CheckIcon } from '@chakra-ui/icons';
 
 type Props = {
   executedWorkflow: NonNullable<ControlExecutedWorkflowSubscription['conductor']['controlExecutedWorkflow']>;
@@ -159,6 +161,7 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                     </Button>
                     {task.externalOutputPayloadStoragePath != null && (
                       <Button
+                        rightIcon={<CheckCircleIcon color='gray.400' />}
                         size="sm"
                         onClick={() => {
                           setPayload({ type: 'Output', data: task.externalOutputPayloadStoragePath || '' });
