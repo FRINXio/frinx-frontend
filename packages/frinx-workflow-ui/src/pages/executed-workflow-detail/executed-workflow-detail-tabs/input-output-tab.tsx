@@ -3,6 +3,7 @@ import { IconButton, Button, SimpleGrid, Box, Stack, Text, Icon, useDisclosure }
 import FeatherIcon from 'feather-icons-react';
 import { Editor } from '@frinx/shared';
 import ExternalStorageModal from './external-storage-modal';
+import { unescapedJSON } from '../../../helpers/utils.helpers';
 
 type Props = {
   isEscaped: boolean;
@@ -73,7 +74,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Editor value={JSON.stringify(input, null, 2)} options={{ readOnly: true, lineNumbers: 'off' }} />
+          <Editor value={unescapedJSON(isEscaped, input)} options={{ readOnly: true, lineNumbers: 'off' }} />
         </Box>
         <Box>
           <Stack direction="row" spacing={2} align="center" mb={2}>
@@ -101,7 +102,7 @@ const InputOutputTab: VoidFunctionComponent<Props> = ({
               </Button>
             )}
           </Stack>
-          <Editor value={JSON.stringify(output, null, 2)} options={{ readOnly: true, lineNumbers: 'off' }} />
+          <Editor value={unescapedJSON(isEscaped, output)} options={{ readOnly: true, lineNumbers: 'off' }} />
         </Box>
       </SimpleGrid>
     </>
