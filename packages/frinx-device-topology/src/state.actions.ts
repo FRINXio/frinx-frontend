@@ -14,11 +14,13 @@ import {
   MplsGraphNodeDetails,
   DeviceMetadata,
   LspCount,
+  MapDeviceNeighbors,
 } from './pages/topology/graph.helpers';
 import { ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
   FilterDevicesMetadatasInput,
+  FilterNeighborInput,
   GeoMapDataQueryQuery,
   GeoMapDataQueryQueryVariables,
   MplsDeviceDetails,
@@ -26,6 +28,8 @@ import {
   MplsTopologyQueryVariables,
   MplsTopologyVersionDataQuery,
   MplsTopologyVersionDataQueryVariables,
+  NeighboursQuery,
+  NeighboursQueryVariables,
   NetTopologyQuery,
   NetTopologyQueryVariables,
   NetTopologyVersionDataQuery,
@@ -268,6 +272,10 @@ export type StateAction =
   | {
       type: 'SET_DEVICES_METADATA';
       payload: DeviceMetadata[];
+    }
+  | {
+      type: 'SET_MAP_DEVICE_NEIGHBORS';
+      payload: MapDeviceNeighbors[];
     }
   | {
       type: 'SET_SYNCE_DIFF_VISIBILITY';
@@ -728,6 +736,19 @@ const GEOMAP_DATA_QUERY = gql`
   }
 `;
 
+const MAP_NEIGHBORS_QUERY = gql`
+  query Neighbours($filter: FilterNeighborInput) {
+    deviceInventory {
+      deviceNeighbor(filter: $filter) {
+        neighbors {
+          deviceName
+          deviceId
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -938,6 +959,40 @@ export function getDeviceMetadata(
           })) || [];
 
         dispatch(setDeviceMetadata(metaData));
+      });
+  };
+}
+
+export function setMapDeviceNeighbors(payload: MapDeviceNeighbors[]): StateAction {
+  return {
+    type: 'SET_MAP_DEVICE_NEIGHBORS',
+    payload,
+  };
+}
+
+export function getMapDeviceNeighbors(
+  client: Client,
+  filter: FilterNeighborInput,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<NeighboursQuery, NeighboursQueryVariables>(
+        MAP_NEIGHBORS_QUERY,
+        { filter },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const deviceNeighborsData = data.data?.deviceInventory.deviceNeighbor?.neighbors ?? [];
+        const deviceNeighbors: MapDeviceNeighbors[] =
+          deviceNeighborsData?.map((d) => ({
+            deviceName: d?.deviceName || '',
+            deviceId: d?.deviceId || '',
+          })) || [];
+
+        dispatch(setMapDeviceNeighbors(deviceNeighbors));
       });
   };
 }

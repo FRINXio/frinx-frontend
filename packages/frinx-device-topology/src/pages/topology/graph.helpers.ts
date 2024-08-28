@@ -127,6 +127,11 @@ export type DeviceMetadata = {
   };
 };
 
+export type MapDeviceNeighbors = {
+  deviceName: string;
+  deviceId: string;
+};
+
 export type SourceTarget = {
   nodeId: string;
   interface: string;

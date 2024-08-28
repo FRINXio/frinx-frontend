@@ -742,6 +742,11 @@ export type DeviceMetadata = {
   nodes: Maybe<Array<Maybe<GeoMapDevice>>>;
 };
 
+export type DeviceNeighbors = {
+  __typename?: 'DeviceNeighbors';
+  neighbors: Maybe<Array<Maybe<Neighbor>>>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -936,6 +941,11 @@ export type FilterEventHandlerInput = {
 
 export type FilterLabelsInput = {
   name: Scalars['String']['input'];
+};
+
+export type FilterNeighborInput = {
+  deviceName: Scalars['String']['input'];
+  topologyType: TopologyType;
 };
 
 export type FilterStreamsInput = {
@@ -1185,6 +1195,12 @@ export type Mutation = {
   deviceInventory: DeviceInventoryMutation;
   resourceManager: ResourceManagerMutation;
   scheduler: SchedulerMutation;
+};
+
+export type Neighbor = {
+  __typename?: 'Neighbor';
+  deviceId: Scalars['String']['output'];
+  deviceName: Scalars['String']['output'];
 };
 
 export type NetInterface = {
@@ -3447,6 +3463,7 @@ export type DeviceInventoryQuery = {
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
   deviceMetadata: Maybe<DeviceMetadata>;
+  deviceNeighbor: Maybe<DeviceNeighbors>;
   devices: DeviceConnection;
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
@@ -3506,6 +3523,11 @@ export type DeviceInventoryQueryDataStoreArgs = {
 
 export type DeviceInventoryQueryDeviceMetadataArgs = {
   filter?: InputMaybe<FilterDevicesMetadatasInput>;
+};
+
+
+export type DeviceInventoryQueryDeviceNeighborArgs = {
+  filter?: InputMaybe<FilterNeighborInput>;
 };
 
 
@@ -4132,13 +4154,6 @@ export type TopologyCommonNodesQueryVariables = Exact<{
 
 export type TopologyCommonNodesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', topologyCommonNodes: { __typename?: 'TopologyCommonNodes', commonNodes: Array<string> } | null } };
 
-export type GeoMapDataQueryQueryVariables = Exact<{
-  filter?: InputMaybe<FilterDevicesMetadatasInput>;
-}>;
-
-
-export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
-
 export type UpdateSyncePositionMutationVariables = Exact<{
   input: UpdateGraphNodeCoordinatesInput;
 }>;
@@ -4248,3 +4263,17 @@ export type MplsTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'MplsDeviceDetails', lspTunnels: Array<{ __typename?: 'LspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'MplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null, operState: string | null, ldpPrefix: string | null, mplsOperation: string | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+
+export type GeoMapDataQueryQueryVariables = Exact<{
+  filter?: InputMaybe<FilterDevicesMetadatasInput>;
+}>;
+
+
+export type GeoMapDataQueryQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceMetadata: { __typename?: 'DeviceMetadata', nodes: Array<{ __typename?: 'GeoMapDevice', id: string, deviceName: string, locationName: string | null, geolocation: { __typename?: 'Geolocation', latitude: number, longitude: number } | null } | null> | null } | null } };
+
+export type NeighboursQueryVariables = Exact<{
+  filter?: InputMaybe<FilterNeighborInput>;
+}>;
+
+
+export type NeighboursQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceNeighbor: { __typename?: 'DeviceNeighbors', neighbors: Array<{ __typename?: 'Neighbor', deviceName: string, deviceId: string } | null> | null } | null } };

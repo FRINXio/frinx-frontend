@@ -24,9 +24,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = React.useState(false);
   const { state, dispatch } = useStateContext();
   const { synceEdges, devicesMetadata } = state;
-  const { details } = node;
-
-  const { interfaces } = node;
+  const { details, interfaces } = node;
 
   const client = useClient();
 
