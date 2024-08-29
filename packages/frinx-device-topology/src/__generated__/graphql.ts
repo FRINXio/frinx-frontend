@@ -1111,17 +1111,12 @@ export type LocationEdge = {
 
 export type LspPath = {
   __typename?: 'LspPath';
-  nodes: Maybe<Array<Maybe<LspPathItem>>>;
+  metadata: Maybe<LspPathMetadata>;
+  path: Array<Scalars['String']['output']>;
 };
 
-export type LspPathItem = {
-  __typename?: 'LspPathItem';
-  metadata: Maybe<LspPathItemMetadata>;
-  nodeId: Scalars['String']['output'];
-};
-
-export type LspPathItemMetadata = {
-  __typename?: 'LspPathItemMetadata';
+export type LspPathMetadata = {
+  __typename?: 'LspPathMetadata';
   fromDevice: Maybe<Scalars['String']['output']>;
   signalization: Maybe<Scalars['String']['output']>;
   toDevice: Maybe<Scalars['String']['output']>;
@@ -4172,13 +4167,13 @@ export type GetMplsLspCountQueryVariables = Exact<{
 
 export type GetMplsLspCountQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsLspCount: { __typename?: 'MplsLspCount', counts: Array<{ __typename?: 'MplsLspCountItem', target: string | null, incomingLsps: number | null, outcomingLsps: number | null } | null> | null } | null } };
 
-export type GetLspPathQueryVariables = Exact<{
+export type LspPathQueryVariables = Exact<{
   deviceId: Scalars['String']['input'];
   lspId: Scalars['String']['input'];
 }>;
 
 
-export type GetLspPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', lspPath: { __typename?: 'LspPath', nodes: Array<{ __typename?: 'LspPathItem', nodeId: string, metadata: { __typename?: 'LspPathItemMetadata', fromDevice: string | null, toDevice: string | null } | null } | null> | null } | null } };
+export type LspPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', lspPath: { __typename?: 'LspPath', path: Array<string>, metadata: { __typename?: 'LspPathMetadata', fromDevice: string | null, toDevice: string | null, signalization: string | null, uptime: number | null } | null } | null } };
 
 export type ShortestPathQueryVariables = Exact<{
   from: Scalars['String']['input'];

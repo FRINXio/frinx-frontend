@@ -14,8 +14,8 @@ type Props = {
   isUnknown: boolean;
   isShortestPath: boolean;
   isWeightVisible?: boolean;
-  isGmPath?: boolean;
   weight: number | null;
+  isLspPath?: boolean;
   // TODO; props below will be used later
   // mplsInterfaceMap: Map<string, GraphMplsNodeInterface>;
   // mplsNodes: MplsGraphNodeWithDiff[];
@@ -33,7 +33,7 @@ const Edge: VoidFunctionComponent<Props> = ({
   isUnknown,
   isShortestPath,
   isWeightVisible,
-  isGmPath,
+  isLspPath,
   weight,
 }) => {
   const { start, end } = linePoints;
@@ -61,7 +61,7 @@ const Edge: VoidFunctionComponent<Props> = ({
       <path
         ref={edgeRef}
         strokeWidth={1}
-        stroke={get(colors, getEdgeColor(edge.change, isUnknown, isShortestPath, isGmPath ?? false))}
+        stroke={get(colors, getEdgeColor(edge.change, isUnknown, isShortestPath, isLspPath ?? false))}
         strokeLinejoin="round"
         fill="none"
         d={getCurvePath(start, end, controlPoints)}
@@ -119,7 +119,7 @@ const Edge: VoidFunctionComponent<Props> = ({
         y1={start.y}
         x2={end.x}
         y2={end.y}
-        stroke={getEdgeColor(edge.change, isUnknown, isShortestPath, isGmPath ?? false)}
+        stroke={getEdgeColor(edge.change, isUnknown, isShortestPath, isLspPath ?? false)}
         strokeWidth={isActive ? 3 : 1}
         strokeLinecap="round"
         borderWidth={3}

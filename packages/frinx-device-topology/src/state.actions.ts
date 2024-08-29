@@ -15,7 +15,7 @@ import {
   DeviceMetadata,
   LspCount,
 } from './pages/topology/graph.helpers';
-import { ShortestPath, State, TopologyLayer } from './state.reducer';
+import { LspPathMetadata, ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
   FilterDevicesMetadatasInput,
@@ -252,7 +252,7 @@ export type StateAction =
   | {
       type: 'CLEAR_LSP_PATH';
     }
-  | { type: 'SET_LSP_PATH_IDS'; nodeIds: string[] }
+  | { type: 'SET_LSP_PATH'; nodeIds: string[]; metadata: LspPathMetadata | null }
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
@@ -1342,10 +1342,11 @@ export function clearLspPathSearch(): StateAction {
   };
 }
 
-export function setLspPathIds(nodeIds: string[]): StateAction {
+export function setLspPath(nodeIds: string[], metadata: LspPathMetadata | null): StateAction {
   return {
-    type: 'SET_LSP_PATH_IDS',
+    type: 'SET_LSP_PATH',
     nodeIds,
+    metadata,
   };
 }
 

@@ -59,6 +59,13 @@ export type ShortestPathInfo = {
 };
 export type ShortestPath = ShortestPathInfo[];
 
+export type LspPathMetadata = {
+  fromDevice: string | null;
+  toDevice: string | null;
+  signalization: string | null;
+  uptime: number | null;
+};
+
 // We need to limit zoomLevel to reasonable numbers,
 // these were picked as a good start.
 // (Safari on Mac should have lower MAX, but we will stick with it for now)
@@ -102,7 +109,9 @@ export type State = {
   gmPathIds: string[];
   unconfirmedSelectedLspPathNodeId: string | null;
   selectedLspPathNodeId: string | null;
+  selectedLspId: string | null;
   lspPathIds: string[];
+  lspPathMetadata: LspPathMetadata | null;
   synceNodes: SynceGraphNodeWithDiff[];
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
@@ -160,7 +169,9 @@ export const initialState: State = {
   gmPathIds: [],
   unconfirmedSelectedLspPathNodeId: null,
   selectedLspPathNodeId: null,
+  selectedLspId: null,
   lspPathIds: [],
+  lspPathMetadata: null,
   synceNodes: [],
   synceEdges: [],
   synceNodePositions: {},
@@ -405,6 +416,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_UNCONFIRMED_LSP_NODE_ID': {
         acc.unconfirmedSelectedLspPathNodeId = action.nodeId;
+        acc.selectedLspId = action.lspId;
         return acc;
       }
       case 'FIND_LSP_PATH': {
@@ -415,10 +427,12 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.unconfirmedSelectedLspPathNodeId = null;
         acc.selectedLspPathNodeId = null;
         acc.lspPathIds = [];
+        acc.lspPathMetadata = null;
         return acc;
       }
-      case 'SET_LSP_PATH_IDS': {
+      case 'SET_LSP_PATH': {
         acc.lspPathIds = action.nodeIds;
+        acc.lspPathMetadata = action.metadata;
         return acc;
       }
       case 'SET_MODE': {

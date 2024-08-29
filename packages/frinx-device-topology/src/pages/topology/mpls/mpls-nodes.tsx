@@ -2,11 +2,7 @@ import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
 import MplsNodeIcon from '../../../components/node-icons/mpls-node-icon';
 import { MplsGraphNodeWithDiff } from '../../../helpers/topology-helpers';
-import {
-  setSelectedMplsNode,
-  setUnconfimedNodeIdForGmPathSearch,
-  setUnconfimedNodeIdForLspPathSearch,
-} from '../../../state.actions';
+import { setSelectedMplsNode, setUnconfimedNodeIdForLspPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { Position, MplsGraphNode } from '../graph.helpers';
 

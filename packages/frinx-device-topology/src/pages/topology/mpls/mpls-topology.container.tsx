@@ -7,12 +7,12 @@ import {
   setLspCounts,
   getMplsBackupNodesAndEdges,
   findLspPath,
-  setLspPathIds,
+  setLspPath,
 } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
-  GetLspPathQuery,
-  GetLspPathQueryVariables,
+  LspPathQuery,
+  LspPathQueryVariables,
   GetMplsLspCountQuery,
   GetMplsLspCountQueryVariables,
   UpdateSyncePositionMutation,
@@ -46,15 +46,15 @@ const GET_MPLS_LPS_COUNT = gql`
 `;
 
 const GET_LSP_PATH = gql`
-  query GetLspPath($deviceId: String!, $lspId: String!) {
+  query LspPath($deviceId: String!, $lspId: String!) {
     deviceInventory {
       lspPath(deviceId: $deviceId, lspId: $lspId) {
-        nodes {
-          nodeId
-          metadata {
-            fromDevice
-            toDevice
-          }
+        path
+        metadata {
+          fromDevice
+          toDevice
+          signalization
+          uptime
         }
       }
     }
@@ -65,7 +65,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
-  const { topologyLayer, selectedVersion, selectedNode, selectedLspPathNodeId } = state;
+  const { topologyLayer, selectedVersion, selectedNode, selectedLspPathNodeId, selectedLspId } = state;
 
   const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
@@ -80,22 +80,20 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     pause: selectedNode?.id === null,
   });
 
-  const [{ data: lspPathData, fetching: isLspPathFetching }] = useQuery<GetLspPathQuery, GetLspPathQueryVariables>({
+  const [{ data: lspPathData, fetching: isLspPathFetching }] = useQuery<LspPathQuery, LspPathQueryVariables>({
     query: GET_LSP_PATH,
     requestPolicy: 'network-only',
     variables: {
       deviceId: selectedLspPathNodeId as string,
-      lspId: 'fakeId', // TODO; not implemented
+      lspId: selectedLspId as string,
     },
-    pause: selectedLspPathNodeId === null,
+    pause: selectedLspPathNodeId === null || selectedLspId === null,
   });
 
   useEffect(() => {
-    const lspPathDataIds =
-      lspPathData?.deviceInventory.lspPath?.nodes?.filter(omitNullValue).map((n) => {
-        return n?.nodeId;
-      }) ?? [];
-    dispatch(setLspPathIds(lspPathDataIds));
+    const lspPathDataIds = lspPathData?.deviceInventory?.lspPath?.path ?? [];
+    const metadata = lspPathData?.deviceInventory.lspPath?.metadata ?? null;
+    dispatch(setLspPath(lspPathDataIds, metadata));
   }, [dispatch, lspPathData]);
 
   useEffect(() => {

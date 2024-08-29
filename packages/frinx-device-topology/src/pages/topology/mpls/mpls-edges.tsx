@@ -26,17 +26,15 @@ const MplsEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
     selectedNode,
     mplsNodePositions: nodePositions,
     mplsInterfaceGroupPositions: interfaceGroupPositions,
-    gmPathIds,
+    lspPathIds,
   } = state;
 
   const handleEdgeClick = (edge: GraphEdgeWithDiff | null) => {
     dispatch(setSelectedEdge(edge));
   };
 
-  const [gmEdges, nonGmEdges] = partition(edges, (edge) => isGmPathPredicate(gmPathIds, edge));
-  const sortedSynceEdges = [...nonGmEdges, ...gmEdges];
-  // TODO: will be used in future implementation
-  // const netInterfaceMap = new Map(mplsNodes.flatMap((n) => n.interfaces).map((i) => [i.id, i]));
+  const [lspEdges, nonLspEdges] = partition(edges, (edge) => isGmPathPredicate(lspPathIds, edge));
+  const sortedSynceEdges = [...nonLspEdges, ...lspEdges];
 
   return (
     <g>
@@ -68,8 +66,8 @@ const MplsEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
 
         const isUnknown = false;
         const isShortestPath = false;
-        const isGmPathEdge =
-          gmEdges.findIndex(
+        const isLspPathEdge =
+          lspEdges.findIndex(
             (e) => e.source.interface === edge.source.interface && e.target.interface === edge.target.interface,
           ) > -1;
 
@@ -83,7 +81,7 @@ const MplsEdges: VoidFunctionComponent<Props> = ({ edgesWithDiff: edges }) => {
             key={edge.id}
             isUnknown={isUnknown}
             isShortestPath={isShortestPath}
-            isGmPath={isGmPathEdge}
+            isLspPath={isLspPathEdge}
             weight={null}
           />
         );

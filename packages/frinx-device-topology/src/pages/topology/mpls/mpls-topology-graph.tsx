@@ -1,7 +1,12 @@
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Select } from '@chakra-ui/react';
 import { unwrap } from '@frinx/shared';
 import React, { useRef, VoidFunctionComponent } from 'react';
-import { clearLspPathSearch, setSelectedNode, updateMplsNodePosition } from '../../../state.actions';
+import {
+  clearLspPathSearch,
+  setSelectedNode,
+  setUnconfimedNodeIdForLspPathSearch,
+  updateMplsNodePosition,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import Edges from './mpls-edges';
 import { height, Position, width, MplsGraphNode } from '../graph.helpers';
@@ -9,6 +14,7 @@ import BackgroundSvg from '../img/background.svg';
 import MplsNodes from './mpls-nodes';
 import MplsInfoPanel from './mpls-info-panel';
 import LspCounts from './lsp-counts';
+import MplsLspPanel from './mpls-isp-panel';
 
 type Props = {
   isLspPathFetching: boolean;
@@ -29,6 +35,9 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
     mplsEdges: edges,
     mplsNodes: nodes,
     selectedNode,
+    selectedLspId,
+    lspPathMetadata,
+    lspPathIds,
     lspCounts,
     unconfirmedSelectedLspPathNodeId,
     unconfirmedSelectedNodeIds,
@@ -62,6 +71,10 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
     dispatch(setSelectedNode(null));
   };
 
+  const handleLspPanelClose = () => {
+    dispatch(clearLspPathSearch());
+  };
+
   const handleClearLspPath = () => {
     dispatch(clearLspPathSearch());
   };
@@ -69,6 +82,20 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
   const handleSearchClick = () => {
     onLspPathSearch(unconfirmedSelectedNodeIds);
   };
+
+  const handleLspIdChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { currentTarget } = event;
+    const { value: lspId } = currentTarget;
+    if (!unconfirmedSelectedLspPathNodeId) {
+      return;
+    }
+    dispatch(setUnconfimedNodeIdForLspPathSearch(unconfirmedSelectedLspPathNodeId, lspId));
+  };
+
+  const isLspPanelOpen = lspPathMetadata;
+  const isInfoPanelOpen = !isLspPanelOpen && selectedNode != null;
+  const [pathStart] = lspPathIds;
+  const [pathEnd] = [...lspPathIds].reverse();
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
@@ -81,16 +108,34 @@ const MplsTopologyGraph: VoidFunctionComponent<Props> = ({
         />
         {selectedNode && <LspCounts edges={edges} lspCounts={lspCounts} />}
       </svg>
-      {selectedNode != null && <MplsInfoPanel node={selectedNode as MplsGraphNode} onClose={handleInfoPanelClose} />}
+      {isInfoPanelOpen && <MplsInfoPanel node={selectedNode as MplsGraphNode} onClose={handleInfoPanelClose} />}
+      {isLspPanelOpen && (
+        <MplsLspPanel
+          onClose={handleLspPanelClose}
+          pathStart={pathStart}
+          pathEnd={pathEnd}
+          metadata={lspPathMetadata}
+        />
+      )}
       {unconfirmedSelectedLspPathNodeId && (
-        <Box position="absolute" top={2} left="2" background="transparent">
+        <Box position="absolute" top={2} left="2" minWidth={300} background="transparent">
           <Box display="flex" alignItems="center">
             <Button onClick={handleClearLspPath} marginRight={2}>
               Clear Lsp path
             </Button>
-            <Button onClick={handleSearchClick} isDisabled={isLspPathFetching} marginRight={2}>
+            <Button onClick={handleSearchClick} isDisabled={!selectedLspId || isLspPathFetching} marginRight={2}>
               Find Lsp path
             </Button>
+            <Select onChange={handleLspIdChange} maxWidth={200} background="white">
+              <option>-- choose lsp id</option>
+              {nodes
+                .find((n) => n.id === unconfirmedSelectedLspPathNodeId)
+                ?.details.lspTunnels.map((t) => (
+                  <option key={t.lspId} value={t.lspId}>
+                    {t.lspId}
+                  </option>
+                ))}
+            </Select>
           </Box>
         </Box>
       )}
