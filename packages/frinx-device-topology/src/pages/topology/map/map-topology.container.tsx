@@ -8,6 +8,7 @@ import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/top
 import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 import { useStateContext } from '../../../state.provider';
 import { getDeviceMetadata, getMapDeviceNeighbors, setSelectedMapDeviceName } from '../../../state.actions';
+import { omitNullValue } from '@frinx/shared';
 
 type MarkerLines = {
   id: string;
@@ -86,8 +87,8 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
       if (fromLatLng && toLatLng) {
         return {
           id: `${selectedMapDeviceName}-${d.deviceName}`,
-          from: [fromLatLng.latitude, fromLatLng.longitude] as LatLngTuple,
-          to: [toLatLng.latitude, toLatLng.longitude] as LatLngTuple,
+          from: [fromLatLng.latitude, fromLatLng.longitude],
+          to: [toLatLng.latitude, toLatLng.longitude],
         };
       }
 
