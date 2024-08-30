@@ -8,7 +8,6 @@ import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/top
 import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 import { useStateContext } from '../../../state.provider';
 import { getDeviceMetadata, getMapDeviceNeighbors, setSelectedMapDeviceName } from '../../../state.actions';
-import { omitNullValue } from '@frinx/shared';
 
 type MarkerLines = {
   id: string;
