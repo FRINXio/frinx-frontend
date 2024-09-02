@@ -20,7 +20,7 @@ type Props = {
   positions: PositionsWithGroupsMap<GraphMplsNodeInterface>;
   isFocused: boolean;
   isSelectedForGmPath: boolean;
-  isGmPath: boolean;
+  isLspPath: boolean;
   node: MplsGraphNodeWithDiff;
   topologyMode: TopologyMode;
   onPointerDown: (event: PointerEvent<SVGRectElement>) => void;
@@ -39,7 +39,7 @@ const MplsNodeIcon: VoidFunctionComponent<Props> = ({
   positions,
   isFocused,
   isSelectedForGmPath,
-  isGmPath,
+  isLspPath,
   node,
   topologyMode,
   onPointerDown,
@@ -104,7 +104,7 @@ const MplsNodeIcon: VoidFunctionComponent<Props> = ({
           stroke="red.300"
         />
       )}
-      {isGmPath && (
+      {isLspPath && (
         <Circle
           r={`${circleDiameter / 2 + 5}px`}
           fill="transparent"
