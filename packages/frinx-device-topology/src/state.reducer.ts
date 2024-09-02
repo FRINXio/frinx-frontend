@@ -34,6 +34,7 @@ import {
   MplsGraphNode,
   DeviceMetadata,
   LspCount,
+  MapDeviceNeighbors,
 } from './pages/topology/graph.helpers';
 import {
   identity,
@@ -71,6 +72,7 @@ export type State = {
   mapTopologyType: MapTopologyType;
   selectedMapDeviceName: string | null;
   devicesMetadata: DeviceMetadata[] | null;
+  mapDeviceNeighbors: MapDeviceNeighbors[] | null;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
@@ -127,6 +129,7 @@ export const initialState: State = {
   mapTopologyType: null,
   selectedMapDeviceName: null,
   devicesMetadata: null,
+  mapDeviceNeighbors: null,
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -499,6 +502,11 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_MAP_DEVICE_NAME': {
         acc.selectedMapDeviceName = action.deviceName;
+        return acc;
+      }
+
+      case 'SET_MAP_DEVICE_NEIGHBORS': {
+        acc.mapDeviceNeighbors = action.payload;
         return acc;
       }
 
