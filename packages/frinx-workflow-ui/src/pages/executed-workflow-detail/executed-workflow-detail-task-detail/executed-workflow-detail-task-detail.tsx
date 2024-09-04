@@ -161,7 +161,7 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                     </Button>
                     {task.externalOutputPayloadStoragePath != null && (
                       <Button
-                        rightIcon={<CheckCircleIcon color='gray.400' />}
+                        rightIcon={<CheckCircleIcon color="gray.400" />}
                         size="sm"
                         onClick={() => {
                           setPayload({ type: 'Output', data: task.externalOutputPayloadStoragePath || '' });
