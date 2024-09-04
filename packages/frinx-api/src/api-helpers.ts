@@ -92,3 +92,7 @@ export function createGraphQLApiClient(config: ApiConfig): GraphQLApiClient {
     authContext,
   };
 }
+
+export function encodeUriValue(value: string): string {
+  return `%22${value}%22`;
+}
