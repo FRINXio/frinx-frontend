@@ -16,7 +16,6 @@ import {
   Textarea,
   HStack,
   Spacer,
-  Badge,
 } from '@chakra-ui/react';
 import { jsonParse } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
@@ -25,7 +24,7 @@ import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { unescapedJSON } from '../../../helpers/utils.helpers';
 import ExternalStorageModal from '../executed-workflow-detail-tabs/external-storage-modal';
 import { ControlExecutedWorkflowSubscription } from '../../../__generated__/graphql';
-import { ArrowForwardIcon, CheckCircleIcon, CheckIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 
 type Props = {
   executedWorkflow: NonNullable<ControlExecutedWorkflowSubscription['conductor']['controlExecutedWorkflow']>;

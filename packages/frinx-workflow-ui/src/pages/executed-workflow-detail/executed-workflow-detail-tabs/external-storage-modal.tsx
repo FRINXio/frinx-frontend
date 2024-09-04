@@ -15,7 +15,6 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent, useState } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import unescapeJs from 'unescape-js';
 import { gql, useQuery } from 'urql';
 import { Editor } from '@frinx/shared';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
@@ -47,8 +46,6 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
   const handleEscapeChange = () => {
     setIsEscaped((prev) => !prev);
   };
-
-  const value = isEscaped ? storagePath : unescapeJs(storagePath);
 
   return (
     <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
