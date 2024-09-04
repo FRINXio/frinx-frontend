@@ -20,11 +20,11 @@ import {
 import { jsonParse } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { unescapedJSON } from '../../../helpers/utils.helpers';
 import ExternalStorageModal from '../executed-workflow-detail-tabs/external-storage-modal';
 import { ControlExecutedWorkflowSubscription } from '../../../__generated__/graphql';
-import { CheckCircleIcon } from '@chakra-ui/icons';
 
 type Props = {
   executedWorkflow: NonNullable<ControlExecutedWorkflowSubscription['conductor']['controlExecutedWorkflow']>;
