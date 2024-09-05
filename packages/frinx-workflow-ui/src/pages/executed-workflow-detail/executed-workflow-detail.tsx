@@ -13,7 +13,6 @@ import {
   Tabs,
   Text,
   useToast,
-  VStack,
 } from '@chakra-ui/react';
 import { ClientWorkflow, jsonParse, useNotifications } from '@frinx/shared';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -484,79 +483,78 @@ const ExecutedWorkflowDetail: FC<Props> = ({ onExecutedOperation }) => {
         onResumeWorkflow={handleOnResumeWorkflow}
       />
       <Box background="white" borderRadius={4} mb={5}>
-        {executedWorkflow.status === 'RUNNING' ? (
-          <VStack>
-            <Progress isIndeterminate />
-            <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />
-          </VStack>
-        ) : (
-          <Tabs index={tabIndex} onChange={setTabIndex}>
-            <TabList>
-              <Tab>Task Details</Tab>
-              <Tab>Input/Output</Tab>
-              <Tab>JSON</Tab>
-              <Tab value="editRerun">Edit & Rerun</Tab>
-              <Tab>Execution Flow</Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>
-                {openedTaskId == null && <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />}
-                {openedTaskId != null && executedWorkflow.tasks != null && (
-                  <ExecutedWorkflowDetailTaskDetail
-                    executedWorkflow={executedWorkflow}
-                    taskId={openedTaskId}
-                    onClose={() => {
-                      setOpenedTaskId(null);
-                    }}
-                  />
-                )}
-              </TabPanel>
-              <TabPanel>
-                <InputOutputTab
-                  copyToClipBoard={handleCopyToClipborad}
-                  isEscaped={isEscaped}
-                  input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
-                  output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
-                  externalInputPayloadStoragePath={executedWorkflow.externalInputPayloadStoragePath}
-                  externalOutputPayloadStoragePath={executedWorkflow.externalOutputPayloadStoragePath}
-                  onEscapeChange={() => {
-                    setIsEscaped((prev) => !prev);
+        <Tabs index={tabIndex} onChange={setTabIndex}>
+          <TabList>
+            <Tab>Task Details</Tab>
+            <Tab>Input/Output</Tab>
+            <Tab>JSON</Tab>
+            {executedWorkflow.status !== 'RUNNING' && (
+              <>
+                <Tab value="editRerun">Edit & Rerun</Tab>
+                <Tab>Execution Flow</Tab>
+              </>
+            )}
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              {openedTaskId == null && <TaskTable tasks={executedWorkflow.tasks} onTaskClick={setOpenedTaskId} />}
+              {openedTaskId != null && executedWorkflow.tasks != null && (
+                <ExecutedWorkflowDetailTaskDetail
+                  executedWorkflow={executedWorkflow}
+                  taskId={openedTaskId}
+                  onClose={() => {
+                    setOpenedTaskId(null);
                   }}
                 />
-              </TabPanel>
-              <TabPanel>
-                {executedWorkflow != null && (
-                  <WorkflowJsonTab
-                    copyToClipBoard={handleCopyToClipborad}
-                    isEscaped={isEscaped}
-                    result={executedWorkflow}
-                    onEscapeChange={() => setIsEscaped(!isEscaped)}
-                  />
-                )}
-              </TabPanel>
-              <TabPanel>
-                {executedWorkflow != null && executedWorkflow.workflowDefinition != null && (
+              )}
+            </TabPanel>
+            <TabPanel>
+              <InputOutputTab
+                copyToClipBoard={handleCopyToClipborad}
+                isEscaped={isEscaped}
+                input={executedWorkflow.input != null ? JSON.parse(executedWorkflow.input) : {}}
+                output={executedWorkflow.output != null ? JSON.parse(executedWorkflow.output) : {}}
+                externalInputPayloadStoragePath={executedWorkflow.externalInputPayloadStoragePath}
+                externalOutputPayloadStoragePath={executedWorkflow.externalOutputPayloadStoragePath}
+                onEscapeChange={() => {
+                  setIsEscaped((prev) => !prev);
+                }}
+              />
+            </TabPanel>
+            <TabPanel>
+              {executedWorkflow != null && (
+                <WorkflowJsonTab
+                  copyToClipBoard={handleCopyToClipborad}
+                  isEscaped={isEscaped}
+                  result={executedWorkflow}
+                  onEscapeChange={() => setIsEscaped(!isEscaped)}
+                />
+              )}
+            </TabPanel>
+            <TabPanel>
+              {executedWorkflow != null &&
+                executedWorkflow.workflowDefinition != null &&
+                executedWorkflow.status !== 'RUNNING' && (
                   <EditRerunTab
                     onRerunClick={handleOnRerunClick}
                     workflowDefinition={clientWorkflow}
                     workflowInput={jsonParse(executedWorkflow.input) ?? {}}
                   />
                 )}
-              </TabPanel>
-              <TabPanel>
-                {executedWorkflow.workflowDefinition && (
-                  <WorkflowDiagram
-                    meta={{
-                      ...executedWorkflow.workflowDefinition,
-                      tasks: executedWorkflow.workflowDefinition.tasksJson,
-                    }}
-                    result={executedWorkflow}
-                  />
-                )}
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        )}
+            </TabPanel>
+            <TabPanel>
+              {executedWorkflow.workflowDefinition != null && (
+                <WorkflowDiagram
+                  meta={{
+                    ...executedWorkflow.workflowDefinition,
+                    tasks: executedWorkflow.workflowDefinition.tasksJson,
+                  }}
+                  result={executedWorkflow}
+                />
+              )}
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </Box>
     </Container>
   );

@@ -95,5 +95,5 @@ export const formatDate = (date: Date | number | undefined | null | string) => {
   const utcString = new Date(date).toISOString();
   const localDate = getLocalDateFromUTC(utcString);
 
-  return format(localDate, 'dd/MM/yyyy, k:mm');
+  return format(localDate, 'dd/MM/yyyy, k:mm:ss');
 };

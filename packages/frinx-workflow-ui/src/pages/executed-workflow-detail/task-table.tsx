@@ -43,7 +43,7 @@ const TaskTable: FC<Props> = ({ tasks, onTaskClick }) => {
         {tasks != null &&
           tasks.map((task, index) => (
             <Tr key={task.referenceTaskName}>
-              <Td>{index}</Td>
+              <Td>{index + 1}</Td>
               <Td
                 onClick={() => {
                   onTaskClick(task.id);

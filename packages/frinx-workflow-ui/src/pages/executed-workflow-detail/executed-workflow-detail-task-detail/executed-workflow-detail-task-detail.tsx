@@ -20,6 +20,7 @@ import {
 import { jsonParse } from '@frinx/shared';
 import FeatherIcon from 'feather-icons-react';
 import React, { useState, VoidFunctionComponent } from 'react';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { unescapedJSON } from '../../../helpers/utils.helpers';
 import ExternalStorageModal from '../executed-workflow-detail-tabs/external-storage-modal';
@@ -159,6 +160,7 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                     </Button>
                     {task.externalOutputPayloadStoragePath != null && (
                       <Button
+                        rightIcon={<CheckCircleIcon color="gray.400" />}
                         size="sm"
                         onClick={() => {
                           setPayload({ type: 'Output', data: task.externalOutputPayloadStoragePath || '' });
@@ -223,9 +225,14 @@ const ExecutedWorkflowDetailTaskDetail: VoidFunctionComponent<Props> = ({ execut
                       {isEscaped ? 'Unescape' : 'Escape'}
                     </Button>
                   </Stack>
-                  <Text>
-                    {unescapedJSON(isEscaped, task.logs != null ? JSON.stringify(task.logs) : undefined) ?? 'No logs'}
-                  </Text>
+                  <Textarea
+                    fontFamily="monospace"
+                    value={unescapedJSON(isEscaped, task.logs != null ? task.logs : undefined) ?? 'No logs'}
+                    isReadOnly
+                    id="t_logs"
+                    variant="filled"
+                    minH={600}
+                  />
                 </Box>
               </TabPanel>
             </TabPanels>
