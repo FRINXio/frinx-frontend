@@ -13,7 +13,6 @@ import {
   Tabs,
   Text,
   useToast,
-  VStack,
 } from '@chakra-ui/react';
 import { ClientWorkflow, jsonParse, useNotifications } from '@frinx/shared';
 import { Link, useNavigate, useParams } from 'react-router-dom';
