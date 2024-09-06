@@ -2,7 +2,7 @@
 
 import { isNumber } from 'fp-ts/lib/number';
 import { isString } from 'fp-ts/lib/string';
-import { ApiHelpers } from '../api-helpers';
+import { ApiHelpers, encodeUriValue } from '../api-helpers';
 import {
   getDeviceFilterParams,
   getEvcFilterParams,
@@ -180,7 +180,9 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     try {
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
-        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${serviceId}?${content}`,
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${encodeUriValue(
+          serviceId,
+        )}?${content}`,
       );
       const data = decodeVpnServicesOutput(json);
       return data;
@@ -195,7 +197,9 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function editVpnServices(vpnService: CreateVpnServiceInput): Promise<unknown> {
     const json = await sendPutRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnService['vpn-service'][0]['vpn-id']}?${SERVICE_SCHEMA_PARAMETER}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${encodeUriValue(
+        vpnService['vpn-service'][0]['vpn-id'],
+      )}?${SERVICE_SCHEMA_PARAMETER}`,
       vpnService,
     );
     return json;
@@ -203,7 +207,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function deleteVpnService(vpnServiceId: string): Promise<unknown> {
     const json = await sendDeleteRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${vpnServiceId}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/vpn-services/vpn-service=${encodeUriValue(vpnServiceId)}`,
     );
     return json;
   }
@@ -242,7 +246,7 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     try {
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
-        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}?${content}`,
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${encodeUriValue(siteId)}?${content}`,
       );
       const data = decodeVpnSiteOutput(json);
       return data;
@@ -264,14 +268,16 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function editVpnSite(vpnSite: CreateVpnSiteInput): Promise<void> {
     await sendPutRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSite.site[0]['site-id']}?${SERVICE_SCHEMA_PARAMETER}`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${encodeUriValue(
+        vpnSite.site[0]['site-id'],
+      )}?${SERVICE_SCHEMA_PARAMETER}`,
       vpnSite,
     );
   }
 
   async function deleteVpnSite(vpnSiteId: string): Promise<void> {
     await sendDeleteRequest(
-      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${vpnSiteId}?content=config`,
+      `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${encodeUriValue(vpnSiteId)}?content=config`,
     );
   }
 
@@ -311,7 +317,9 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     try {
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
-        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}?${content}`,
+        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${encodeUriValue(
+          bearerId,
+        )}?${content}`,
       );
       const data = decodeVpnBearerOutput(json);
 
@@ -334,14 +342,18 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function editVpnBearer(bearer: VpnBearerInput): Promise<void> {
     await sendPutRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearer['vpn-bearer'][0]['sp-bearer-reference']}?${BEARER_SCHEMA_PARAMETER}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${encodeUriValue(
+        bearer['vpn-bearer'][0]['sp-bearer-reference'],
+      )}?${BEARER_SCHEMA_PARAMETER}`,
       bearer,
     );
   }
 
   async function deleteVpnBearer(id: string): Promise<void> {
     await sendDeleteRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${id}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${encodeUriValue(
+        id,
+      )}`,
     );
   }
 
@@ -366,14 +378,18 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function editVpnNode(node: VpnNodeInput): Promise<void> {
     await sendPutRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${node['vpn-node'][0]['ne-id']}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${encodeUriValue(
+        node['vpn-node'][0]['ne-id'],
+      )}`,
       node,
     );
   }
 
   async function deleteVpnNode(nodeId: string): Promise<void> {
     await sendDeleteRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${nodeId}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-nodes/vpn-node=${encodeUriValue(
+        nodeId,
+      )}`,
     );
   }
 
@@ -405,14 +421,18 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
 
   async function editVpnCarrier(carrier: VpnCarrierInput): Promise<void> {
     await sendPutRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrier.carrier[0]['carrier-name']}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${encodeUriValue(
+        carrier.carrier[0]['carrier-name'],
+      )}`,
       carrier,
     );
   }
 
   async function deleteVpnCarrier(carrierId: string): Promise<void> {
     await sendDeleteRequest(
-      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${carrierId}`,
+      `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/carriers/carrier=${encodeUriValue(
+        carrierId,
+      )}`,
     );
   }
 
@@ -591,7 +611,9 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
     try {
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
-        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access=${siteNetworkAccessId}?${content}`,
+        `${UNICONFIG_SERVICE_URL}/gamma-l3vpn-svc:l3vpn-svc/sites/site=${siteId}/site-network-accesses/site-network-access=${encodeUriValue(
+          siteNetworkAccessId,
+        )}?${content}`,
       );
       const data = decodeSiteNetworkAccessOutput(json);
       return data;
@@ -659,7 +681,9 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
       const paginationParams = pagination ? `&offset=${pagination.offset}&limit=${pagination.limit}` : '';
       const content = getContentParameter(contentType);
       const json = await sendGetRequest(
-        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&${content}${paginationParams}${filterParams}`,
+        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${encodeUriValue(
+          bearerId,
+        )}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&${content}${paginationParams}${filterParams}`,
       );
       const data = decodeEvcAttachmentItemsOutput(json);
       return data;
@@ -680,7 +704,9 @@ export default function createUnistoreApiClient(apiHelpers: ApiHelpers, unistore
       const filterParams = evcFilter ? getEvcFilterParams(evcFilter) : '';
       const content = getContentParameter(contentType);
       const data = await sendGetRequest(
-        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${bearerId}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&fetch=count&${content}${filterParams}`,
+        `/data/network-topology:network-topology/topology=unistore/node=bearer/frinx-uniconfig-topology:configuration/gamma-bearer-svc:bearer-svc/vpn-bearers/vpn-bearer=${encodeUriValue(
+          bearerId,
+        )}/evc-attachments/evc-attachment?${BEARER_SCHEMA_PARAMETER}&fetch=count&${content}${filterParams}`,
       );
       if (!isNumber(data)) {
         throw new Error('not a number');
