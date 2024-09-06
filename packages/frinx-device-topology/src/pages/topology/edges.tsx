@@ -46,7 +46,7 @@ const Edges: VoidFunctionComponent<Props> = ({ edgesWithDiff }) => {
         const isUnknown = !!nodes.find(
           (n) =>
             n.interfaces.find((i) => i.id === edge.source.interface || i.id === edge.target.interface)?.status ===
-            'unknown',
+            'UNKNOWN',
         );
 
         const isShortestPath = false;

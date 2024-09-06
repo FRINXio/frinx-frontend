@@ -27,7 +27,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const client = useClient();
 
   useEffect(() => {
-    dispatch(getDeviceMetadata(client, { topologyType: 'PtpTopology' }));
+    dispatch(getDeviceMetadata(client, { topologyType: 'PTP_TOPOLOGY' }));
   }, [client, dispatch]);
 
   const handleInterfaceClick = (deviceInterface: GraphPtpNodeInterface) => {
@@ -44,7 +44,7 @@ const PtpInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('PtpTopology'));
+    dispatch(setMapTopologyType('PTP_TOPOLOGY'));
     dispatch(setSelectedMapDeviceName(node.name));
   };
 

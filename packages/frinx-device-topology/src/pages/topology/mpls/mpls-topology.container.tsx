@@ -136,7 +136,7 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
     updatePosition({
       input: {
         coordinates,
-        layer: 'MplsTopology',
+        layer: 'MPLS_TOPOLOGY',
       },
     });
   };

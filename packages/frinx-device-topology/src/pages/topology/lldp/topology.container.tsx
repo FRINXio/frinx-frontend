@@ -89,7 +89,7 @@ const TopologyContainer: VoidFunctionComponent = () => {
     updatePosition({
       input: {
         coordinates,
-        layer: 'PhysicalTopology',
+        layer: 'PHYSICAL_TOPOLOGY',
       },
     });
   };

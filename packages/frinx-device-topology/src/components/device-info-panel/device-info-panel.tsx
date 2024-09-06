@@ -35,7 +35,7 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
   const client = useClient();
 
   useEffect(() => {
-    dispatch(getDeviceMetadata(client, { topologyType: 'PhysicalTopology' }));
+    dispatch(getDeviceMetadata(client, { topologyType: 'PHYSICAL_TOPOLOGY' }));
   }, [client, dispatch]);
 
   const { isEnabled: isPerformanceMonitoringEnabled } = usePerformanceMonitoring();
@@ -44,7 +44,7 @@ const DeviceInfoPanel: VoidFunctionComponent<Props> = ({
   const nodeLoadUsageColor = isShowingLoad ? getDeviceUsageColor(nodeLoad?.cpuLoad, nodeLoad?.memoryLoad) : 'gray';
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('PhysicalTopology'));
+    dispatch(setMapTopologyType('PHYSICAL_TOPOLOGY'));
     dispatch(setSelectedMapDeviceName(name));
   };
 

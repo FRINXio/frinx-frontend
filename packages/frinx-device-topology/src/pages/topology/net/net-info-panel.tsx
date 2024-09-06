@@ -1,7 +1,13 @@
 import { Box, Button, Flex, Heading, HStack, IconButton, Icon } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import React, { VoidFunctionComponent } from 'react';
-import { setMapTopologyType, setSelectedMapDeviceName, setTopologyLayer } from '../../../state.actions';
+import React, { useEffect, VoidFunctionComponent } from 'react';
+import { useClient } from 'urql';
+import {
+  getDeviceMetadata,
+  setMapTopologyType,
+  setSelectedMapDeviceName,
+  setTopologyLayer,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { GraphNetNode } from '../graph.helpers';
 
@@ -13,6 +19,11 @@ type Props = {
 const NetInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const { state, dispatch } = useStateContext();
   const { devicesMetadata } = state;
+  const client = useClient();
+
+  useEffect(() => {
+    dispatch(getDeviceMetadata(client, { topologyType: 'NETWORK_TOPOLOGY' }));
+  }, [client, dispatch]);
 
   const handleClose = () => {
     onClose();
@@ -20,7 +31,7 @@ const NetInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('NetworkTopology'));
+    dispatch(setMapTopologyType('NETWORK_TOPOLOGY'));
     dispatch(setSelectedMapDeviceName(node.phyDeviceName));
   };
 
