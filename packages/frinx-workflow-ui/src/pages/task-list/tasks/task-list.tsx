@@ -119,6 +119,7 @@ const TaskList = () => {
       },
       orderBy,
     },
+    requestPolicy: 'cache-and-network',
     context,
   });
 

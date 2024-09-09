@@ -15,11 +15,11 @@ import {
 } from '@chakra-ui/react';
 import React, { VoidFunctionComponent, useState } from 'react';
 import FeatherIcon from 'feather-icons-react';
-import unescapeJs from 'unescape-js';
 import { gql, useQuery } from 'urql';
 import { Editor } from '@frinx/shared';
 import copyToClipBoard from '../../../helpers/copy-to-clipboard';
 import { ExternalStorageQuery, ExternalStorageQueryVariables } from '../../../__generated__/graphql';
+import { unescapedJSON } from '../../../helpers/utils.helpers';
 
 const EXTERNAL_STORAGE = gql`
   query ExternalStorage($path: String!) {
@@ -47,8 +47,6 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
     setIsEscaped((prev) => !prev);
   };
 
-  const value = isEscaped ? storagePath : unescapeJs(storagePath);
-
   return (
     <Modal size="5xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -65,7 +63,7 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
               icon={<Icon as={FeatherIcon} icon="copy" size={20} />}
               size="sm"
               className="clp"
-              onClick={() => copyToClipBoard(value)}
+              onClick={() => copyToClipBoard(data?.conductor.externalStorage)}
             />
             <Button size="sm" onClick={handleEscapeChange}>
               {isEscaped ? 'Unescape' : 'Escape'}
@@ -78,7 +76,7 @@ const ExternalStorageModal: VoidFunctionComponent<Props> = ({ isOpen, onClose, s
           )}
           {!fetching && (error || data == null) && <Text>Failed to load external storage payload</Text>}
           {!fetching && data != null && (
-            <Editor value={JSON.stringify(data.conductor.externalStorage)} language="json" />
+            <Editor value={unescapedJSON(isEscaped, data.conductor.externalStorage)} language="json" />
           )}
         </ModalBody>
       </ModalContent>
