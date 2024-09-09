@@ -96,11 +96,11 @@ export type SetDeviceUsagePayload = {
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH' | 'LSP_PATH';
 
 export type MapTopologyType =
-  | 'PhysicalTopology'
-  | 'PtpTopology'
-  | 'EthTopology'
-  | 'NetworkTopology'
-  | 'MplsTopology'
+  | 'PHYSICAL_TOPOLOGY'
+  | 'PTP_TOPOLOGY'
+  | 'ETH_TOPOLOGY'
+  | 'NETWORK_TOPOLOGY'
+  | 'MPLS_TOPOLOGY'
   | null;
 
 export type StateAction =

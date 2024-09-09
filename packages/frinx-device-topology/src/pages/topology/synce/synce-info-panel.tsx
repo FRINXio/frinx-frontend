@@ -21,7 +21,7 @@ type Props = {
 
 const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const [activeInterface, setActiveInterface] = useState<GraphSynceNodeInterface | null>(null);
-  const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = React.useState(false);
+  const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = useState(false);
   const { state, dispatch } = useStateContext();
   const { synceEdges, devicesMetadata } = state;
   const { details, interfaces } = node;
@@ -29,7 +29,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const client = useClient();
 
   useEffect(() => {
-    dispatch(getDeviceMetadata(client, { topologyType: 'EthTopology' }));
+    dispatch(getDeviceMetadata(client, { topologyType: 'ETH_TOPOLOGY' }));
   }, [client, dispatch]);
 
   const handleInterfaceClick = (deviceInterface: GraphSynceNodeInterface) => {
@@ -48,7 +48,7 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('EthTopology'));
+    dispatch(setMapTopologyType('ETH_TOPOLOGY'));
     dispatch(setSelectedMapDeviceName(node.name));
   };
 

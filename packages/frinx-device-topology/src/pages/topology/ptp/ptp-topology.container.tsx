@@ -123,7 +123,7 @@ const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShow
     updatePosition({
       input: {
         coordinates,
-        layer: 'PtpTopology',
+        layer: 'PTP_TOPOLOGY',
       },
     });
   };

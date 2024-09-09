@@ -7,6 +7,13 @@ const TopologyTypeSelect: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
   const { mapTopologyType } = state;
 
+  const topologyLayers = [
+    { name: 'Physical Topology', value: 'PHYSICAL_TOPOLOGY' },
+    { name: 'Ptp Topology', value: 'PTP_TOPOLOGY' },
+    { name: 'Eth Topology', value: 'ETH_TOPOLOGY' },
+    { name: 'Mpls Topology', value: 'MPLS_TOPOLOGY' },
+  ];
+
   const handleTopologyTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value as MapTopologyType;
     dispatch(setMapTopologyType(value));
@@ -22,9 +29,9 @@ const TopologyTypeSelect: VoidFunctionComponent = () => {
         onChange={handleTopologyTypeChange}
         value={mapTopologyType || ''}
       >
-        {['PhysicalTopology', 'PtpTopology', 'EthTopology', 'NetworkTopology', 'MplsTopology'].map((layer) => (
-          <option key={layer} value={layer}>
-            {layer}
+        {topologyLayers.map((layer) => (
+          <option key={layer.value} value={layer.value}>
+            {layer.name}
           </option>
         ))}
       </Select>

@@ -26,7 +26,7 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const client = useClient();
 
   useEffect(() => {
-    dispatch(getDeviceMetadata(client, { topologyType: 'MplsTopology' }));
+    dispatch(getDeviceMetadata(client, { topologyType: 'MPLS_TOPOLOGY' }));
   }, [client, dispatch]);
 
   const mplsInfoModal = useDisclosure();
@@ -48,7 +48,7 @@ const MplsInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
 
   const handleShowDeviceOnMap = () => {
     dispatch(setTopologyLayer('Map'));
-    dispatch(setMapTopologyType('MplsTopology'));
+    dispatch(setMapTopologyType('MPLS_TOPOLOGY'));
     dispatch(setSelectedMapDeviceName(node.name));
   };
 
