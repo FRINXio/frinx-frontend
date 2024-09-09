@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import differenceBy from 'lodash/differenceBy';
+import { LatLngTuple } from 'leaflet';
 import {
   BackupGraphNode,
   BackupNetGraphNode,
@@ -7,8 +8,13 @@ import {
   GraphNode,
   SynceGraphNode,
   PtpGraphNode,
+  MplsGraphNode,
 } from '../pages/topology/graph.helpers';
 import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
+
+// TODO make these 2 constants env. variables
+export const DEFAULT_MAP_CENTER: LatLngTuple = [48.15247287355192, 17.12495675052697]; // Bratislava
+export const DEFAULT_MAP_ZOOM_LEVEL = 10;
 
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
@@ -21,6 +27,10 @@ export type PtpGraphNodeWithDiff = PtpGraphNode & {
 };
 
 export type SynceGraphNodeWithDiff = SynceGraphNode & {
+  change: Change;
+};
+
+export type MplsGraphNodeWithDiff = MplsGraphNode & {
   change: Change;
 };
 
@@ -197,6 +207,10 @@ export function getSynceInterfaceNodeColor(
   return 'purple';
 }
 
+export function getMplsInterfaceNodeColor() {
+  return 'purple';
+}
+
 export function getSynceNodesWithDiff(
   nodes: SynceGraphNode[],
   backupGraphNodes: BackupGraphNode[],
@@ -276,6 +290,84 @@ export function getSynceNodesWithDiff(
   return [...currentNodesWithDiff, ...deletedBackupNodesWithDiff];
 }
 
+export function getMplsNodesWithDiff(
+  nodes: MplsGraphNode[],
+  backupGraphNodes: BackupGraphNode[],
+): MplsGraphNodeWithDiff[] {
+  if (backupGraphNodes.length === 0) {
+    return nodes.map((n) => ({
+      ...n,
+      change: 'NONE' as const,
+    }));
+  }
+
+  const nodesMap = new Map(nodes.map((n) => [n.id, n]));
+  const backupNodesMap = new Map(backupGraphNodes.map((n) => [n.id, n]));
+
+  const currentNodesWithDiff = nodes.map((n) => {
+    const { id, interfaces } = n;
+    const addedInterfaces = differenceBy(
+      nodesMap.get(id)?.interfaces ?? [],
+      backupNodesMap.get(id)?.interfaces ?? [],
+      'id',
+    ).map((i) => ({ ...i, change: 'ADDED' }));
+    const removedInterfaces = differenceBy(
+      backupNodesMap.get(id)?.interfaces,
+      nodesMap.get(id)?.interfaces ?? [],
+      'id',
+    ).map((i) => ({ ...i, change: 'DELETED' }));
+    const noChangeInterfaces = differenceBy(interfaces, removedInterfaces, addedInterfaces, 'id').map((i) => ({
+      ...i,
+      change: 'NONE',
+    }));
+    if (backupNodesMap.has(n.id)) {
+      return {
+        ...n,
+        details: { mplsData: [], lspTunnels: [] },
+        interfaces: [...addedInterfaces, ...removedInterfaces, ...noChangeInterfaces].map((i) => ({
+          ...i,
+        })),
+        change: 'NONE' as const,
+      };
+    }
+    return {
+      ...n,
+      interfaces: [...addedInterfaces, ...removedInterfaces, ...noChangeInterfaces].map((i) => ({
+        ...i,
+      })),
+      change: 'ADDED' as const,
+    };
+  });
+
+  const deletedBackupNodesWithDiff = backupGraphNodes
+    .map((n) => {
+      const { id, name, interfaces, coordinates } = n;
+      return {
+        id,
+        name,
+        device: {
+          id: uuid(),
+          deviceSize: 'MEDIUM' as const,
+          name,
+          // below are some fake data
+          isInstalled: false,
+          createdAt: '1970-01-01',
+          serviceState: 'PLANNING',
+        },
+        details: { mplsData: [], lspTunnels: [] },
+        interfaces: interfaces.map((i) => ({ ...i })),
+        coordinates,
+        change: 'DELETED' as const,
+        status: 'ok' as const,
+        labels: [],
+        nodeId: '',
+      };
+    })
+    .filter((n) => !nodesMap.has(n.id));
+
+  return [...currentNodesWithDiff, ...deletedBackupNodesWithDiff];
+}
+
 export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNetGraphNode[]): NetGraphNodeWithDiff[] {
   if (backupGraphNodes.length === 0) {
     return nodes.map((n) => ({
@@ -326,10 +418,11 @@ export function getNetNodesWithDiff(nodes: NetNode[], backupGraphNodes: BackupNe
 
   const deletedBackupNodesWithDiff = backupGraphNodes
     .map((n) => {
-      const { id, name, interfaces, coordinates, networks } = n;
+      const { id, name, interfaces, coordinates, networks, phyDeviceName } = n;
       return {
         id,
         name,
+        phyDeviceName,
         device: {
           id: uuid(),
           deviceSize: 'MEDIUM' as const,

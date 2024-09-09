@@ -1,6 +1,6 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
-import { DeviceSize } from '../../__generated__/graphql';
+import { DeviceSize, MplsLspCountItem } from '../../__generated__/graphql';
 
 export const width = 1248;
 export const height = 600;
@@ -25,7 +25,7 @@ export type Device = {
 
 export type GraphNodeInterface = {
   id: string;
-  status: 'ok' | 'unknown';
+  status: 'OK' | 'UNKNOWN';
   name: string;
 };
 
@@ -47,14 +47,14 @@ export type GraphNode = {
 export type PtpGraphNodeDetails = {
   clockAccuracy: string | null;
   clockClass: number | null;
-  clockId: string;
+  clockId: string | null;
   clockType: string | null;
   clockVariance: string | null;
-  domain: number;
+  domain: number | null;
   globalPriority: number | null;
-  gmClockId: string;
-  parentClockId: string;
-  ptpProfile: string;
+  gmClockId: string | null;
+  parentClockId: string | null;
+  ptpProfile: string | null;
   timeRecoveryStatus: string | null;
   userPriority: number | null;
 };
@@ -83,6 +83,55 @@ export type SynceGraphNode = {
   status: string;
 };
 
+export type MplsGraphNodeDetails = {
+  mplsData: MplsData[];
+  lspTunnels: LspTunnel[];
+};
+
+export type MplsData = {
+  lspId: string;
+  inputLabel: number | null;
+  inputInterface: string | null;
+  outputLabel: number | null;
+  outputInterface: string | null;
+  operState: string | null;
+  mplsOperation: string | null;
+  ldpPrefix: string | null;
+};
+
+export type LspTunnel = {
+  lspId: string;
+  fromDevice: string | null;
+  toDevice: string | null;
+  signalization: string | null;
+  uptime: number | null;
+};
+
+export type MplsGraphNode = {
+  id: string;
+  name: string;
+  nodeId: string;
+  interfaces: GraphMplsNodeInterface[];
+  coordinates: Position;
+  details: MplsGraphNodeDetails;
+  status: string;
+};
+
+export type DeviceMetadata = {
+  id?: string;
+  deviceName?: string;
+  locationName?: string | null;
+  geolocation: {
+    latitude?: number;
+    longitude?: number;
+  };
+};
+
+export type MapDeviceNeighbors = {
+  deviceName: string;
+  deviceId: string;
+};
+
 export type SourceTarget = {
   nodeId: string;
   interface: string;
@@ -109,6 +158,7 @@ export type GraphNetNode = {
   id: string;
   nodeId: string;
   name: string;
+  phyDeviceName: string | null;
   interfaces: GrahpNetNodeInterface[];
   networks: NetNetwork[];
   coordinates: Position;
@@ -130,6 +180,7 @@ export type GraphPtpNodeInterfaceDetails = {
 export type BackupNetGraphNode = {
   id: string;
   name: string;
+  phyDeviceName: string | null;
   interfaces: GraphNetNodeInterface[];
   networks: NetNetwork[];
   coordinates: Position;
@@ -155,6 +206,18 @@ export type GraphSynceNodeInterface = {
   name: string;
   status: string;
   details: SynceGraphNodeInterfaceDetails | null;
+};
+
+export type GraphMplsNodeInterface = {
+  id: string;
+  name: string;
+  status: string;
+};
+
+export type LspCount = {
+  deviceName: string;
+  incomingLsps: number;
+  outcomingLsps: number;
 };
 
 export const NODE_CIRCLE_RADIUS = 30;
@@ -408,7 +471,9 @@ export function isTargetingActiveNode<S extends { id: string; name: string }>(
   return targetNodeId === selectedNodeName && !!targetGroup?.interfaces.find((i) => i.id === edge.source.interface);
 }
 
-export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null): string | null {
+export function getNameFromNode(
+  node: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null,
+): string | null {
   if (node == null) {
     return null;
   }
@@ -422,7 +487,7 @@ export function getNameFromNode(node: GraphNode | GraphNetNode | PtpGraphNode | 
 }
 
 export function ensureNodeHasDevice(
-  value: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | null,
+  value: GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode | null,
 ): value is GraphNode {
   return value != null && 'device' in value;
 }
@@ -446,5 +511,25 @@ export function normalizeNodeInterfaceData<
     status,
     name,
     ...details,
+  };
+}
+
+export function getLspCounts(input: MplsLspCountItem): LspCount {
+  return {
+    deviceName: input.target ?? '',
+    incomingLsps: input.incomingLsps ?? 0,
+    outcomingLsps: input.outcomingLsps ?? 0,
+  };
+}
+
+// distance is number between 0-1 - thats ratio distance/length
+export function getPointAtLength(line: Line, distance: number): Position {
+  const { start, end } = line;
+  const length = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
+  const x = start.x + ((distance * length) / length) * (end.x - start.x);
+  const y = start.y + ((distance * length) / length) * (end.y - start.y);
+  return {
+    x,
+    y,
   };
 }

@@ -5,18 +5,28 @@ import { Item } from 'chakra-ui-autocomplete';
 import {
   Button,
   Divider,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
+  Icon,
+  IconButton,
   Input,
   Select,
   Spacer,
 } from '@chakra-ui/react';
-import { Editor, jsonParse } from '@frinx/shared';
-
+import { Autocomplete, Editor, jsonParse } from '@frinx/shared';
+import FeatherIcon from 'feather-icons-react';
 import { Device, DeviceSizeEnum, deviceSizeOptions, serviceStateOptions } from '../../helpers/types';
-import { DeviceServiceState, Label, LabelsQuery, ZonesQuery, DeviceSize } from '../../__generated__/graphql';
+import {
+  DeviceServiceState,
+  Label,
+  LabelsQuery,
+  ZonesQuery,
+  DeviceSize,
+  LocationsQuery,
+} from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 
 type FormValues = {
@@ -28,6 +38,7 @@ type FormValues = {
   vendor: string | null;
   model: string | null;
   address: string | null;
+  locationId: string | null;
 };
 
 type FormLabel = { id: string; name: string };
@@ -38,6 +49,7 @@ type Props = {
   labels: LabelsQuery['deviceInventory']['labels']['edges'];
   zones: ZonesQuery['deviceInventory']['zones']['edges']; // eslint-disable-line react/no-unused-prop-types
   device: FormDevice;
+  locations: LocationsQuery['deviceInventory']['locations']['edges'];
   onUpdate: (values: FormValues) => void;
   onLabelCreate: (label: string) => Promise<Label | null>;
   onCancel: () => void;
@@ -65,7 +77,7 @@ const EditDeviceFormSchema = yup.object().shape({
   }),
 });
 
-const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel }): JSX.Element => {
+const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, onCancel, locations }): JSX.Element => {
   const INITIAL_VALUES = useMemo(() => {
     return {
       zoneId: device.zone.id,
@@ -76,6 +88,7 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
       model: device.model ?? '',
       address: device.host ?? '',
       deviceSize: device.deviceSize,
+      locationId: device.locationId ?? null,
     };
   }, [device]);
 
@@ -117,6 +130,25 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
 
   const parsedMountParameters = jsonParse(values.mountParameters);
   const isMountParametersValid = parsedMountParameters != null && typeof parsedMountParameters === 'string';
+  const locationOptions = locations.map(({ node: location }) => ({
+    label: location.name,
+    value: location.name,
+  }));
+
+  const locationList = locations.map((l) => l.node);
+
+  const handleLocationChange = (locationName?: string | null) => {
+    if (locationName) {
+      const location = locationList.find((loc) => loc.name === locationName)?.id;
+      setFieldValue('locationId', location);
+    }
+  };
+
+  const location = locationList.find((loc) => loc.id === values.locationId);
+  const selectedLocation = {
+    label: location?.name || '',
+    value: location?.name || '',
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -203,7 +235,22 @@ const EditDeviceForm: FC<Props> = ({ labels, device, onUpdate, onLabelCreate, on
           onSelectionChange={handleOnSelectionChange}
         />
       </FormControl>
-
+      <FormControl my={6}>
+        <FormLabel>Location</FormLabel>
+        <Flex gap="5px">
+          <Autocomplete
+            items={locationOptions}
+            onChange={(e) => handleLocationChange(e?.value)}
+            selectedItem={selectedLocation}
+          />
+          <IconButton
+            aria-label="x-square"
+            icon={<Icon size={12} as={FeatherIcon} icon="x-square" />}
+            onClick={() => setFieldValue('locationId', null)}
+            colorScheme="red"
+          />
+        </Flex>
+      </FormControl>
       <FormControl my={6}>
         <FormLabel data-cy="ace-editor">Mount parameters</FormLabel>
         <Editor

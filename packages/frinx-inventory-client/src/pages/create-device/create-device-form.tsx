@@ -7,16 +7,20 @@ import {
   Grid,
   GridItem,
   HStack,
+  Icon,
+  IconButton,
   Input,
   Select,
   Spacer,
   Switch,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useFormik } from 'formik';
 import React, { useState, VoidFunctionComponent } from 'react';
 import * as yup from 'yup';
 import { Item } from 'chakra-ui-autocomplete';
-import { Editor, jsonParse } from '@frinx/shared';
+import { Autocomplete, Editor, jsonParse } from '@frinx/shared';
+import FeatherIcon from 'feather-icons-react';
 import parse from 'json-templates';
 import {
   DeviceBlueprintsQuery,
@@ -24,12 +28,17 @@ import {
   DeviceSize as DeviceSizeType,
   Label,
   LabelsQuery,
+  LocationsQuery,
   ZonesQuery,
 } from '../../__generated__/graphql';
 import SearchByLabelInput from '../../components/search-by-label-input';
 import { ServiceState, serviceStateOptions, DeviceSizeEnum, deviceSizeOptions } from '../../helpers/types';
+import { LocationData } from './create-device-page';
+import AddDeviceLocationModal from '../../components/add-device-location-modal';
 
 type Props = {
+  onAddDeviceLocation: (locationData: LocationData) => void;
+  locations: LocationsQuery['deviceInventory']['locations']['edges'];
   isSubmitting: boolean;
   zones: ZonesQuery['deviceInventory']['zones']['edges'];
   labels: LabelsQuery['deviceInventory']['labels']['edges'];
@@ -39,7 +48,7 @@ type Props = {
   deviceNameError: string | null;
 };
 
-type FormValues = {
+export type FormValues = {
   name: string;
   zoneId: string;
   mountParameters: string | null;
@@ -55,6 +64,7 @@ type FormValues = {
   version: string;
   vendor: string;
   port: number;
+  locationId: string;
 };
 
 const deviceSchema = yup.object({
@@ -70,6 +80,7 @@ const deviceSchema = yup.object({
   deviceType: yup.string(),
   version: yup.string(),
   username: yup.string(),
+  locationId: yup.string(),
   password: yup.string(),
   deviceSize: yup.lazy((deviceSize) => {
     if (deviceSize === '') {
@@ -104,6 +115,7 @@ const INITIAL_VALUES: FormValues = {
   username: '',
   version: '',
   port: 0,
+  locationId: '',
 };
 
 const CreateDeviceForm: VoidFunctionComponent<Props> = ({
@@ -114,10 +126,14 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   onLabelCreate,
   blueprints,
   isSubmitting,
+  locations,
+  onAddDeviceLocation,
 }) => {
   const [blueprintParameterValues, setBlueprintParameterValues] = useState<Record<string, string>>({});
-  const [selectedLabels, setSelectedLabels] = React.useState<Item[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<Item[]>([]);
   const [isUsingBlueprints, setIsUsingBlueprints] = useState(false);
+  const addDeviceLocationModalDisclosure = useDisclosure();
+
   const { errors, values, handleSubmit, handleChange, setFieldValue } = useFormik<FormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: deviceSchema,
@@ -171,6 +187,34 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
   const parsedMountParameters = jsonParse(values.mountParameters);
   const isMountParametersValid = parsedMountParameters != null && typeof parsedMountParameters === 'string';
 
+  const locationOptions = locations.map(({ node: location }) => ({
+    label: location.name,
+    value: location.name,
+  }));
+
+  const locationList = locations.map((l) => {
+    const { id, name, latitude, longitude } = l.node;
+    return {
+      id,
+      name,
+      latitude,
+      longitude,
+    };
+  });
+
+  const handleLocationChange = (locationName?: string | null) => {
+    if (locationName) {
+      const location = locationList.find((loc) => loc.name === locationName)?.id;
+      setFieldValue('locationId', location);
+    }
+  };
+
+  const location = locationList.find((loc) => loc.id === values.locationId);
+  const selectedLocation = {
+    label: location?.name || '',
+    value: location?.name || '',
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="name" my={6} isRequired isInvalid={deviceNameError !== null}>
@@ -178,7 +222,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         <Input data-cy="add-device-name" placeholder="R1" onChange={handleChange} name="name" value={values.name} />
         <FormErrorMessage>{deviceNameError}</FormErrorMessage>
       </FormControl>
-
       <FormControl id="zone" isRequired marginY={6} isInvalid={errors.zoneId !== undefined}>
         <FormLabel>Zone</FormLabel>
         <Select onChange={handleChange} data-cy="add-device-zone" name="zoneId" placeholder="Select zone of device">
@@ -190,7 +233,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
         </Select>
         <FormErrorMessage>{errors.zoneId}</FormErrorMessage>
       </FormControl>
-
       <FormControl>
         <FormLabel>Service state</FormLabel>
         <Select
@@ -207,7 +249,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           ))}
         </Select>
       </FormControl>
-
       <HStack my={6} alignItems="flex-start">
         <FormControl>
           <FormLabel>Vendor</FormLabel>
@@ -248,7 +289,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.deviceSize}</FormErrorMessage>
         </FormControl>
       </HStack>
-
       <HStack my={6} alignItems="start">
         <FormControl>
           <FormLabel>Device type</FormLabel>
@@ -274,7 +314,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.version}</FormErrorMessage>
         </FormControl>
       </HStack>
-
       <HStack my={6} alignItems="flex-start">
         <FormControl>
           <FormLabel>Username</FormLabel>
@@ -300,7 +339,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.password}</FormErrorMessage>
         </FormControl>
       </HStack>
-
       <HStack my={6} alignItems="flex-start">
         <FormControl isInvalid={errors.address != null}>
           <FormLabel>Address / DNS</FormLabel>
@@ -319,7 +357,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           <FormErrorMessage>{errors.port}</FormErrorMessage>
         </FormControl>
       </HStack>
-
       <FormControl my={6}>
         <SearchByLabelInput
           items={labels}
@@ -328,6 +365,35 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           onSelectionChange={handleOnSelectionChange}
         />
       </FormControl>
+      <FormControl my={6}>
+        <FormLabel>Location</FormLabel>
+        <HStack>
+          <Autocomplete
+            items={locationOptions}
+            onChange={(e) => {
+              handleLocationChange(e?.value);
+            }}
+            selectedItem={selectedLocation}
+          />
+          <Button onClick={addDeviceLocationModalDisclosure.onOpen} colorScheme="blue">
+            +
+          </Button>
+          <IconButton
+            aria-label="x-square"
+            icon={<Icon size={12} as={FeatherIcon} icon="x-square" />}
+            onClick={() => setFieldValue('locationId', null)}
+            colorScheme="red"
+          />
+        </HStack>
+      </FormControl>
+      <AddDeviceLocationModal
+        onAddDeviceLocation={onAddDeviceLocation}
+        isOpen={addDeviceLocationModalDisclosure.isOpen}
+        onClose={addDeviceLocationModalDisclosure.onClose}
+        title="Add device location"
+        locationList={locationList}
+        setLocationFieldValue={setFieldValue}
+      />
       <FormControl>
         <FormLabel>Use blueprint?</FormLabel>
         <Switch
@@ -344,7 +410,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           }}
         />
       </FormControl>
-
       {isUsingBlueprints ? (
         <>
           <FormControl marginY={6}>
@@ -403,7 +468,6 @@ const CreateDeviceForm: VoidFunctionComponent<Props> = ({
           />
         </FormControl>
       )}
-
       <Divider my={6} />
       <HStack mb={6}>
         <Spacer />

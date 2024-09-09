@@ -1,21 +1,25 @@
+import { omitNullValue } from '@frinx/shared';
 import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 'react';
 import { gql, useClient, useMutation, useQuery } from 'urql';
 import {
-  findGmPath,
-  getSynceBackupNodesAndEdges,
-  getSynceNodesAndEdges,
-  setGmPathIds,
+  getMplsNodesAndEdges,
   setMode,
+  setLspCounts,
+  getMplsBackupNodesAndEdges,
+  findLspPath,
+  setLspPath,
 } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import {
-  GetSynceGrandMasterPathQuery,
-  GetSynceGrandMasterPathQueryVariables,
+  LspPathQuery,
+  LspPathQueryVariables,
+  GetMplsLspCountQuery,
+  GetMplsLspCountQueryVariables,
   UpdateSyncePositionMutation,
   UpdateSyncePositionMutationVariables,
 } from '../../../__generated__/graphql';
-import { height, Position, width } from '../graph.helpers';
-import SynceTopologyGraph from './synce-topology-graph';
+import { getLspCounts, height, Position, width } from '../graph.helpers';
+import MplsTopologyGraph from './mpls-topology-graph';
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdateSyncePosition($input: UpdateGraphNodeCoordinatesInput!) {
@@ -27,50 +31,88 @@ const UPDATE_POSITION_MUTATION = gql`
   }
 `;
 
-const GET_SYNCE_GM_PATH = gql`
-  query GetSynceGrandMasterPath($deviceFrom: String!) {
+const GET_MPLS_LPS_COUNT = gql`
+  query GetMplsLspCount($deviceId: String!) {
     deviceInventory {
-      syncePathToGrandMaster(deviceFrom: $deviceFrom)
+      mplsLspCount(deviceId: $deviceId) {
+        counts {
+          target
+          incomingLsps
+          outcomingLsps
+        }
+      }
     }
   }
 `;
 
-const SynceTopologyContainer: VoidFunctionComponent = () => {
+const GET_LSP_PATH = gql`
+  query LspPath($deviceId: String!, $lspId: String!) {
+    deviceInventory {
+      lspPath(deviceId: $deviceId, lspId: $lspId) {
+        path
+        metadata {
+          fromDevice
+          toDevice
+          signalization
+          uptime
+        }
+      }
+    }
+  }
+`;
+
+const MplsTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
-  const { topologyLayer, selectedGmPathNodeId, selectedVersion } = state;
+  const { topologyLayer, selectedVersion, selectedNode, selectedLspPathNodeId, selectedLspId } = state;
 
   const [, updatePosition] = useMutation<UpdateSyncePositionMutation, UpdateSyncePositionMutationVariables>(
     UPDATE_POSITION_MUTATION,
   );
 
-  const [{ data: gmPathData, fetching: isGmPathFetching }] = useQuery<
-    GetSynceGrandMasterPathQuery,
-    GetSynceGrandMasterPathQueryVariables
-  >({
-    query: GET_SYNCE_GM_PATH,
+  const [{ data: lspCountData }] = useQuery<GetMplsLspCountQuery, GetMplsLspCountQueryVariables>({
+    query: GET_MPLS_LPS_COUNT,
     requestPolicy: 'network-only',
     variables: {
-      deviceFrom: selectedGmPathNodeId as string,
+      deviceId: selectedNode?.id as string,
     },
-    pause: selectedGmPathNodeId === null,
+    pause: selectedNode?.id === null,
+  });
+
+  const [{ data: lspPathData, fetching: isLspPathFetching }] = useQuery<LspPathQuery, LspPathQueryVariables>({
+    query: GET_LSP_PATH,
+    requestPolicy: 'network-only',
+    variables: {
+      deviceId: selectedLspPathNodeId as string,
+      lspId: selectedLspId as string,
+    },
+    pause: selectedLspPathNodeId === null || selectedLspId === null,
   });
 
   useEffect(() => {
-    const gmPathDataIds =
-      gmPathData?.deviceInventory.syncePathToGrandMaster?.map((p) => {
-        return p;
-      }) ?? [];
-    dispatch(setGmPathIds(gmPathDataIds));
-  }, [dispatch, gmPathData]);
+    const lspPathDataIds = lspPathData?.deviceInventory?.lspPath?.path ?? [];
+    const metadata = lspPathData?.deviceInventory.lspPath?.metadata ?? null;
+    dispatch(setLspPath(lspPathDataIds, metadata));
+  }, [dispatch, lspPathData]);
+
+  useEffect(() => {
+    const lspCounts =
+      lspCountData?.deviceInventory.mplsLspCount?.counts
+        ?.map((p) => {
+          return p;
+        })
+        .filter(omitNullValue)
+        .map(getLspCounts) ?? [];
+    dispatch(setLspCounts(lspCounts));
+  }, [dispatch, lspCountData]);
 
   useEffect(() => {
     if (selectedVersion == null) {
       intervalRef.current = window.setInterval(() => {
-        dispatch(getSynceNodesAndEdges(client));
+        dispatch(getMplsNodesAndEdges(client));
       }, 10000);
-      dispatch(getSynceNodesAndEdges(client));
+      dispatch(getMplsNodesAndEdges(client));
     }
 
     return () => {
@@ -81,7 +123,7 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
   useEffect(() => {
     if (selectedVersion != null) {
       window.clearInterval(intervalRef.current);
-      dispatch(getSynceBackupNodesAndEdges(client, selectedVersion));
+      dispatch(getMplsBackupNodesAndEdges(client, selectedVersion));
     }
   }, [client, dispatch, selectedVersion]);
 
@@ -94,7 +136,7 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
     updatePosition({
       input: {
         coordinates,
-        layer: 'ETH_TOPOLOGY',
+        layer: 'MPLS_TOPOLOGY',
       },
     });
   };
@@ -103,7 +145,7 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
     (event: KeyboardEvent): void => {
       const { code } = event;
       if (code === 'ShiftLeft' || code === 'ShiftRight') {
-        dispatch(setMode('GM_PATH'));
+        dispatch(setMode('LSP_PATH'));
       }
     },
     [dispatch],
@@ -130,16 +172,16 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
   }, [handleKeyDown, handleKeyUp]);
 
   const handleSearchClick = () => {
-    dispatch(findGmPath());
+    dispatch(findLspPath());
   };
 
   return (
-    <SynceTopologyGraph
+    <MplsTopologyGraph
+      onLspPathSearch={handleSearchClick}
       onNodePositionUpdate={handleNodePositionUpdate}
-      onGrandMasterPathSearch={handleSearchClick}
-      isGrandMasterPathFetching={isGmPathFetching}
+      isLspPathFetching={isLspPathFetching}
     />
   );
 };
 
-export default SynceTopologyContainer;
+export default MplsTopologyContainer;

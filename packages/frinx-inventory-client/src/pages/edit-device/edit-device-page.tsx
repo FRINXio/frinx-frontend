@@ -14,6 +14,8 @@ import {
   Label,
   LabelsQuery,
   LabelsQueryVariables,
+  LocationsQuery,
+  LocationsQueryVariables,
   UpdateDeviceMutation,
   UpdateDeviceMutationVariables,
   ZonesQuery,
@@ -34,6 +36,9 @@ const DEVICE_QUERY = gql`
           address
           deviceSize
           mountParameters
+          location {
+            id
+          }
           zone {
             id
             name
@@ -118,6 +123,23 @@ const LABELS_QUERY = gql`
   }
 `;
 
+const LOCATIONS_QUERY = gql`
+  query Locations {
+    deviceInventory {
+      locations {
+        edges {
+          node {
+            id
+            latitude
+            longitude
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 type Props = {
   onSuccess: () => void;
   onCancelButtonClick: () => void;
@@ -132,6 +154,7 @@ type FormValues = {
   model: string | null;
   address: string | null;
   deviceSize: DeviceSize;
+  locationId: string | null;
 };
 
 const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
@@ -145,6 +168,9 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
   const [{ data: zones, fetching: isLoadingZones }] = useQuery<ZonesQuery, ZonesQueryVariables>({ query: ZONES_QUERY });
   const [{ data: labels, fetching: isLoadingLabels }] = useQuery<LabelsQuery, LabelsQueryVariables>({
     query: LABELS_QUERY,
+  });
+  const [{ data: locationsData }] = useQuery<LocationsQuery, LocationsQueryVariables>({
+    query: LOCATIONS_QUERY,
   });
   const [, createLabel] = useMutation<CreateLabelMutation, CreateLabelMutationVariables>(CREATE_LABEL);
 
@@ -169,6 +195,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
         vendor: values.vendor,
         address: values.address,
         deviceSize: values.deviceSize,
+        locationId: values.locationId,
       },
     })
       .then(({ error }) => {
@@ -223,10 +250,12 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
       name: e.node.name,
     })),
     deviceSize: device.deviceSize,
+    locationId: device.location?.id,
   };
 
   const mappedLabels = labels?.deviceInventory.labels.edges ?? [];
   const mappedZones = zones?.deviceInventory.zones.edges ?? [];
+  const locations = locationsData?.deviceInventory.locations.edges ?? [];
 
   return (
     <Container maxWidth={1280}>
@@ -243,6 +272,7 @@ const EditDevicePage: FC<Props> = ({ onSuccess, onCancelButtonClick }) => {
             onCancel={onCancelButtonClick}
             device={formDevice}
             zones={mappedZones}
+            locations={locations}
           />
         </Box>
       )}

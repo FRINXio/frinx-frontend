@@ -1,7 +1,15 @@
-import { Badge, Box, Button, Divider, Flex, Heading, HStack } from '@chakra-ui/react';
-import React, { useState, VoidFunctionComponent } from 'react';
+import { Badge, Box, Button, Divider, Flex, Heading, HStack, IconButton, Icon } from '@chakra-ui/react';
+import FeatherIcon from 'feather-icons-react';
+import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
-import { setSelectedEdge } from '../../../state.actions';
+import { useClient } from 'urql';
+import {
+  getDeviceMetadata,
+  setMapTopologyType,
+  setSelectedEdge,
+  setSelectedMapDeviceName,
+  setTopologyLayer,
+} from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { GraphSynceNodeInterface, normalizeNodeInterfaceData, SynceGraphNode } from '../graph.helpers';
 import DeviceInfoPanelAdditionalInfo from '../../../components/device-info-panel/device-info-panel-additional-info';
@@ -13,12 +21,16 @@ type Props = {
 
 const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const [activeInterface, setActiveInterface] = useState<GraphSynceNodeInterface | null>(null);
-  const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = React.useState(false);
+  const [isShowingAdditionalInfo, setIsShowingAdditionalInfo] = useState(false);
   const { state, dispatch } = useStateContext();
-  const { synceEdges } = state;
-  const { details } = node;
+  const { synceEdges, devicesMetadata } = state;
+  const { details, interfaces } = node;
 
-  const { interfaces } = node;
+  const client = useClient();
+
+  useEffect(() => {
+    dispatch(getDeviceMetadata(client, { topologyType: 'ETH_TOPOLOGY' }));
+  }, [client, dispatch]);
 
   const handleInterfaceClick = (deviceInterface: GraphSynceNodeInterface) => {
     const [edge] = synceEdges.filter((e) => e.source.interface.startsWith(deviceInterface.id));
@@ -32,6 +44,12 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
   const handleClose = () => {
     onClose();
     setActiveInterface(null);
+  };
+
+  const handleShowDeviceOnMap = () => {
+    dispatch(setTopologyLayer('Map'));
+    dispatch(setMapTopologyType('ETH_TOPOLOGY'));
+    dispatch(setSelectedMapDeviceName(node.name));
   };
 
   return (
@@ -76,18 +94,26 @@ const SynceInfoPanel: VoidFunctionComponent<Props> = ({ onClose, node }) => {
             );
           })}
         </Box>
-        <Button
-          marginTop={4}
-          aria-label="show additional"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setIsShowingAdditionalInfo((prev) => !prev);
-          }}
-        >
-          Additional info
-        </Button>
+
         <HStack spacing={2} marginTop={4}>
+          <Button
+            aria-label="show additional"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsShowingAdditionalInfo((prev) => !prev);
+            }}
+          >
+            Additional info
+          </Button>
+          <IconButton
+            size="sm"
+            aria-label="Map"
+            icon={<Icon as={FeatherIcon} icon="map" size={20} />}
+            isDisabled={!devicesMetadata?.find((device) => device.deviceName === node.name)}
+            onClick={handleShowDeviceOnMap}
+            colorScheme="blue"
+          />
           <Button size="sm" onClick={handleClose}>
             Close
           </Button>

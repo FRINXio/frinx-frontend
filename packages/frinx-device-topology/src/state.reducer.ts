@@ -11,6 +11,8 @@ import {
   SynceGraphNodeWithDiff,
   getNetNodesWithDiff,
   NetGraphNodeWithDiff,
+  MplsGraphNodeWithDiff,
+  getMplsNodesWithDiff,
 } from './helpers/topology-helpers';
 import {
   getDefaultPositionsMap,
@@ -28,6 +30,11 @@ import {
   SynceGraphNode,
   width as topologyWidth,
   height as topologyHeight,
+  GraphMplsNodeInterface,
+  MplsGraphNode,
+  DeviceMetadata,
+  LspCount,
+  MapDeviceNeighbors,
 } from './pages/topology/graph.helpers';
 import {
   identity,
@@ -38,10 +45,11 @@ import {
   scale,
   getZoomLevel,
 } from './pages/topology/transform.helpers';
-import { LabelItem, StateAction, TopologyMode } from './state.actions';
+import { LabelItem, StateAction, TopologyMode, MapTopologyType } from './state.actions';
 import { NetInterface, NetNode } from './__generated__/graphql';
 
-export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'Synchronous Ethernet';
+export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'MPLS' | 'Synchronous Ethernet' | 'Map';
+
 export type NodeInfo = {
   weight: number | null;
   name: string | null;
@@ -52,6 +60,13 @@ export type ShortestPathInfo = {
 };
 export type ShortestPath = ShortestPathInfo[];
 
+export type LspPathMetadata = {
+  fromDevice: string | null;
+  toDevice: string | null;
+  signalization: string | null;
+  uptime: number | null;
+};
+
 // We need to limit zoomLevel to reasonable numbers,
 // these were picked as a good start.
 // (Safari on Mac should have lower MAX, but we will stick with it for now)
@@ -59,13 +74,18 @@ const MIN_ZOOM_LEVEL = 0.01;
 const MAX_ZOOM_LEVEL = 20;
 
 export type State = {
+  mapTopologyDeviceSearch: string | null;
   topologyLayer: TopologyLayer;
+  mapTopologyType: MapTopologyType;
+  selectedMapDeviceName: string | null;
+  devicesMetadata: DeviceMetadata[] | null;
+  mapDeviceNeighbors: MapDeviceNeighbors[] | null;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
   nodePositions: Record<string, Position>;
   interfaceGroupPositions: PositionGroupsMap<GraphNodeInterface>;
-  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode) | null;
+  selectedNode: (GraphNode | GraphNetNode | PtpGraphNode | SynceGraphNode | MplsGraphNode) | null;
   selectedEdge: GraphEdge | null;
   connectedNodeIds: string[];
   selectedLabels: LabelItem[];
@@ -90,23 +110,38 @@ export type State = {
   unconfirmedSelectedGmPathNodeId: string | null;
   selectedGmPathNodeId: string | null;
   gmPathIds: string[];
+  unconfirmedSelectedLspPathNodeId: string | null;
+  selectedLspPathNodeId: string | null;
+  selectedLspId: string | null;
+  lspPathIds: string[];
+  lspPathMetadata: LspPathMetadata | null;
   synceNodes: SynceGraphNodeWithDiff[];
   synceEdges: GraphEdgeWithDiff[];
   synceNodePositions: Record<string, Position>;
   synceInterfaceGroupPositions: PositionGroupsMap<GraphSynceNodeInterface>;
+  mplsNodes: MplsGraphNodeWithDiff[];
+  mplsEdges: GraphEdgeWithDiff[];
+  mplsNodePositions: Record<string, Position>;
+  mplsInterfaceGroupPositions: PositionGroupsMap<GraphMplsNodeInterface>;
   transform: Matrix;
   selectedNodeLoad: {
     deviceName: string;
     deviceUsage?: {
-      cpuLoad: number;
-      memoryLoad: number;
+      cpuLoad: number | null;
+      memoryLoad: number | null;
     } | null;
   };
+  lspCounts: LspCount[];
   // isMouseDown: boolean;
 };
 
 export const initialState: State = {
+  mapTopologyDeviceSearch: null,
   topologyLayer: 'LLDP',
+  mapTopologyType: null,
+  selectedMapDeviceName: null,
+  devicesMetadata: null,
+  mapDeviceNeighbors: null,
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -137,15 +172,25 @@ export const initialState: State = {
   unconfirmedSelectedGmPathNodeId: null,
   selectedGmPathNodeId: null,
   gmPathIds: [],
+  unconfirmedSelectedLspPathNodeId: null,
+  selectedLspPathNodeId: null,
+  selectedLspId: null,
+  lspPathIds: [],
+  lspPathMetadata: null,
   synceNodes: [],
   synceEdges: [],
   synceNodePositions: {},
   synceInterfaceGroupPositions: {},
+  mplsNodes: [],
+  mplsEdges: [],
+  mplsNodePositions: {},
+  mplsInterfaceGroupPositions: {},
   transform: identity(),
   selectedNodeLoad: {
     deviceName: '',
     deviceUsage: null,
   },
+  lspCounts: [],
   // isMouseDown: false,
 };
 
@@ -200,6 +245,18 @@ export function stateReducer(state: State, action: StateAction): State {
         );
         return acc;
       }
+      case 'UPDATE_MPLS_NODE_POSITION': {
+        acc.mplsNodePositions[action.nodeId] = action.position;
+        acc.mplsInterfaceGroupPositions = getInterfacesPositions<GraphMplsNodeInterface, MplsGraphNode>(
+          {
+            nodes: acc.mplsNodes,
+            edges: acc.mplsEdges,
+            positionMap: acc.mplsNodePositions,
+          },
+          () => 'MEDIUM',
+        );
+        return acc;
+      }
       case 'SET_SELECTED_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;
@@ -216,6 +273,14 @@ export function stateReducer(state: State, action: StateAction): State {
       }
       case 'SET_SELECTED_EDGE': {
         acc.selectedEdge = action.edge;
+        return acc;
+      }
+      case 'SET_MAP_TOPOLOGY_TYPE': {
+        acc.mapTopologyType = action.mapTopologyType;
+        return acc;
+      }
+      case 'SET_MAP_TOPOLOGY_DEVICE_SEARCH': {
+        acc.mapTopologyDeviceSearch = action.mapTopologyDeviceSearch;
         return acc;
       }
       case 'SET_SELECTED_LABELS': {
@@ -272,6 +337,20 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.synceEdges = allEdges;
         acc.synceNodePositions = positionsMap.nodes;
         acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
+        return acc;
+      }
+      case 'SET_MPLS_BACKUP_NODES_AND_EDGES': {
+        const allNodes = getMplsNodesWithDiff(acc.mplsNodes, action.payload.nodes);
+        const allEdges = getEdgesWithDiff(acc.mplsEdges, action.payload.edges);
+        const positionsMap = getDefaultPositionsMap<GraphMplsNodeInterface, MplsGraphNode>(
+          { nodes: allNodes, edges: allEdges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.mplsNodes = allNodes;
+        acc.mplsEdges = allEdges;
+        acc.mplsNodePositions = positionsMap.nodes;
+        acc.mplsInterfaceGroupPositions = positionsMap.interfaceGroups;
         return acc;
       }
       case 'SET_NET_BACKUP_NODES_AND_EDGES': {
@@ -344,6 +423,27 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.gmPathIds = action.nodeIds;
         return acc;
       }
+      case 'SET_UNCONFIRMED_LSP_NODE_ID': {
+        acc.unconfirmedSelectedLspPathNodeId = action.nodeId;
+        acc.selectedLspId = action.lspId;
+        return acc;
+      }
+      case 'FIND_LSP_PATH': {
+        acc.selectedLspPathNodeId = state.unconfirmedSelectedLspPathNodeId;
+        return acc;
+      }
+      case 'CLEAR_LSP_PATH': {
+        acc.unconfirmedSelectedLspPathNodeId = null;
+        acc.selectedLspPathNodeId = null;
+        acc.lspPathIds = [];
+        acc.lspPathMetadata = null;
+        return acc;
+      }
+      case 'SET_LSP_PATH': {
+        acc.lspPathIds = action.nodeIds;
+        acc.lspPathMetadata = action.metadata;
+        return acc;
+      }
       case 'SET_MODE': {
         acc.mode = action.mode;
         return acc;
@@ -397,6 +497,19 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.synceInterfaceGroupPositions = positionMap.interfaceGroups;
         return acc;
       }
+      case 'SET_MPLS_NODES_AND_EDGES': {
+        const { nodes, edges } = action.payload;
+        const positionMap = getDefaultPositionsMap<GraphMplsNodeInterface, MplsGraphNode>(
+          { nodes, edges },
+          (n) => n.name,
+          () => 'MEDIUM',
+        );
+        acc.mplsNodes = nodes.map((n) => ({ ...n, change: 'NONE' }));
+        acc.mplsEdges = edges.map((e) => ({ ...e, change: 'NONE' }));
+        acc.mplsNodePositions = positionMap.nodes;
+        acc.mplsInterfaceGroupPositions = positionMap.interfaceGroups;
+        return acc;
+      }
       case 'SET_TOPOLOGY_LAYER': {
         acc.topologyLayer = action.layer;
         acc.selectedEdge = null;
@@ -425,6 +538,20 @@ export function stateReducer(state: State, action: StateAction): State {
         acc.connectedNodeIds = connectedNodeIds;
         return acc;
       }
+      case 'SET_SELECTED_MAP_DEVICE_NAME': {
+        acc.selectedMapDeviceName = action.deviceName;
+        return acc;
+      }
+
+      case 'SET_MAP_DEVICE_NEIGHBORS': {
+        acc.mapDeviceNeighbors = action.payload;
+        return acc;
+      }
+
+      case 'SET_DEVICES_METADATA': {
+        acc.devicesMetadata = action.payload;
+        return acc;
+      }
       case 'SET_SELECTED_PTP_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;
@@ -440,6 +567,20 @@ export function stateReducer(state: State, action: StateAction): State {
         return acc;
       }
       case 'SET_SELECTED_SYNCE_NODE': {
+        if (acc.selectedNode?.id !== action.node?.id) {
+          acc.selectedEdge = null;
+        }
+        acc.selectedNode = action.node;
+        const connectedEdges = acc.synceEdges.filter(
+          (e) => action.node?.name === e.source.nodeId || action.node?.name === e.target.nodeId,
+        );
+        const connectedNodeIds = [
+          ...new Set([...connectedEdges.map((e) => e.source.nodeId), ...connectedEdges.map((e) => e.target.nodeId)]),
+        ];
+        acc.connectedNodeIds = connectedNodeIds;
+        return acc;
+      }
+      case 'SET_SELECTED_MPLS_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;
         }
@@ -495,6 +636,10 @@ export function stateReducer(state: State, action: StateAction): State {
           deviceUsage: selectedDeviceUsage,
         };
 
+        return acc;
+      }
+      case 'SET_LSP_COUNTS': {
+        acc.lspCounts = action.lspCounts;
         return acc;
       }
       default:

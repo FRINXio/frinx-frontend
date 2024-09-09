@@ -66,6 +66,7 @@ import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
 import WorkflowListModal from './workflow-list-modal';
+import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
 
 const DEVICES_QUERY = gql`
   query Devices(
@@ -101,6 +102,11 @@ const DEVICES_QUERY = gql`
             zone {
               id
               name
+            }
+            location {
+              name
+              latitude
+              longitude
             }
             mountParameters
           }
@@ -346,6 +352,8 @@ const DeviceList: VoidFunctionComponent = () => {
 
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
+
+  const [deviceToShowOnMap, setDeviceToShowOnMap] = useState<LocationModal | null>(null);
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
 
@@ -643,6 +651,10 @@ const DeviceList: VoidFunctionComponent = () => {
       });
   };
 
+  const handleDeviceMapBtnClick = (deviceLocation: LocationModal | null) => {
+    setDeviceToShowOnMap(deviceLocation);
+  };
+
   const handleDeviceDiscoveryBtnClick = (deviceAdress: string | null) => {
     if (deviceAdress == null) {
       addToastNotification({
@@ -804,6 +816,14 @@ const DeviceList: VoidFunctionComponent = () => {
           onSubmit={handleOnExecuteWorkflow}
         />
       )}
+      {deviceToShowOnMap != null && (
+        <LocationMapModal
+          locationModal={deviceToShowOnMap}
+          onClose={() => {
+            setDeviceToShowOnMap(null);
+          }}
+        />
+      )}
       <Container maxWidth={1280}>
         <Flex justify="space-between" align="center" marginBottom={6}>
           <Heading as="h1" size="xl">
@@ -887,6 +907,7 @@ const DeviceList: VoidFunctionComponent = () => {
           selectedDevices={selectedDevices}
           orderBy={orderBy}
           onSort={handleSort}
+          onDeviceMapBtnClick={handleDeviceMapBtnClick}
           onDeviceDiscoveryBtnClick={handleDeviceDiscoveryBtnClick}
           onInstallButtonClick={handleOnDeviceInstall}
           onUninstallButtonClick={handleUninstallButtonClick}

@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, VoidFunctionComponent } from 're
 import { gql, useClient, useMutation, useQuery } from 'urql';
 import {
   getBackupNodesAndEdges,
+  getDeviceMetadata,
   getNodesAndEdges,
   setCommonNodeIds,
   setMode,
@@ -61,8 +62,10 @@ const TopologyContainer: VoidFunctionComponent = () => {
     if (selectedVersion == null) {
       intervalRef.current = window.setInterval(() => {
         dispatch(getNodesAndEdges(client, selectedLabels));
+        dispatch(getDeviceMetadata(client, { topologyType: null }));
       }, 10000);
       dispatch(getNodesAndEdges(client, selectedLabels));
+      dispatch(getDeviceMetadata(client, { topologyType: null }));
     }
 
     return () => {
@@ -86,7 +89,7 @@ const TopologyContainer: VoidFunctionComponent = () => {
     updatePosition({
       input: {
         coordinates,
-        layer: 'PhysicalTopology',
+        layer: 'PHYSICAL_TOPOLOGY',
       },
     });
   };

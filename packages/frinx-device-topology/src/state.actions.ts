@@ -1,3 +1,4 @@
+import { omitNullValue } from '@frinx/shared';
 import { Client, gql } from 'urql';
 import { GraphEdgeWithDiff } from './helpers/topology-helpers';
 import {
@@ -9,10 +10,26 @@ import {
   PtpGraphNode,
   Position,
   SynceGraphNode,
+  MplsGraphNode,
+  MplsGraphNodeDetails,
+  DeviceMetadata,
+  LspCount,
+  MapDeviceNeighbors,
 } from './pages/topology/graph.helpers';
-import { ShortestPath, State, TopologyLayer } from './state.reducer';
+import { LspPathMetadata, ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
+  FilterDevicesMetadatasInput,
+  FilterNeighborInput,
+  GeoMapDataQueryQuery,
+  GeoMapDataQueryQueryVariables,
+  MplsDeviceDetails,
+  MplsTopologyQuery,
+  MplsTopologyQueryVariables,
+  MplsTopologyVersionDataQuery,
+  MplsTopologyVersionDataQueryVariables,
+  NeighboursQuery,
+  NeighboursQueryVariables,
   NetTopologyQuery,
   NetTopologyQueryVariables,
   NetTopologyVersionDataQuery,
@@ -51,6 +68,11 @@ export type SynceNodesEdgesPayload = {
   edges: GraphEdge[];
 };
 
+export type MplsNodesEdgesPayload = {
+  nodes: MplsGraphNode[];
+  edges: GraphEdge[];
+};
+
 export type BackupNodesEdgesPayload = {
   nodes: BackupGraphNode[];
   edges: GraphEdge[];
@@ -67,11 +89,19 @@ export type LabelItem = {
 };
 
 export type SetDeviceUsagePayload = {
-  cpuLoad: number;
-  memoryLoad: number;
+  cpuLoad: number | null;
+  memoryLoad: number | null;
 };
 
-export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH';
+export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH' | 'LSP_PATH';
+
+export type MapTopologyType =
+  | 'PHYSICAL_TOPOLOGY'
+  | 'PTP_TOPOLOGY'
+  | 'ETH_TOPOLOGY'
+  | 'NETWORK_TOPOLOGY'
+  | 'MPLS_TOPOLOGY'
+  | null;
 
 export type StateAction =
   | {
@@ -90,6 +120,11 @@ export type StateAction =
     }
   | {
       type: 'UPDATE_SYNCE_NODE_POSITION';
+      nodeId: string;
+      position: Position;
+    }
+  | {
+      type: 'UPDATE_MPLS_NODE_POSITION';
       nodeId: string;
       position: Position;
     }
@@ -119,6 +154,10 @@ export type StateAction =
     }
   | {
       type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES';
+      payload: BackupNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_MPLS_BACKUP_NODES_AND_EDGES';
       payload: BackupNodesEdgesPayload;
     }
   | {
@@ -160,6 +199,14 @@ export type StateAction =
       layer: TopologyLayer;
     }
   | {
+      type: 'SET_MAP_TOPOLOGY_TYPE';
+      mapTopologyType: MapTopologyType;
+    }
+  | {
+      type: 'SET_MAP_TOPOLOGY_DEVICE_SEARCH';
+      mapTopologyDeviceSearch: string | null;
+    }
+  | {
       type: 'SET_SELECTED_NET_NODE';
       node: GraphNetNode | null;
     }
@@ -184,6 +231,10 @@ export type StateAction =
       alternativePathIndex: number;
     }
   | {
+      type: 'SET_SELECTED_MAP_DEVICE_NAME';
+      deviceName: string | null;
+    }
+  | {
       type: 'SET_WEIGHT_VISIBILITY';
       isVisible: boolean;
     }
@@ -199,6 +250,18 @@ export type StateAction =
     }
   | { type: 'SET_GM_PATH_IDS'; nodeIds: string[] }
   | {
+      type: 'SET_UNCONFIRMED_LSP_NODE_ID';
+      nodeId: string | null;
+      lspId: string | null;
+    }
+  | {
+      type: 'FIND_LSP_PATH';
+    }
+  | {
+      type: 'CLEAR_LSP_PATH';
+    }
+  | { type: 'SET_LSP_PATH'; nodeIds: string[]; metadata: LspPathMetadata | null }
+  | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
     }
@@ -207,8 +270,24 @@ export type StateAction =
       node: SynceGraphNode | null;
     }
   | {
+      type: 'SET_MPLS_NODES_AND_EDGES';
+      payload: MplsNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_SELECTED_MPLS_NODE';
+      node: MplsGraphNode | null;
+    }
+  | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_DEVICES_METADATA';
+      payload: DeviceMetadata[];
+    }
+  | {
+      type: 'SET_MAP_DEVICE_NEIGHBORS';
+      payload: MapDeviceNeighbors[];
     }
   | {
       type: 'SET_SYNCE_DIFF_VISIBILITY';
@@ -222,6 +301,10 @@ export type StateAction =
         deviceName: string;
         deviceUsage?: SetDeviceUsagePayload | null;
       };
+    }
+  | {
+      type: 'SET_LSP_COUNTS';
+      lspCounts: LspCount[];
     };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
@@ -371,12 +454,46 @@ const SYNCE_TOPOLOGY_VERSION_DATA_QUERY = gql`
   }
 `;
 
+const MPLS_TOPOLOGY_VERSION_DATA_QUERY = gql`
+  query MplsTopologyVersionData($version: String!) {
+    deviceInventory {
+      mplsTopologyVersionData(version: $version) {
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+        }
+        nodes {
+          id
+          name
+          interfaces {
+            id
+            status
+            name
+          }
+          coordinates {
+            x
+            y
+          }
+        }
+      }
+    }
+  }
+`;
+
 const NET_TOPOLOGY_QUERY = gql`
   query NetTopology {
     deviceInventory {
       netTopology {
         nodes {
           id
+          phyDeviceName
           nodeId
           name
           interfaces {
@@ -420,6 +537,7 @@ const NET_TOPOLOGY_VERSION_DATA_QUERY = gql`
         nodes {
           id
           name
+          phyDeviceName
           interfaces {
             id
             name
@@ -550,6 +668,93 @@ const SYNCE_TOPOLOGY_QUERY = gql`
             interface
           }
           weight
+        }
+      }
+    }
+  }
+`;
+
+const MPLS_TOPOLOGY_QUERY = gql`
+  query MplsTopology {
+    deviceInventory {
+      mplsTopology {
+        nodes {
+          id
+          nodeId
+          name
+          interfaces {
+            id
+            name
+            status
+          }
+          coordinates {
+            x
+            y
+          }
+          status
+          labels
+          mplsDeviceDetails {
+            lspTunnels {
+              lspId
+              fromDevice
+              toDevice
+              uptime
+              signalization
+            }
+            mplsData {
+              lspId
+              inputLabel
+              inputInterface
+              outputLabel
+              outputInterface
+              operState
+              ldpPrefix
+              mplsOperation
+            }
+          }
+        }
+        edges {
+          id
+          source {
+            nodeId
+            interface
+          }
+          target {
+            nodeId
+            interface
+          }
+          weight
+        }
+      }
+    }
+  }
+`;
+
+const GEOMAP_DATA_QUERY = gql`
+  query GeoMapDataQuery($filter: FilterDevicesMetadatasInput) {
+    deviceInventory {
+      deviceMetadata(filter: $filter) {
+        nodes {
+          id
+          deviceName
+          locationName
+          geolocation {
+            latitude
+            longitude
+          }
+        }
+      }
+    }
+  }
+`;
+
+const MAP_NEIGHBORS_QUERY = gql`
+  query Neighbours($filter: FilterNeighborInput) {
+    deviceInventory {
+      deviceNeighbor(filter: $filter) {
+        neighbors {
+          deviceName
+          deviceId
         }
       }
     }
@@ -687,6 +892,123 @@ export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<St
   };
 }
 
+export function setMplsNodesAndEdges(payload: MplsNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_MPLS_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+function getMplsDetails(mplsDetails: MplsDeviceDetails): MplsGraphNodeDetails {
+  const { mplsData, lspTunnels } = mplsDetails;
+
+  return {
+    mplsData: mplsData?.filter(omitNullValue) ?? [],
+    lspTunnels: lspTunnels?.filter(omitNullValue) ?? [],
+  };
+}
+
+export function getMplsNodesAndEdges(client: Client): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<MplsTopologyQuery, MplsTopologyQueryVariables>(
+        MPLS_TOPOLOGY_QUERY,
+        {},
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes, edges } = data.data?.deviceInventory.mplsTopology ?? { nodes: [], edges: [] };
+        const mplsNodes: MplsGraphNode[] = nodes.map((n) => {
+          const nodeInterfaces = n.interfaces.map((i) => ({
+            ...i,
+          }));
+          return {
+            ...n,
+            details: getMplsDetails(n.mplsDeviceDetails),
+            interfaces: nodeInterfaces,
+          };
+        });
+        dispatch(setMplsNodesAndEdges({ nodes: mplsNodes, edges }));
+      });
+  };
+}
+
+export function setDeviceMetadata(payload: DeviceMetadata[]): StateAction {
+  return {
+    type: 'SET_DEVICES_METADATA',
+    payload,
+  };
+}
+
+export function getDeviceMetadata(
+  client: Client,
+  filter: FilterDevicesMetadatasInput,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<GeoMapDataQueryQuery, GeoMapDataQueryQueryVariables>(
+        GEOMAP_DATA_QUERY,
+        { filter },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const { nodes } = data.data?.deviceInventory.deviceMetadata ?? { nodes: [] };
+        const metaData: DeviceMetadata[] =
+          nodes?.map((n) => ({
+            id: n?.id,
+            deviceName: n?.deviceName,
+            locationName: n?.locationName,
+            geolocation: {
+              latitude: n?.geolocation?.latitude,
+              longitude: n?.geolocation?.longitude,
+            },
+          })) || [];
+
+        dispatch(setDeviceMetadata(metaData));
+      });
+  };
+}
+
+export function setMapDeviceNeighbors(payload: MapDeviceNeighbors[]): StateAction {
+  return {
+    type: 'SET_MAP_DEVICE_NEIGHBORS',
+    payload,
+  };
+}
+
+export function getMapDeviceNeighbors(
+  client: Client,
+  filter: FilterNeighborInput,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<NeighboursQuery, NeighboursQueryVariables>(
+        MAP_NEIGHBORS_QUERY,
+        { filter },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const deviceNeighborsData = data.data?.deviceInventory.deviceNeighbor?.neighbors ?? [];
+        const deviceNeighbors: MapDeviceNeighbors[] =
+          deviceNeighborsData?.map((d) => ({
+            deviceName: d?.deviceName || '',
+            deviceId: d?.deviceId || '',
+          })) || [];
+
+        dispatch(setMapDeviceNeighbors(deviceNeighbors));
+      });
+  };
+}
+
 export function updateNodePosition(nodeId: string, position: Position): StateAction {
   return {
     type: 'UPDATE_NODE_POSITION',
@@ -711,10 +1033,25 @@ export function updateSynceNodePosition(nodeId: string, position: Position): Sta
   };
 }
 
+export function updateMplsNodePosition(nodeId: string, position: Position): StateAction {
+  return {
+    type: 'UPDATE_MPLS_NODE_POSITION',
+    nodeId,
+    position,
+  };
+}
+
 export function setSelectedNode(node: GraphNode | null): StateAction {
   return {
     type: 'SET_SELECTED_NODE',
     node,
+  };
+}
+
+export function setSelectedMapDeviceName(deviceName: string | null): StateAction {
+  return {
+    type: 'SET_SELECTED_MAP_DEVICE_NAME',
+    deviceName,
   };
 }
 
@@ -763,6 +1100,13 @@ export function setPtpBackupNodesAndEdges(payload: BackupNodesEdgesPayload): Sta
 export function setSynceBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
   return {
     type: 'SET_SYNCE_BACKUP_NODES_AND_EDGES',
+    payload,
+  };
+}
+
+export function setMplsBackupNodesAndEdges(payload: BackupNodesEdgesPayload): StateAction {
+  return {
+    type: 'SET_MPLS_BACKUP_NODES_AND_EDGES',
     payload,
   };
 }
@@ -857,6 +1201,37 @@ export function getSynceBackupNodesAndEdges(
   };
 }
 
+export function getMplsBackupNodesAndEdges(
+  client: Client,
+  version: string,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<MplsTopologyVersionDataQuery, MplsTopologyVersionDataQueryVariables>(
+        MPLS_TOPOLOGY_VERSION_DATA_QUERY,
+        {
+          version,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        dispatch(
+          setMplsBackupNodesAndEdges({
+            nodes: data.data?.deviceInventory.mplsTopologyVersionData.nodes ?? [],
+            edges:
+              data.data?.deviceInventory.mplsTopologyVersionData.edges.map((e) => ({
+                ...e,
+                weight: null,
+              })) ?? [],
+          }),
+        );
+      });
+  };
+}
+
 export function getNetBackupNodesAndEdges(
   client: Client,
   version: string,
@@ -935,6 +1310,20 @@ export function setTopologyLayer(layer: TopologyLayer): StateAction {
   };
 }
 
+export function setMapTopologyType(mapTopologyType: MapTopologyType): StateAction {
+  return {
+    type: 'SET_MAP_TOPOLOGY_TYPE',
+    mapTopologyType,
+  };
+}
+
+export function setMapTopologyDeviceSearch(mapTopologyDeviceSearch: string | null): StateAction {
+  return {
+    type: 'SET_MAP_TOPOLOGY_DEVICE_SEARCH',
+    mapTopologyDeviceSearch,
+  };
+}
+
 export function setSelectedNetNode(node: GraphNetNode): StateAction {
   return {
     type: 'SET_SELECTED_NET_NODE',
@@ -952,6 +1341,13 @@ export function setSelectedPtpNode(node: PtpGraphNode): StateAction {
 export function setSelectedSynceNode(node: SynceGraphNode): StateAction {
   return {
     type: 'SET_SELECTED_SYNCE_NODE',
+    node,
+  };
+}
+
+export function setSelectedMplsNode(node: MplsGraphNode): StateAction {
+  return {
+    type: 'SET_SELECTED_MPLS_NODE',
     node,
   };
 }
@@ -992,6 +1388,34 @@ export function setSynceDiffVisibility(isVisible: boolean): StateAction {
   };
 }
 
+export function setUnconfimedNodeIdForLspPathSearch(nodeId: string, lspId: string | null): StateAction {
+  return {
+    type: 'SET_UNCONFIRMED_LSP_NODE_ID',
+    nodeId,
+    lspId,
+  };
+}
+
+export function findLspPath(): StateAction {
+  return {
+    type: 'FIND_LSP_PATH',
+  };
+}
+
+export function clearLspPathSearch(): StateAction {
+  return {
+    type: 'CLEAR_LSP_PATH',
+  };
+}
+
+export function setLspPath(nodeIds: string[], metadata: LspPathMetadata | null): StateAction {
+  return {
+    type: 'SET_LSP_PATH',
+    nodeIds,
+    metadata,
+  };
+}
+
 export function setUnconfimedNodeIdForGmPathSearch(nodeId: string): StateAction {
   return {
     type: 'SET_UNCONFIRMED_GM_NODE_ID',
@@ -1015,6 +1439,13 @@ export function setGmPathIds(nodeIds: string[]): StateAction {
   return {
     type: 'SET_GM_PATH_IDS',
     nodeIds,
+  };
+}
+
+export function setLspCounts(lspCounts: LspCount[]): StateAction {
+  return {
+    type: 'SET_LSP_COUNTS',
+    lspCounts,
   };
 }
 
