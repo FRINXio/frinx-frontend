@@ -2,12 +2,20 @@ import React, { useEffect, useRef, VoidFunctionComponent, useState } from 'react
 import { MapContainer, Marker, Popup, TileLayer, useMap, Polyline } from 'react-leaflet';
 import { useClient } from 'urql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { Box, Heading } from '@chakra-ui/react';
+import { Box, Button, Heading } from '@chakra-ui/react';
 import L, { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
 import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 import { useStateContext } from '../../../state.provider';
-import { getDeviceMetadata, getMapDeviceNeighbors, setSelectedMapDeviceName } from '../../../state.actions';
+import {
+  getDeviceMetadata,
+  getMapDeviceNeighbors,
+  setMapTopologyType,
+  setSelectedMapDeviceName,
+  setSelectedNode,
+  setTopologyLayer,
+} from '../../../state.actions';
+import { topologyLayers } from '../../../components/topology-type-select/topology-type-select';
 
 type MarkerLines = {
   id: string;
@@ -99,6 +107,15 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
     dispatch(setSelectedMapDeviceName(null));
   };
 
+  const handleShowDevice = () => {
+    const layer = topologyLayers.find((l) => l.value === mapTopologyType);
+    if (mapTopologyType && layer) {
+      dispatch(setTopologyLayer(layer.layer));
+      dispatch(setMapTopologyType(null));
+      // dispatch(setSelectedNode())
+    }
+  };
+
   return (
     <>
       <TileLayer
@@ -128,7 +145,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                   }}
                 >
                   <Popup>
-                    <Box mt={2}>
+                    <Box m={2}>
                       <Heading as="h3" fontSize="xs" color="blue.700">
                         {node?.deviceName ?? '-'}
                       </Heading>
@@ -151,6 +168,9 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                       </Heading>
                       {node?.geolocation?.longitude}
                     </Box>
+                    <Button mt={3} size="sm" onClick={handleShowDevice} colorScheme="blue">
+                      Switch to device
+                    </Button>
                   </Popup>
                 </Marker>
               );

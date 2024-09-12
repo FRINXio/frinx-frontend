@@ -1,4 +1,4 @@
-import { Box, Container, Flex, FormControl, FormLabel, Heading, Select, Switch } from '@chakra-ui/react';
+import { Box, Container, Flex, FormControl, FormLabel, Heading, Select, Switch, VStack } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
@@ -25,7 +25,7 @@ const Topology: VoidFunctionComponent = () => {
           Device topology
         </Heading>
       </Flex>
-      <Flex gridGap={4}>
+      <Flex direction={topologyLayer === 'Map' ? 'column' : 'row'} gridGap={4}>
         <FormControl width="sm" paddingBottom="24px">
           <FormLabel marginBottom={4}>Select layer:</FormLabel>
           <Select
@@ -49,10 +49,10 @@ const Topology: VoidFunctionComponent = () => {
         )}
         {topologyLayer === 'Map' && (
           <>
-            <Box flex={1}>
+            <Flex justify="space-between" gap={4} flex={1}>
               <TopologyTypeSelect />
-            </Box>
-            <DeviceSearch />
+              <DeviceSearch />
+            </Flex>
           </>
         )}
         {topologyLayer === 'LLDP' && (
