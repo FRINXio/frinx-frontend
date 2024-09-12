@@ -73,7 +73,7 @@ const EditDeviceLocationModal: FC<Props> = ({ isOpen, onClose, title, initialLoc
   });
 
   useEffect(() => {
-    if (isNaN(parseFloat(values.latitude)) || isNaN(parseFloat(values.longitude))) {
+    if (Number.isNaN(parseFloat(values.latitude)) || Number.isNaN(parseFloat(values.longitude))) {
       return;
     }
     setParsedMapPosition([parseFloat(values.latitude), parseFloat(values.longitude)]);
