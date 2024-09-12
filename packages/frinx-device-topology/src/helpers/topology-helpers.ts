@@ -517,7 +517,7 @@ export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
   return ptpNodes.at(0)?.details.ptpProfile ?? null;
 }
 
-export const fetchOsmData = async (lat: number, lon: number, setOsmData: (data: OSMData) => void) => {
+export const fetchOsmData = async (lat: number, lon: number): Promise<OSMData> => {
   try {
     const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
     if (!response.ok) {
@@ -536,11 +536,11 @@ export const fetchOsmData = async (lat: number, lon: number, setOsmData: (data: 
     };
 
     if (data.error === 'Unable to geocode') {
-      setOsmData({ ...formattedData, displayName: 'No information available for this location.' });
-    } else {
-      setOsmData(formattedData);
+      return { ...formattedData, displayName: 'No information available for this location.' };
     }
+
+    return formattedData;
   } catch (error) {
-    setOsmData({ ...defaultOsmData, displayName: 'Error fetching location data.' });
+    return { ...defaultOsmData, displayName: 'Error fetching location data.' };
   }
 };

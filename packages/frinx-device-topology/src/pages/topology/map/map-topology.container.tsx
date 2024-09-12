@@ -73,12 +73,13 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
     }
   }, [deviceData, selectedMapDeviceName, map, markersReady]);
 
-  const handleLocationInfoClick = (lat: number, lon: number) => () => {
+  const handleLocationInfoClick = async (lat: number, lon: number) => {
     setOsmData(null);
     setShowLocationInfo((prev) => !prev);
 
     if (!showLocationInfo) {
-      fetchOsmData(lat, lon, setOsmData);
+      const fetchedOsmData = await fetchOsmData(lat, lon);
+      setOsmData(fetchedOsmData);
     }
   };
 
@@ -160,7 +161,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                       {lon}
                     </Box>
                     <Box mt={2}>
-                      <Button colorScheme="blue" size="xs" onClick={handleLocationInfoClick(lat, lon)}>
+                      <Button colorScheme="blue" size="xs" onClick={() => handleLocationInfoClick(lat, lon)}>
                         {showLocationInfo ? 'Hide Location Info' : 'Show Location Info'}
                       </Button>
                     </Box>
