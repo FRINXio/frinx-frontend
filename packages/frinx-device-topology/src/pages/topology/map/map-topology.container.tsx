@@ -4,7 +4,7 @@ import { useClient } from 'urql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Box, Button, Heading } from '@chakra-ui/react';
 import L, { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
-import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL, fetchOsmData, OSMData } from '../../../helpers/topology-helpers';
 import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 import { useStateContext } from '../../../state.provider';
 import { getDeviceMetadata, getMapDeviceNeighbors, setSelectedMapDeviceName } from '../../../state.actions';
@@ -13,32 +13,6 @@ type MarkerLines = {
   id: string;
   from: LatLngTuple;
   to: LatLngTuple;
-};
-
-type OSMData = {
-  placeId: string;
-  lat: string;
-  lon: string;
-  displayName: string;
-  type: string;
-  importance: number;
-  address: {
-    road?: string;
-    city?: string;
-    state?: string;
-    country?: string;
-    postcode?: string;
-  };
-};
-
-const defaultOsmData: OSMData = {
-  placeId: '',
-  lat: '',
-  lon: '',
-  displayName: '',
-  type: '',
-  importance: 0,
-  address: {},
 };
 
 const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
@@ -99,40 +73,12 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
     }
   }, [deviceData, selectedMapDeviceName, map, markersReady]);
 
-  const fetchOsmData = async (lat: number, lon: number) => {
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data from OpenStreetMap');
-      }
-      const data = await response.json();
-
-      const formattedData: OSMData = {
-        placeId: data.place_id,
-        lat: data.lat,
-        lon: data.lon,
-        displayName: data.display_name,
-        type: data.type,
-        importance: data.importance,
-        address: data.address || {},
-      };
-
-      if (data.error === 'Unable to geocode') {
-        setOsmData({ ...formattedData, displayName: 'No information available for this location.' });
-      } else {
-        setOsmData(formattedData);
-      }
-    } catch (error) {
-      setOsmData({ ...defaultOsmData, displayName: 'Error fetching location data.' });
-    }
-  };
-
   const handleLocationInfoClick = (lat: number, lon: number) => () => {
     setOsmData(null);
     setShowLocationInfo((prev) => !prev);
 
     if (!showLocationInfo) {
-      fetchOsmData(lat, lon);
+      fetchOsmData(lat, lon, setOsmData);
     }
   };
 
