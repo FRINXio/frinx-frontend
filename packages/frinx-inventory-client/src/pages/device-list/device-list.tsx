@@ -357,7 +357,12 @@ const DeviceList: VoidFunctionComponent = () => {
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
 
-  const deviceColumnOptions = ['model/version', 'discoveredAt', 'deviceStatus', 'isInstalled'];
+  const deviceColumnOptions = [
+    { name: 'model/version', value: 'model/version' },
+    { name: 'discovered', value: 'discoveredAt' },
+    { name: 'device status', value: 'deviceStatus' },
+    { name: 'installation', value: 'isInstalled' },
+  ];
 
   const handleCheckboxChange = (value: string) => {
     if (columnsDisplayed.includes(value)) {
@@ -888,9 +893,12 @@ const DeviceList: VoidFunctionComponent = () => {
           </MenuButton>
           <MenuList>
             {deviceColumnOptions.map((option) => (
-              <MenuItem key={option}>
-                <Checkbox isChecked={columnsDisplayed.includes(option)} onChange={() => handleCheckboxChange(option)}>
-                  {option}
+              <MenuItem key={option.value}>
+                <Checkbox
+                  isChecked={columnsDisplayed.includes(option.value)}
+                  onChange={() => handleCheckboxChange(option.value)}
+                >
+                  {option.name}
                 </Checkbox>
               </MenuItem>
             ))}
