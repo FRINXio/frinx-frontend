@@ -29,6 +29,7 @@ import {
   ConfirmDeleteModal,
   KafkaHealthCheckToolbar,
   usePerformanceMonitoring,
+  omitNullValue,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -692,9 +693,7 @@ const DeviceList: VoidFunctionComponent = () => {
       /* eslint-disable @typescript-eslint/naming-convention */
       /* eslint-disable object-shorthand */
 
-      ips_and_ports: {
-        ips: ips.map((ip) => ({ ip: ip })),
-      },
+      ips: ips.filter(omitNullValue),
     };
     /* eslint-enable object-shorthand */
     /* eslint-enable @typescript-eslint/naming-convention */
