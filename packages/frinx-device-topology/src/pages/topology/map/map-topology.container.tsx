@@ -10,9 +10,16 @@ import { useStateContext } from '../../../state.provider';
 import {
   getDeviceMetadata,
   getMapDeviceNeighbors,
+  getMplsNodesAndEdges,
+  getNodesAndEdges,
+  getPtpNodesAndEdges,
+  getSynceNodesAndEdges,
   setMapTopologyType,
   setSelectedMapDeviceName,
+  setSelectedMplsNode,
   setSelectedNode,
+  setSelectedPtpNode,
+  setSelectedSynceNode,
   setTopologyLayer,
 } from '../../../state.actions';
 import { topologyLayers } from '../../../components/topology-type-select/topology-type-select';
@@ -32,6 +39,10 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
     selectedMapDeviceName,
     devicesMetadata: deviceData,
     mapDeviceNeighbors,
+    ptpNodes,
+    synceNodes,
+    mplsNodes,
+    nodes,
   } = state;
 
   const map = useMap();
@@ -110,9 +121,46 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   const handleShowDevice = () => {
     const layer = topologyLayers.find((l) => l.value === mapTopologyType);
     if (mapTopologyType && layer) {
+      switch (selectedDeviceData.topologyType) {
+        case 'LLDP': {
+          dispatch(getNodesAndEdges(client, []));
+          const selectedNode = nodes.find((n) => n.name === selectedMapDeviceName);
+          if (selectedNode) {
+            dispatch(setSelectedNode(selectedNode));
+          }
+          return;
+        }
+        case 'PTP': {
+          dispatch(getPtpNodesAndEdges(client));
+          const selectedPtpNode = ptpNodes.find((n) => n.name === selectedMapDeviceName);
+          if (selectedPtpNode) {
+            dispatch(setSelectedPtpNode(selectedPtpNode));
+          }
+          return;
+        }
+        case 'MPLS': {
+          dispatch(getMplsNodesAndEdges(client));
+          const selectedMplsNode = mplsNodes.find((n) => n.name === selectedMapDeviceName);
+          if (selectedMplsNode) {
+            dispatch(setSelectedMplsNode(selectedMplsNode));
+          }
+
+          return;
+        }
+        case 'Synchronous Ethernet': {
+          dispatch(getSynceNodesAndEdges(client));
+          const selectedSynceNode = synceNodes.find((n) => n.name === selectedMapDeviceName);
+          if (selectedSynceNode) {
+            dispatch(setSelectedSynceNode(selectedSynceNode));
+          }
+
+          return;
+        }
+        default:
+          break;
+      }
       dispatch(setTopologyLayer(layer.layer));
       dispatch(setMapTopologyType(null));
-      // dispatch(setSelectedNode())
     }
   };
 
