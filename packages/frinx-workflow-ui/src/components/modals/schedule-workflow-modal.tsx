@@ -54,7 +54,9 @@ const SCHEDULED_WORKFLOWS_QUERY = gql`
 `;
 
 const DEFAULT_CRON_STRING = '* * * * *';
-const CRON_REGEX = /^(\*|[0-5]?\d)(\s(\*|[01]?\d|2[0-3])){2}(\s(\*|[1-9]|[12]\d|3[01])){2}$/;
+const CRON_REGEX =
+  /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/;
+
 function getCrontabGuruUrl(cronString: string = DEFAULT_CRON_STRING) {
   return `https://crontab.guru/#${cronString.replace(/\s/g, '_')}`;
 }
