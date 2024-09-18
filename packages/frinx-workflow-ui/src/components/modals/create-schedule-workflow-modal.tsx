@@ -111,6 +111,7 @@ const CreateScheduleWorkflowModal: FC<Props> = ({ workflows, isOpen, onClose, on
       };
 
       onSubmit(formattedValues);
+      resetForm();
       onClose();
     },
   });
