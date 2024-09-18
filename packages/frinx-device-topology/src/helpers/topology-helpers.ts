@@ -490,3 +490,19 @@ export function getGmPathHopsCount(gmPathIds: string[], devicePrefix: 'PtpDevice
 export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
   return ptpNodes.at(0)?.details.ptpProfile ?? null;
 }
+
+// returns pointer X constrainet to SVG vieport
+// if SVG viewport is null, constrained only to 0
+export function getConstrainedPointerX(newX: number, viewPort: SVGElement | null): number {
+  const viewPortWidth = viewPort?.clientWidth;
+  const rightConstrainedX = viewPortWidth && newX > viewPortWidth ? viewPortWidth : newX;
+  return newX < 0 ? 0 : rightConstrainedX;
+}
+
+// returns pointer Y constrainet to SVG vieport
+// if SVG viewport is null, constrained only to 0
+export function getConstrainedPointerY(newY: number, viewPort: SVGElement | null): number {
+  const viewPortHeight = viewPort?.clientHeight;
+  const rightConstrainedY = viewPortHeight && newY > viewPortHeight ? viewPortHeight : newY;
+  return newY < 0 ? 0 : rightConstrainedY;
+}

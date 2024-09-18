@@ -1,7 +1,11 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import React, { useState, VoidFunctionComponent } from 'react';
 import PtpNodeIcon from '../../../components/node-icons/ptp-node-icon';
-import { PtpGraphNodeWithDiff } from '../../../helpers/topology-helpers';
+import {
+  getConstrainedPointerX,
+  getConstrainedPointerY,
+  PtpGraphNodeWithDiff,
+} from '../../../helpers/topology-helpers';
 import { setSelectedPtpNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { Position, PtpGraphNode } from '../graph.helpers';
@@ -75,8 +79,12 @@ const PtpNodes: VoidFunctionComponent<Props> = ({
       const x = event.clientX - bbox.left;
       const y = event.clientY - bbox.top;
       const nodeId = unwrap(position.nodeId);
-      const newX = ptpNodePositions[nodeId].x - (position.offset.x - x);
-      const newY = ptpNodePositions[nodeId].y - (position.offset.y - y);
+
+      const viewPort = event.currentTarget.viewportElement;
+
+      const newX = getConstrainedPointerX(ptpNodePositions[nodeId].x - (position.offset.x - x), viewPort);
+      const newY = getConstrainedPointerY(ptpNodePositions[nodeId].y - (position.offset.y - y), viewPort);
+
       onNodePositionUpdate(nodeId, { x: newX, y: newY });
     }
   };

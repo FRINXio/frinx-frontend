@@ -2,7 +2,7 @@ import { unwrap, usePerformanceMonitoring } from '@frinx/shared';
 import React, { useCallback, useEffect, useState, VoidFunctionComponent } from 'react';
 import { gql, useSubscription } from 'urql';
 import NodeIcon from '../../../components/node-icons/node-icon';
-import { GraphNodeWithDiff } from '../../../helpers/topology-helpers';
+import { getConstrainedPointerX, getConstrainedPointerY, GraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import {
   setSelectedNode,
   setSelectedNodeLoad,
@@ -112,8 +112,12 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
         const x = event.clientX - bbox.left;
         const y = event.clientY - bbox.top;
         const nodeId = unwrap(position.nodeId);
-        const newX = nodePositions[nodeId].x - (position.offset.x - x);
-        const newY = nodePositions[nodeId].y - (position.offset.y - y);
+
+        const viewPort = event.currentTarget.viewportElement;
+
+        const newX = getConstrainedPointerX(nodePositions[nodeId].x - (position.offset.x - x), viewPort);
+        const newY = getConstrainedPointerY(nodePositions[nodeId].y - (position.offset.y - y), viewPort);
+
         onNodePositionUpdate(nodeId, { x: newX, y: newY });
       }
     },
