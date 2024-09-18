@@ -16,11 +16,14 @@ import {
   HStack,
   Button,
   useDisclosure,
+  chakra,
+  FormLabel,
+  Input,
 } from '@chakra-ui/react';
 import { ConfirmDeleteModal, getLocalDateFromUTC, Pagination, usePagination } from '@frinx/shared';
 import { format, formatDistanceToNow } from 'date-fns';
 import FeatherIcon from 'feather-icons-react';
-import React, { useMemo, useState, VoidFunctionComponent } from 'react';
+import React, { ChangeEvent, FormEvent, useMemo, useState, VoidFunctionComponent } from 'react';
 import { gql, useMutation, useQuery } from 'urql';
 import {
   AddLocationMutation,
@@ -30,6 +33,8 @@ import {
   Location,
   LocationListQuery,
   LocationListQueryVariables,
+  LocationOrderByInput,
+  SortLocationBy,
   UpdateLocationMutation,
   UpdateLocationMutationVariables,
 } from '../../__generated__/graphql';
@@ -39,9 +44,16 @@ import { LocationData } from '../create-device/create-device-page';
 import EditDeviceLocationModal, { FormValues as EditFormValues } from '../../components/edit-device-location-modal';
 
 const LOCATION_LIST_QUERY = gql`
-  query LocationList($first: Int, $last: Int, $after: String, $before: String) {
+  query LocationList(
+    $filter: FilterLocationsInput
+    $first: Int
+    $after: String
+    $last: Int
+    $before: String
+    $orderBy: LocationOrderByInput
+  ) {
     deviceInventory {
-      locations(first: $first, last: $last, after: $after, before: $before) {
+      locations(filter: $filter, first: $first, after: $after, last: $last, before: $before, orderBy: $orderBy) {
         edges {
           node {
             id
@@ -100,12 +112,19 @@ const DELETE_LOCATION_MUTATION = gql`
   }
 `;
 
+const Form = chakra('form');
+
 const LocationList: VoidFunctionComponent = () => {
   const context = useMemo(() => ({ additionalTypenames: ['Location'] }), []);
-  const [paginationArgs, { nextPage, previousPage }] = usePagination();
+  const [paginationArgs, { nextPage, previousPage, firstPage }] = usePagination();
+  const [searchNameText, setSearchNameText] = useState<string>('');
+  const [locationNameFilter, setLocationNameFilter] = useState<string | null>(null);
+  const [orderBy, setOrderBy] = useState<LocationOrderByInput>({ sortKey: 'name', direction: 'ASC' });
   const [{ data: locationQData, error }] = useQuery<LocationListQuery, LocationListQueryVariables>({
     query: LOCATION_LIST_QUERY,
     variables: {
+      filter: { name: locationNameFilter },
+      orderBy,
       ...paginationArgs,
     },
     context,
@@ -166,6 +185,27 @@ const LocationList: VoidFunctionComponent = () => {
     deleteModalDisclosure.onClose();
   };
 
+  const handleSort = (sortKey: SortLocationBy) => {
+    return orderBy.direction === 'DESC'
+      ? setOrderBy({ sortKey, direction: 'ASC' })
+      : setOrderBy({ sortKey, direction: 'DESC' });
+  };
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchNameText(event.target.value);
+  };
+
+  const clearFilter = () => {
+    setSearchNameText('');
+    setLocationNameFilter(null);
+  };
+
+  const handleSearchSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    firstPage();
+    setLocationNameFilter(searchNameText);
+  };
+
   if (locationQData == null || error != null) {
     return null;
   }
@@ -217,11 +257,58 @@ const LocationList: VoidFunctionComponent = () => {
             </Button>
           </HStack>
         </Flex>
+        <Form
+          display="flex"
+          flexDirection="row"
+          alignItems="flex-end"
+          justifyContent="start"
+          width="half"
+          onSubmit={handleSearchSubmit}
+        >
+          <Box marginBottom={6}>
+            <FormLabel htmlFor="location-search" marginBottom={4}>
+              Search by name:
+            </FormLabel>
+            <Flex mt={2}>
+              <Input
+                data-cy="search-by-name"
+                id="location-search"
+                type="text"
+                onChange={handleChange}
+                background="white"
+                placeholder="Search location"
+                value={searchNameText}
+              />
+            </Flex>
+          </Box>
+          <Button mb={6} data-cy="search-button" colorScheme="blue" marginLeft="2" type="submit">
+            Search
+          </Button>
+          <Button
+            mb={6}
+            data-cy="clear-button"
+            onClick={clearFilter}
+            colorScheme="red"
+            variant="outline"
+            marginLeft="2"
+          >
+            Clear
+          </Button>
+        </Form>
         <Box>
           <Table background="white" size="lg">
             <Thead>
               <Tr>
-                <Th>Name</Th>
+                <Th cursor="pointer" onClick={() => handleSort('name')}>
+                  Name
+                  {orderBy.sortKey === 'name' && (
+                    <Icon
+                      as={FeatherIcon}
+                      size={40}
+                      icon={orderBy.direction === 'ASC' ? 'chevron-down' : 'chevron-up'}
+                    />
+                  )}
+                </Th>
                 <Th>Created</Th>
                 <Th>Updated</Th>
                 <Th>Latitude</Th>
