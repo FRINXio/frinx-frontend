@@ -174,9 +174,10 @@ const CreateScheduleWorkflowModal: FC<Props> = ({ workflows, isOpen, onClose, on
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
 
-          <FormControl my={6} isRequired>
+          <FormControl my={6} isRequired isInvalid={errors.workflowName != null}>
             <FormLabel>Workflow</FormLabel>
             <Autocomplete items={workflowOptions} onChange={handleWorkflowChanged} selectedItem={undefined} />
+            <FormErrorMessage>{errors.workflowName}</FormErrorMessage>
           </FormControl>
 
           <HStack my={5}>
