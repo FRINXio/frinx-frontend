@@ -22,7 +22,7 @@ import { getDeviceUsageColor, getLocalDateFromUTC, getDeviceUsage, omitNullValue
 import { DevicesQuery, DevicesUsage } from '../../__generated__/graphql';
 import InstallButton from './install-button';
 import { isDeviceOnUniconfigLayer } from '../../helpers/device';
-import { LocationModal } from '../../components/location-map-modal';
+import { LocationModal } from '../../components/edit-location-map-modal';
 
 type SortedBy = 'name' | 'discoveredAt' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
@@ -278,10 +278,9 @@ const DeviceTable: VoidFunctionComponent<Props> = ({
                     data-cy={`device-map-${device.name}`}
                     aria-label="map"
                     size="sm"
-                    isDisabled={!device.location || !device.location.latitude || !device.location.longitude}
                     icon={<Icon size={12} as={FeatherIcon} icon="map" />}
-                    as={isInstalled ? Link : 'button'}
-                    onClick={() => onDeviceMapBtnClick({ title: device.name, location: device.location })}
+                    as={Link}
+                    onClick={() => onDeviceMapBtnClick({ location: device.location, deviceId: device.id })}
                   />
                   <IconButton
                     data-cy={`device-rediscover-${device.name}`}
