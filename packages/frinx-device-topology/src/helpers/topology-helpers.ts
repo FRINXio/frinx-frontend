@@ -9,6 +9,7 @@ import {
   SynceGraphNode,
   PtpGraphNode,
   MplsGraphNode,
+  Position,
 } from '../pages/topology/graph.helpers';
 import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/graphql';
 
@@ -491,7 +492,7 @@ export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
   return ptpNodes.at(0)?.details.ptpProfile ?? null;
 }
 
-// returns pointer X constrainet to SVG vieport
+// returns pointer X constrained to SVG vieport
 // if SVG viewport is null, constrained only to 0
 export function getConstrainedPointerX(newX: number, viewPort: SVGElement | null): number {
   const viewPortWidth = viewPort?.clientWidth;
@@ -499,10 +500,17 @@ export function getConstrainedPointerX(newX: number, viewPort: SVGElement | null
   return newX < 0 ? 0 : rightConstrainedX;
 }
 
-// returns pointer Y constrainet to SVG vieport
+// returns pointer Y constrained to SVG vieport
 // if SVG viewport is null, constrained only to 0
 export function getConstrainedPointerY(newY: number, viewPort: SVGElement | null): number {
   const viewPortHeight = viewPort?.clientHeight;
   const rightConstrainedY = viewPortHeight && newY > viewPortHeight ? viewPortHeight : newY;
   return newY < 0 ? 0 : rightConstrainedY;
+}
+// returns Position constrained to SVG vieport
+// if SVG viewport is null, constrained only to 0
+export function getConstrainedPosition(newPosition: Position, viewPort: SVGElement | null): Position {
+  const x = getConstrainedPointerX(newPosition.x, viewPort);
+  const y = getConstrainedPointerY(newPosition.y, viewPort);
+  return { x, y };
 }

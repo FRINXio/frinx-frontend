@@ -1,11 +1,7 @@
 import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
 import MplsNodeIcon from '../../../components/node-icons/mpls-node-icon';
-import {
-  getConstrainedPointerX,
-  getConstrainedPointerY,
-  MplsGraphNodeWithDiff,
-} from '../../../helpers/topology-helpers';
+import { getConstrainedPosition, MplsGraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedMplsNode, setUnconfimedNodeIdForLspPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { Position, MplsGraphNode } from '../graph.helpers';
@@ -73,12 +69,15 @@ const MplsNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate, 
       const y = event.clientY - bbox.top;
       const nodeId = unwrap(position.nodeId);
 
-      const viewPort = event.currentTarget.viewportElement;
+      const newPosition = getConstrainedPosition(
+        {
+          x: mplsNodePositions[nodeId].x - (position.offset.x - x),
+          y: mplsNodePositions[nodeId].y - (position.offset.y - y),
+        },
+        event.currentTarget.viewportElement,
+      );
 
-      const newX = getConstrainedPointerX(mplsNodePositions[nodeId].x - (position.offset.x - x), viewPort);
-      const newY = getConstrainedPointerY(mplsNodePositions[nodeId].y - (position.offset.y - y), viewPort);
-
-      onNodePositionUpdate(nodeId, { x: newX, y: newY });
+      onNodePositionUpdate(nodeId, newPosition);
     }
   };
   const handlePointerUp = (node: MplsGraphNode) => {

@@ -2,7 +2,7 @@ import { unwrap, usePerformanceMonitoring } from '@frinx/shared';
 import React, { useCallback, useEffect, useState, VoidFunctionComponent } from 'react';
 import { gql, useSubscription } from 'urql';
 import NodeIcon from '../../../components/node-icons/node-icon';
-import { getConstrainedPointerX, getConstrainedPointerY, GraphNodeWithDiff } from '../../../helpers/topology-helpers';
+import { getConstrainedPosition, GraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import {
   setSelectedNode,
   setSelectedNodeLoad,
@@ -113,12 +113,15 @@ const Nodes: VoidFunctionComponent<Props> = ({ nodesWithDiff, onNodePositionUpda
         const y = event.clientY - bbox.top;
         const nodeId = unwrap(position.nodeId);
 
-        const viewPort = event.currentTarget.viewportElement;
+        const newPosition = getConstrainedPosition(
+          {
+            x: nodePositions[nodeId].x - (position.offset.x - x),
+            y: nodePositions[nodeId].y - (position.offset.y - y),
+          },
+          event.currentTarget.viewportElement,
+        );
 
-        const newX = getConstrainedPointerX(nodePositions[nodeId].x - (position.offset.x - x), viewPort);
-        const newY = getConstrainedPointerY(nodePositions[nodeId].y - (position.offset.y - y), viewPort);
-
-        onNodePositionUpdate(nodeId, { x: newX, y: newY });
+        onNodePositionUpdate(nodeId, newPosition);
       }
     },
     [
