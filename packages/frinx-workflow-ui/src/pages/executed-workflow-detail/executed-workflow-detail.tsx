@@ -64,10 +64,7 @@ const EXECUTED_WORKFLOW_SUBSCRIPTION = gql`
           id
           version
           name
-<<<<<<< HEAD
-=======
           tasksJson
->>>>>>> v6.1.0
           ownerEmail
           restartable
           hasSchedule
