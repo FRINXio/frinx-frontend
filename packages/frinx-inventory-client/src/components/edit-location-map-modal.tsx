@@ -22,7 +22,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import React, { useEffect, useState, VoidFunctionComponent } from 'react';
 import { Marker as MarkerType } from 'leaflet';
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { Autocomplete } from '@frinx/shared/src';
 import { DEFAULT_ICON } from '../helpers/map';
 import { LocationData } from '../pages/create-device/create-device-page';
@@ -83,7 +83,8 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
   );
   const [createNewLocation, setCreateNewLocation] = useState<boolean>(false);
   const [markerRef, setMarkerRef] = useState<MarkerType | null>(null);
-  const { values, handleSubmit, handleChange, resetForm, errors } = useFormik<FormValues>({
+
+  const { values, handleSubmit, handleChange, resetForm, setFieldValue, errors } = useFormik<FormValues>({
     enableReinitialize: true,
     initialValues: INITIAL_VALUES,
     validationSchema: AddLocationSchema,
@@ -115,14 +116,31 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
     }
   };
 
-  const displayLocation = locationsList.find((l) => l.name === selectedLocation?.value);
-  const newDeviceLocationId = locationsList.find((l) => selectedLocation?.key === l.name)?.id;
-
   const RecenterMap = ({ lat, lng }: { lat: number; lng: number }) => {
     const map = useMap();
     useEffect(() => {
       map.setView([lat, lng], map.getZoom());
     }, [lat, lng, map]);
+
+    return null;
+  };
+
+  const displayLocation = locationsList.find((l) => l.name === selectedLocation?.value);
+  const newDeviceLocationId = locationsList.find((l) => selectedLocation?.key === l.name)?.id;
+
+  const latitude = displayLocation?.latitude || parseFloat(values.latitude) || 0;
+  const longitude = displayLocation?.longitude || parseFloat(values.longitude) || 0;
+
+  const ClickableMap = () => {
+    useMapEvents({
+      click: (e) => {
+        if (createNewLocation) {
+          setFieldValue('latitude', e.latlng.lat.toString());
+          setFieldValue('longitude', e.latlng.lng.toString());
+          setSelectedLocation(undefined); // Clear selected location when manually setting coordinates
+        }
+      },
+    });
 
     return null;
   };
@@ -135,7 +153,7 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
         <ModalCloseButton />
         <ModalBody>
           <FormLabel>Change device location</FormLabel>
-          <Flex mb={4} gap={2}>
+          <Flex zIndex={9} mb={4} gap={2}>
             <Autocomplete
               items={locationOptions.map((option) => ({
                 ...option,
@@ -143,6 +161,7 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
               }))}
               onChange={(e) => {
                 handleLocationChange(e?.value);
+                setCreateNewLocation(false);
               }}
               selectedItem={selectedLocation}
             />
@@ -152,7 +171,7 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
                 resetForm();
                 setCreateNewLocation((prev) => !prev);
               }}
-              colorScheme={createNewLocation ? 'red' : ' blue'}
+              colorScheme={createNewLocation ? 'red' : 'blue'}
             >
               {createNewLocation ? ' Collapse' : 'Add new location'}
             </Button>
@@ -173,6 +192,7 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
                       name="latitude"
                       onChange={(e) => {
                         handleChange(e);
+                        setSelectedLocation(undefined); // Clear selected location when entering manual coordinates
                       }}
                       value={values.latitude || ''}
                       placeholder="Enter number"
@@ -185,6 +205,7 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
                       name="longitude"
                       onChange={(e) => {
                         handleChange(e);
+                        setSelectedLocation(undefined); // Clear selected location when entering manual coordinates
                       }}
                       value={values.longitude || ''}
                       placeholder="Enter number"
@@ -200,13 +221,8 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
               </Flex>
             </form>
           )}
-
-          {displayLocation?.latitude && displayLocation?.longitude ? (
-            <MapContainer
-              center={[displayLocation.latitude, displayLocation.longitude]}
-              zoom={13}
-              style={{ height: '60vh' }}
-            >
+          <Box position="relative" zIndex={1}>
+            <MapContainer center={[latitude, longitude]} zoom={13} style={{ height: '60vh' }}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -215,46 +231,33 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
                 ref={(el) => {
                   setMarkerRef(el);
                 }}
-                position={[displayLocation.latitude, displayLocation.longitude]}
+                position={[latitude, longitude]}
                 icon={DEFAULT_ICON}
               >
                 <Popup>
                   <Box mt={2}>
                     <Heading as="h3" fontSize="xs" color="blue.700">
-                      {displayLocation.name}
+                      {displayLocation?.name || values.name || 'No name provided'}
                     </Heading>
                   </Box>
-                  {displayLocation.name && (
-                    <Box mt={2}>
-                      <Heading as="h4" fontSize="xs">
-                        Location name
-                      </Heading>
-                      {displayLocation.name ?? '-'}
-                    </Box>
-                  )}
                   <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Latitude
                     </Heading>
-                    {displayLocation.latitude}
+                    {latitude}
                   </Box>
                   <Box mt={2}>
                     <Heading as="h4" fontSize="xs">
                       Longitude
                     </Heading>
-                    {displayLocation.longitude}
+                    {longitude}
                   </Box>
                 </Popup>
               </Marker>
-              <RecenterMap lat={displayLocation.latitude} lng={displayLocation.longitude} />
+              <RecenterMap lat={latitude} lng={longitude} />
+              {createNewLocation && <ClickableMap />}
             </MapContainer>
-          ) : (
-            <Box mt={2}>
-              <Heading color="red" as="h3" fontSize="sm">
-                No location selected
-              </Heading>
-            </Box>
-          )}
+          </Box>
         </ModalBody>
         <ModalFooter>
           <HStack>
