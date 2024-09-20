@@ -1,6 +1,6 @@
 {
   "name": "@frinx/dashboard",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "private": false,
   "dependencies": {
     "@chakra-ui/react": "2.8.1",
