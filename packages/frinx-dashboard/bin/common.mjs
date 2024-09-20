@@ -13,11 +13,6 @@ export async function prepareFiles() {
   await mkdir(fullPath(BUILD_CLIENT_PATH, 'static'), { recursive: true });
   await copyFile(fullPath('../../public/index.html'), fullPath(BUILD_CLIENT_PATH, 'index.html'));
   await copyFile(fullPath('../../public/favicon.ico'), fullPath(BUILD_CLIENT_PATH, 'static/favicon.ico'));
-  await copyFile(fullPath('../../public/l3vpn-options.js'), fullPath(BUILD_CLIENT_PATH, 'static/l3vpn-options.js'));
-  await copyFile(
-    fullPath('../../node_modules/@frinxio/gamma/dist/l3vpn-options.js'),
-    fullPath(BUILD_CLIENT_PATH, 'static/l3vpn-options.js'),
-  );
 }
 
 export function makeConfig(isProd) {

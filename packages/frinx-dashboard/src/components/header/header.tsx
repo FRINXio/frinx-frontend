@@ -66,10 +66,6 @@ const Header: VoidFunctionComponent<Props> = ({ isAuthEnabled }) => {
                 <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
                 <Text fontWeight="bold">Resource manager</Text>
               </MenuItem>
-              <MenuItem as={Link} to="/gamma">
-                <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
-                <Text fontWeight="bold">L3VPN Automation</Text>
-              </MenuItem>
               <MenuItem as={Link} to="/device-topology">
                 <Icon size={20} as={FeatherIcon} icon="hard-drive" color="blue.700" marginRight={2} />
                 <Text fontWeight="bold">Device Topology</Text>
