@@ -18,12 +18,23 @@ import {
   Container,
   Flex,
   IconButton,
+  Button,
 } from '@chakra-ui/react';
 import FeatherIcon from 'feather-icons-react';
-import { omitNullValue, useNotifications, StatusType, ClientWorkflow, CreateScheduledWorkflow } from '@frinx/shared';
+import {
+  omitNullValue,
+  useNotifications,
+  StatusType,
+  ClientWorkflow,
+  CreateScheduledWorkflow,
+  unwrap,
+} from '@frinx/shared';
 import { sortBy } from 'lodash';
 import { gql, useQuery, useMutation } from 'urql';
 import {
+  CreateScheduleInput,
+  CreateScheduleMutation,
+  CreateScheduleMutationVariables,
   DeleteScheduleMutation,
   DeleteScheduleMutationVariables,
   SchedulesQuery,
@@ -32,6 +43,7 @@ import {
   WorkflowListQuery,
 } from '../../__generated__/graphql';
 import EditScheduleWorkflowModal from '../../components/modals/edit-schedule-workflow-modal';
+import CreateScheduleWorkflowModal from '../../components/modals/create-schedule-workflow-modal';
 
 const WORKFLOWS_QUERY = gql`
   query WorkflowList {
@@ -97,6 +109,23 @@ const SCHEDULED_WORKFLOWS_QUERY = gql`
   }
 `;
 
+const CREATE_SCHEDULE_MUTATION = gql`
+  mutation CreateSchedule($input: CreateScheduleInput!) {
+    scheduler {
+      createSchedule(input: $input) {
+        name
+        enabled
+        workflowName
+        workflowVersion
+        cronString
+        workflowContext
+        fromDate
+        toDate
+      }
+    }
+  }
+`;
+
 const DELETE_SCHEDULE_MUTATION = gql`
   mutation DeleteSchedule($name: String!) {
     scheduler {
@@ -138,6 +167,7 @@ function getStatusTagColor(status: StatusType) {
 function ScheduledWorkflowList() {
   const context = useMemo(() => ({ additionalTypenames: ['Schedule'] }), []);
   const [selectedWorkflow, setSelectedWorkflow] = useState<CreateScheduledWorkflow | null>();
+  const createScheduleDisclosure = useDisclosure();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { addToastNotification } = useNotifications();
 
@@ -148,6 +178,9 @@ function ScheduledWorkflowList() {
     query: SCHEDULED_WORKFLOWS_QUERY,
     requestPolicy: 'cache-and-network',
   });
+  const [, createSchedule] = useMutation<CreateScheduleMutation, CreateScheduleMutationVariables>(
+    CREATE_SCHEDULE_MUTATION,
+  );
   const [, deleteSchedule] = useMutation<DeleteScheduleMutation, DeleteScheduleMutationVariables>(
     DELETE_SCHEDULE_MUTATION,
   );
@@ -155,9 +188,46 @@ function ScheduledWorkflowList() {
     UPDATE_SCHEDULE_MUTATION,
   );
 
+  const handleOnCreateClick = () => {
+    createScheduleDisclosure.onOpen();
+  };
+
   const handleOnEditClick = (workflow: CreateScheduledWorkflow) => {
     setSelectedWorkflow(workflow);
     onOpen();
+  };
+
+  const handleCreateWorkflow = (scheduledWf: CreateScheduleInput) => {
+    const scheduleInput = {
+      ...scheduledWf,
+      cronString: unwrap(scheduledWf.cronString),
+    };
+    if (scheduledWf.workflowName != null && scheduledWf.workflowVersion != null) {
+      createSchedule({ input: scheduleInput })
+        .then((res) => {
+          if (!res.data?.scheduler.createSchedule) {
+            addToastNotification({
+              type: 'error',
+              title: 'Error',
+              content: res.error?.message,
+            });
+          }
+          if (res.data?.scheduler.createSchedule || !res.error) {
+            addToastNotification({
+              content: 'Successfully scheduled',
+              title: 'Success',
+              type: 'success',
+            });
+          }
+        })
+        .catch(() => {
+          addToastNotification({
+            type: 'error',
+            title: 'Error',
+            content: 'Failed to schedule workflow',
+          });
+        });
+    }
   };
 
   const handleWorkflowUpdate = ({ workflowName, workflowVersion, ...scheduledWf }: CreateScheduledWorkflow) => {
@@ -279,7 +349,21 @@ function ScheduledWorkflowList() {
         <Heading as="h1" size="xl">
           Scheduled workflows
         </Heading>
+        <Box marginLeft="auto">
+          <Button colorScheme="blue" onClick={handleOnCreateClick}>
+            Schedule workflow
+          </Button>
+        </Box>
       </Flex>
+      <CreateScheduleWorkflowModal
+        workflows={clientWorkflows}
+        isOpen={createScheduleDisclosure.isOpen}
+        onClose={() => {
+          createScheduleDisclosure.onClose();
+        }}
+        onSubmit={handleCreateWorkflow}
+      />
+
       {selectedWorkflow != null && selectedClientWorkflow != null && (
         <EditScheduleWorkflowModal
           workflow={selectedClientWorkflow}

@@ -17,15 +17,6 @@ import { InputParameter } from '../../helpers/workflow.helpers';
 import Editor from '../editor/editor';
 import SearchByTagInput from '../search-by-tag/search-by-tag-input';
 
-function getSelectedTags(list: string): string[] {
-  try {
-    const parsedList = JSON.parse(list);
-    return parsedList;
-  } catch {
-    return [];
-  }
-}
-
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   values: Record<string, any>;
@@ -89,8 +80,8 @@ const WorkflowFormInput: VoidFunctionComponent<Props> = ({
           <SearchByTagInput
             isList
             tagText=""
-            selectedTags={getSelectedTags(values[inputParameterKey])}
-            onSelectionChange={(selectedTags) => onChange(inputParameterKey, JSON.stringify(selectedTags))}
+            selectedTags={values[inputParameterKey]}
+            onSelectionChange={(selectedTags) => onChange(inputParameterKey, selectedTags ?? [])}
           />
         </FormControl>
       )}

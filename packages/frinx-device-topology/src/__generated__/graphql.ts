@@ -943,6 +943,10 @@ export type FilterLabelsInput = {
   name: Scalars['String']['input'];
 };
 
+export type FilterLocationsInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type FilterNeighborInput = {
   deviceName: Scalars['String']['input'];
   topologyType: TopologyType;
@@ -1117,6 +1121,11 @@ export type LocationEdge = {
   __typename?: 'LocationEdge';
   cursor: Scalars['String']['output'];
   node: Location;
+};
+
+export type LocationOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortLocationBy;
 };
 
 export type LspPath = {
@@ -1624,6 +1633,9 @@ export type SortExecutedWorkflowsBy =
 export type SortExecutedWorkflowsDirection =
   | 'asc'
   | 'desc';
+
+export type SortLocationBy =
+  | 'name';
 
 export type SortResourcePoolsInput = {
   direction: OrderDirection;
@@ -3568,8 +3580,10 @@ export type DeviceInventoryQueryLabelsArgs = {
 export type DeviceInventoryQueryLocationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterLocationsInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<LocationOrderByInput>;
 };
 
 
