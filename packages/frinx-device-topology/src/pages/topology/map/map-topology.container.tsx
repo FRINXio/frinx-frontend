@@ -124,7 +124,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                       markerRefs.current.set(node.deviceName, ref);
                     }
                   }}
-                ></Marker>
+                />
               );
             }
 
@@ -133,7 +133,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
         </MarkerClusterGroup>
       )}
       {selectedDeviceData && (
-        <Card zIndex={500} minWidth={150} position={'absolute'} right={2} bottom={6}>
+        <Card zIndex={500} minWidth={150} position="absolute" right={2} bottom={6}>
           <CloseButton size="md" onClick={handlePopupClose} />
           <CardBody paddingTop={0} paddingBottom={30}>
             <Box mt={2}>
