@@ -1,7 +1,7 @@
 import { unwrap } from '@frinx/shared';
 import React, { useState, VoidFunctionComponent } from 'react';
 import SynceNodeIcon from '../../../components/node-icons/synce-node-icon';
-import { SynceGraphNodeWithDiff } from '../../../helpers/topology-helpers';
+import { getConstrainedPosition, SynceGraphNodeWithDiff } from '../../../helpers/topology-helpers';
 import { setSelectedSynceNode, setUnconfimedNodeIdForGmPathSearch } from '../../../state.actions';
 import { useStateContext } from '../../../state.provider';
 import { Position, SynceGraphNode } from '../graph.helpers';
@@ -68,9 +68,16 @@ const SynceNodes: VoidFunctionComponent<Props> = ({ nodes, onNodePositionUpdate,
       const x = event.clientX - bbox.left;
       const y = event.clientY - bbox.top;
       const nodeId = unwrap(position.nodeId);
-      const newX = synceNodePositions[nodeId].x - (position.offset.x - x);
-      const newY = synceNodePositions[nodeId].y - (position.offset.y - y);
-      onNodePositionUpdate(nodeId, { x: newX, y: newY });
+
+      const newPosition = getConstrainedPosition(
+        {
+          x: synceNodePositions[nodeId].x - (position.offset.x - x),
+          y: synceNodePositions[nodeId].y - (position.offset.y - y),
+        },
+        event.currentTarget.viewportElement,
+      );
+
+      onNodePositionUpdate(nodeId, newPosition);
     }
   };
   const handlePointerUp = (node: SynceGraphNode) => {

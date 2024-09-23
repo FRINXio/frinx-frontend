@@ -38,6 +38,7 @@ import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
 import { ModalWorkflow } from '../../helpers/convert';
 import {
+  UpdateDeviceInput,
   BulkInstallDevicesMutation,
   BulkInstallDevicesMutationVariables,
   DeleteDeviceMutation,
@@ -60,6 +61,12 @@ import {
   DevicesConnectionSubscriptionVariables,
   DevicesConnectionSubscription,
   DiscoveryWorkflowsQuery,
+  LocationsQuery,
+  LocationsQueryVariables,
+  AddLocationMutation,
+  AddLocationMutationVariables,
+  UpdateDeviceMutation,
+  UpdateDeviceMutationVariables,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -67,7 +74,8 @@ import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
 import WorkflowListModal from './workflow-list-modal';
-import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
+import LocationMapModal, { LocationModal } from '../../components/edit-location-map-modal';
+import { LocationData } from '../create-device/create-device-page';
 
 const DEVICES_QUERY = gql`
   query Devices(
@@ -122,6 +130,28 @@ const DEVICES_QUERY = gql`
     }
   }
 `;
+
+const UPDATE_DEVICE_MUTATION = gql`
+  mutation UpdateDevice($id: String!, $input: UpdateDeviceInput!) {
+    deviceInventory {
+      updateDevice(id: $id, input: $input) {
+        device {
+          id
+          name
+          model
+          vendor
+          address
+          isInstalled
+          zone {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 const INSTALL_DEVICE_MUTATION = gql`
   mutation InstallDevice($id: String!) {
     deviceInventory {
@@ -254,6 +284,35 @@ const DISCOVERY_WORKFLOWS = gql`
   }
 `;
 
+const LOCATIONS_QUERY = gql`
+  query Locations {
+    deviceInventory {
+      locations {
+        edges {
+          node {
+            id
+            latitude
+            longitude
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+const ADD_LOCATION_MUTATION = gql`
+  mutation AddLocation($addLocationInput: AddLocationInput!) {
+    deviceInventory {
+      addLocation(input: $addLocationInput) {
+        location {
+          id
+        }
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'discoveredAt' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -303,6 +362,12 @@ const DeviceList: VoidFunctionComponent = () => {
   const [{ data: workflowsData }] = useQuery<DiscoveryWorkflowsQuery>({
     query: DISCOVERY_WORKFLOWS,
   });
+  const [{ data: locationsData }] = useQuery<LocationsQuery, LocationsQueryVariables>({
+    query: LOCATIONS_QUERY,
+  });
+
+  const [, addLocation] = useMutation<AddLocationMutation, AddLocationMutationVariables>(ADD_LOCATION_MUTATION);
+
   const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
     KAFKA_RECONNECT_MUTATION,
   );
@@ -310,6 +375,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
     UNINSTALL_DEVICE_MUTATION,
   );
+  const [, updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(UPDATE_DEVICE_MUTATION);
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
   const [, executeWorkflow] = useMutation<
     ExecuteModalWorkflowByNameMutation,
@@ -353,12 +419,34 @@ const DeviceList: VoidFunctionComponent = () => {
 
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
-
   const [deviceToShowOnMap, setDeviceToShowOnMap] = useState<LocationModal | null>(null);
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
 
-  const deviceColumnOptions = ['model/version', 'discoveredAt', 'deviceStatus', 'isInstalled'];
+  const deviceColumnOptions = [
+    { name: 'model/version', value: 'model/version' },
+    { name: 'discovered', value: 'discoveredAt' },
+    { name: 'device status', value: 'deviceStatus' },
+    { name: 'installation', value: 'isInstalled' },
+  ];
+
+  const locationOptions =
+    locationsData?.deviceInventory.locations.edges.map(({ node: location }) => ({
+      label: location.name,
+      value: location.name,
+      key: location.name,
+    })) || [];
+
+  const locationsList =
+    locationsData?.deviceInventory.locations.edges.map((l) => {
+      const { id, name, latitude, longitude } = l.node;
+      return {
+        id,
+        name,
+        latitude,
+        longitude,
+      };
+    }) || [];
 
   const handleCheckboxChange = (value: string) => {
     if (columnsDisplayed.includes(value)) {
@@ -366,6 +454,16 @@ const DeviceList: VoidFunctionComponent = () => {
     } else {
       setColumnsDisplayed([...columnsDisplayed, value]);
     }
+  };
+
+  const handleAddDeviceLocation = (locationData: LocationData) => {
+    addLocation({
+      addLocationInput: locationData,
+    });
+  };
+
+  const handleUpdateDeviceLocation = (id: string, updatedDeviceData: UpdateDeviceInput) => {
+    updateDevice({ id, input: updatedDeviceData });
   };
 
   useEffect(() => {
@@ -817,7 +915,11 @@ const DeviceList: VoidFunctionComponent = () => {
       )}
       {deviceToShowOnMap != null && (
         <LocationMapModal
+          locationOptions={locationOptions}
+          locationsList={locationsList}
           locationModal={deviceToShowOnMap}
+          onAddDeviceLocation={handleAddDeviceLocation}
+          onUpdateDeviceLocation={handleUpdateDeviceLocation}
           onClose={() => {
             setDeviceToShowOnMap(null);
           }}
@@ -887,9 +989,12 @@ const DeviceList: VoidFunctionComponent = () => {
           </MenuButton>
           <MenuList>
             {deviceColumnOptions.map((option) => (
-              <MenuItem key={option}>
-                <Checkbox isChecked={columnsDisplayed.includes(option)} onChange={() => handleCheckboxChange(option)}>
-                  {option}
+              <MenuItem key={option.value}>
+                <Checkbox
+                  isChecked={columnsDisplayed.includes(option.value)}
+                  onChange={() => handleCheckboxChange(option.value)}
+                >
+                  {option.name}
                 </Checkbox>
               </MenuItem>
             ))}

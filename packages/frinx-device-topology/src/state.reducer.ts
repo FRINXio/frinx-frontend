@@ -549,7 +549,7 @@ export function stateReducer(state: State, action: StateAction): State {
       }
 
       case 'SET_DEVICES_METADATA': {
-        acc.devicesMetadata = action.payload;
+        acc.devicesMetadata = action.payload.filter((d) => d.geolocation.latitude && d.geolocation.longitude);
         return acc;
       }
       case 'SET_SELECTED_PTP_NODE': {
@@ -583,6 +583,7 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_SELECTED_MPLS_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {
           acc.selectedEdge = null;
+          acc.lspCounts = [];
         }
         acc.selectedNode = action.node;
         const connectedEdges = acc.synceEdges.filter(
