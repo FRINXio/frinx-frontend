@@ -58,6 +58,32 @@ import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
 import WorkflowListModal from './workflow-list-modal';
 
+type UniconfigErrorItem = {
+  'error-tag': string; // eslint-disable-line @typescript-eslint/naming-convention
+  'error-info': Record<string, string>; // eslint-disable-line @typescript-eslint/naming-convention
+  'error-message': string; // eslint-disable-line @typescript-eslint/naming-convention
+  'error-type': string; // eslint-disable-line @typescript-eslint/naming-convention
+};
+
+type UniconfigError = {
+  code: number;
+  message: {
+    errors: {
+      error: UniconfigErrorItem[];
+    };
+  };
+};
+
+function parseErrorMessage(msg: string): string {
+  try {
+    const parsedError: UniconfigError = JSON.parse(msg);
+
+    return parsedError.message.errors.error.map((e) => e['error-message']).join('\n');
+  } catch (e) {
+    return 'unknown error';
+  }
+}
+
 const DEVICES_QUERY = gql`
   query Devices(
     $labels: [String!]
@@ -352,13 +378,19 @@ const DeviceList: VoidFunctionComponent = () => {
             content: 'Device uninstalled successfuly',
           });
         }
-        if (res.error) {
-          addToastNotification({
-            type: 'error',
-            title: 'Error',
-            content: 'Uninstallation failed',
-          });
+        if (res.error != null) {
+          const message = res.error.graphQLErrors.at(0)?.message ?? '';
+          throw new Error(parseErrorMessage(message));
         }
+      })
+      .catch((e) => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          timeout: 10000,
+          content: `Uninstallation failed:\n\n
+            ${e}`,
+        });
       })
       .finally(() => {
         setInstallLoadingMap((m) => {
@@ -433,14 +465,18 @@ const DeviceList: VoidFunctionComponent = () => {
           });
         }
         if (res.error != null) {
-          throw new Error(res.error?.message);
+          const message = parseErrorMessage(res.error.graphQLErrors[0].message);
+          throw new Error(message);
         }
       })
-      .catch(() => {
+      .catch((e) => {
         addToastNotification({
           type: 'error',
           title: 'Error',
-          content: 'Installation failed',
+          timeout: 10,
+          content: `Installation failed
+          ${e}
+          `,
         });
       })
       .finally(() => {
@@ -472,7 +508,8 @@ const DeviceList: VoidFunctionComponent = () => {
     })
       .then((res) => {
         if (res.error != null || res.data == null) {
-          throw new Error(res.error?.message ?? 'Problem with bulk installation of devices');
+          const bulkErrors = res.error?.graphQLErrors.map((e) => parseErrorMessage(e.message)) ?? [];
+          throw new Error(bulkErrors.join('\n'));
         }
 
         if (res.data?.deviceInventory.bulkInstallDevices.installedDevices.length === 0) {
@@ -485,11 +522,13 @@ const DeviceList: VoidFunctionComponent = () => {
           content: 'Devices installed successfuly',
         });
       })
-      .catch(() => {
+      .catch((e) => {
         addToastNotification({
           type: 'error',
           title: 'Error',
-          content: 'Bulk installation of devices has failed',
+          timeout: 10,
+          content: `Bulk installation of devices has failed
+          ${e.message}`,
         });
       })
       .finally(() => {
