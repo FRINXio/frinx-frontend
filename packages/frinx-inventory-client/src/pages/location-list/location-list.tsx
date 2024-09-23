@@ -38,10 +38,10 @@ import {
   UpdateLocationMutation,
   UpdateLocationMutationVariables,
 } from '../../__generated__/graphql';
-import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
 import AddDeviceLocationModal from '../../components/add-device-location-modal';
 import { LocationData } from '../create-device/create-device-page';
 import EditDeviceLocationModal, { FormValues as EditFormValues } from '../../components/edit-device-location-modal';
+import ViewLocationMapModal, { ViewLocationModal } from '../../components/view-location-map-modal';
 
 const LOCATION_LIST_QUERY = gql`
   query LocationList(
@@ -137,14 +137,14 @@ const LocationList: VoidFunctionComponent = () => {
     DELETE_LOCATION_MUTATION,
   );
 
-  const [locationToShowOnMap, setLocationToShowOnMap] = useState<LocationModal | null>(null);
+  const [locationToShowOnMap, setLocationToShowOnMap] = useState<ViewLocationModal | null>(null);
   const addLocationModalDisclosure = useDisclosure();
   const editLocationModalDisclosure = useDisclosure();
   const deleteModalDisclosure = useDisclosure();
   const [locationIdToDelete, setLocationIdToDelete] = useState<string | null>(null);
   const [locationToEdit, setLocationToEdit] = useState<EditFormValues>();
 
-  const handleMapBtnClick = (deviceLocation: LocationModal | null) => {
+  const handleMapBtnClick = (deviceLocation: ViewLocationModal | null) => {
     setLocationToShowOnMap(deviceLocation);
   };
 
@@ -214,7 +214,7 @@ const LocationList: VoidFunctionComponent = () => {
   return (
     <>
       {locationToShowOnMap != null && (
-        <LocationMapModal
+        <ViewLocationMapModal
           locationModal={locationToShowOnMap}
           onClose={() => {
             setLocationToShowOnMap(null);
