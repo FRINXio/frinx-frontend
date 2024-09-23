@@ -16,17 +16,17 @@ import { Marker as MarkerType } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import { DEFAULT_ICON } from '../helpers/map';
 
-export type LocationModal = {
+export type ViewLocationModal = {
   title?: string;
   location: { name: string; latitude: number | null; longitude: number | null } | null;
 };
 
 type Props = {
   onClose: () => void;
-  locationModal: LocationModal;
+  locationModal: ViewLocationModal;
 };
 
-const LocationMapModal: VoidFunctionComponent<Props> = ({ onClose, locationModal }) => {
+const ViewLocationMapModal: VoidFunctionComponent<Props> = ({ onClose, locationModal }) => {
   const [markerRef, setMarkerRef] = useState<MarkerType | null>(null);
 
   useEffect(() => {
@@ -107,4 +107,4 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({ onClose, locationModal
   );
 };
 
-export default LocationMapModal;
+export default ViewLocationMapModal;
