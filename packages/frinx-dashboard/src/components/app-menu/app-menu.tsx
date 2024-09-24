@@ -54,7 +54,7 @@ const AppMenu: VoidFunctionComponent = () => {
               <AppMenuItem to="/inventory/streams">Streams</AppMenuItem>
               <AppMenuItem to="/inventory/blueprints">Blueprints</AppMenuItem>
               <AppMenuItem to="/inventory/transactions">Transactions</AppMenuItem>
-              <AppMenuItem to="/inventory/shell">UniConfig Shell</AppMenuItem>
+              {/* <AppMenuItem to="/inventory/shell">UniConfig Shell</AppMenuItem> */}
             </>
           }
         />
