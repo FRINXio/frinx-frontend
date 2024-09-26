@@ -88,6 +88,9 @@ const AddDeviceLocationModal: FC<Props> = ({
   useEffect(() => {
     if (values.latitude && values.longitude) {
       setShouldFlyTo(true);
+      if (Number.isNaN(parseFloat(values.latitude)) || Number.isNaN(parseFloat(values.longitude))) {
+        return;
+      }
       setParsedMapPosition([parseFloat(values.latitude), parseFloat(values.longitude)]);
     }
   }, [values]);
