@@ -742,6 +742,11 @@ export type DeviceMetadata = {
   nodes: Maybe<Array<Maybe<GeoMapDevice>>>;
 };
 
+export type DeviceNeighbors = {
+  __typename?: 'DeviceNeighbors';
+  neighbors: Maybe<Array<Maybe<Neighbor>>>;
+};
+
 export type DeviceOrderByInput = {
   direction: SortDirection;
   sortKey: SortDeviceBy;
@@ -921,6 +926,12 @@ export type FilterDevicesInput = {
   labels?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type FilterDevicesMetadatasInput = {
+  deviceName?: InputMaybe<Scalars['String']['input']>;
+  polygon?: InputMaybe<PolygonInput>;
+  topologyType?: InputMaybe<TopologyType>;
+};
+
 export type FilterEventHandlerInput = {
   evaluatorType?: InputMaybe<Scalars['String']['input']>;
   event?: InputMaybe<Scalars['String']['input']>;
@@ -930,6 +941,15 @@ export type FilterEventHandlerInput = {
 
 export type FilterLabelsInput = {
   name: Scalars['String']['input'];
+};
+
+export type FilterLocationsInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FilterNeighborInput = {
+  deviceName: Scalars['String']['input'];
+  topologyType: TopologyType;
 };
 
 export type FilterStreamsInput = {
@@ -973,8 +993,8 @@ export type GraphEdge = {
 };
 
 export type GraphEdgeStatus =
-  | 'ok'
-  | 'unknown';
+  | 'OK'
+  | 'UNKNOWN';
 
 export type GraphNode = BaseGraphNode & {
   __typename?: 'GraphNode';
@@ -1103,6 +1123,25 @@ export type LocationEdge = {
   node: Location;
 };
 
+export type LocationOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortLocationBy;
+};
+
+export type LspPath = {
+  __typename?: 'LspPath';
+  metadata: Maybe<LspPathMetadata>;
+  path: Array<Scalars['String']['output']>;
+};
+
+export type LspPathMetadata = {
+  __typename?: 'LspPathMetadata';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  signalization: Maybe<Scalars['String']['output']>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
 export type LspTunnel = {
   __typename?: 'LspTunnel';
   fromDevice: Maybe<Scalars['String']['output']>;
@@ -1149,9 +1188,27 @@ export type MplsGraphNodeInterface = {
   status: GraphEdgeStatus;
 };
 
+export type MplsLspCount = {
+  __typename?: 'MplsLspCount';
+  counts: Maybe<Array<Maybe<MplsLspCountItem>>>;
+};
+
+export type MplsLspCountItem = {
+  __typename?: 'MplsLspCountItem';
+  incomingLsps: Maybe<Scalars['Int']['output']>;
+  outcomingLsps: Maybe<Scalars['Int']['output']>;
+  target: Maybe<Scalars['String']['output']>;
+};
+
 export type MplsTopology = {
   __typename?: 'MplsTopology';
   edges: Array<GraphEdge>;
+  nodes: Array<MplsGraphNode>;
+};
+
+export type MplsTopologyVersionData = {
+  __typename?: 'MplsTopologyVersionData';
+  edges: Array<GraphVersionEdge>;
   nodes: Array<MplsGraphNode>;
 };
 
@@ -1161,6 +1218,12 @@ export type Mutation = {
   deviceInventory: DeviceInventoryMutation;
   resourceManager: ResourceManagerMutation;
   scheduler: SchedulerMutation;
+};
+
+export type Neighbor = {
+  __typename?: 'Neighbor';
+  deviceId: Scalars['String']['output'];
+  deviceName: Scalars['String']['output'];
 };
 
 export type NetInterface = {
@@ -1184,6 +1247,7 @@ export type NetNode = {
   name: Scalars['String']['output'];
   networks: Array<NetNetwork>;
   nodeId: Scalars['String']['output'];
+  phyDeviceName: Maybe<Scalars['String']['output']>;
 };
 
 export type NetRoutingPathNode = {
@@ -1249,6 +1313,10 @@ export type PollData = {
   lastPollTime: Maybe<Scalars['BigInt']['output']>;
   queueName: Maybe<Scalars['String']['output']>;
   workerId: Maybe<Scalars['String']['output']>;
+};
+
+export type PolygonInput = {
+  polygon?: InputMaybe<Array<Array<Array<Scalars['Float']['input']>>>>;
 };
 
 /** Entity representing capacity of a pool */
@@ -1565,6 +1633,9 @@ export type SortExecutedWorkflowsBy =
 export type SortExecutedWorkflowsDirection =
   | 'asc'
   | 'desc';
+
+export type SortLocationBy =
+  | 'name';
 
 export type SortResourcePoolsInput = {
   direction: OrderDirection;
@@ -1993,10 +2064,17 @@ export type TopologyCommonNodes = {
 };
 
 export type TopologyLayer =
-  | 'EthTopology'
-  | 'MplsTopology'
-  | 'PhysicalTopology'
-  | 'PtpTopology';
+  | 'ETH_TOPOLOGY'
+  | 'MPLS_TOPOLOGY'
+  | 'PHYSICAL_TOPOLOGY'
+  | 'PTP_TOPOLOGY';
+
+export type TopologyType =
+  | 'ETH_TOPOLOGY'
+  | 'MPLS_TOPOLOGY'
+  | 'NETWORK_TOPOLOGY'
+  | 'PHYSICAL_TOPOLOGY'
+  | 'PTP_TOPOLOGY';
 
 export type Transaction = {
   __typename?: 'Transaction';
@@ -3411,11 +3489,15 @@ export type DeviceInventoryQuery = {
   countries: CountryConnection;
   dataStore: Maybe<DataStore>;
   deviceMetadata: Maybe<DeviceMetadata>;
+  deviceNeighbor: Maybe<DeviceNeighbors>;
   devices: DeviceConnection;
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
+  lspPath: Maybe<LspPath>;
+  mplsLspCount: Maybe<MplsLspCount>;
   mplsTopology: Maybe<MplsTopology>;
+  mplsTopologyVersionData: MplsTopologyVersionData;
   netTopology: Maybe<NetTopology>;
   netTopologyVersionData: NetTopologyVersionData;
   node: Maybe<Node>;
@@ -3466,6 +3548,16 @@ export type DeviceInventoryQueryDataStoreArgs = {
 };
 
 
+export type DeviceInventoryQueryDeviceMetadataArgs = {
+  filter?: InputMaybe<FilterDevicesMetadatasInput>;
+};
+
+
+export type DeviceInventoryQueryDeviceNeighborArgs = {
+  filter?: InputMaybe<FilterNeighborInput>;
+};
+
+
 export type DeviceInventoryQueryDevicesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -3488,8 +3580,26 @@ export type DeviceInventoryQueryLabelsArgs = {
 export type DeviceInventoryQueryLocationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterLocationsInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<LocationOrderByInput>;
+};
+
+
+export type DeviceInventoryQueryLspPathArgs = {
+  deviceId: Scalars['String']['input'];
+  lspId: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQueryMplsLspCountArgs = {
+  deviceId: Scalars['String']['input'];
+};
+
+
+export type DeviceInventoryQueryMplsTopologyVersionDataArgs = {
+  version: Scalars['String']['input'];
 };
 
 
@@ -4360,10 +4470,12 @@ export type UpdateStreamMutationVariables = Exact<{
 export type UpdateStreamMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateStream: { __typename?: 'UpdateStreamPayload', stream: { __typename?: 'Stream', id: string, streamName: string, deviceName: string, isActive: boolean } | null } } };
 
 export type LocationListQueryVariables = Exact<{
+  filter?: InputMaybe<FilterLocationsInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  orderBy?: InputMaybe<LocationOrderByInput>;
 }>;
 
 

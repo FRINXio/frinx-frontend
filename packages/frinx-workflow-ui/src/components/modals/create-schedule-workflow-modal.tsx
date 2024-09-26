@@ -1,4 +1,4 @@
-import React, { FC, useRef } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -20,7 +20,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Progress,
   Spacer,
   Text,
   useBoolean,
@@ -28,58 +27,36 @@ import {
 import {
   parseInputParameters,
   getDynamicInputParametersFromWorkflow,
+  ClientWorkflow,
   getInitialValuesFromParsedInputParameters,
+  CreateScheduledWorkflow,
   ExecuteWorkflowModalFormInput,
-  ClientWorkflowWithTasks,
+  Autocomplete,
+  InputParameter,
 } from '@frinx/shared';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import moment from 'moment';
 import FeatherIcon from 'feather-icons-react';
-import { gql, useQuery } from 'urql';
-import { CreateScheduleInput, GetSchedulesQuery, GetSchedulesQueryVariables } from '../../__generated__/graphql';
-
-const SCHEDULED_WORKFLOWS_QUERY = gql`
-  query GetSchedules {
-    scheduler {
-      schedules {
-        edges {
-          node {
-            name
-          }
-        }
-      }
-    }
-  }
-`;
+import { Item } from '@frinx/shared/dist/components/autocomplete/autocomplete';
+import { CreateScheduleInput } from '../../__generated__/graphql';
 
 const DEFAULT_CRON_STRING = '* * * * *';
 const CRON_REGEX =
   /^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/;
 
-function getCrontabGuruUrl(cronString: string = DEFAULT_CRON_STRING) {
-  return `https://crontab.guru/#${cronString.replace(/\s/g, '_')}`;
-}
-function createValidationSchema(schedules: GetSchedulesQuery['scheduler']['schedules']) {
-  return Yup.object().shape({
+type Props = {
+  workflows: ClientWorkflow[];
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (workflow: CreateScheduleInput) => void;
+};
+
+const CreateScheduleWorkflowModal: FC<Props> = ({ workflows, isOpen, onClose, onSubmit }) => {
+  const validationSchema = Yup.object().shape({
     workflowName: Yup.string().required('Workflow name is required'),
-    workflowVersion: Yup.number().required('Workflow version is required'),
-    name: Yup.string()
-      .required('Schedule name is required')
-      .test({
-        name: 'name',
-        message: 'Schedule name must be unique',
-        test: (value) => {
-          const scheduleNames = schedules?.edges.map((edge) => {
-            return edge?.node.name;
-          });
-          const isNameUnique = !scheduleNames?.some((wfName) => wfName === value);
-          if (!isNameUnique) {
-            return false;
-          }
-          return true;
-        },
-      }),
+    workflowVersion: Yup.string().required('Workflow version is required'),
+    name: Yup.string().required('Schedule name is required'),
     cronString: Yup.string()
       .required('Cron expression is required')
       .test({
@@ -94,46 +71,26 @@ function createValidationSchema(schedules: GetSchedulesQuery['scheduler']['sched
         },
       }),
     enabled: Yup.boolean(),
-    workflowContext: Yup.object(),
+    workflowContext: Yup.object().required('Workflow is required'),
     fromDate: Yup.string(),
     toDate: Yup.string(),
   });
-}
 
-type Props = {
-  workflow: ClientWorkflowWithTasks;
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (workflow: CreateScheduleInput) => void;
-};
+  const [selectedWorkflow, setSelectedWorkflow] = useState<ClientWorkflow | undefined>();
 
-type ClientSchedule = Omit<CreateScheduleInput, 'workflowContext'> & {
-  workflowContext: Record<string, string>;
-};
-
-const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit }) => {
-  const [{ data: scheduledWorkflows, fetching: isLoadingScheduledWorkflows }] = useQuery<
-    GetSchedulesQuery,
-    GetSchedulesQueryVariables
-  >({
-    query: SCHEDULED_WORKFLOWS_QUERY,
-  });
-
-  const { current: validationSchema } = useRef(createValidationSchema(scheduledWorkflows?.scheduler.schedules ?? null));
-
-  const parsedInputParameters = parseInputParameters(workflow.inputParameters);
-  const dynamicInputParameters = getDynamicInputParametersFromWorkflow(workflow);
+  const [dynamicInputParameters, setDynamicInputParameters] = useState<string[] | null>(null);
+  const [parsedInputParameters, setParsedInputParameters] = useState<InputParameter | null>(null);
 
   const [shouldShowInputParams, { toggle: toggleShouldShowInputParams }] = useBoolean(false);
 
-  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<ClientSchedule>({
-    enableReinitialize: true,
+  const { values, errors, handleChange, submitForm, setFieldValue, resetForm } = useFormik<CreateScheduledWorkflow>({
+    // enableReinitialize: true,
     validationSchema,
     validateOnMount: false,
     initialValues: {
-      workflowName: workflow.name,
-      workflowVersion: workflow.version?.toString() ?? '',
-      workflowContext: getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
+      workflowName: '',
+      workflowVersion: '',
+      workflowContext: {},
       name: '',
       cronString: DEFAULT_CRON_STRING,
       enabled: false,
@@ -154,13 +111,44 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
       };
 
       onSubmit(formattedValues);
+      resetForm();
       onClose();
     },
   });
 
-  if (isLoadingScheduledWorkflows) {
-    return <Progress size="xs" isIndeterminate />;
-  }
+  useEffect(() => {
+    setFieldValue('workflowName', selectedWorkflow?.name);
+    setFieldValue('workflowVersion', selectedWorkflow?.version.toString() ?? '');
+    setDynamicInputParameters(getDynamicInputParametersFromWorkflow(selectedWorkflow));
+    setParsedInputParameters(parseInputParameters(selectedWorkflow?.inputParameters));
+  }, [selectedWorkflow, setFieldValue]);
+
+  useEffect(() => {
+    setFieldValue(
+      'workflowContext',
+      getInitialValuesFromParsedInputParameters(parsedInputParameters, dynamicInputParameters),
+    );
+  }, [dynamicInputParameters, parsedInputParameters, setFieldValue]);
+
+  const getCrontabGuruUrl = () => {
+    const cronString = values.cronString || DEFAULT_CRON_STRING;
+    const url = `https://crontab.guru/#${cronString.replace(/\s/g, '_')}`;
+    return (
+      <Link href={url} color="blue.500">
+        crontab.guru
+      </Link>
+    );
+  };
+
+  const handleWorkflowChanged = (item: Item | null | undefined) => {
+    const workflowToSelect = workflows.find((workflow) => workflow.name === item?.value);
+    setSelectedWorkflow(workflowToSelect);
+  };
+
+  const workflowOptions = workflows.map((workflow) => ({
+    label: workflow.name,
+    value: workflow.name,
+  }));
 
   const inputParametersKeys = Object.keys(values.workflowContext);
 
@@ -184,6 +172,12 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
               placeholder="Enter name for scheduled workflow"
             />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
+          </FormControl>
+
+          <FormControl my={6} isRequired isInvalid={errors.workflowName != null}>
+            <FormLabel>Workflow</FormLabel>
+            <Autocomplete items={workflowOptions} onChange={handleWorkflowChanged} selectedItem={undefined} />
+            <FormErrorMessage>{errors.workflowName}</FormErrorMessage>
           </FormControl>
 
           <HStack my={5}>
@@ -215,7 +209,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
           <HStack my={5} alignItems="flex-start">
             <FormControl isInvalid={errors.enabled != null} isRequired>
               <FormLabel>Enabled</FormLabel>
-              <Checkbox onChange={handleChange} name="enabled" isChecked={values.enabled ?? false}>
+              <Checkbox onChange={handleChange} name="enabled" isChecked={values.enabled}>
                 Enabled
               </Checkbox>
               <FormErrorMessage>{errors.enabled}</FormErrorMessage>
@@ -229,9 +223,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
                 name="cronString"
                 placeholder="Enter cron expression"
               />
-              <FormHelperText>
-                Verify using <Link href={getCrontabGuruUrl(values.cronString)}>crontab.guru</Link>
-              </FormHelperText>
+              <FormHelperText>Verify using {getCrontabGuruUrl()}</FormHelperText>
               <FormErrorMessage>{errors.cronString}</FormErrorMessage>
             </FormControl>
           </HStack>
@@ -259,12 +251,7 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
                   <GridItem key={inputParameterKey}>
                     <ExecuteWorkflowModalFormInput
                       inputParameterKey={inputParameterKey}
-                      onChange={(key, value) =>
-                        setFieldValue(`workflowContext`, {
-                          ...values.workflowContext,
-                          [key]: value,
-                        })
-                      }
+                      onChange={(key, value) => setFieldValue(`workflowContext.${key}`, value)}
                       values={values.workflowContext}
                       parsedInputParameters={parsedInputParameters}
                     />
@@ -294,4 +281,4 @@ const ScheduleWorkflowModal: FC<Props> = ({ workflow, isOpen, onClose, onSubmit 
   );
 };
 
-export default ScheduleWorkflowModal;
+export default CreateScheduleWorkflowModal;

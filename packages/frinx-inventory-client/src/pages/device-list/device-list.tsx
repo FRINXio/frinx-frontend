@@ -29,6 +29,7 @@ import {
   ConfirmDeleteModal,
   KafkaHealthCheckToolbar,
   usePerformanceMonitoring,
+  omitNullValue,
 } from '@frinx/shared';
 import { Item } from 'chakra-ui-autocomplete';
 import React, { FormEvent, useEffect, useMemo, useState, VoidFunctionComponent } from 'react';
@@ -37,6 +38,7 @@ import { gql, useMutation, useQuery, useSubscription } from 'urql';
 import ImportCSVModal from '../../components/import-csv-modal';
 import { ModalWorkflow } from '../../helpers/convert';
 import {
+  UpdateDeviceInput,
   BulkInstallDevicesMutation,
   BulkInstallDevicesMutationVariables,
   DeleteDeviceMutation,
@@ -59,6 +61,12 @@ import {
   DevicesConnectionSubscriptionVariables,
   DevicesConnectionSubscription,
   DiscoveryWorkflowsQuery,
+  LocationsQuery,
+  LocationsQueryVariables,
+  AddLocationMutation,
+  AddLocationMutationVariables,
+  UpdateDeviceMutation,
+  UpdateDeviceMutationVariables,
 } from '../../__generated__/graphql';
 import BulkActions from './bulk-actions';
 import DeleteSelectedDevicesModal from './delete-selected-modal';
@@ -66,7 +74,34 @@ import DeviceFilter from './device-filters';
 import DeviceSearch from './device-search';
 import DeviceTable from './device-table';
 import WorkflowListModal from './workflow-list-modal';
-import LocationMapModal, { LocationModal } from '../../components/location-map-modal';
+import LocationMapModal, { LocationModal } from '../../components/edit-location-map-modal';
+import { LocationData } from '../create-device/create-device-page';
+
+type UniconfigErrorItem = {
+  'error-tag': string; // eslint-disable-line @typescript-eslint/naming-convention
+  'error-info': Record<string, string>; // eslint-disable-line @typescript-eslint/naming-convention
+  'error-message': string; // eslint-disable-line @typescript-eslint/naming-convention
+  'error-type': string; // eslint-disable-line @typescript-eslint/naming-convention
+};
+
+type UniconfigError = {
+  code: number;
+  message: {
+    errors: {
+      error: UniconfigErrorItem[];
+    };
+  };
+};
+
+function parseErrorMessage(msg: string): string {
+  try {
+    const parsedError: UniconfigError = JSON.parse(msg);
+
+    return parsedError.message.errors.error.map((e) => e['error-message']).join('\n');
+  } catch (e) {
+    return 'unknown error';
+  }
+}
 
 const DEVICES_QUERY = gql`
   query Devices(
@@ -121,6 +156,28 @@ const DEVICES_QUERY = gql`
     }
   }
 `;
+
+const UPDATE_DEVICE_MUTATION = gql`
+  mutation UpdateDevice($id: String!, $input: UpdateDeviceInput!) {
+    deviceInventory {
+      updateDevice(id: $id, input: $input) {
+        device {
+          id
+          name
+          model
+          vendor
+          address
+          isInstalled
+          zone {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
 const INSTALL_DEVICE_MUTATION = gql`
   mutation InstallDevice($id: String!) {
     deviceInventory {
@@ -253,6 +310,35 @@ const DISCOVERY_WORKFLOWS = gql`
   }
 `;
 
+const LOCATIONS_QUERY = gql`
+  query Locations {
+    deviceInventory {
+      locations {
+        edges {
+          node {
+            id
+            latitude
+            longitude
+            name
+          }
+        }
+      }
+    }
+  }
+`;
+
+const ADD_LOCATION_MUTATION = gql`
+  mutation AddLocation($addLocationInput: AddLocationInput!) {
+    deviceInventory {
+      addLocation(input: $addLocationInput) {
+        location {
+          id
+        }
+      }
+    }
+  }
+`;
+
 type SortedBy = 'name' | 'discoveredAt' | 'modelVersion';
 type Direction = 'ASC' | 'DESC';
 type Sorting = {
@@ -302,6 +388,12 @@ const DeviceList: VoidFunctionComponent = () => {
   const [{ data: workflowsData }] = useQuery<DiscoveryWorkflowsQuery>({
     query: DISCOVERY_WORKFLOWS,
   });
+  const [{ data: locationsData }] = useQuery<LocationsQuery, LocationsQueryVariables>({
+    query: LOCATIONS_QUERY,
+  });
+
+  const [, addLocation] = useMutation<AddLocationMutation, AddLocationMutationVariables>(ADD_LOCATION_MUTATION);
+
   const [, reconnectKafka] = useMutation<KafkaReconnectMutation, KafkaReconnectMutationVariables>(
     KAFKA_RECONNECT_MUTATION,
   );
@@ -309,6 +401,7 @@ const DeviceList: VoidFunctionComponent = () => {
   const [, uninstallDevice] = useMutation<UninstallDeviceMutation, UninstallDeviceMutationVariables>(
     UNINSTALL_DEVICE_MUTATION,
   );
+  const [, updateDevice] = useMutation<UpdateDeviceMutation, UpdateDeviceMutationVariables>(UPDATE_DEVICE_MUTATION);
   const [, deleteDevice] = useMutation<DeleteDeviceMutation, DeleteDeviceMutationVariables>(DELETE_DEVICE_MUTATION);
   const [, executeWorkflow] = useMutation<
     ExecuteModalWorkflowByNameMutation,
@@ -352,12 +445,34 @@ const DeviceList: VoidFunctionComponent = () => {
 
   const [isSendingToWorkflows, setIsSendingToWorkflows] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<ModalWorkflow | null>(null);
-
   const [deviceToShowOnMap, setDeviceToShowOnMap] = useState<LocationModal | null>(null);
 
   const kafkaHealthCheckToolbar = useDisclosure({ defaultIsOpen: true });
 
-  const deviceColumnOptions = ['model/version', 'discoveredAt', 'deviceStatus', 'isInstalled'];
+  const deviceColumnOptions = [
+    { name: 'model/version', value: 'model/version' },
+    { name: 'discovered', value: 'discoveredAt' },
+    { name: 'device status', value: 'deviceStatus' },
+    { name: 'installation', value: 'isInstalled' },
+  ];
+
+  const locationOptions =
+    locationsData?.deviceInventory.locations.edges.map(({ node: location }) => ({
+      label: location.name,
+      value: location.name,
+      key: location.name,
+    })) || [];
+
+  const locationsList =
+    locationsData?.deviceInventory.locations.edges.map((l) => {
+      const { id, name, latitude, longitude } = l.node;
+      return {
+        id,
+        name,
+        latitude,
+        longitude,
+      };
+    }) || [];
 
   const handleCheckboxChange = (value: string) => {
     if (columnsDisplayed.includes(value)) {
@@ -365,6 +480,16 @@ const DeviceList: VoidFunctionComponent = () => {
     } else {
       setColumnsDisplayed([...columnsDisplayed, value]);
     }
+  };
+
+  const handleAddDeviceLocation = (locationData: LocationData) => {
+    addLocation({
+      addLocationInput: locationData,
+    });
+  };
+
+  const handleUpdateDeviceLocation = (id: string, updatedDeviceData: UpdateDeviceInput) => {
+    updateDevice({ id, input: updatedDeviceData });
   };
 
   useEffect(() => {
@@ -409,13 +534,19 @@ const DeviceList: VoidFunctionComponent = () => {
             content: 'Device uninstalled successfuly',
           });
         }
-        if (res.error) {
-          addToastNotification({
-            type: 'error',
-            title: 'Error',
-            content: 'Uninstallation failed',
-          });
+        if (res.error != null) {
+          const message = res.error.graphQLErrors.at(0)?.message ?? '';
+          throw new Error(parseErrorMessage(message));
         }
+      })
+      .catch((e) => {
+        addToastNotification({
+          type: 'error',
+          title: 'Error',
+          timeout: 10000,
+          content: `Uninstallation failed:\n\n
+            ${e}`,
+        });
       })
       .finally(() => {
         setInstallLoadingMap((m) => {
@@ -490,14 +621,18 @@ const DeviceList: VoidFunctionComponent = () => {
           });
         }
         if (res.error != null) {
-          throw new Error(res.error?.message);
+          const message = parseErrorMessage(res.error.graphQLErrors[0].message);
+          throw new Error(message);
         }
       })
-      .catch(() => {
+      .catch((e) => {
         addToastNotification({
           type: 'error',
           title: 'Error',
-          content: 'Installation failed',
+          timeout: 10,
+          content: `Installation failed
+          ${e}
+          `,
         });
       })
       .finally(() => {
@@ -529,7 +664,8 @@ const DeviceList: VoidFunctionComponent = () => {
     })
       .then((res) => {
         if (res.error != null || res.data == null) {
-          throw new Error(res.error?.message ?? 'Problem with bulk installation of devices');
+          const bulkErrors = res.error?.graphQLErrors.map((e) => parseErrorMessage(e.message)) ?? [];
+          throw new Error(bulkErrors.join('\n'));
         }
 
         if (res.data?.deviceInventory.bulkInstallDevices.installedDevices.length === 0) {
@@ -542,11 +678,13 @@ const DeviceList: VoidFunctionComponent = () => {
           content: 'Devices installed successfuly',
         });
       })
-      .catch(() => {
+      .catch((e) => {
         addToastNotification({
           type: 'error',
           title: 'Error',
-          content: 'Bulk installation of devices has failed',
+          timeout: 10,
+          content: `Bulk installation of devices has failed
+          ${e.message}`,
         });
       })
       .finally(() => {
@@ -692,9 +830,7 @@ const DeviceList: VoidFunctionComponent = () => {
       /* eslint-disable @typescript-eslint/naming-convention */
       /* eslint-disable object-shorthand */
 
-      ips_and_ports: {
-        ips: ips.map((ip) => ({ ip: ip })),
-      },
+      ips: ips.filter(omitNullValue),
     };
     /* eslint-enable object-shorthand */
     /* eslint-enable @typescript-eslint/naming-convention */
@@ -818,7 +954,11 @@ const DeviceList: VoidFunctionComponent = () => {
       )}
       {deviceToShowOnMap != null && (
         <LocationMapModal
+          locationOptions={locationOptions}
+          locationsList={locationsList}
           locationModal={deviceToShowOnMap}
+          onAddDeviceLocation={handleAddDeviceLocation}
+          onUpdateDeviceLocation={handleUpdateDeviceLocation}
           onClose={() => {
             setDeviceToShowOnMap(null);
           }}
@@ -888,9 +1028,12 @@ const DeviceList: VoidFunctionComponent = () => {
           </MenuButton>
           <MenuList>
             {deviceColumnOptions.map((option) => (
-              <MenuItem key={option}>
-                <Checkbox isChecked={columnsDisplayed.includes(option)} onChange={() => handleCheckboxChange(option)}>
-                  {option}
+              <MenuItem key={option.value}>
+                <Checkbox
+                  isChecked={columnsDisplayed.includes(option.value)}
+                  onChange={() => handleCheckboxChange(option.value)}
+                >
+                  {option.name}
                 </Checkbox>
               </MenuItem>
             ))}

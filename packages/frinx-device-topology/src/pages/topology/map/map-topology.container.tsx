@@ -2,10 +2,10 @@ import React, { useEffect, useRef, VoidFunctionComponent, useState } from 'react
 import { MapContainer, Marker, Popup, TileLayer, useMap, Polyline } from 'react-leaflet';
 import { useClient } from 'urql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { Box, Button, Heading } from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, CloseButton, Heading } from '@chakra-ui/react';
 import L, { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
-import { DEFAULT_ICON } from '../../../helpers/map-marker-helper';
+import { RED_DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 import { useStateContext } from '../../../state.provider';
 import {
   getDeviceMetadata,
@@ -206,7 +206,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                 <Marker
                   position={[node.geolocation.latitude, node.geolocation.longitude]}
                   key={node?.id}
-                  icon={DEFAULT_ICON}
+                  icon={RED_DEFAULT_ICON}
                   eventHandlers={{
                     click: handleMarkerClick(node.deviceName || ''),
                     popupclose: handlePopupClose(),
@@ -273,6 +273,43 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
           })}
         </MarkerClusterGroup>
       )}
+      {selectedDeviceData && selectedDeviceData.geolocation?.latitude && selectedDeviceData.geolocation?.longitude && (
+        <Marker
+          position={[selectedDeviceData.geolocation.latitude, selectedDeviceData.geolocation.longitude]}
+          key={selectedDeviceData.id}
+          icon={RED_DEFAULT_ICON}
+        />
+      )}
+      {selectedDeviceData && (
+        <Card zIndex={500} minWidth={150} position="absolute" right={2} bottom={6}>
+          <CloseButton size="md" onClick={handlePopupClose} />
+          <CardBody paddingTop={0} paddingBottom={30}>
+            <Box mt={2}>
+              <Heading as="h3" fontSize="xs" color="blue.700">
+                {selectedDeviceData.deviceName ?? '-'}
+              </Heading>
+            </Box>
+            <Box mt={2}>
+              <Heading as="h4" fontSize="xs">
+                Location name
+              </Heading>
+              {selectedDeviceData.locationName ?? '-'}
+            </Box>
+            <Box mt={2}>
+              <Heading as="h4" fontSize="xs">
+                Latitude
+              </Heading>
+              {selectedDeviceData.geolocation?.latitude}
+            </Box>
+            <Box mt={2}>
+              <Heading as="h4" fontSize="xs">
+                Longitude
+              </Heading>
+              {selectedDeviceData.geolocation?.longitude}
+            </Box>
+          </CardBody>
+        </Card>
+      )}
     </>
   );
 };
@@ -280,7 +317,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
 const MapTopologyContainer: VoidFunctionComponent = () => {
   return (
     <MapContainer
-      style={{ height: `calc(100vh - 320px)`, zIndex: 0 }}
+      style={{ height: `calc(100vh - 320px)`, zIndex: 0, minHeight: 300 }}
       center={DEFAULT_MAP_CENTER}
       zoom={DEFAULT_MAP_ZOOM_LEVEL}
       scrollWheelZoom

@@ -12,7 +12,7 @@ const MplsTable: VoidFunctionComponent<Props> = ({ data }) => {
     ['inputLabel', 'Input Label'],
     ['inputInterface', 'Input Interface'],
     ['outputLabel', 'Output Label'],
-    ['outputInterface', 'Output Ingerface'],
+    ['outputInterface', 'Output Interface'],
     ['operState', 'Oper State'],
     ['mplsOperation', 'MPLS Operation'],
     ['ldpPrefix', 'Ldp Prefix'],
@@ -32,7 +32,7 @@ const MplsTable: VoidFunctionComponent<Props> = ({ data }) => {
         <Tbody>
           {data.map((row) => {
             return (
-              <Tr key={`mpls-data-row-${row.lspId}`}>
+              <Tr key={`mpls-data-row-${row.lspId}-${row.inputLabel}`}>
                 {[...tableColumns.keys()].map((column) => (
                   <Td key={`mpls-data-row-${row.lspId}-column-${column}`}>{row[column] ?? '-'}</Td>
                 ))}
