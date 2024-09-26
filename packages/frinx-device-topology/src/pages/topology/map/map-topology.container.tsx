@@ -218,7 +218,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                   }}
                 >
                   <Popup>
-                    <Box m={2}>
+                    <Box my={2}>
                       <Heading as="h3" fontSize="xs" color="blue.700">
                         {node?.deviceName ?? '-'}
                       </Heading>
@@ -241,25 +241,29 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                       </Heading>
                       {node?.geolocation?.longitude}
                     </Box>
-                    <Box>Switch to layer</Box>
-                    {topologiesOfDevice.map((m) => {
-                      if (m.topologyId !== 'NETWORK_TOPOLOGY') {
-                        return (
-                          <Button
-                            key={m.deviceId}
-                            mt={3}
-                            size="sm"
-                            onClick={() => {
-                              handleShowDevice(m.topologyId);
-                            }}
-                            colorScheme="blue"
-                          >
-                            {m.topologyId}
-                          </Button>
-                        );
-                      }
-                      return null;
-                    })}
+                    <Box mt={2}>
+                      <Heading as="h4" fontSize="xs">
+                        Switch to layer
+                      </Heading>
+                      {topologiesOfDevice.map((m) => {
+                        if (m.topologyId !== 'NETWORK_TOPOLOGY') {
+                          return (
+                            <Button
+                              key={m.deviceId}
+                              mt={3}
+                              size="sm"
+                              onClick={() => {
+                                handleShowDevice(m.topologyId);
+                              }}
+                              colorScheme="blue"
+                            >
+                              {m.topologyId}
+                            </Button>
+                          );
+                        }
+                        return null;
+                      })}
+                    </Box>
                   </Popup>
                 </Marker>
               );
