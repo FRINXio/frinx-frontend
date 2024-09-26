@@ -14,6 +14,7 @@ import {
   getNodesAndEdges,
   getPtpNodesAndEdges,
   getSynceNodesAndEdges,
+  getTopologiesOfDevice,
   setMapTopologyType,
   setSelectedMapDeviceName,
   setSelectedMplsNode,
@@ -22,7 +23,6 @@ import {
   setSelectedSynceNode,
   setTopologyLayer,
 } from '../../../state.actions';
-import { topologyLayers } from '../../../components/topology-type-select/topology-type-select';
 
 type MarkerLines = {
   id: string;
@@ -43,6 +43,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
     synceNodes,
     mplsNodes,
     nodes,
+    topologiesOfDevice,
   } = state;
 
   const map = useMap();
@@ -91,6 +92,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   }, [deviceData, selectedMapDeviceName, map, markersReady]);
 
   const handleMarkerClick = (deviceName: string) => () => {
+    dispatch(getTopologiesOfDevice(client, deviceName));
     dispatch(setSelectedMapDeviceName(deviceName));
   };
 
@@ -118,49 +120,72 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
     dispatch(setSelectedMapDeviceName(null));
   };
 
-  const handleShowDevice = () => {
-    const layer = topologyLayers.find((l) => l.value === mapTopologyType);
-    if (mapTopologyType && layer) {
-      switch (selectedDeviceData.topologyType) {
-        case 'LLDP': {
-          dispatch(getNodesAndEdges(client, []));
-          const selectedNode = nodes.find((n) => n.name === selectedMapDeviceName);
-          if (selectedNode) {
-            dispatch(setSelectedNode(selectedNode));
-          }
-          return;
+  const getTopologyOfDevice = (topology: string) => {
+    if (topology) {
+      switch (topology) {
+        case 'PHYSICAL_TOPOLOGY': {
+          return 'LLDP';
         }
-        case 'PTP': {
-          dispatch(getPtpNodesAndEdges(client));
-          const selectedPtpNode = ptpNodes.find((n) => n.name === selectedMapDeviceName);
-          if (selectedPtpNode) {
-            dispatch(setSelectedPtpNode(selectedPtpNode));
-          }
-          return;
+        case 'PTP_TOPOLOGY': {
+          return 'PTP';
         }
-        case 'MPLS': {
-          dispatch(getMplsNodesAndEdges(client));
-          const selectedMplsNode = mplsNodes.find((n) => n.name === selectedMapDeviceName);
-          if (selectedMplsNode) {
-            dispatch(setSelectedMplsNode(selectedMplsNode));
-          }
-
-          return;
+        case 'MPLS_TOPOLOGY': {
+          return 'MPLS';
         }
-        case 'Synchronous Ethernet': {
-          dispatch(getSynceNodesAndEdges(client));
-          const selectedSynceNode = synceNodes.find((n) => n.name === selectedMapDeviceName);
-          if (selectedSynceNode) {
-            dispatch(setSelectedSynceNode(selectedSynceNode));
-          }
-
-          return;
+        case 'ETH_TOPOLOGY': {
+          return 'Synchronous Ethernet';
         }
         default:
           break;
       }
-      dispatch(setTopologyLayer(layer.layer));
-      dispatch(setMapTopologyType(null));
+    }
+    return undefined;
+  };
+
+  const handleShowDevice = (topology: string) => {
+    const layerOfDevice = getTopologyOfDevice(topology);
+
+    if (layerOfDevice) {
+      dispatch(setTopologyLayer(layerOfDevice));
+    }
+    dispatch(setMapTopologyType(null));
+    switch (topology) {
+      case 'PHYSICAL_TOPOLOGY': {
+        dispatch(getNodesAndEdges(client, []));
+        const selectedNode = nodes.find((n) => n.name === selectedMapDeviceName);
+        if (selectedNode) {
+          dispatch(setSelectedNode(selectedNode));
+        }
+        return;
+      }
+      case 'PTP_TOPOLOGY': {
+        dispatch(getPtpNodesAndEdges(client));
+        const selectedPtpNode = ptpNodes.find((n) => n.name === selectedMapDeviceName);
+        if (selectedPtpNode) {
+          dispatch(setSelectedPtpNode(selectedPtpNode));
+        }
+        return;
+      }
+      case 'MPLS_TOPOLOGY': {
+        dispatch(getMplsNodesAndEdges(client));
+        const selectedMplsNode = mplsNodes.find((n) => n.name === selectedMapDeviceName);
+        if (selectedMplsNode) {
+          dispatch(setSelectedMplsNode(selectedMplsNode));
+        }
+
+        return;
+      }
+      case 'ETH_TOPOLOGY': {
+        dispatch(getSynceNodesAndEdges(client));
+        const selectedSynceNode = synceNodes.find((n) => n.name === selectedMapDeviceName);
+        if (selectedSynceNode) {
+          dispatch(setSelectedSynceNode(selectedSynceNode));
+        }
+
+        break;
+      }
+      default:
+        break;
     }
   };
 
@@ -216,9 +241,25 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                       </Heading>
                       {node?.geolocation?.longitude}
                     </Box>
-                    <Button mt={3} size="sm" onClick={handleShowDevice} colorScheme="blue">
-                      Switch to device
-                    </Button>
+                    <Box>Switch to layer</Box>
+                    {topologiesOfDevice.map((m) => {
+                      if (m.topologyId !== 'NETWORK_TOPOLOGY') {
+                        return (
+                          <Button
+                            key={m.deviceId}
+                            mt={3}
+                            size="sm"
+                            onClick={() => {
+                              handleShowDevice(m.topologyId);
+                            }}
+                            colorScheme="blue"
+                          >
+                            {m.topologyId}
+                          </Button>
+                        );
+                      }
+                      return null;
+                    })}
                   </Popup>
                 </Marker>
               );

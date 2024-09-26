@@ -19,6 +19,8 @@ import {
 import { LspPathMetadata, ShortestPath, State, TopologyLayer } from './state.reducer';
 import { CustomDispatch } from './use-thunk-reducer';
 import {
+  DevicesTopologyQuery,
+  DevicesTopologyQueryVariables,
   FilterDevicesMetadatasInput,
   FilterNeighborInput,
   GeoMapDataQueryQuery,
@@ -92,6 +94,11 @@ export type SetDeviceUsagePayload = {
   cpuLoad: number | null;
   memoryLoad: number | null;
 };
+
+export type TopologiesOfDevice = {
+  deviceId: string;
+  topologyId: string;
+}[];
 
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH' | 'LSP_PATH';
 
@@ -264,6 +271,10 @@ export type StateAction =
   | {
       type: 'SET_SYNCE_NODES_AND_EDGES';
       payload: SynceNodesEdgesPayload;
+    }
+  | {
+      type: 'SET_TOPOLOGIES_OF_DEVICE';
+      topologies: TopologiesOfDevice;
     }
   | {
       type: 'SET_SELECTED_SYNCE_NODE';
@@ -761,6 +772,19 @@ const MAP_NEIGHBORS_QUERY = gql`
   }
 `;
 
+const TOPOLOGIES_OF_DEVICE_QUERY = gql`
+  query DevicesTopology($deviceName: String!) {
+    deviceInventory {
+      devicesTopology(deviceName: $deviceName) {
+        topologies {
+          deviceId
+          topologyId
+        }
+      }
+    }
+  }
+`;
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -1135,6 +1159,38 @@ export function getBackupNodesAndEdges(client: Client, version: string): ReturnT
               })) ?? [],
           }),
         );
+      });
+  };
+}
+
+export function setTopologiesOfDevice(topologies: TopologiesOfDevice): StateAction {
+  return {
+    type: 'SET_TOPOLOGIES_OF_DEVICE',
+    topologies,
+  };
+}
+
+export function getTopologiesOfDevice(client: Client, deviceName: string): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .query<DevicesTopologyQuery, DevicesTopologyQueryVariables>(
+        TOPOLOGIES_OF_DEVICE_QUERY,
+        {
+          deviceName,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const topologies =
+          data.data?.deviceInventory.devicesTopology?.topologies?.map((t) => ({
+            deviceId: t?.deviceId || '',
+            topologyId: t?.topologyId || '',
+          })) || [];
+
+        dispatch(setTopologiesOfDevice(topologies));
       });
   };
 }

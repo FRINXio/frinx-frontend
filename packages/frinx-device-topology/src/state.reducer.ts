@@ -45,7 +45,7 @@ import {
   scale,
   getZoomLevel,
 } from './pages/topology/transform.helpers';
-import { LabelItem, StateAction, TopologyMode, MapTopologyType } from './state.actions';
+import { LabelItem, StateAction, TopologyMode, MapTopologyType, TopologiesOfDevice } from './state.actions';
 import { NetInterface, NetNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'MPLS' | 'Synchronous Ethernet' | 'Map';
@@ -80,6 +80,7 @@ export type State = {
   selectedMapDeviceName: string | null;
   devicesMetadata: DeviceMetadata[] | null;
   mapDeviceNeighbors: MapDeviceNeighbors[] | null;
+  topologiesOfDevice: TopologiesOfDevice;
   mode: TopologyMode;
   nodes: GraphNodeWithDiff[];
   edges: GraphEdgeWithDiff[];
@@ -142,6 +143,7 @@ export const initialState: State = {
   selectedMapDeviceName: null,
   devicesMetadata: null,
   mapDeviceNeighbors: null,
+  topologiesOfDevice: [],
   mode: 'NORMAL',
   nodes: [],
   edges: [],
@@ -255,6 +257,10 @@ export function stateReducer(state: State, action: StateAction): State {
           },
           () => 'MEDIUM',
         );
+        return acc;
+      }
+      case 'SET_TOPOLOGIES_OF_DEVICE': {
+        acc.topologiesOfDevice = action.topologies;
         return acc;
       }
       case 'SET_SELECTED_NODE': {

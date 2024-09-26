@@ -943,6 +943,10 @@ export type FilterLabelsInput = {
   name: Scalars['String']['input'];
 };
 
+export type FilterLocationsInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type FilterNeighborInput = {
   deviceName: Scalars['String']['input'];
   topologyType: TopologyType;
@@ -1117,6 +1121,11 @@ export type LocationEdge = {
   __typename?: 'LocationEdge';
   cursor: Scalars['String']['output'];
   node: Location;
+};
+
+export type LocationOrderByInput = {
+  direction: SortDirection;
+  sortKey: SortLocationBy;
 };
 
 export type LspPath = {
@@ -1625,6 +1634,9 @@ export type SortExecutedWorkflowsDirection =
   | 'asc'
   | 'desc';
 
+export type SortLocationBy =
+  | 'name';
+
 export type SortResourcePoolsInput = {
   direction: OrderDirection;
   field?: InputMaybe<ResourcePoolOrderField>;
@@ -2040,6 +2052,11 @@ export type TimeoutPolicy =
   | 'ALERT_ONLY'
   | 'TIME_OUT_WF';
 
+export type Topologies = {
+  __typename?: 'Topologies';
+  topologies: Maybe<Array<Maybe<TopologyOfDevice>>>;
+};
+
 export type Topology = {
   __typename?: 'Topology';
   edges: Array<GraphEdge>;
@@ -2056,6 +2073,12 @@ export type TopologyLayer =
   | 'MPLS_TOPOLOGY'
   | 'PHYSICAL_TOPOLOGY'
   | 'PTP_TOPOLOGY';
+
+export type TopologyOfDevice = {
+  __typename?: 'TopologyOfDevice';
+  deviceId: Scalars['String']['output'];
+  topologyId: Scalars['String']['output'];
+};
 
 export type TopologyType =
   | 'ETH_TOPOLOGY'
@@ -3479,6 +3502,7 @@ export type DeviceInventoryQuery = {
   deviceMetadata: Maybe<DeviceMetadata>;
   deviceNeighbor: Maybe<DeviceNeighbors>;
   devices: DeviceConnection;
+  devicesTopology: Maybe<Topologies>;
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
@@ -3556,6 +3580,11 @@ export type DeviceInventoryQueryDevicesArgs = {
 };
 
 
+export type DeviceInventoryQueryDevicesTopologyArgs = {
+  deviceName: Scalars['String']['input'];
+};
+
+
 export type DeviceInventoryQueryLabelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -3568,8 +3597,10 @@ export type DeviceInventoryQueryLabelsArgs = {
 export type DeviceInventoryQueryLocationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FilterLocationsInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<LocationOrderByInput>;
 };
 
 
@@ -4306,3 +4337,10 @@ export type NeighboursQueryVariables = Exact<{
 
 
 export type NeighboursQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceNeighbor: { __typename?: 'DeviceNeighbors', neighbors: Array<{ __typename?: 'Neighbor', deviceName: string, deviceId: string } | null> | null } | null } };
+
+export type DevicesTopologyQueryVariables = Exact<{
+  deviceName: Scalars['String']['input'];
+}>;
+
+
+export type DevicesTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devicesTopology: { __typename?: 'Topologies', topologies: Array<{ __typename?: 'TopologyOfDevice', deviceId: string, topologyId: string } | null> | null } | null } };
