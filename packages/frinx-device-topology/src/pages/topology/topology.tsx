@@ -1,7 +1,7 @@
 import { Box, Button, Container, Flex, FormControl, FormLabel, Heading, Select, Switch } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
-import React, {useState, VoidFunctionComponent} from 'react';
-import { gql, useMutation } from "urql";
+import React, { useState, VoidFunctionComponent } from 'react';
+import { gql, useMutation } from 'urql';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
 import { setSelectedVersion, setSynceDiffVisibility, setTopologyLayer } from '../../state.actions';
@@ -16,9 +16,10 @@ import MapTopologyContainer from './map/map-topology.container';
 import TopologyTypeSelect from '../../components/topology-type-select/topology-type-select';
 import DeviceSearch from '../../components/device-search/device-search';
 import {
-    RefreshCoordinatesMutation, RefreshCoordinatesMutationVariables,
-    TopologyType
-} from "../../__generated__/graphql";
+  RefreshCoordinatesMutation,
+  RefreshCoordinatesMutationVariables,
+  TopologyType,
+} from '../../__generated__/graphql';
 
 const REFRESH_COORDINATES = gql`
   mutation RefreshCoordinates($topologyType: TopologyType) {
@@ -32,7 +33,7 @@ const REFRESH_COORDINATES = gql`
       }
     }
   }
-`
+`;
 
 const getTopologyType = (layer: TopologyLayer): TopologyType | null => {
   // TODO: In version 8.0 Net devices will have their own coordinates
@@ -53,7 +54,7 @@ const getTopologyType = (layer: TopologyLayer): TopologyType | null => {
     default:
       return null;
   }
-}
+};
 
 const Topology: VoidFunctionComponent = () => {
   const { state, dispatch } = useStateContext();
