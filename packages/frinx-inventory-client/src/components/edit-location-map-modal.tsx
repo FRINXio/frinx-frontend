@@ -30,6 +30,7 @@ import { UpdateDeviceInput } from '../__generated__/graphql';
 
 export type LocationModal = {
   deviceId: string;
+  isInstalled: boolean;
   location: { name: string; latitude: number | null; longitude: number | null } | null;
 };
 
@@ -152,30 +153,34 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
         <ModalHeader>{displayLocation?.name || 'No location selected'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormLabel>Change device location</FormLabel>
-          <Flex zIndex={9} mb={4} gap={2}>
-            <Autocomplete
-              items={locationOptions.map((option) => ({
-                ...option,
-                key: option.value,
-              }))}
-              onChange={(e) => {
-                handleLocationChange(e?.value);
-                setCreateNewLocation(false);
-              }}
-              selectedItem={selectedLocation}
-            />
-            <Button
-              w="150px"
-              onClick={() => {
-                resetForm();
-                setCreateNewLocation((prev) => !prev);
-              }}
-              colorScheme={createNewLocation ? 'red' : 'blue'}
-            >
-              {createNewLocation ? ' Collapse' : 'Add new location'}
-            </Button>
-          </Flex>
+          {!locationModal.isInstalled && (
+            <>
+              <FormLabel>Change device location</FormLabel>
+              <Flex zIndex={9} mb={4} gap={2}>
+                <Autocomplete
+                  items={locationOptions.map((option) => ({
+                    ...option,
+                    key: option.value,
+                  }))}
+                  onChange={(e) => {
+                    handleLocationChange(e?.value);
+                    setCreateNewLocation(false);
+                  }}
+                  selectedItem={selectedLocation}
+                />
+                <Button
+                  w="150px"
+                  onClick={() => {
+                    resetForm();
+                    setCreateNewLocation((prev) => !prev);
+                  }}
+                  colorScheme={createNewLocation ? 'red' : 'blue'}
+                >
+                  {createNewLocation ? ' Collapse' : 'Add new location'}
+                </Button>
+              </Flex>
+            </>
+          )}
           {createNewLocation && (
             <form onSubmit={handleSubmit}>
               <Divider my={4} />
@@ -261,16 +266,18 @@ const LocationMapModal: VoidFunctionComponent<Props> = ({
         </ModalBody>
         <ModalFooter>
           <HStack>
-            <Button
-              onClickCapture={() => {
-                onUpdateDeviceLocation(locationModal.deviceId, { locationId: newDeviceLocationId });
-              }}
-              colorScheme="blue"
-              data-cy="location-map-modal-save"
-              onClick={onClose}
-            >
-              Save device location
-            </Button>
+            {!locationModal.isInstalled && (
+              <Button
+                onClickCapture={() => {
+                  onUpdateDeviceLocation(locationModal.deviceId, { locationId: newDeviceLocationId });
+                }}
+                colorScheme="blue"
+                data-cy="location-map-modal-save"
+                onClick={onClose}
+              >
+                Save device location
+              </Button>
+            )}
             <Button data-cy="location-map-modal-close" onClick={onClose}>
               Close
             </Button>
