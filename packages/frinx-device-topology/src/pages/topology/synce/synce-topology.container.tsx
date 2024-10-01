@@ -20,7 +20,7 @@ import SynceTopologyGraph from './synce-topology-graph';
 type Props = {
   refreshGraph: boolean;
   onGraphRefreshed: () => void;
-}
+};
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdateSyncePosition($input: UpdateGraphNodeCoordinatesInput!) {
@@ -40,10 +40,7 @@ const GET_SYNCE_GM_PATH = gql`
   }
 `;
 
-const SynceTopologyContainer: VoidFunctionComponent<Props> = ({
-  refreshGraph,
-  onGraphRefreshed
-}) => {
+const SynceTopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGraphRefreshed }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();

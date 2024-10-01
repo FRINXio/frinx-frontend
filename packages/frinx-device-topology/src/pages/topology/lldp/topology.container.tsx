@@ -22,7 +22,7 @@ import TopologyGraph from '../topology-graph';
 type Props = {
   refreshGraph: boolean;
   onGraphRefreshed: () => void;
-}
+};
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdatePosition($input: UpdateGraphNodeCoordinatesInput!) {
@@ -44,10 +44,7 @@ const TOPOLOGY_COMMON_NODES = gql`
   }
 `;
 
-const TopologyContainer: VoidFunctionComponent<Props> = ({
-   refreshGraph,
-   onGraphRefreshed
-}) => {
+const TopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGraphRefreshed }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { state, dispatch } = useStateContext();

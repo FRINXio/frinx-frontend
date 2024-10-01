@@ -24,7 +24,7 @@ import MplsTopologyGraph from './mpls-topology-graph';
 type Props = {
   refreshGraph: boolean;
   onGraphRefreshed: () => void;
-}
+};
 
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdateSyncePosition($input: UpdateGraphNodeCoordinatesInput!) {
@@ -66,10 +66,7 @@ const GET_LSP_PATH = gql`
   }
 `;
 
-const MplsTopologyContainer: VoidFunctionComponent<Props> = ({
-  refreshGraph,
-  onGraphRefreshed
-}) => {
+const MplsTopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGraphRefreshed }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();

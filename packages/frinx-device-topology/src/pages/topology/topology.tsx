@@ -137,37 +137,25 @@ const Topology: VoidFunctionComponent = () => {
         )}
       </Flex>
       <Box>
-        {topologyLayer === 'LLDP' &&
-            <TopologyContainer
-                refreshGraph={refreshGraph}
-                onGraphRefreshed={() => setRefreshGraph(false)}
-            />
-        }
-        {topologyLayer === 'BGP-LS' &&
-            <NetTopologyContainer
-                refreshGraph={refreshGraph}
-                onGraphRefreshed={() => setRefreshGraph(false)}
-            />
-        }
-        {topologyLayer === 'PTP' &&
-            <PtpTopologyContainer
-                isPtpDiffSynceShown={isSynceDiffVisible}
-                refreshGraph={refreshGraph}
-                onGraphRefreshed={() => setRefreshGraph(false)}
-            />
-        }
-        {topologyLayer === 'Synchronous Ethernet' &&
-            <SynceTopologyContainer
-                refreshGraph={refreshGraph}
-                onGraphRefreshed={() => setRefreshGraph(false)}
-            />
-        }
-        {topologyLayer === 'MPLS' &&
-            <MplsTopologyContainer
-                refreshGraph={refreshGraph}
-                onGraphRefreshed={() => setRefreshGraph(false)}
-            />
-        }
+        {topologyLayer === 'LLDP' && (
+          <TopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
+        )}
+        {topologyLayer === 'BGP-LS' && (
+          <NetTopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
+        )}
+        {topologyLayer === 'PTP' && (
+          <PtpTopologyContainer
+            isPtpDiffSynceShown={isSynceDiffVisible}
+            refreshGraph={refreshGraph}
+            onGraphRefreshed={() => setRefreshGraph(false)}
+          />
+        )}
+        {topologyLayer === 'Synchronous Ethernet' && (
+          <SynceTopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
+        )}
+        {topologyLayer === 'MPLS' && (
+          <MplsTopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
+        )}
         {topologyLayer === 'Map' && <MapTopologyContainer />}
       </Box>
       {topology !== null && (

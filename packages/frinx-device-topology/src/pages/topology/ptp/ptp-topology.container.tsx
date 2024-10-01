@@ -59,7 +59,7 @@ const GET_PTP_DIFF_SYNCE = gql`
 const PtpTopologyContainer: VoidFunctionComponent<Props> = ({
   isPtpDiffSynceShown,
   refreshGraph,
-  onGraphRefreshed
+  onGraphRefreshed,
 }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
@@ -173,7 +173,7 @@ const PtpTopologyContainer: VoidFunctionComponent<Props> = ({
       if (state.selectedVersion == null) {
         dispatch(getPtpNodesAndEdges(client));
       } else {
-        dispatch(getPtpBackupNodesAndEdges(client, state.selectedVersion))
+        dispatch(getPtpBackupNodesAndEdges(client, state.selectedVersion));
       }
       onGraphRefreshed();
     }

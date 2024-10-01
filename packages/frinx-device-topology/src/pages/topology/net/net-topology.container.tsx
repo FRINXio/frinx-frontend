@@ -33,7 +33,7 @@ import NetNodes from './net-nodes';
 type Props = {
   refreshGraph: boolean;
   onGraphRefreshed: () => void;
-}
+};
 
 const EDGE_GAP = 75;
 
@@ -60,10 +60,7 @@ const isShortestPathPredicate = (shortestPathInfo: ShortestPathInfo | null, edge
   return shortestPathIds.includes(edge.target.interface, fromInterfaceIndex);
 };
 
-const NetTopologyContainer: VoidFunctionComponent<Props> = ({
-  refreshGraph,
-  onGraphRefreshed
-}) => {
+const NetTopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGraphRefreshed }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
