@@ -7,6 +7,7 @@ import {
   GraphEdge,
   GraphNode,
   SynceGraphNode,
+  GraphNetNode,
   PtpGraphNode,
   MplsGraphNode,
   Position,

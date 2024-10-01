@@ -1211,6 +1211,46 @@ export type InstalledDevices = {
   updated: Array<Scalars['String']['output']>;
 };
 
+export type InventoryLspTunnel = {
+  __typename?: 'InventoryLspTunnel';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  signalization: Maybe<Signalization>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
+export type InventoryMplsData = {
+  __typename?: 'InventoryMplsData';
+  inputInterface: Maybe<Scalars['String']['output']>;
+  inputLabel: Maybe<Scalars['Int']['output']>;
+  ldpPrefix: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  mplsOperation: Maybe<Scalars['String']['output']>;
+  operState: Maybe<Scalars['String']['output']>;
+  outputInterface: Maybe<Scalars['String']['output']>;
+  outputLabel: Maybe<Scalars['Int']['output']>;
+};
+
+export type InventoryMplsDeviceDetails = {
+  __typename?: 'InventoryMplsDeviceDetails';
+  lspTunnels: Maybe<Array<Maybe<InventoryLspTunnel>>>;
+  mplsData: Maybe<Array<Maybe<InventoryMplsData>>>;
+};
+
+export type InventoryNetInterface = {
+  __typename?: 'InventoryNetInterface';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type InventoryNetNetwork = {
+  __typename?: 'InventoryNetNetwork';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['String']['output'];
+  subnet: Scalars['String']['output'];
+};
+
 export type IsOkResponse = {
   __typename?: 'IsOkResponse';
   isOk: Scalars['Boolean']['output'];
@@ -1289,7 +1329,6 @@ export type LspTunnel = {
   lspId: Scalars['String']['output'];
   /** Type of signalisation. */
   signalisation: Signalisation;
-  signalization: Maybe<Signalization>;
   /** Where is the tunnel headed. */
   toDevice: Maybe<Scalars['String']['output']>;
   /** Uptime of the tunnel in seconds. */
@@ -1312,9 +1351,6 @@ export type MplsData = {
   inInterface: Maybe<Scalars['String']['output']>;
   /** The input label. */
   inLabel: Maybe<Scalars['Int']['output']>;
-  inputInterface: Maybe<Scalars['String']['output']>;
-  inputLabel: Maybe<Scalars['Int']['output']>;
-  ldpPrefix: Maybe<Scalars['String']['output']>;
   /** Name of the link state packet. */
   lspId: Scalars['String']['output'];
   /** The operation type. */
@@ -1325,8 +1361,6 @@ export type MplsData = {
   outInterface: Maybe<Scalars['String']['output']>;
   /** The output label. */
   outLabel: Maybe<Scalars['Int']['output']>;
-  outputInterface: Maybe<Scalars['String']['output']>;
-  outputLabel: Maybe<Scalars['Int']['output']>;
   /** Type of signalisation. */
   signalisation: Maybe<Signalisation>;
 };
@@ -1398,7 +1432,7 @@ export type MplsGraphNode = {
   id: Scalars['ID']['output'];
   interfaces: Array<MplsGraphNodeInterface>;
   labels: Maybe<Array<Scalars['String']['output']>>;
-  mplsDeviceDetails: MplsDeviceDetails;
+  mplsDeviceDetails: InventoryMplsDeviceDetails;
   name: Scalars['String']['output'];
   nodeId: Scalars['String']['output'];
   status: GraphEdgeStatus;
@@ -1625,7 +1659,6 @@ export type NetInterface = Node & {
   igpMetric: Maybe<Scalars['Int']['output']>;
   /** IP address configured on the interface. */
   ipAddress: Scalars['String']['output'];
-  name: Scalars['String']['output'];
   /** Routing entity that owns this interface. */
   netDevice: Maybe<NetDevice>;
   /** Links to connected remote network devices. */
@@ -1744,9 +1777,9 @@ export type NetNode = {
   __typename?: 'NetNode';
   coordinates: GraphNodeCoordinates;
   id: Scalars['ID']['output'];
-  interfaces: Array<NetInterface>;
+  interfaces: Array<InventoryNetInterface>;
   name: Scalars['String']['output'];
-  networks: Array<NetNetwork>;
+  networks: Array<InventoryNetNetwork>;
   nodeId: Scalars['String']['output'];
   phyDeviceName: Maybe<Scalars['String']['output']>;
 };
@@ -5895,14 +5928,14 @@ export type MplsTopologyVersionDataQuery = { __typename?: 'Query', deviceInvento
 export type NetTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, phyDeviceName: string | null, nodeId: string, name: string, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'TopologyCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type NetTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopology: { __typename?: 'NetTopology', nodes: Array<{ __typename?: 'NetNode', id: string, phyDeviceName: string | null, nodeId: string, name: string, interfaces: Array<{ __typename?: 'InventoryNetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'InventoryNetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type NetTopologyVersionDataQueryVariables = Exact<{
   version: Scalars['String']['input'];
 }>;
 
 
-export type NetTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopologyVersionData: { __typename?: 'NetTopologyVersionData', nodes: Array<{ __typename?: 'NetNode', id: string, name: string, phyDeviceName: string | null, interfaces: Array<{ __typename?: 'NetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'NetNetwork', id: string, subnet: string, coordinates: { __typename?: 'TopologyCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } } };
+export type NetTopologyVersionDataQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', netTopologyVersionData: { __typename?: 'NetTopologyVersionData', nodes: Array<{ __typename?: 'NetNode', id: string, name: string, phyDeviceName: string | null, interfaces: Array<{ __typename?: 'InventoryNetInterface', id: string, name: string }>, networks: Array<{ __typename?: 'InventoryNetNetwork', id: string, subnet: string, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number } }>, edges: Array<{ __typename?: 'GraphVersionEdge', id: string, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } } };
 
 export type PtpTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -5917,7 +5950,7 @@ export type SynceTopologyQuery = { __typename?: 'Query', deviceInventory: { __ty
 export type MplsTopologyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'MplsDeviceDetails', lspTunnels: Array<{ __typename?: 'LspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'MplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null, operState: string | null, ldpPrefix: string | null, mplsOperation: MplsOperation | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
+export type MplsTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', mplsTopology: { __typename?: 'MplsTopology', nodes: Array<{ __typename?: 'MplsGraphNode', id: string, nodeId: string, name: string, status: GraphEdgeStatus, labels: Array<string> | null, interfaces: Array<{ __typename?: 'MplsGraphNodeInterface', id: string, name: string, status: GraphEdgeStatus }>, coordinates: { __typename?: 'GraphNodeCoordinates', x: number, y: number }, mplsDeviceDetails: { __typename?: 'InventoryMplsDeviceDetails', lspTunnels: Array<{ __typename?: 'InventoryLspTunnel', lspId: string, fromDevice: string | null, toDevice: string | null, uptime: number | null, signalization: Signalization | null } | null> | null, mplsData: Array<{ __typename?: 'InventoryMplsData', lspId: string, inputLabel: number | null, inputInterface: string | null, outputLabel: number | null, outputInterface: string | null, operState: string | null, ldpPrefix: string | null, mplsOperation: string | null } | null> | null } }>, edges: Array<{ __typename?: 'GraphEdge', id: string, weight: number | null, source: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string }, target: { __typename?: 'EdgeSourceTarget', nodeId: string, interface: string } }> } | null } };
 
 export type GeoMapDataQueryQueryVariables = Exact<{
   filter?: InputMaybe<FilterDevicesMetadatasInput>;

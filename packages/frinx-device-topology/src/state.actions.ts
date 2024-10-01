@@ -23,7 +23,7 @@ import {
   FilterNeighborInput,
   GeoMapDataQueryQuery,
   GeoMapDataQueryQueryVariables,
-  MplsDeviceDetails,
+  InventoryMplsDeviceDetails,
   MplsTopologyQuery,
   MplsTopologyQueryVariables,
   MplsTopologyVersionDataQuery,
@@ -899,7 +899,7 @@ export function setMplsNodesAndEdges(payload: MplsNodesEdgesPayload): StateActio
   };
 }
 
-function getMplsDetails(mplsDetails: MplsDeviceDetails): MplsGraphNodeDetails {
+function getMplsDetails(mplsDetails: InventoryMplsDeviceDetails): MplsGraphNodeDetails {
   const { mplsData, lspTunnels } = mplsDetails;
 
   return {

@@ -46,7 +46,7 @@ import {
   getZoomLevel,
 } from './pages/topology/transform.helpers';
 import { LabelItem, StateAction, TopologyMode, MapTopologyType } from './state.actions';
-import { NetInterface, NetNode } from './__generated__/graphql';
+import { InventoryNetInterface, NetNode } from './__generated__/graphql';
 
 export type TopologyLayer = 'LLDP' | 'BGP-LS' | 'PTP' | 'MPLS' | 'Synchronous Ethernet' | 'Map';
 
@@ -357,7 +357,7 @@ export function stateReducer(state: State, action: StateAction): State {
         const allNodes = getNetNodesWithDiff(acc.netNodes, action.payload.nodes);
         const allEdges = getEdgesWithDiff(acc.netEdges, action.payload.edges);
 
-        const positionsMap = getDefaultPositionsMap<NetInterface, NetNode>(
+        const positionsMap = getDefaultPositionsMap<InventoryNetInterface, NetNode>(
           { nodes: allNodes, edges: allEdges },
           (n) => n.name,
           () => 'MEDIUM',
