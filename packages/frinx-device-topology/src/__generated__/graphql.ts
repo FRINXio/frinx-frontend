@@ -1622,7 +1622,7 @@ export type NetInterface = Node & {
   /** Unique identifier of the object. */
   id: Scalars['ID']['output'];
   /** IGP metric configured on the network interface. */
-  igp_metric: Maybe<Scalars['Int']['output']>;
+  igpMetric: Maybe<Scalars['Int']['output']>;
   /** IP address configured on the interface. */
   ipAddress: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -1663,6 +1663,24 @@ export type NetInterfaceFilter = {
   ipAddress?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type NetLinkAttributes = {
+  __typename?: 'NetLinkAttributes';
+  /** A list of admin group masks on the network interface. (Group Number) */
+  adminGroup: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
+  /** IGP metric configured on the network interface. */
+  igpMetric: Maybe<Scalars['Int']['output']>;
+  /** The maximum link bandwidth of the network interface. (Bytes per second) */
+  maxLinkBandwidth: Maybe<Scalars['Float']['output']>;
+  /** The maximum reservable link bandwidth of the network interface. (Bytes per second) */
+  maxReservableLinkBandwidth: Maybe<Scalars['Float']['output']>;
+  /** A list of shared risk link groups on the network interface. */
+  sharedRiskLinkGroup: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
+  /** Traffic Engineering metric on the network interface. */
+  trafficEngineeringMetric: Maybe<Scalars['Int']['output']>;
+  /** The unreserved bandwidth on the network interface. (Bytes per second) */
+  unreservedBandwidth: Maybe<Array<Maybe<Scalars['Float']['output']>>>;
+};
+
 /** Grouped list of NetLinks objects and pagination metadata. */
 export type NetLinkConnection = {
   __typename?: 'NetLinkConnection';
@@ -1674,6 +1692,8 @@ export type NetLinkConnection = {
 
 export type NetLinkEdge = {
   __typename?: 'NetLinkEdge';
+  /** List of attributes associated to the link. */
+  attributes: Maybe<NetLinkAttributes>;
   /** Pagination cursor for this edge. */
   cursor: Scalars['String']['output'];
   /** Identifier of the link that connects this interface to the interface on the remote device */
@@ -1818,7 +1838,7 @@ export type PageInfo = {
   /** Indicates if there is a next object in the list. */
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor: Maybe<Scalars['Cursor']['output']>;
+  startCursor: Maybe<Scalars['String']['output']>;
 };
 
 export type PaginationArgs = {
@@ -3214,6 +3234,15 @@ export type TopologyCoordinates = {
   x: Scalars['Float']['output'];
   /** Vertical coordinate of the node on the graph. */
   y: Scalars['Float']['output'];
+};
+
+/** Topology and device identifier of a device. */
+export type TopologyDevice = {
+  __typename?: 'TopologyDevice';
+  /** Topology-specific device identifier. */
+  deviceId: Scalars['ID']['output'];
+  /** Identifier of the topology in which device is present. */
+  topologyId: TopologyType;
 };
 
 export type TopologyLayer =
@@ -5592,6 +5621,11 @@ export type TopologyDiscoveryQuery = {
    */
   syncePathToGm: SyncePath;
   /**
+   * Find identifiers of the topologies where the specified device is present.
+   * The query returns a list in which each entry contains a topology identifier and a device identifier.
+   */
+  topologies: Maybe<Array<TopologyDevice>>;
+  /**
    * Computation of the diff between two databases per collections - created, deleted, and changed entries.
    * Only documents that belong to the specified topology are included in the diff.
    */
@@ -5705,6 +5739,11 @@ export type TopologyDiscoveryQuerySynceDevicesArgs = {
 export type TopologyDiscoveryQuerySyncePathToGmArgs = {
   deviceFrom: Scalars['ID']['input'];
   outputCollection?: InputMaybe<SyncePathOutputCollections>;
+};
+
+
+export type TopologyDiscoveryQueryTopologiesArgs = {
+  deviceName: Scalars['String']['input'];
 };
 
 
