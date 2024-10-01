@@ -17,6 +17,11 @@ import {
 import { height, Position, width } from '../graph.helpers';
 import SynceTopologyGraph from './synce-topology-graph';
 
+type Props = {
+  refreshGraph: boolean;
+  onGraphRefreshed: () => void;
+}
+
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdateSyncePosition($input: UpdateGraphNodeCoordinatesInput!) {
     deviceInventory {
@@ -35,7 +40,10 @@ const GET_SYNCE_GM_PATH = gql`
   }
 `;
 
-const SynceTopologyContainer: VoidFunctionComponent = () => {
+const SynceTopologyContainer: VoidFunctionComponent<Props> = ({
+  refreshGraph,
+  onGraphRefreshed
+}) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
@@ -132,6 +140,17 @@ const SynceTopologyContainer: VoidFunctionComponent = () => {
   const handleSearchClick = () => {
     dispatch(findGmPath());
   };
+
+  useEffect(() => {
+    if (refreshGraph) {
+      if (selectedVersion == null) {
+        dispatch(getSynceNodesAndEdges(client));
+      } else {
+        dispatch(getSynceBackupNodesAndEdges(client, selectedVersion));
+      }
+      onGraphRefreshed();
+    }
+  }, [dispatch, client, selectedVersion, refreshGraph, onGraphRefreshed]);
 
   return (
     <SynceTopologyGraph

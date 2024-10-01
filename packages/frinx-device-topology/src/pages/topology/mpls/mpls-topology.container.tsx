@@ -21,6 +21,11 @@ import {
 import { getLspCounts, height, Position, width } from '../graph.helpers';
 import MplsTopologyGraph from './mpls-topology-graph';
 
+type Props = {
+  refreshGraph: boolean;
+  onGraphRefreshed: () => void;
+}
+
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdateSyncePosition($input: UpdateGraphNodeCoordinatesInput!) {
     deviceInventory {
@@ -61,7 +66,10 @@ const GET_LSP_PATH = gql`
   }
 `;
 
-const MplsTopologyContainer: VoidFunctionComponent = () => {
+const MplsTopologyContainer: VoidFunctionComponent<Props> = ({
+  refreshGraph,
+  onGraphRefreshed
+}) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
@@ -174,6 +182,17 @@ const MplsTopologyContainer: VoidFunctionComponent = () => {
   const handleSearchClick = () => {
     dispatch(findLspPath());
   };
+
+  useEffect(() => {
+    if (refreshGraph) {
+      if (selectedVersion == null) {
+        dispatch(getMplsNodesAndEdges(client));
+      } else {
+        dispatch(getMplsBackupNodesAndEdges(client, selectedVersion));
+      }
+      onGraphRefreshed();
+    }
+  }, [dispatch, client, selectedVersion, refreshGraph, onGraphRefreshed]);
 
   return (
     <MplsTopologyGraph

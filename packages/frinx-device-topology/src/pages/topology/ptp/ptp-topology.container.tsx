@@ -20,6 +20,8 @@ import PtpTopologyGraph from './ptp-topology-graph';
 
 type Props = {
   isPtpDiffSynceShown: boolean;
+  refreshGraph: boolean;
+  onGraphRefreshed: () => void;
 };
 
 const UPDATE_POSITION_MUTATION = gql`
@@ -54,7 +56,11 @@ const GET_PTP_DIFF_SYNCE = gql`
   }
 `;
 
-const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShown }) => {
+const PtpTopologyContainer: VoidFunctionComponent<Props> = ({
+  isPtpDiffSynceShown,
+  refreshGraph,
+  onGraphRefreshed
+}) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
@@ -161,6 +167,17 @@ const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShow
   const handleSearchClick = () => {
     dispatch(findGmPath());
   };
+
+  useEffect(() => {
+    if (refreshGraph) {
+      if (state.selectedVersion == null) {
+        dispatch(getPtpNodesAndEdges(client));
+      } else {
+        dispatch(getPtpBackupNodesAndEdges(client, state.selectedVersion))
+      }
+      onGraphRefreshed();
+    }
+  }, [dispatch, client, state.selectedVersion, refreshGraph, onGraphRefreshed]);
 
   return (
     <PtpTopologyGraph
