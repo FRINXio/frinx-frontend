@@ -1,7 +1,7 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import { DeviceSize, MplsLspCountItem } from '../../__generated__/graphql';
-import { NodePosition } from "../../state.actions";
+import { NodePosition } from '../../state.actions';
 
 export const width = 1248;
 export const height = 600;
@@ -349,9 +349,12 @@ export function getRefreshedPositionsMap<
   getNodeName: (node: T) => string,
   getDeviceSize: (node: T) => DeviceSize,
 ): PositionsWithGroupsMap<S> {
-  const coordinates = nodesPositions.reduce((coords, node) => {
-    return {...coords, [node.nodeId]: node.position}
-  }, {} as Record<string, Position>)
+  const coordinates = nodesPositions.reduce(
+    (coords, node) => {
+      return { ...coords, [node.nodeId]: node.position };
+    },
+    {} as Record<string, Position>,
+  );
   const nodesMap = nodes.reduce(
     (acc, curr) => {
       const nodeName = getNodeName(curr);
@@ -383,9 +386,12 @@ export function getRefreshedPositionsMapOfNetNodes<
   getPhyNodeName: (node: T) => string,
   getDeviceSize: (node: T) => DeviceSize,
 ): PositionsWithGroupsMap<S> {
-  const coordinates = nodesPositions.reduce((coords, node) => {
-    return {...coords, [node.nodeId]: node.position}
-  }, {} as Record<string, Position>)
+  const coordinates = nodesPositions.reduce(
+    (coords, node) => {
+      return { ...coords, [node.nodeId]: node.position };
+    },
+    {} as Record<string, Position>,
+  );
   const nodesMap = nodes.reduce(
     (acc, curr) => {
       const phyNodeName = getPhyNodeName(curr);

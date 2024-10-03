@@ -54,9 +54,7 @@ const GET_PTP_DIFF_SYNCE = gql`
   }
 `;
 
-const PtpTopologyContainer: VoidFunctionComponent<Props> = ({
-  isPtpDiffSynceShown,
-}) => {
+const PtpTopologyContainer: VoidFunctionComponent<Props> = ({ isPtpDiffSynceShown }) => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();

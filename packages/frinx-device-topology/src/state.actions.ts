@@ -104,7 +104,7 @@ export type NodesPositionsPayload = {
 export type NodePosition = {
   nodeId: string;
   position: Position;
-}
+};
 
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH' | 'LSP_PATH';
 
@@ -320,9 +320,9 @@ export type StateAction =
       lspCounts: LspCount[];
     }
   | {
-    type: 'REFRESH_COORDINATES';
-    payload: NodesPositionsPayload;
-  };
+      type: 'REFRESH_COORDINATES';
+      payload: NodesPositionsPayload;
+    };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -805,27 +805,28 @@ export function refreshCoordinates(
   topologyType: TopologyType,
 ): ReturnType<ThunkAction<StateAction, State>> {
   return (dispatch) => {
-    client.mutation<RefreshCoordinatesMutation, RefreshCoordinatesMutationVariables>(
-      REFRESH_COORDINATES,
-      {
-        topologyType,
-      },
-      {
-        requestPolicy: 'network-only',
-      }
-    )
-    .toPromise()
-    .then((data) => {
-      const nodes: NodesPositionsPayload = {
-        nodes: (data.data?.topologyDiscovery.refreshCoordinates?.nodes ?? []).map((node) => ({
-          nodeId: node.nodeId,
-          position: { x: node.x, y: node.y },
-        })),
-        topologyLayer,
-      };
-      dispatch(setCoordinates(nodes));
-    })
-  }
+    client
+      .mutation<RefreshCoordinatesMutation, RefreshCoordinatesMutationVariables>(
+        REFRESH_COORDINATES,
+        {
+          topologyType,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const nodes: NodesPositionsPayload = {
+          nodes: (data.data?.topologyDiscovery.refreshCoordinates?.nodes ?? []).map((node) => ({
+            nodeId: node.nodeId,
+            position: { x: node.x, y: node.y },
+          })),
+          topologyLayer,
+        };
+        dispatch(setCoordinates(nodes));
+      });
+  };
 }
 
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {

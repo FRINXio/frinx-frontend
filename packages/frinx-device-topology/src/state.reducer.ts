@@ -264,10 +264,10 @@ export function stateReducer(state: State, action: StateAction): State {
         const layer: TopologyLayer = action.payload.topologyLayer;
         if (layer === 'LLDP') {
           const positionsMap = getRefreshedPositionsMap<GraphNodeInterface, GraphNode>(
-            {nodes: acc.nodes, edges: acc.edges},
+            { nodes: acc.nodes, edges: acc.edges },
             action.payload.nodes,
             (n) => n.name,
-            (n) => n.device?.deviceSize ?? 'MEDIUM'
+            (n) => n.device?.deviceSize ?? 'MEDIUM',
           );
           acc.nodePositions = positionsMap.nodes;
           acc.interfaceGroupPositions = positionsMap.interfaceGroups;
@@ -278,11 +278,11 @@ export function stateReducer(state: State, action: StateAction): State {
           //       https://frinxhelpdesk.atlassian.net/browse/FR-360
           //       https://frinxhelpdesk.atlassian.net/browse/FR-361
           const positionsMap = getRefreshedPositionsMapOfNetNodes<GraphNetNodeInterface, GraphNetNode>(
-            {nodes: acc.netNodes, edges: acc.netEdges},
+            { nodes: acc.netNodes, edges: acc.netEdges },
             action.payload.nodes,
             (n) => n.name,
             (n) => n.phyDeviceName!,
-            () => 'MEDIUM'
+            () => 'MEDIUM',
           );
           acc.netNodePositions = positionsMap.nodes;
           acc.netInterfaceGroupPositions = positionsMap.interfaceGroups;
@@ -292,7 +292,7 @@ export function stateReducer(state: State, action: StateAction): State {
             { nodes: acc.ptpNodes, edges: acc.ptpEdges },
             action.payload.nodes,
             (n) => n.name,
-            () => 'MEDIUM'
+            () => 'MEDIUM',
           );
           acc.ptpNodePositions = positionsMap.nodes;
           acc.ptpInterfaceGroupPositions = positionsMap.interfaceGroups;
@@ -302,7 +302,7 @@ export function stateReducer(state: State, action: StateAction): State {
             { nodes: acc.synceNodes, edges: acc.synceEdges },
             action.payload.nodes,
             (n) => n.name,
-            () => 'MEDIUM'
+            () => 'MEDIUM',
           );
           acc.synceNodePositions = positionsMap.nodes;
           acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
@@ -312,7 +312,7 @@ export function stateReducer(state: State, action: StateAction): State {
             { nodes: acc.mplsNodes, edges: acc.mplsEdges },
             action.payload.nodes,
             (n) => n.name,
-            () => 'MEDIUM'
+            () => 'MEDIUM',
           );
           acc.mplsNodePositions = positionsMap.nodes;
           acc.mplsInterfaceGroupPositions = positionsMap.interfaceGroups;

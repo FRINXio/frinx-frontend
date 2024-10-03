@@ -1,10 +1,10 @@
 import { Box, Button, Container, Flex, FormControl, FormLabel, Heading, Select, Switch } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import React, { useState, VoidFunctionComponent } from 'react';
-import {useClient} from 'urql';
+import { useClient } from 'urql';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
-import {refreshCoordinates, setSelectedVersion, setSynceDiffVisibility, setTopologyLayer} from '../../state.actions';
+import { refreshCoordinates, setSelectedVersion, setSynceDiffVisibility, setTopologyLayer } from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { TopologyLayer } from '../../state.reducer';
 import NetTopologyContainer from './net/net-topology.container';
@@ -15,9 +15,7 @@ import MplsTopologyContainer from './mpls/mpls-topology.container';
 import MapTopologyContainer from './map/map-topology.container';
 import TopologyTypeSelect from '../../components/topology-type-select/topology-type-select';
 import DeviceSearch from '../../components/device-search/device-search';
-import {
-  TopologyType,
-} from '../../__generated__/graphql';
+import { TopologyType } from '../../__generated__/graphql';
 
 const getTopologyType = (layer: TopologyLayer): TopologyType | null => {
   // TODO: In version 8.0 Net devices will have their own coordinates
@@ -50,7 +48,7 @@ const Topology: VoidFunctionComponent = () => {
     if (topology === null) {
       return;
     }
-    dispatch(refreshCoordinates(client, topologyLayer, topology))
+    dispatch(refreshCoordinates(client, topologyLayer, topology));
   };
 
   return (
