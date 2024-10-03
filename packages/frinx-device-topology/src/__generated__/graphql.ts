@@ -2386,7 +2386,7 @@ export type Query = {
 export type RefreshCoordinatesResponse = {
   __typename?: 'RefreshCoordinatesResponse';
   /** List of refreshed nodes with their new coordinates. */
-  nodes: Array<Maybe<NodeCoordinates>>;
+  nodes: Array<NodeCoordinates>;
 };
 
 export type RerunWorkflowRequest_Input = {
@@ -5883,13 +5883,6 @@ export type GetSynceGrandMasterPathQueryVariables = Exact<{
 
 export type GetSynceGrandMasterPathQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', syncePathToGrandMaster: Array<string> | null } };
 
-export type RefreshCoordinatesMutationVariables = Exact<{
-  topologyType?: InputMaybe<TopologyType>;
-}>;
-
-
-export type RefreshCoordinatesMutation = { __typename?: 'Mutation', topologyDiscovery: { __typename?: 'topologyDiscoveryMutation', refreshCoordinates: { __typename?: 'RefreshCoordinatesResponse', nodes: Array<{ __typename?: 'NodeCoordinates', nodeId: string, x: number, y: number } | null> } } };
-
 export type TopologyQueryVariables = Exact<{
   labels?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
@@ -5965,3 +5958,10 @@ export type NeighboursQueryVariables = Exact<{
 
 
 export type NeighboursQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceNeighbor: { __typename?: 'DeviceNeighbors', neighbors: Array<{ __typename?: 'Neighbor', deviceName: string, deviceId: string } | null> | null } | null } };
+
+export type RefreshCoordinatesMutationVariables = Exact<{
+  topologyType?: InputMaybe<TopologyType>;
+}>;
+
+
+export type RefreshCoordinatesMutation = { __typename?: 'Mutation', topologyDiscovery: { __typename?: 'topologyDiscoveryMutation', refreshCoordinates: { __typename?: 'RefreshCoordinatesResponse', nodes: Array<{ __typename?: 'NodeCoordinates', nodeId: string, x: number, y: number }> } } };

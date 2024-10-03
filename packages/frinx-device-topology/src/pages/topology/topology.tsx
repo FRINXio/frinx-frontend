@@ -1,10 +1,10 @@
 import { Box, Button, Container, Flex, FormControl, FormLabel, Heading, Select, Switch } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import React, { useState, VoidFunctionComponent } from 'react';
-import { gql, useMutation } from 'urql';
+import {useClient} from 'urql';
 import LabelsFilter from '../../components/labels-filter/labels-filter';
 import VersionSelect from '../../components/version-select/version-select';
-import { setSelectedVersion, setSynceDiffVisibility, setTopologyLayer } from '../../state.actions';
+import {refreshCoordinates, setSelectedVersion, setSynceDiffVisibility, setTopologyLayer} from '../../state.actions';
 import { useStateContext } from '../../state.provider';
 import { TopologyLayer } from '../../state.reducer';
 import NetTopologyContainer from './net/net-topology.container';
@@ -16,24 +16,8 @@ import MapTopologyContainer from './map/map-topology.container';
 import TopologyTypeSelect from '../../components/topology-type-select/topology-type-select';
 import DeviceSearch from '../../components/device-search/device-search';
 import {
-  RefreshCoordinatesMutation,
-  RefreshCoordinatesMutationVariables,
   TopologyType,
 } from '../../__generated__/graphql';
-
-const REFRESH_COORDINATES = gql`
-  mutation RefreshCoordinates($topologyType: TopologyType) {
-    topologyDiscovery {
-      refreshCoordinates(topologyType: $topologyType) {
-        nodes {
-          nodeId
-          x
-          y
-        }
-      }
-    }
-  }
-`;
 
 const getTopologyType = (layer: TopologyLayer): TopologyType | null => {
   // TODO: In version 8.0 Net devices will have their own coordinates
@@ -57,19 +41,16 @@ const getTopologyType = (layer: TopologyLayer): TopologyType | null => {
 };
 
 const Topology: VoidFunctionComponent = () => {
+  const client = useClient();
   const { state, dispatch } = useStateContext();
   const { mode, topologyLayer, isSynceDiffVisible } = state;
   const [topology, setTopologyType] = useState<TopologyType | null>('PHYSICAL_TOPOLOGY');
-  const [refreshGraph, setRefreshGraph] = useState(false);
-  const [, refreshCoords] = useMutation<RefreshCoordinatesMutation, RefreshCoordinatesMutationVariables>(
-    REFRESH_COORDINATES,
-  );
 
   const handleRefreshCoordinates = async () => {
-    await refreshCoords({
-      topologyType: topology,
-    });
-    setRefreshGraph(true);
+    if (topology === null) {
+      return;
+    }
+    dispatch(refreshCoordinates(client, topologyLayer, topology))
   };
 
   return (
@@ -137,25 +118,11 @@ const Topology: VoidFunctionComponent = () => {
         )}
       </Flex>
       <Box>
-        {topologyLayer === 'LLDP' && (
-          <TopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
-        )}
-        {topologyLayer === 'BGP-LS' && (
-          <NetTopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
-        )}
-        {topologyLayer === 'PTP' && (
-          <PtpTopologyContainer
-            isPtpDiffSynceShown={isSynceDiffVisible}
-            refreshGraph={refreshGraph}
-            onGraphRefreshed={() => setRefreshGraph(false)}
-          />
-        )}
-        {topologyLayer === 'Synchronous Ethernet' && (
-          <SynceTopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
-        )}
-        {topologyLayer === 'MPLS' && (
-          <MplsTopologyContainer refreshGraph={refreshGraph} onGraphRefreshed={() => setRefreshGraph(false)} />
-        )}
+        {topologyLayer === 'LLDP' && <TopologyContainer />}
+        {topologyLayer === 'BGP-LS' && <NetTopologyContainer />}
+        {topologyLayer === 'PTP' && <PtpTopologyContainer isPtpDiffSynceShown={isSynceDiffVisible} />}
+        {topologyLayer === 'Synchronous Ethernet' && <SynceTopologyContainer />}
+        {topologyLayer === 'MPLS' && <MplsTopologyContainer />}
         {topologyLayer === 'Map' && <MapTopologyContainer />}
       </Box>
       {topology !== null && (

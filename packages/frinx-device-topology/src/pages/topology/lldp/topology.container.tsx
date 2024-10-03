@@ -19,11 +19,6 @@ import {
 import { height, Position, width } from '../graph.helpers';
 import TopologyGraph from '../topology-graph';
 
-type Props = {
-  refreshGraph: boolean;
-  onGraphRefreshed: () => void;
-};
-
 const UPDATE_POSITION_MUTATION = gql`
   mutation UpdatePosition($input: UpdateGraphNodeCoordinatesInput!) {
     deviceInventory {
@@ -44,7 +39,7 @@ const TOPOLOGY_COMMON_NODES = gql`
   }
 `;
 
-const TopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGraphRefreshed }) => {
+const TopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { state, dispatch } = useStateContext();
@@ -139,17 +134,6 @@ const TopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGraph
     const data = commonNodesData?.deviceInventory.topologyCommonNodes?.commonNodes || [];
     dispatch(setCommonNodeIds([...data]));
   }, [commonNodesData, dispatch]);
-
-  useEffect(() => {
-    if (refreshGraph) {
-      if (selectedVersion == null) {
-        dispatch(getNodesAndEdges(client, selectedLabels));
-      } else {
-        dispatch(getBackupNodesAndEdges(client, selectedVersion));
-      }
-      onGraphRefreshed();
-    }
-  }, [dispatch, client, selectedLabels, selectedVersion, refreshGraph, onGraphRefreshed]);
 
   return (
     <TopologyGraph

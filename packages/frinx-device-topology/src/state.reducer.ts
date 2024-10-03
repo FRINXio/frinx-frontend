@@ -35,6 +35,9 @@ import {
   DeviceMetadata,
   LspCount,
   MapDeviceNeighbors,
+  getRefreshedPositionsMap,
+  GraphNetNodeInterface,
+  getRefreshedPositionsMapOfNetNodes,
 } from './pages/topology/graph.helpers';
 import {
   identity,
@@ -256,6 +259,65 @@ export function stateReducer(state: State, action: StateAction): State {
           () => 'MEDIUM',
         );
         return acc;
+      }
+      case 'REFRESH_COORDINATES': {
+        const layer: TopologyLayer = action.payload.topologyLayer;
+        if (layer === 'LLDP') {
+          const positionsMap = getRefreshedPositionsMap<GraphNodeInterface, GraphNode>(
+            {nodes: acc.nodes, edges: acc.edges},
+            action.payload.nodes,
+            (n) => n.name,
+            (n) => n.device?.deviceSize ?? 'MEDIUM'
+          );
+          acc.nodePositions = positionsMap.nodes;
+          acc.interfaceGroupPositions = positionsMap.interfaceGroups;
+          return acc;
+        } else if (layer === 'BGP-LS') {
+          // TODO: In version 8.0 Net devices will have their own coordinates.Then use the function
+          //       getRefreshedPositionsMap.
+          //       https://frinxhelpdesk.atlassian.net/browse/FR-360
+          //       https://frinxhelpdesk.atlassian.net/browse/FR-361
+          const positionsMap = getRefreshedPositionsMapOfNetNodes<GraphNetNodeInterface, GraphNetNode>(
+            {nodes: acc.netNodes, edges: acc.netEdges},
+            action.payload.nodes,
+            (n) => n.name,
+            (n) => n.phyDeviceName!,
+            () => 'MEDIUM'
+          );
+          acc.netNodePositions = positionsMap.nodes;
+          acc.netInterfaceGroupPositions = positionsMap.interfaceGroups;
+          return acc;
+        } else if (layer === 'PTP') {
+          const positionsMap = getRefreshedPositionsMap<GraphPtpNodeInterface, PtpGraphNode>(
+            { nodes: acc.ptpNodes, edges: acc.ptpEdges },
+            action.payload.nodes,
+            (n) => n.name,
+            () => 'MEDIUM'
+          );
+          acc.ptpNodePositions = positionsMap.nodes;
+          acc.ptpInterfaceGroupPositions = positionsMap.interfaceGroups;
+          return acc;
+        } else if (layer === 'Synchronous Ethernet') {
+          const positionsMap = getRefreshedPositionsMap<GraphSynceNodeInterface, SynceGraphNode>(
+            { nodes: acc.synceNodes, edges: acc.synceEdges },
+            action.payload.nodes,
+            (n) => n.name,
+            () => 'MEDIUM'
+          );
+          acc.synceNodePositions = positionsMap.nodes;
+          acc.synceInterfaceGroupPositions = positionsMap.interfaceGroups;
+          return acc;
+        } else {
+          const positionsMap = getRefreshedPositionsMap<GraphMplsNodeInterface, MplsGraphNode>(
+            { nodes: acc.mplsNodes, edges: acc.mplsEdges },
+            action.payload.nodes,
+            (n) => n.name,
+            () => 'MEDIUM'
+          );
+          acc.mplsNodePositions = positionsMap.nodes;
+          acc.mplsInterfaceGroupPositions = positionsMap.interfaceGroups;
+          return acc;
+        }
       }
       case 'SET_SELECTED_NODE': {
         if (acc.selectedNode?.id !== action.node?.id) {

@@ -1,6 +1,7 @@
 import unwrap from '@frinx/shared/src/helpers/unwrap';
 import { GraphEdgeWithDiff } from '../../helpers/topology-helpers';
 import { DeviceSize, MplsLspCountItem } from '../../__generated__/graphql';
+import { NodePosition } from "../../state.actions";
 
 export const width = 1248;
 export const height = 600;
@@ -326,10 +327,72 @@ export function getDefaultPositionsMap<
 ): PositionsWithGroupsMap<S> {
   const nodesMap = nodes.reduce(
     (acc, curr) => {
-      const { coordinates } = curr;
       return {
         ...acc,
-        [getNodeName(curr)]: { x: coordinates.x * width, y: coordinates.y * height },
+        [getNodeName(curr)]: { x: curr.coordinates.x * width, y: curr.coordinates.y * height },
+      };
+    },
+    {} as Record<string, Position>,
+  );
+  return {
+    nodes: nodesMap,
+    interfaceGroups: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }, getDeviceSize),
+  };
+}
+
+export function getRefreshedPositionsMap<
+  S extends { id: string; name: string },
+  T extends { name: string; coordinates: Position; interfaces: S[] },
+>(
+  { nodes, edges }: NodesEdgesParam<T>,
+  nodesPositions: NodePosition[],
+  getNodeName: (node: T) => string,
+  getDeviceSize: (node: T) => DeviceSize,
+): PositionsWithGroupsMap<S> {
+  const coordinates = nodesPositions.reduce((coords, node) => {
+    return {...coords, [node.nodeId]: node.position}
+  }, {} as Record<string, Position>)
+  const nodesMap = nodes.reduce(
+    (acc, curr) => {
+      const nodeName = getNodeName(curr);
+      const nodeCoordinates = coordinates[nodeName];
+      return {
+        ...acc,
+        [nodeName]: { x: nodeCoordinates.x * width, y: nodeCoordinates.y * height },
+      };
+    },
+    {} as Record<string, Position>,
+  );
+  return {
+    nodes: nodesMap,
+    interfaceGroups: getInterfacesPositions({ nodes, edges, positionMap: nodesMap }, getDeviceSize),
+  };
+}
+
+// TODO: In version 8.0 Net devices will have their own coordinates.Then remove this function
+//       and use the getRefreshedPositionsMap instead.
+//       https://frinxhelpdesk.atlassian.net/browse/FR-360
+//       https://frinxhelpdesk.atlassian.net/browse/FR-361
+export function getRefreshedPositionsMapOfNetNodes<
+  S extends { id: string; name: string },
+  T extends { name: string; coordinates: Position; interfaces: S[] },
+>(
+  { nodes, edges }: NodesEdgesParam<T>,
+  nodesPositions: NodePosition[],
+  getNodeName: (node: T) => string,
+  getPhyNodeName: (node: T) => string,
+  getDeviceSize: (node: T) => DeviceSize,
+): PositionsWithGroupsMap<S> {
+  const coordinates = nodesPositions.reduce((coords, node) => {
+    return {...coords, [node.nodeId]: node.position}
+  }, {} as Record<string, Position>)
+  const nodesMap = nodes.reduce(
+    (acc, curr) => {
+      const phyNodeName = getPhyNodeName(curr);
+      const nodeCoordinates = coordinates[phyNodeName];
+      return {
+        ...acc,
+        [getNodeName(curr)]: { x: nodeCoordinates.x * width, y: nodeCoordinates.y * height },
       };
     },
     {} as Record<string, Position>,

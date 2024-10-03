@@ -30,11 +30,6 @@ import {
 import BackgroundSvg from '../img/background.svg';
 import NetNodes from './net-nodes';
 
-type Props = {
-  refreshGraph: boolean;
-  onGraphRefreshed: () => void;
-};
-
 const EDGE_GAP = 75;
 
 const SHORTEST_PATH_QUERY = gql`
@@ -60,7 +55,7 @@ const isShortestPathPredicate = (shortestPathInfo: ShortestPathInfo | null, edge
   return shortestPathIds.includes(edge.target.interface, fromInterfaceIndex);
 };
 
-const NetTopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGraphRefreshed }) => {
+const NetTopologyContainer: VoidFunctionComponent = () => {
   const client = useClient();
   const intervalRef = useRef<number>();
   const { dispatch, state } = useStateContext();
@@ -181,17 +176,6 @@ const NetTopologyContainer: VoidFunctionComponent<Props> = ({ refreshGraph, onGr
     isShortestPathPredicate(shortestPathInfo, edge),
   );
   const sortedNetEdges = [...nonShortestPathEdges, ...shortestPathEdges];
-
-  useEffect(() => {
-    if (refreshGraph) {
-      if (selectedVersion != null) {
-        dispatch(getNetBackupNodesAndEdges(client, selectedVersion));
-      } else {
-        dispatch(getNetNodesAndEdges(client));
-      }
-      onGraphRefreshed();
-    }
-  }, [dispatch, client, selectedVersion, refreshGraph, onGraphRefreshed]);
 
   return (
     <Box background="white" borderRadius="md" position="relative" backgroundImage={`url(${BackgroundSvg})`}>
