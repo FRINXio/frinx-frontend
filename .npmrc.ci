@@ -1,4 +1,3 @@
 @frinxio:registry=https://npm.pkg.github.com/
 @frinx:registry=https://registry.npmjs.org/
 //registry.npmjs.org/:_authToken=${PRIVATE_NPM_TOKEN}
-//npm.pkg.github.com:_authToken=${PRIVATE_GH_TOKEN}
