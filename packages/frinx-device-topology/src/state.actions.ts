@@ -23,7 +23,7 @@ import {
   FilterNeighborInput,
   GeoMapDataQueryQuery,
   GeoMapDataQueryQueryVariables,
-  MplsDeviceDetails,
+  InventoryMplsDeviceDetails,
   MplsTopologyQuery,
   MplsTopologyQueryVariables,
   MplsTopologyVersionDataQuery,
@@ -38,12 +38,15 @@ import {
   PtpTopologyQueryVariables,
   PtpTopologyVersionDataQuery,
   PtpTopologyVersionDataQueryVariables,
+  RefreshCoordinatesMutation,
+  RefreshCoordinatesMutationVariables,
   SynceTopologyQuery,
   SynceTopologyQueryVariables,
   SynceTopologyVersionDataQuery,
   SynceTopologyVersionDataQueryVariables,
   TopologyQuery,
   TopologyQueryVariables,
+  TopologyType,
   TopologyVersionDataQuery,
   TopologyVersionDataQueryVariables,
 } from './__generated__/graphql';
@@ -91,6 +94,16 @@ export type LabelItem = {
 export type SetDeviceUsagePayload = {
   cpuLoad: number | null;
   memoryLoad: number | null;
+};
+
+export type NodesPositionsPayload = {
+  nodes: NodePosition[];
+  topologyLayer: TopologyLayer;
+};
+
+export type NodePosition = {
+  nodeId: string;
+  position: Position;
 };
 
 export type TopologyMode = 'NORMAL' | 'COMMON_NODES' | 'SHORTEST_PATH' | 'GM_PATH' | 'LSP_PATH';
@@ -305,6 +318,10 @@ export type StateAction =
   | {
       type: 'SET_LSP_COUNTS';
       lspCounts: LspCount[];
+    }
+  | {
+      type: 'REFRESH_COORDINATES';
+      payload: NodesPositionsPayload;
     };
 
 export type ThunkAction<A extends Record<string, unknown>, S> = (
@@ -761,6 +778,57 @@ const MAP_NEIGHBORS_QUERY = gql`
   }
 `;
 
+const REFRESH_COORDINATES = gql`
+  mutation RefreshCoordinates($topologyType: TopologyType) {
+    topologyDiscovery {
+      refreshCoordinates(topologyType: $topologyType) {
+        nodes {
+          nodeId
+          x
+          y
+        }
+      }
+    }
+  }
+`;
+
+export function setCoordinates(payload: NodesPositionsPayload): StateAction {
+  return {
+    type: 'REFRESH_COORDINATES',
+    payload,
+  };
+}
+
+export function refreshCoordinates(
+  client: Client,
+  topologyLayer: TopologyLayer,
+  topologyType: TopologyType,
+): ReturnType<ThunkAction<StateAction, State>> {
+  return (dispatch) => {
+    client
+      .mutation<RefreshCoordinatesMutation, RefreshCoordinatesMutationVariables>(
+        REFRESH_COORDINATES,
+        {
+          topologyType,
+        },
+        {
+          requestPolicy: 'network-only',
+        },
+      )
+      .toPromise()
+      .then((data) => {
+        const nodes: NodesPositionsPayload = {
+          nodes: (data.data?.topologyDiscovery.refreshCoordinates?.nodes ?? []).map((node) => ({
+            nodeId: node.nodeId,
+            position: { x: node.x, y: node.y },
+          })),
+          topologyLayer,
+        };
+        dispatch(setCoordinates(nodes));
+      });
+  };
+}
+
 export function setNodesAndEdges(payload: NodesEdgesPayload): StateAction {
   return {
     type: 'SET_NODES_AND_EDGES',
@@ -899,7 +967,7 @@ export function setMplsNodesAndEdges(payload: MplsNodesEdgesPayload): StateActio
   };
 }
 
-function getMplsDetails(mplsDetails: MplsDeviceDetails): MplsGraphNodeDetails {
+function getMplsDetails(mplsDetails: InventoryMplsDeviceDetails): MplsGraphNodeDetails {
   const { mplsData, lspTunnels } = mplsDetails;
 
   return {

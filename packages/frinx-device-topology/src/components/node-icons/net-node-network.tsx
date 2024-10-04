@@ -1,11 +1,11 @@
 import { chakra } from '@chakra-ui/react';
 import React, { VoidFunctionComponent } from 'react';
 import { height, width } from '../../pages/topology/graph.helpers';
-import { NetNetwork } from '../../__generated__/graphql';
+import { InventoryNetNetwork } from '../../__generated__/graphql';
 
 type Props = {
-  network: Omit<NetNetwork, 'ospfRouteType'>;
-  allNetworks: Omit<NetNetwork, 'ospfRouteType'>[];
+  network: Omit<InventoryNetNetwork, 'ospfRouteType'>;
+  allNetworks: Omit<InventoryNetNetwork, 'ospfRouteType'>[];
 };
 
 const G = chakra('g');

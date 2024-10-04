@@ -361,6 +361,13 @@ export type CommitConfigPayload = {
   output: CommitConfigOutput;
 };
 
+/** Response from the commonNodes query that wraps the list of found common nodes in the database. */
+export type CommonNodesResponse = {
+  __typename?: 'CommonNodesResponse';
+  /** List of the common node names. Common nodes contain connection to all nodes specified on the input. */
+  commonNodes: Array<Scalars['String']['output']>;
+};
+
 export type ConductorSubscription = {
   __typename?: 'ConductorSubscription';
   controlExecutedWorkflow: Workflow;
@@ -374,6 +381,34 @@ export type ConductorSubscriptionControlExecutedWorkflowArgs = {
 export type Coordinates = {
   latitude: Scalars['Float']['input'];
   longitude: Scalars['Float']['input'];
+};
+
+/** Input of the updateCoordinates mutation that contains information about updated coordinates of a node. */
+export type CoordinatesInput = {
+  /** Name of the node in the topology. */
+  nodeName: Scalars['String']['input'];
+  /** Type of the node in the topology. */
+  nodeType: CoordinatesNodeType;
+  /** Updated horizontal coordinate of the node on the graph. */
+  x: Scalars['Float']['input'];
+  /** Updated vertical coordinate of the node on the graph. */
+  y: Scalars['Float']['input'];
+};
+
+/** Type of the node in the topology for which the coordinates are being updated. */
+export type CoordinatesNodeType =
+  /** Node that represent device in a topology (for example, PhyDevice or NetDevice collections). */
+  | 'DEVICE'
+  /** Node that represents IP network in the network topology (NetNetwork collection). */
+  | 'NETWORK';
+
+/** Response from the updateCoordinates query that contains information about updated coordinated of selected nodes. */
+export type CoordinatesResponse = {
+  __typename?: 'CoordinatesResponse';
+  /** Devices that exist in the database. */
+  installed: InstalledDevices;
+  /** List of node names that do not exist in the database. */
+  notInstalled: Array<Scalars['String']['output']>;
 };
 
 export type Country = Node & {
@@ -427,6 +462,13 @@ export type CreateAllocationStrategyInput = {
 export type CreateAllocationStrategyPayload = {
   __typename?: 'CreateAllocationStrategyPayload';
   strategy: Maybe<AllocationStrategy>;
+};
+
+/** Response from the createBackup mutation that contains information about created backup. */
+export type CreateBackupResponse = {
+  __typename?: 'CreateBackupResponse';
+  /** Name of the created backup database. Format: f"backup_{datetime.today().strftime('%Y%m%d%H%M%S')}". */
+  dbName: Scalars['String']['output'];
 };
 
 export type CreateEventHandlerInput = {
@@ -602,6 +644,13 @@ export type DeleteAllocationStrategyPayload = {
   strategy: Maybe<AllocationStrategy>;
 };
 
+/** Response from the deleteBackups mutation that contains information about removed backups. */
+export type DeleteBackupsResponse = {
+  __typename?: 'DeleteBackupsResponse';
+  /** Names of the removed databases that contained backups. */
+  deletedBackups: Array<Scalars['String']['output']>;
+};
+
 export type DeleteBlueprintPayload = {
   __typename?: 'DeleteBlueprintPayload';
   blueprint: Maybe<Blueprint>;
@@ -732,14 +781,91 @@ export type DeviceEdge = {
   node: Device;
 };
 
+/** Device GeoLocation data. */
+export type DeviceGeoLocation = {
+  __typename?: 'DeviceGeoLocation';
+  /** Defining the area around the device, with four elements indicating its boundaries. */
+  bbox: Maybe<Array<Maybe<Scalars['Float']['output']>>>;
+  /** Device location coordinates providing longitude and latitude (in this order, based on GeoJSON convention). */
+  coordinates: Array<Scalars['Float']['output']>;
+  /** Type of geometry. */
+  type: GeometryType;
+};
+
 export type DeviceListUsage = {
   __typename?: 'DeviceListUsage';
   devicesUsage: Array<DevicesUsage>;
 };
 
-export type DeviceMetadata = {
+/** Representation of the device in the metadata. */
+export type DeviceMetadata = Node & {
   __typename?: 'DeviceMetadata';
+  /** Human readable name of the device. */
+  deviceName: Scalars['String']['output'];
+  /** Type of the device (ex. router). */
+  deviceType: Maybe<Scalars['String']['output']>;
+  /** Device geographic data of point type in GeoJson format. */
+  geoLocation: Maybe<DeviceGeoLocation>;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Model of the device (XR, ASR). */
+  model: Maybe<Scalars['String']['output']>;
   nodes: Maybe<Array<Maybe<GeoMapDevice>>>;
+  /** Protocol used for management for the device (cli, netconf, gnmi). */
+  protocolType: Maybe<Array<Scalars['String']['output']>>;
+  /** Vendor of the device (ex. Cisco). */
+  vendor: Maybe<Scalars['String']['output']>;
+  /** Version of the device software (ex. 6.0.1). */
+  version: Maybe<Scalars['String']['output']>;
+};
+
+/** Grouped Metadata device object and associated cursor used by pagination. */
+export type DeviceMetadataEdge = {
+  __typename?: 'DeviceMetadataEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated MetadataDevice object. */
+  node: Maybe<DeviceMetadata>;
+};
+
+/** Filter for Metadata device type based on device name, or other attributes. */
+export type DeviceMetadataFilter = {
+  /** Regex of device name. */
+  deviceName?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * A GeoJSON Polygon shape used for filtering devices based on their location in this area.
+   *
+   * The GeoJSON Polygon consists of a series of closed LineString objects (ring-like).
+   * These Linear Ring objects consist of four or more coordinate pairs with the first and last coordinate
+   * pair being equal. Coordinate pairs of a Polygon are an array of linear ring coordinate arrays.
+   * The first element in the array represents the exterior ring.
+   * Any subsequent elements represent interior rings (holes within the surface).
+   *
+   * The orientation of the first linear ring is crucial: the right-hand-rule is applied, so that the area to the left
+   * of the path of the linear ring (when walking on the surface of the Earth) is considered to be the “interior”
+   * of the polygon. All other linear rings must be contained within this interior.
+   *
+   * Example with a hole:
+   * [
+   *     [
+   *         [100.0, 0.0],
+   *         [101.0, 0.0],
+   *         [101.0, 1.0],
+   *         [100.0, 1.0],
+   *         [100.0, 0.0]
+   *     ],
+   *     [
+   *         [100.8, 0.8],
+   *         [100.8, 0.2],
+   *         [100.2, 0.2],
+   *         [100.2, 0.8],
+   *         [100.8, 0.8]
+   *     ]
+   * ]
+   */
+  polygon?: InputMaybe<Array<Array<Array<Scalars['Float']['input']>>>>;
+  /** Topology in which device must be present. */
+  topologyType?: InputMaybe<TopologyType>;
 };
 
 export type DeviceNeighbors = {
@@ -984,6 +1110,10 @@ export type Geolocation = {
   longitude: Scalars['Float']['output'];
 };
 
+/** Type of geometry. */
+export type GeometryType =
+  | 'POINT';
+
 export type GraphEdge = {
   __typename?: 'GraphEdge';
   id: Scalars['ID']['output'];
@@ -1073,6 +1203,54 @@ export type InstallDevicePayload = {
   device: Device;
 };
 
+export type InstalledDevices = {
+  __typename?: 'InstalledDevices';
+  /** List of node names which coordinates have not been updated. */
+  notUpdated: Array<Scalars['String']['output']>;
+  /** List of node names which coordinates have been updated. */
+  updated: Array<Scalars['String']['output']>;
+};
+
+export type InventoryLspTunnel = {
+  __typename?: 'InventoryLspTunnel';
+  fromDevice: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  signalization: Maybe<Signalization>;
+  toDevice: Maybe<Scalars['String']['output']>;
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
+export type InventoryMplsData = {
+  __typename?: 'InventoryMplsData';
+  inputInterface: Maybe<Scalars['String']['output']>;
+  inputLabel: Maybe<Scalars['Int']['output']>;
+  ldpPrefix: Maybe<Scalars['String']['output']>;
+  lspId: Scalars['String']['output'];
+  mplsOperation: Maybe<Scalars['String']['output']>;
+  operState: Maybe<Scalars['String']['output']>;
+  outputInterface: Maybe<Scalars['String']['output']>;
+  outputLabel: Maybe<Scalars['Int']['output']>;
+};
+
+export type InventoryMplsDeviceDetails = {
+  __typename?: 'InventoryMplsDeviceDetails';
+  lspTunnels: Maybe<Array<Maybe<InventoryLspTunnel>>>;
+  mplsData: Maybe<Array<Maybe<InventoryMplsData>>>;
+};
+
+export type InventoryNetInterface = {
+  __typename?: 'InventoryNetInterface';
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type InventoryNetNetwork = {
+  __typename?: 'InventoryNetNetwork';
+  coordinates: GraphNodeCoordinates;
+  id: Scalars['String']['output'];
+  subnet: Scalars['String']['output'];
+};
+
 export type IsOkResponse = {
   __typename?: 'IsOkResponse';
   isOk: Scalars['Boolean']['output'];
@@ -1142,31 +1320,110 @@ export type LspPathMetadata = {
   uptime: Maybe<Scalars['Int']['output']>;
 };
 
+/** LSP Tunnel (related to tunnel originating from this device). */
 export type LspTunnel = {
   __typename?: 'LspTunnel';
+  /** From which device is the tunnel originating. */
   fromDevice: Maybe<Scalars['String']['output']>;
+  /** Name of the link state packet. */
   lspId: Scalars['String']['output'];
-  signalization: Maybe<Signalization>;
+  /** Type of signalisation. */
+  signalisation: Signalisation;
+  /** Where is the tunnel headed. */
   toDevice: Maybe<Scalars['String']['output']>;
+  /** Uptime of the tunnel in seconds. */
   uptime: Maybe<Scalars['Int']['output']>;
 };
 
-export type MplsData = {
-  __typename?: 'MplsData';
-  inputInterface: Maybe<Scalars['String']['output']>;
-  inputLabel: Maybe<Scalars['Int']['output']>;
-  ldpPrefix: Maybe<Scalars['String']['output']>;
-  lspId: Scalars['String']['output'];
-  mplsOperation: Maybe<Scalars['String']['output']>;
-  operState: Maybe<Scalars['String']['output']>;
-  outputInterface: Maybe<Scalars['String']['output']>;
-  outputLabel: Maybe<Scalars['Int']['output']>;
+/** Grouped list of Metadata device objects and pagination metadata. */
+export type MetadataConnection = {
+  __typename?: 'MetadataConnection';
+  /** List of Metadata device objects. */
+  edges: Maybe<Array<Maybe<DeviceMetadataEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
 };
 
+/** MPLS Data (related to all tunnels). */
+export type MplsData = {
+  __typename?: 'MplsData';
+  /** The input interface. */
+  inInterface: Maybe<Scalars['String']['output']>;
+  /** The input label. */
+  inLabel: Maybe<Scalars['Int']['output']>;
+  /** Name of the link state packet. */
+  lspId: Scalars['String']['output'];
+  /** The operation type. */
+  mplsOperation: Maybe<MplsOperation>;
+  /** Operational state of the device. */
+  operState: Maybe<Scalars['String']['output']>;
+  /** The input interface. */
+  outInterface: Maybe<Scalars['String']['output']>;
+  /** The output label. */
+  outLabel: Maybe<Scalars['Int']['output']>;
+  /** Type of signalisation. */
+  signalisation: Maybe<Signalisation>;
+};
+
+/** Representation of the device in the MPLS topology. */
+export type MplsDevice = Node & {
+  __typename?: 'MplsDevice';
+  /** Coordinates of the device node on the graph. */
+  coordinates: TopologyCoordinates;
+  /** Details of the device. */
+  details: MplsDeviceDetails;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** List of strings that can be used for grouping of synced devices. */
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  /** List of ports that are present on the device. */
+  mplsInterfaces: MplsInterfaceConnection;
+  /** Human readable name of the device. */
+  name: Scalars['String']['output'];
+  /** Status of the device from the view of the synced topology. */
+  status: NodeStatus;
+};
+
+
+/** Representation of the device in the MPLS topology. */
+export type MplsDeviceMplsInterfacesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<MplsInterfaceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of MplsDevice objects and pagination metadata. */
+export type MplsDeviceConnection = {
+  __typename?: 'MplsDeviceConnection';
+  /** List of MplsDevice objects. */
+  edges: Maybe<Array<Maybe<MplsDeviceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Details specific to MPLS (Multi-Protocol Label Switching). */
 export type MplsDeviceDetails = {
   __typename?: 'MplsDeviceDetails';
   lspTunnels: Maybe<Array<Maybe<LspTunnel>>>;
   mplsData: Maybe<Array<Maybe<MplsData>>>;
+  routerId: Maybe<Scalars['String']['output']>;
+};
+
+/** Grouped MplsDevice object and associated cursor used by pagination. */
+export type MplsDeviceEdge = {
+  __typename?: 'MplsDeviceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated MplsDevice object. */
+  node: Maybe<MplsDevice>;
+};
+
+/** Filter for MplsDevice type based on device label and device name. */
+export type MplsDeviceFilter = {
+  /** Device label. */
+  label?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of device name. */
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type MplsGraphNode = {
@@ -1175,7 +1432,7 @@ export type MplsGraphNode = {
   id: Scalars['ID']['output'];
   interfaces: Array<MplsGraphNodeInterface>;
   labels: Maybe<Array<Scalars['String']['output']>>;
-  mplsDeviceDetails: MplsDeviceDetails;
+  mplsDeviceDetails: InventoryMplsDeviceDetails;
   name: Scalars['String']['output'];
   nodeId: Scalars['String']['output'];
   status: GraphEdgeStatus;
@@ -1186,6 +1443,74 @@ export type MplsGraphNodeInterface = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   status: GraphEdgeStatus;
+};
+
+/** Port attached to the MPLS device. */
+export type MplsInterface = Node & {
+  __typename?: 'MplsInterface';
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Device that owns this interface. */
+  mplsDevice: Maybe<MplsDevice>;
+  /** Link to connected remote MPLS device. */
+  mplsLinks: Maybe<MplsLinkConnection>;
+  /** Human readable name of the network port. */
+  name: Scalars['String']['output'];
+  /** Status of the interface from the view of the synced topology ('ok' or 'unknown'). */
+  status: NodeStatus;
+};
+
+
+/** Port attached to the MPLS device. */
+export type MplsInterfaceMplsLinksArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of MplsInterface objects and pagination metadata. */
+export type MplsInterfaceConnection = {
+  __typename?: 'MplsInterfaceConnection';
+  /** List of MplsInterface objects. */
+  edges: Maybe<Array<Maybe<MplsInterfaceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped MplsInterface object and associated cursor used by pagination. */
+export type MplsInterfaceEdge = {
+  __typename?: 'MplsInterfaceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated MplsInterface object. */
+  node: Maybe<MplsInterface>;
+};
+
+/** Filter for MplsInterface type based on the current interface status and name of the device. */
+export type MplsInterfaceFilter = {
+  /** Regex of interface name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** Status of the interface from the view of the synced topology. */
+  status?: InputMaybe<NodeStatus>;
+};
+
+/** Grouped list of MplsLinks objects and pagination metadata. */
+export type MplsLinkConnection = {
+  __typename?: 'MplsLinkConnection';
+  /** List of MplsInterface objects. */
+  edges: Maybe<Array<Maybe<MplsLinkEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped MplsLink object and associated cursor used by pagination. */
+export type MplsLinkEdge = {
+  __typename?: 'MplsLinkEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** Identifier of the link that connects this interface to the interface on the remote device */
+  link: Maybe<Scalars['ID']['output']>;
+  /** The associated MplsInterface object. */
+  node: Maybe<MplsInterface>;
 };
 
 export type MplsLspCount = {
@@ -1200,6 +1525,32 @@ export type MplsLspCountItem = {
   target: Maybe<Scalars['String']['output']>;
 };
 
+export type MplsLspMetadata = {
+  __typename?: 'MplsLspMetadata';
+  /** From which device is the tunnel originating. */
+  fromDevice: Scalars['String']['output'];
+  /** Type of signalisation. */
+  signalisation: Scalars['String']['output'];
+  /** Where is the tunnel headed. */
+  toDevice: Scalars['String']['output'];
+  /** Uptime of the tunnel in seconds. */
+  uptime: Maybe<Scalars['Int']['output']>;
+};
+
+export type MplsLspPath = {
+  __typename?: 'MplsLspPath';
+  /** LSP metadata. */
+  lspMetadata: Maybe<MplsLspMetadata>;
+  /** Ordered list of link IDs & device IDs on the path. */
+  path: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+};
+
+export type MplsOperation =
+  | 'NOOP'
+  | 'POP'
+  | 'PUSH'
+  | 'SWAP';
+
 export type MplsTopology = {
   __typename?: 'MplsTopology';
   edges: Array<GraphEdge>;
@@ -1212,42 +1563,232 @@ export type MplsTopologyVersionData = {
   nodes: Array<MplsGraphNode>;
 };
 
+export type MplsTotalLsps = {
+  __typename?: 'MplsTotalLsps';
+  /** Number of incoming LSPs. */
+  incomingLsps: Maybe<Scalars['Int']['output']>;
+  /** Number of outcoming LSPs. */
+  outcomingLsps: Maybe<Scalars['Int']['output']>;
+  /** To which device the LSP is headed. */
+  toDevice: Maybe<Scalars['String']['output']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   conductor: ConductorMutation;
   deviceInventory: DeviceInventoryMutation;
   resourceManager: ResourceManagerMutation;
   scheduler: SchedulerMutation;
+  topologyDiscovery: TopologyDiscoveryMutation;
 };
 
+/** Metadata information about a neighbor device. */
 export type Neighbor = {
   __typename?: 'Neighbor';
+  /** Identifier of the neighbor device document (for example, MplsDevice/1). */
   deviceId: Scalars['String']['output'];
+  /** Human-readable name of the neighbor device (for example, CPE_01). */
   deviceName: Scalars['String']['output'];
 };
 
-export type NetInterface = {
-  __typename?: 'NetInterface';
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
+/** Representation of the routing entity in the network topology. */
+export type NetDevice = Node & {
+  __typename?: 'NetDevice';
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Interfaces that are used for connecting to other routing entities. */
+  netInterfaces: NetInterfaceConnection;
+  /** Networks that are attached to the routing entity. */
+  netNetworks: NetNetworkConnection;
+  /** Identifier of OSPF area formatted as IPv4 address (for example, 0.0.0.0 represents area 0). */
+  ospfAreaId: Scalars['String']['output'];
+  /** Linked device in the physical topology. */
+  phyDevice: Maybe<PhyDevice>;
+  /** Identifier of the routing entity (usually IPv4 address). RouterId and ospfAreaId together compose a unique key. */
+  routerId: Scalars['String']['output'];
 };
 
-export type NetNetwork = {
+
+/** Representation of the routing entity in the network topology. */
+export type NetDeviceNetInterfacesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<NetInterfaceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** Representation of the routing entity in the network topology. */
+export type NetDeviceNetNetworksArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<NetNetworkFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of NetDevice objects and pagination metadata. */
+export type NetDeviceConnection = {
+  __typename?: 'NetDeviceConnection';
+  /** List of NetDevice objects. */
+  edges: Maybe<Array<Maybe<NetDeviceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped NetDevice object and associated cursor used by pagination. */
+export type NetDeviceEdge = {
+  __typename?: 'NetDeviceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated NetDevice object. */
+  node: Maybe<NetDevice>;
+};
+
+/** Filter for NetDevice type based on router identifier and area identifier. */
+export type NetDeviceFilter = {
+  /** OSPF area identifier formatted as IPv4 address (for example, 0.0.0.0 represents area 0). */
+  ospfAreaId?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of router identifier of the routing entity (usually IPv4 address). */
+  routerId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Network interface attached to the network device. */
+export type NetInterface = Node & {
+  __typename?: 'NetInterface';
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** IGP metric configured on the network interface. */
+  igpMetric: Maybe<Scalars['Int']['output']>;
+  /** IP address configured on the interface. */
+  ipAddress: Scalars['String']['output'];
+  /** Routing entity that owns this interface. */
+  netDevice: Maybe<NetDevice>;
+  /** Links to connected remote network devices. */
+  netLinks: NetLinkConnection;
+};
+
+
+/** Network interface attached to the network device. */
+export type NetInterfaceNetLinksArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of NetInterface objects and pagination metadata. */
+export type NetInterfaceConnection = {
+  __typename?: 'NetInterfaceConnection';
+  /** List of NetInterface objects. */
+  edges: Maybe<Array<Maybe<NetInterfaceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped NetInterface object and associated cursor used by pagination. */
+export type NetInterfaceEdge = {
+  __typename?: 'NetInterfaceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated NetInterface object. */
+  node: Maybe<NetInterface>;
+};
+
+/** Filter for NetInterface type based on the configured IP address. */
+export type NetInterfaceFilter = {
+  /** Regex of IP address configured on the interface. */
+  ipAddress?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type NetLinkAttributes = {
+  __typename?: 'NetLinkAttributes';
+  /** A list of admin group masks on the network interface. (Group Number) */
+  adminGroup: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
+  /** IGP metric configured on the network interface. */
+  igpMetric: Maybe<Scalars['Int']['output']>;
+  /** The maximum link bandwidth of the network interface. (Bytes per second) */
+  maxLinkBandwidth: Maybe<Scalars['Float']['output']>;
+  /** The maximum reservable link bandwidth of the network interface. (Bytes per second) */
+  maxReservableLinkBandwidth: Maybe<Scalars['Float']['output']>;
+  /** A list of shared risk link groups on the network interface. */
+  sharedRiskLinkGroup: Maybe<Array<Maybe<Scalars['Int']['output']>>>;
+  /** Traffic Engineering metric on the network interface. */
+  trafficEngineeringMetric: Maybe<Scalars['Int']['output']>;
+  /** The unreserved bandwidth on the network interface. (Bytes per second) */
+  unreservedBandwidth: Maybe<Array<Maybe<Scalars['Float']['output']>>>;
+};
+
+/** Grouped list of NetLinks objects and pagination metadata. */
+export type NetLinkConnection = {
+  __typename?: 'NetLinkConnection';
+  /** List of NetInterface objects. */
+  edges: Maybe<Array<Maybe<NetLinkEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+export type NetLinkEdge = {
+  __typename?: 'NetLinkEdge';
+  /** List of attributes associated to the link. */
+  attributes: Maybe<NetLinkAttributes>;
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** Identifier of the link that connects this interface to the interface on the remote device */
+  link: Maybe<Scalars['ID']['output']>;
+  /** The associated NetInterface object. */
+  node: Maybe<NetInterface>;
+};
+
+/** IP subnet in the network topology. */
+export type NetNetwork = Node & {
   __typename?: 'NetNetwork';
-  coordinates: GraphNodeCoordinates;
-  id: Scalars['String']['output'];
+  /** Coordinates of the network node on the graph. */
+  coordinates: TopologyCoordinates;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Type of the OSPF network (LSA type). */
+  ospfRouteType: Scalars['Int']['output'];
+  /** Network address including prefix length expressed in the CIDR notation (e.g. 10.0.0.0/24). */
   subnet: Scalars['String']['output'];
+};
+
+/** Grouped list of NetNetwork objects and pagination metadata. */
+export type NetNetworkConnection = {
+  __typename?: 'NetNetworkConnection';
+  /** List of NetNetwork objects. */
+  edges: Maybe<Array<Maybe<NetNetworkEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: Maybe<PageInfo>;
+};
+
+export type NetNetworkEdge = {
+  __typename?: 'NetNetworkEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated NetNetwork object. */
+  node: Maybe<NetNetwork>;
+};
+
+/** Filter for NetNetwork type based on the subnet and route type. */
+export type NetNetworkFilter = {
+  /** Type of the OSPF network (LSA type). */
+  ospfRouteType?: InputMaybe<Scalars['Int']['input']>;
+  /** Regex of network address including prefix length (e.g. 10.0.0.0/24) */
+  subnet?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type NetNode = {
   __typename?: 'NetNode';
   coordinates: GraphNodeCoordinates;
   id: Scalars['ID']['output'];
-  interfaces: Array<NetInterface>;
+  interfaces: Array<InventoryNetInterface>;
   name: Scalars['String']['output'];
-  networks: Array<NetNetwork>;
+  networks: Array<InventoryNetNetwork>;
   nodeId: Scalars['String']['output'];
   phyDeviceName: Maybe<Scalars['String']['output']>;
+};
+
+/** Computed routing paths from source to destination device. */
+export type NetRoutingPathConnection = {
+  __typename?: 'NetRoutingPathConnection';
+  /** List of routing paths from source to destination device. Ordered from shortest to longest path based on weight. */
+  edges: Maybe<Array<RoutingPath>>;
 };
 
 export type NetRoutingPathNode = {
@@ -1261,6 +1802,13 @@ export type NetRoutingPathNodeInfo = {
   name: Maybe<Scalars['String']['output']>;
   weight: Maybe<Scalars['Int']['output']>;
 };
+
+/** Types of the nodes that should be included in the returned path. */
+export type NetRoutingPathOutputCollections =
+  /** Include NetDevice nodes in the returned path. */
+  | 'NET_DEVICE'
+  /** Include NetInterface nodes in the returned path. */
+  | 'NET_INTERFACE';
 
 export type NetTopology = {
   __typename?: 'NetTopology';
@@ -1278,6 +1826,33 @@ export type Node = {
   id: Scalars['ID']['output'];
 };
 
+/** Represents the coordinates of a specific node in the topology. */
+export type NodeCoordinates = {
+  __typename?: 'NodeCoordinates';
+  /** Name of the node in the topology. */
+  nodeId: Scalars['String']['output'];
+  /** Refreshed horizontal coordinate of the node on the graph. Value is between 0.0 and 1.0. */
+  x: Scalars['Float']['output'];
+  /** Refreshed vertical coordinate of the node on the graph. Value is between 0.0 and 1.0. */
+  y: Scalars['Float']['output'];
+};
+
+/** Information about a node that is part of the computed path. */
+export type NodeInfo = {
+  __typename?: 'NodeInfo';
+  /** Unique identifier of the node on the path. */
+  node: Scalars['ID']['output'];
+  /** Weight of the node on the path. Weight is present only on the nodes of NetDevice type. */
+  weight: Maybe<Scalars['Int']['output']>;
+};
+
+/** Status of the node from the view of the device registry. */
+export type NodeStatus =
+  /** Node is known - it has been installed in the device registry. */
+  | 'OK'
+  /** Node is unknown - sync process has detected presence of this node but it is not present in the device registry. */
+  | 'UNKNOWN';
+
 export type OrderDirection =
   | 'ASC'
   | 'DESC';
@@ -1288,9 +1863,12 @@ export type OutputParameters = {
   value: Scalars['String']['output'];
 };
 
+/** Pagination metadata that is usually coupled to a returned list of objects. */
 export type PageInfo = {
   __typename?: 'PageInfo';
+  /** Pointer to the last object in the list. */
   endCursor: Maybe<Scalars['String']['output']>;
+  /** Indicates if there is a next object in the list. */
   hasNextPage: Scalars['Boolean']['output'];
   hasPreviousPage: Scalars['Boolean']['output'];
   startCursor: Maybe<Scalars['String']['output']>;
@@ -1299,6 +1877,148 @@ export type PageInfo = {
 export type PaginationArgs = {
   size: Scalars['Int']['input'];
   start: Scalars['Int']['input'];
+};
+
+/** Representation of the device in the physical topology. */
+export type PhyDevice = Node & {
+  __typename?: 'PhyDevice';
+  /** Coordinates of the device node on the graph. */
+  coordinates: TopologyCoordinates;
+  /** Details of the device. */
+  details: PhyDeviceDetails;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** List of strings that can be used for grouping of synced devices. */
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  /** Human readable name of the device. */
+  name: Scalars['String']['output'];
+  /** Linked device in the network topology. */
+  netDevice: Maybe<NetDevice>;
+  /** List of ports that are present on the device. */
+  phyInterfaces: PhyInterfaceConnection;
+  /** Identifier of the corresponding routing entity in the network topology. */
+  routerId: Maybe<Scalars['String']['output']>;
+  /** Status of the device from the view of the synced topology. */
+  status: NodeStatus;
+};
+
+
+/** Representation of the device in the physical topology. */
+export type PhyDevicePhyInterfacesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<PhyInterfaceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of PhyDevice objects and pagination metadata. */
+export type PhyDeviceConnection = {
+  __typename?: 'PhyDeviceConnection';
+  /** List of PhyDevice objects. */
+  edges: Maybe<Array<Maybe<PhyDeviceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Details of the device. */
+export type PhyDeviceDetails = {
+  __typename?: 'PhyDeviceDetails';
+  /** Device type (e.g. device model, vendor, chassis, hardware details, etc.) */
+  deviceType: Maybe<Scalars['String']['output']>;
+  /** Version of the network operating system running on the device. */
+  swVersion: Maybe<Scalars['String']['output']>;
+};
+
+/** Grouped PhyDevice object and associated cursor used by pagination. */
+export type PhyDeviceEdge = {
+  __typename?: 'PhyDeviceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated PhyDevice object. */
+  node: Maybe<PhyDevice>;
+};
+
+/** Filter for PhyDevice type based on device label and device name. */
+export type PhyDeviceFilter = {
+  /** Device label. */
+  label?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of device name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Port attached to the physical device. */
+export type PhyInterface = Node & {
+  __typename?: 'PhyInterface';
+  /** Details of the interface. */
+  details: Maybe<PhyInterfaceDetails>;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Human readable name of the network port. */
+  name: Scalars['String']['output'];
+  /** Device that owns this interface. */
+  phyDevice: Maybe<PhyDevice>;
+  /** List of links connected to remote physical device. */
+  phyLinks: PhyLinkConnection;
+  /** Status of the interface from the view of the synced topology ('ok' or 'unknown'). */
+  status: NodeStatus;
+};
+
+
+/** Port attached to the physical device. */
+export type PhyInterfacePhyLinksArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of PhyInterface objects and pagination metadata. */
+export type PhyInterfaceConnection = {
+  __typename?: 'PhyInterfaceConnection';
+  /** List of PhyInterface objects. */
+  edges: Maybe<Array<Maybe<PhyInterfaceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Details of the interface. */
+export type PhyInterfaceDetails = {
+  __typename?: 'PhyInterfaceDetails';
+  /** Max operational interface bandwidth in Mbit. */
+  maxSpeed: Maybe<Scalars['Float']['output']>;
+};
+
+/** Grouped PhyInterface object and associated cursor used by pagination. */
+export type PhyInterfaceEdge = {
+  __typename?: 'PhyInterfaceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated PhyInterface object. */
+  node: Maybe<PhyInterface>;
+};
+
+/** Filter for PhyInterface type based on the current interface status and name of the device. */
+export type PhyInterfaceFilter = {
+  /** Regex of interface name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** Status of the interface from the view of the synced topology. */
+  status?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Grouped list of PhyLinks objects and pagination metadata. */
+export type PhyLinkConnection = {
+  __typename?: 'PhyLinkConnection';
+  /** List of PhyInterface objects. */
+  edges: Maybe<Array<Maybe<PhyLinkEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+export type PhyLinkEdge = {
+  __typename?: 'PhyLinkEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** Identifier of the link that connects this interface to the interface on the remote device */
+  link: Maybe<Scalars['ID']['output']>;
+  /** The associated PhyInterface object. */
+  node: Maybe<PhyInterface>;
 };
 
 export type PhyTopologyVersionData = {
@@ -1344,25 +2064,158 @@ export type PropertyType = Node & {
   id: Scalars['ID']['output'];
 };
 
+/** Response from the provider query that contains information about supported device types in the specified topology. */
+export type ProviderResponse = {
+  __typename?: 'ProviderResponse';
+  /** List of the supported device types in the specified topology (e.g. ios, ios xe, sros, etc.) */
+  supportedDevices: Array<Scalars['String']['output']>;
+};
+
+/** Representation of the device in the ptp topology. */
+export type PtpDevice = Node & {
+  __typename?: 'PtpDevice';
+  /** Coordinates of the device node on the graph. */
+  coordinates: TopologyCoordinates;
+  /** Details of the device. */
+  details: PtpDeviceDetails;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** List of strings that can be used for grouping of synced devices. */
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  /** Human readable name of the device. */
+  name: Scalars['String']['output'];
+  /** List of ports that are present on the device. */
+  ptpInterfaces: PtpInterfaceConnection;
+  /** Status of the device from the view of the synced topology. */
+  status: NodeStatus;
+};
+
+
+/** Representation of the device in the ptp topology. */
+export type PtpDevicePtpInterfacesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<PtpInterfaceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of PtpDevice objects and pagination metadata. */
+export type PtpDeviceConnection = {
+  __typename?: 'PtpDeviceConnection';
+  /** List of PtpDevice objects. */
+  edges: Maybe<Array<Maybe<PtpDeviceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Details specific to PTP (Precision Time Protocol). */
 export type PtpDeviceDetails = {
   __typename?: 'PtpDeviceDetails';
+  /**
+   * How accurate is the clock output to primary reference. This parameter is often automatically determined
+   * by the device based on the characteristics of its internal clock oscillator and how well it can track
+   * the reference time.
+   */
   clockAccuracy: Maybe<Scalars['String']['output']>;
+  /** Measure of clock traceability. */
   clockClass: Maybe<Scalars['Int']['output']>;
+  /** Unique identifier of the clock. */
   clockId: Maybe<Scalars['String']['output']>;
+  /** Type of clock (e.g., ordinary, master). */
   clockType: Maybe<Scalars['String']['output']>;
+  /**
+   * Measure of clock precision. How much the clock-output varies when not synchronized to another source.
+   * The variance is determined by assessing how much the local clock deviates from the ideal time over a certain period,
+   * often expressed in parts per billion (ppb) or as the standard deviation of the clock's offset.
+   */
   clockVariance: Maybe<Scalars['String']['output']>;
+  /** Domain of the PTP network. */
   domain: Maybe<Scalars['Int']['output']>;
+  /** Global priority of the clock (the first priority). */
   globalPriority: Maybe<Scalars['Int']['output']>;
+  /** Unique identifier of the grandmaster clock. */
   gmClockId: Maybe<Scalars['String']['output']>;
+  /** Unique identifier of the parent clock. */
   parentClockId: Maybe<Scalars['String']['output']>;
+  /** The port state of the device. */
+  ptpPortState: Maybe<Scalars['String']['output']>;
+  /** PTP profile used (e.g., ITU-T G.8275.1). */
   ptpProfile: Maybe<Scalars['String']['output']>;
+  /**
+   * Indicates the current state of the time recovery process. Time recovery is the process of adjusting
+   * the local clock to synchronize with a more accurate reference clock.
+   */
   timeRecoveryStatus: Maybe<Scalars['String']['output']>;
+  /** User defined value of the second priority. */
   userPriority: Maybe<Scalars['Int']['output']>;
 };
 
-export type PtpDiffSynce = {
+/** Grouped PtpDevice object and associated cursor used by pagination. */
+export type PtpDeviceEdge = {
+  __typename?: 'PtpDeviceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated PtpDevice object. */
+  node: Maybe<PtpDevice>;
+};
+
+/** Filter for PtpDevice type based on device label and device name. */
+export type PtpDeviceFilter = {
+  /** Regex: clock accuracy to primary reference. */
+  clockAccuracy?: InputMaybe<Scalars['String']['input']>;
+  /** Measure of clock traceability. */
+  clockClass?: InputMaybe<Scalars['Int']['input']>;
+  /** Regex: Unique identifier of the clock. */
+  clockId?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: Type of clock (e.g., ordinary, master). */
+  clockType?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: measure of clock precision. */
+  clockVariance?: InputMaybe<Scalars['String']['input']>;
+  /** Domain of the PTP network. */
+  domain?: InputMaybe<Scalars['Int']['input']>;
+  /** Device label. */
+  label?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of device name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** PTP profile used (e.g., ITU-T G.8275.1). */
+  ptpProfile?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: indicates the current state of the time recovery process. */
+  timeRecoveryStatus?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** A Ptp node that uses a different upstream path in SyncE topology */
+export type PtpDiffSynce = Node & {
   __typename?: 'PtpDiffSynce';
   edges: Array<PtpDiffSynceEdges>;
+  /** Ptp node id */
+  id: Scalars['ID']['output'];
+  /** Ptp node's upstream interface */
+  ptpUpstreamInterface: Maybe<Scalars['ID']['output']>;
+  /** Ptp node's upstream interface name */
+  ptpUpstreamInterfaceName: Maybe<Scalars['String']['output']>;
+  /** Ptp node's upstream interface status */
+  ptpUpstreamInterfaceStatus: Maybe<Scalars['String']['output']>;
+  /** SyncE node id. This is the same device as identified */
+  synceId: Maybe<Scalars['ID']['output']>;
+  /** Synce node's upstream interface name */
+  synceUpstreamInterfaceName: Maybe<Scalars['String']['output']>;
+};
+
+/** Grouped list of PtpDiffSynceDevice objects and pagination metadata. */
+export type PtpDiffSynceConnection = {
+  __typename?: 'PtpDiffSynceConnection';
+  /** List of PtpDiffSynce objects. */
+  edges: Maybe<Array<Maybe<PtpDiffSynceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped PtpDiffSynceDevice object and associated cursor used by pagination. */
+export type PtpDiffSynceEdge = {
+  __typename?: 'PtpDiffSynceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated PtpDiffSynce object. */
+  node: Maybe<PtpDiffSynce>;
 };
 
 export type PtpDiffSynceEdges = {
@@ -1402,6 +2255,112 @@ export type PtpGraphNodeInterfaceDetails = {
   ptsfUnusable: Scalars['String']['output'];
 };
 
+/** Port attached to the ptp device. */
+export type PtpInterface = Node & {
+  __typename?: 'PtpInterface';
+  /** Interface details specific to PTP (Precision Time Protocol). */
+  details: Maybe<PtpInterfaceDetails>;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Human readable name of the network port. */
+  name: Scalars['String']['output'];
+  /** Device that owns this interface. */
+  ptpDevice: Maybe<PtpDevice>;
+  /** List of links connected to remote ptp devices. */
+  ptpLinks: PtpLinkConnection;
+  /** Status of the interface from the view of the synced topology ('ok' or 'unknown'). */
+  status: NodeStatus;
+};
+
+
+/** Port attached to the ptp device. */
+export type PtpInterfacePtpLinksArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of PtpInterface objects and pagination metadata. */
+export type PtpInterfaceConnection = {
+  __typename?: 'PtpInterfaceConnection';
+  /** List of PtpInterface objects. */
+  edges: Maybe<Array<Maybe<PtpInterfaceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** PTP interface details. */
+export type PtpInterfaceDetails = {
+  __typename?: 'PtpInterfaceDetails';
+  /** Administrative/operational status of the interface (e.g. 'up/up', 'up/down'). */
+  adminOperStatus: Scalars['String']['output'];
+  /** State of the PTP process on the interface (e.g. 'master', 'slave', 'disabled', 'passive', 'unknown'). */
+  ptpStatus: Scalars['String']['output'];
+  /**
+   * Unusable packet timing signal received by the slave, for example, where the packet delay variation is excessive,
+   * resulting in the slave being unable to meet the output clock performance requirements.
+   */
+  ptsfUnusable: Scalars['String']['output'];
+};
+
+/** Grouped PtpInterface object and associated cursor used by pagination. */
+export type PtpInterfaceEdge = {
+  __typename?: 'PtpInterfaceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated PtpInterface object. */
+  node: Maybe<PtpInterface>;
+};
+
+/** Filter for PtpInterface type based on the current interface status and name of the device. */
+export type PtpInterfaceFilter = {
+  /** Regex of administrative/operational status on the interface (e.g. 'up/up', 'up/down'). */
+  adminOperStatus?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of interface name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of the PTP process status on the interface. */
+  ptpStatus?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of unusable packet timing signal received by the slave. */
+  ptsfUnusable?: InputMaybe<Scalars['String']['input']>;
+  /** Status of the interface from the view of the synced topology. */
+  status?: InputMaybe<NodeStatus>;
+};
+
+/** Grouped list of PtpLinks objects and pagination metadata. */
+export type PtpLinkConnection = {
+  __typename?: 'PtpLinkConnection';
+  /** List of PtpInterface objects. */
+  edges: Maybe<Array<Maybe<PtpLinkEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped PtpLink object and associated cursor used by pagination. */
+export type PtpLinkEdge = {
+  __typename?: 'PtpLinkEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** Identifier of the link that connects this interface to the interface on the remote device */
+  link: Maybe<Scalars['ID']['output']>;
+  /** The associated PtpInterface object. */
+  node: Maybe<PtpInterface>;
+};
+
+/** Computed path from source to destination PTP clock device. */
+export type PtpPath = {
+  __typename?: 'PtpPath';
+  /** True if path is complete - the last element in the path represents GM clock, False otherwise. */
+  complete: Scalars['Boolean']['output'];
+  /** Ordered list of node identifiers that compose path from source clock to destination clock. */
+  nodes: Maybe<Array<Scalars['ID']['output']>>;
+};
+
+/** Types of the nodes that should be included in the returned path. */
+export type PtpPathOutputCollections =
+  /** Include PtpDevice nodes in the returned path. */
+  | 'PTP_DEVICE'
+  /** Include PtpInterface nodes in the returned path. */
+  | 'PTP_INTERFACE';
+
 export type PtpTopology = {
   __typename?: 'PtpTopology';
   edges: Array<GraphEdge>;
@@ -1420,6 +2379,14 @@ export type Query = {
   deviceInventory: DeviceInventoryQuery;
   resourceManager: ResourceManagerQuery;
   scheduler: SchedulerQuery;
+  topologyDiscovery: TopologyDiscoveryQuery;
+};
+
+/** Response containing a list of nodes with refreshed coordinates. */
+export type RefreshCoordinatesResponse = {
+  __typename?: 'RefreshCoordinatesResponse';
+  /** List of refreshed nodes with their new coordinates. */
+  nodes: Array<Maybe<NodeCoordinates>>;
 };
 
 export type RerunWorkflowRequest_Input = {
@@ -1537,6 +2504,15 @@ export type RevertChangesPayload = {
   isOk: Scalars['Boolean']['output'];
 };
 
+/** Computed routing path from source to destination device. */
+export type RoutingPath = {
+  __typename?: 'RoutingPath';
+  /** Ordered list of nodes that compose path from source to destination device. */
+  nodes: Array<NodeInfo>;
+  /** Total weight of the path. */
+  weight: Scalars['Int']['output'];
+};
+
 export type Schedule = {
   __typename?: 'Schedule';
   cronString: Scalars['String']['output'];
@@ -1592,6 +2568,10 @@ export type SearchResultWorkflowSummary = {
   results: Maybe<Array<Maybe<WorkflowSummary>>>;
   totalHits: Maybe<Scalars['BigInt']['output']>;
 };
+
+export type Signalisation =
+  | 'LDP'
+  | 'RSVP';
 
 export type Signalization =
   | 'LDP'
@@ -1756,9 +2736,109 @@ export type SyncFromNetworkPayload = {
   dataStore: Maybe<DataStore>;
 };
 
+/** Response from the sync query that contains information about synced devices from the network to topology. */
+export type SyncResponse = {
+  __typename?: 'SyncResponse';
+  /**
+   * List of devices that are installed in UniConfig but are missing their metadata in DeviceMetadata collection in the
+   * database.
+   */
+  devicesMissingInInventory: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  /** List of devices that are not installed in UniConfig. */
+  devicesMissingInUniconfig: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  /**
+   * List of string labels that are used for grouping of synced devices.
+   * List content should be the same as the list of labels in the input of the sync query.
+   */
+  labels: Array<Scalars['String']['output']>;
+  /**
+   * Dictionary of devices and neighbors that are successfully synced from network to target topology.
+   * JSON format:
+   * {
+   *   "R1": [
+   *     {
+   *       "from_interface": "GigabitEthernet0/0/0/0",
+   *       "to_interface": "GigabitEthernet0/0/0/0",
+   *       "to_device": "R7"
+   *     },
+   *     {
+   *       "from_interface": "GigabitEthernet0/0/0/1",
+   *       "to_interface": "GigabitEthernet0/0/0/1",
+   *       "to_device": "R2"
+   *     }
+   *   ],
+   *   "R2": [
+   *     {
+   *       "from_interface": "GigabitEthernet0/0/0/0",
+   *       "to_interface": "GigabitEthernet0/0/0/0",
+   *       "to_device": "R3"
+   *     }
+   *   ]
+   * }
+   */
+  loadedDevices: Scalars['JSON']['output'];
+};
+
+/** Representation of the device in the synce topology. */
+export type SynceDevice = Node & {
+  __typename?: 'SynceDevice';
+  /** Coordinates of the device node on the graph. */
+  coordinates: TopologyCoordinates;
+  /** Details of the device. */
+  details: SynceDeviceDetails;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** List of strings that can be used for grouping of synced devices. */
+  labels: Maybe<Array<Scalars['String']['output']>>;
+  /** Human readable name of the device. */
+  name: Scalars['String']['output'];
+  /** Status of the device from the view of the synced topology. */
+  status: NodeStatus;
+  /** List of ports that are present on the device. */
+  synceInterfaces: SynceInterfaceConnection;
+};
+
+
+/** Representation of the device in the synce topology. */
+export type SynceDeviceSynceInterfacesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<SynceInterfaceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of SynceDevice objects and pagination metadata. */
+export type SynceDeviceConnection = {
+  __typename?: 'SynceDeviceConnection';
+  /** List of SynceDevice objects. */
+  edges: Maybe<Array<Maybe<SynceDeviceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Details specific to SyncE (Synchronous Ethernet). */
 export type SynceDeviceDetails = {
   __typename?: 'SynceDeviceDetails';
+  /** Identifier of the reference (for example, source interface) that is used to synchronize the clock. */
   selectedForUse: Maybe<Scalars['String']['output']>;
+};
+
+/** Grouped SynceDevice object and associated cursor used by pagination. */
+export type SynceDeviceEdge = {
+  __typename?: 'SynceDeviceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated SynceDevice object. */
+  node: Maybe<SynceDevice>;
+};
+
+/** Filter for SynceDevice type based on device label and device name. */
+export type SynceDeviceFilter = {
+  /** Device label. */
+  label?: InputMaybe<Scalars['String']['input']>;
+  /** Regex of device name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: identifier of the reference (for example, source interface) that is used to synchronize the clock. */
+  selectedForUse?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SynceGraphNode = {
@@ -1789,6 +2869,123 @@ export type SynceGraphNodeInterfaceDetails = {
   rxQualityLevel: Maybe<Scalars['String']['output']>;
   synceEnabled: Maybe<Scalars['Boolean']['output']>;
 };
+
+/** Port attached to the SyncE device. */
+export type SynceInterface = Node & {
+  __typename?: 'SynceInterface';
+  /** Interface details specific to SyncE operation. */
+  details: Maybe<SynceInterfaceDetails>;
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Human readable name of the network port. */
+  name: Scalars['String']['output'];
+  /** Status of the interface from the view of the synced topology ('ok' or 'unknown'). */
+  status: NodeStatus;
+  /** Device that owns this interface. */
+  synceDevice: Maybe<SynceDevice>;
+  /** Link to connected remote synce device. */
+  synceLinks: Maybe<SynceLinkConnection>;
+};
+
+
+/** Port attached to the SyncE device. */
+export type SynceInterfaceSynceLinksArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of SynceInterface objects and pagination metadata. */
+export type SynceInterfaceConnection = {
+  __typename?: 'SynceInterfaceConnection';
+  /** List of SynceInterface objects. */
+  edges: Maybe<Array<Maybe<SynceInterfaceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Details specific to SyncE (Synchronous Ethernet). */
+export type SynceInterfaceDetails = {
+  __typename?: 'SynceInterfaceDetails';
+  /**
+   * Information about why the interface is not qualified for SyncE synchronization
+   * (set to 'unknown' if the interface is qualified).
+   */
+  notQualifiedDueTo: Maybe<Scalars['String']['output']>;
+  /**
+   * Information about why the interface is not selected for SyncE synchronization
+   * (set to 'unknown' if the interface is selected).
+   */
+  notSelectedDueTo: Maybe<Scalars['String']['output']>;
+  /** Statement of whether the interface is qualified for SyncE synchronization. */
+  qualifiedForUse: Maybe<Scalars['String']['output']>;
+  /** Quality of the received SyncE signal (for example, 'DNU' or 'PRC'). */
+  rxQualityLevel: Maybe<Scalars['String']['output']>;
+  /** Configured SyncE on the port. */
+  synceEnabled: Maybe<Scalars['Boolean']['output']>;
+};
+
+/** Grouped SynceInterface object and associated cursor used by pagination. */
+export type SynceInterfaceEdge = {
+  __typename?: 'SynceInterfaceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated SynceInterface object. */
+  node: Maybe<SynceInterface>;
+};
+
+/** Filter for SynceInterface type based on the current interface status and name of the device. */
+export type SynceInterfaceFilter = {
+  /** Regex of interface name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: Information about why the interface is not qualified for SyncE synchronization. */
+  notQualifiedDueTo?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: Information about why the interface is not selected for SyncE synchronization. */
+  notSelectedDueTo?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: Statement of whether the interface is qualified for SyncE synchronization. */
+  qualifiedForUse?: InputMaybe<Scalars['String']['input']>;
+  /** Regex: Quality of the received SyncE signal (for example, 'DNU' or 'PRC'). */
+  rxQualityLevel?: InputMaybe<Scalars['String']['input']>;
+  /** Status of the interface from the view of the synced topology. */
+  status?: InputMaybe<NodeStatus>;
+  /** Configured SyncE on the port. */
+  synceEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Grouped list of SynceLinks objects and pagination metadata. */
+export type SynceLinkConnection = {
+  __typename?: 'SynceLinkConnection';
+  /** List of SynceInterface objects. */
+  edges: Maybe<Array<Maybe<SynceLinkEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped SynceLink object and associated cursor used by pagination. */
+export type SynceLinkEdge = {
+  __typename?: 'SynceLinkEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** Identifier of the link that connects this interface to the interface on the remote device */
+  link: Maybe<Scalars['ID']['output']>;
+  /** The associated SynceInterface object. */
+  node: Maybe<SynceInterface>;
+};
+
+/** Computed path from source to destination SYNCE device. */
+export type SyncePath = {
+  __typename?: 'SyncePath';
+  /** True if path is complete - the last element in the path represents GM, False otherwise. */
+  complete: Scalars['Boolean']['output'];
+  /** Ordered list of node identifiers that compose path from source device to destination device. */
+  nodes: Maybe<Array<Scalars['ID']['output']>>;
+};
+
+/** Types of the nodes that should be included in the returned path. */
+export type SyncePathOutputCollections =
+  /** Include SynceDevice nodes in the returned path. */
+  | 'SYNCE_DEVICE'
+  /** Include SynceInterface nodes in the returned path. */
+  | 'SYNCE_INTERFACE';
 
 export type SynceTopology = {
   __typename?: 'SynceTopology';
@@ -2063,12 +3260,153 @@ export type TopologyCommonNodes = {
   commonNodes: Array<Scalars['String']['output']>;
 };
 
+/** Coordinates of the node on the graph. */
+export type TopologyCoordinates = {
+  __typename?: 'TopologyCoordinates';
+  /** Horizontal coordinate of the node on the graph. */
+  x: Scalars['Float']['output'];
+  /** Vertical coordinate of the node on the graph. */
+  y: Scalars['Float']['output'];
+};
+
+/** Topology and device identifier of a device. */
+export type TopologyDevice = {
+  __typename?: 'TopologyDevice';
+  /** Topology-specific device identifier. */
+  deviceId: Scalars['ID']['output'];
+  /** Identifier of the topology in which device is present. */
+  topologyId: TopologyType;
+};
+
 export type TopologyLayer =
   | 'ETH_TOPOLOGY'
   | 'MPLS_TOPOLOGY'
   | 'PHYSICAL_TOPOLOGY'
   | 'PTP_TOPOLOGY';
 
+export type TopologyOverlayDevice = {
+  __typename?: 'TopologyOverlayDevice';
+  /** Unique identifier of the object. */
+  id: Scalars['ID']['output'];
+  /** Device name. */
+  name: Scalars['String']['output'];
+  /** Document device ID from the second topology (can be null). */
+  secondTopologyId: Maybe<Scalars['ID']['output']>;
+  /** List of ports that are present on the device. */
+  topologyOverlayInterfaces: TopologyOverlayInterfaceConnection;
+};
+
+
+export type TopologyOverlayDeviceTopologyOverlayInterfacesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<TopologyOverlayInterfaceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Grouped list of TopologyOverlayDevice objects and pagination metadata. */
+export type TopologyOverlayDeviceConnection = {
+  __typename?: 'TopologyOverlayDeviceConnection';
+  /** List of TopologyOverlayDeviceEdge objects. */
+  edges: Maybe<Array<Maybe<TopologyOverlayDeviceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped TopologyOverlayDeviceEdge object and associated cursor used by pagination. */
+export type TopologyOverlayDeviceEdge = {
+  __typename?: 'TopologyOverlayDeviceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated TopologyOverlayDevice object. */
+  node: Maybe<TopologyOverlayDevice>;
+};
+
+/** Filter for TopologyOverlayDevice type based on device name. */
+export type TopologyOverlayDeviceFilter = {
+  /** Regex of device name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TopologyOverlayInterface = {
+  __typename?: 'TopologyOverlayInterface';
+  /** Document interface ID from the first topology */
+  id: Scalars['ID']['output'];
+  /** Interface name. */
+  name: Scalars['String']['output'];
+  /** Document device ID from the second topology (can be null). */
+  secondTopologyId: Maybe<Scalars['ID']['output']>;
+  /** Topology overlay device that owns this interface. */
+  topologyOverlayDevice: Maybe<TopologyOverlayDevice>;
+  /** Topology overlay neighbor interface */
+  topologyOverlayLinks: Maybe<TopologyOverlayLinkConnection>;
+};
+
+/** Grouped list of TopologyOverlayInterface objects and pagination metadata. */
+export type TopologyOverlayInterfaceConnection = {
+  __typename?: 'TopologyOverlayInterfaceConnection';
+  /** List of TopologyOverlayInterface objects. */
+  edges: Maybe<Array<Maybe<TopologyOverlayInterfaceEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+/** Grouped TopologyOverlayInterface object and associated cursor used by pagination. */
+export type TopologyOverlayInterfaceEdge = {
+  __typename?: 'TopologyOverlayInterfaceEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** The associated TopologyOverlayInterface object. */
+  node: Maybe<TopologyOverlayInterface>;
+};
+
+/** Filter for TopologyOverlayInterface type based on the name of the device. */
+export type TopologyOverlayInterfaceFilter = {
+  /** Regex of interface name. */
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Grouped list of TopologyOverlayLinks objects and pagination metadata. */
+export type TopologyOverlayLinkConnection = {
+  __typename?: 'TopologyOverlayLinkConnection';
+  /** List of TopologyOverlayInterface objects. */
+  edges: Maybe<Array<Maybe<TopologyOverlayLinkEdge>>>;
+  /** Pagination metadata. */
+  pageInfo: PageInfo;
+};
+
+export type TopologyOverlayLinkEdge = {
+  __typename?: 'TopologyOverlayLinkEdge';
+  /** Pagination cursor for this edge. */
+  cursor: Scalars['String']['output'];
+  /** Identifier of the link that connects this interface to the interface on the remote device */
+  link: Maybe<TopologyOverlayLinkIds>;
+  /** The associated TopologyOverlayInterface object. */
+  node: Maybe<TopologyOverlayInterface>;
+};
+
+export type TopologyOverlayLinkIds = {
+  __typename?: 'TopologyOverlayLinkIds';
+  /** Identifier of the link that connects this interface to the interface on the remote device on the first topology. */
+  firstTopologyLinkId: Scalars['ID']['output'];
+  /** Identifier of the link that connects this interface to the interface on the remote device on the second topology. */
+  secondTopologyLinkId: Maybe<Scalars['ID']['output']>;
+};
+
+/** Response from the topologyDiff query that contains diff between two databases. */
+export type TopologyResponse = {
+  __typename?: 'TopologyResponse';
+  /**
+   * Created diff between two databases. Format of the output JSON ('data' represents database document):
+   * {
+   *     "added": {"PhyDevice": [{data}], "PhyInterface": [], ...},
+   *     "deleted": {"PhyDevice": [{data}], "PhyInterface": [], ...},
+   *     "changed": {"PhyDevice": [{"new": {data}, "old"}: {data}], "PhyInterface": [{"new": {data}, "old": {data}], ...}
+   * }
+   */
+  diffData: Maybe<Scalars['JSON']['output']>;
+};
+
+/** Present topology types. */
 export type TopologyType =
   | 'ETH_TOPOLOGY'
   | 'MPLS_TOPOLOGY'
@@ -4157,6 +5495,307 @@ export type SchedulerQuerySchedulesArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type TopologyDiscoveryMutation = {
+  __typename?: 'topologyDiscoveryMutation';
+  /**
+   * Creation of the backup from the whole database including all graphs.
+   * Name of the backup database is derived from the current timestamp and returned in the response.
+   */
+  createBackup: CreateBackupResponse;
+  /**
+   * Removing backups that are older than the specified number of hours.
+   * Response contains the list of removed backup databases.
+   */
+  deleteBackups: DeleteBackupsResponse;
+  /**
+   * Enable debug session to the remote Python debug server.
+   * If debug session has already been enabled, it will be reloaded with new settings.
+   * Debug session is automatically closed after client stops debugging.
+   * Response contains version of the debug library.
+   */
+  enableRemoteDebugSession: Scalars['String']['output'];
+  /** Refresh the coordinates of nodes in the specified topology by using the ForceAtlas2 algorithm. */
+  refreshCoordinates: RefreshCoordinatesResponse;
+  /**
+   * Synchronization of the devices in the specified topology.
+   * Topology represents an abstraction layer of observed network from the operational view
+   * (for example, physical topology that is built from LLDP data, or network topology that is built from BGP-LS data).
+   * During synchronization topology-discovery service reads topological information from network devices,
+   * parses read data using drivers into graph data model, and builds the graph that is stored in the graph database.
+   * Response contains information about synced devices and their neighbors.
+   */
+  sync: SyncResponse;
+  /**
+   * Updating the coordinates of the specified nodes on the graph (x,y fractional values).
+   * Response contains list of successfully and unsuccessfully updated nodes.
+   */
+  updateCoordinates: CoordinatesResponse;
+  /**
+   * Updating status of the specified device or attached interfaces and edges between device and interfaces.
+   * A: If there is status and device_name param, status is changed for PhyDevice / PtpDevice document.
+   * B: If there is also interface_name, status is changed only for PhyInterface / PtpInterface and PhyHas / PtpHas documents.
+   * JSON response:
+   * A: {"device": device_document},
+   * B: {"has": has_document, "interface": interface_document}
+   */
+  updateNodeStatus: Scalars['JSON']['output'];
+};
+
+
+export type TopologyDiscoveryMutationDeleteBackupsArgs = {
+  deleteAge?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryMutationEnableRemoteDebugSessionArgs = {
+  host: Scalars['String']['input'];
+  port?: InputMaybe<Scalars['Int']['input']>;
+  stderrToServer?: InputMaybe<Scalars['Boolean']['input']>;
+  stdoutToServer?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type TopologyDiscoveryMutationRefreshCoordinatesArgs = {
+  topologyType?: InputMaybe<TopologyType>;
+};
+
+
+export type TopologyDiscoveryMutationSyncArgs = {
+  devices?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  labels?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  topologyType: TopologyType;
+};
+
+
+export type TopologyDiscoveryMutationUpdateCoordinatesArgs = {
+  coordinatesList: Array<CoordinatesInput>;
+  topologyType?: InputMaybe<TopologyType>;
+};
+
+
+export type TopologyDiscoveryMutationUpdateNodeStatusArgs = {
+  deviceName: Scalars['String']['input'];
+  interfaceName?: InputMaybe<Scalars['String']['input']>;
+  status: NodeStatus;
+  topologyType?: InputMaybe<TopologyType>;
+};
+
+export type TopologyDiscoveryQuery = {
+  __typename?: 'topologyDiscoveryQuery';
+  /**
+   * Read list of created backups.
+   * List of backup database names are converted to ISO datetime format: %Y-%m-%dT%H:%M:%S.%f. Example:
+   * Name of the backup database: backup_20221014130000.
+   * Formatted identifier: 2022-10-14T13:00:00.000000.
+   */
+  backups: Array<Scalars['String']['output']>;
+  /**
+   * Find nodes that have connection to all selected nodes in the specified database.
+   * In case of the PhyDevice devices, the common nodes represent devices that contain physical interface-based
+   * link to all specified input devices.
+   * In case of other types of nodes (for example, in the network topology), implementation logic may vary.
+   */
+  commonNodes: CommonNodesResponse;
+  /** Read devices that match specified filter. */
+  deviceMetadata: MetadataConnection;
+  /** Read MPLS devices that match the specified filter. */
+  mplsDevices: MplsDeviceConnection;
+  /**
+   * Returns a list of LSPs based on to which device they are headed.
+   * Also return the count of incoming and outcoming tunnels from / to that device.
+   */
+  mplsLspCount: Maybe<Array<Maybe<MplsTotalLsps>>>;
+  /**
+   * Finds a LSP path between two devices based on start device ID and LSP ID.
+   * Also return MPLS LSP metadata about start device if they exist.
+   */
+  mplsLspPath: MplsLspPath;
+  /** Find identifiers of all neighbour devices of the specified device in the specified topology. */
+  neighbors: Maybe<Array<Neighbor>>;
+  /** Read network devices that match specified filter. */
+  netDevices: NetDeviceConnection;
+  /**
+   * Find routing paths between two network devices in the network topology.
+   * Routing paths are ordered from the shortest to the longest based on the summarized weights.
+   */
+  netRoutingPaths: Maybe<NetRoutingPathConnection>;
+  /**
+   * Read node by its unique object identifier.
+   * Example subtypes of Node interface: PhyDevice, PhyInterface, NetDevice, NetInterface, NetNetwork.
+   */
+  node: Maybe<Node>;
+  /** Read physical devices that match specified filter. */
+  phyDevices: PhyDeviceConnection;
+  /** Read list of support device types in the specified topology. */
+  provider: ProviderResponse;
+  /** Read list of available topology providers (e.g. physical, etp, eth_sync, etc.). */
+  providers: Array<TopologyType>;
+  /** Read ptp devices that match specified filter. */
+  ptpDevices: PtpDeviceConnection;
+  /**
+   * Find devices that have different upstream path in PTP topology vs SyncE topology.
+   * Return a list of PTP nodes that:
+   * - do not have SyncE setup
+   * - use different parent node in SyncE
+   * - use different interface towards parent node in SyncE
+   */
+  ptpDiffSynce: PtpDiffSynceConnection;
+  /**
+   * Find path between selected PTP device clock and its current grandmaster clock.
+   * If synced PTP topology does not contain active path from specified device to grandmaster, empty path is returned.
+   * If invalid device identifier is specified, error is returned.
+   */
+  ptpPathToGmClock: PtpPath;
+  /** Read synce devices that match specified filter. */
+  synceDevices: SynceDeviceConnection;
+  /**
+   * Find path between selected SYNCE device and its current grandmaster.
+   * If synced SYNCED topology does not contain active path from specified device to grandmaster, empty path is returned.
+   * If invalid device identifier is specified, error is returned.
+   */
+  syncePathToGm: SyncePath;
+  /**
+   * Find identifiers of the topologies where the specified device is present.
+   * The query returns a list in which each entry contains a topology identifier and a device identifier.
+   */
+  topologies: Maybe<Array<TopologyDevice>>;
+  /**
+   * Computation of the diff between two databases per collections - created, deleted, and changed entries.
+   * Only documents that belong to the specified topology are included in the diff.
+   */
+  topologyDiff: TopologyResponse;
+  /**
+   * Returns an overlay between two topologies.
+   * The overlay works in such a way that it takes the first topology, and tries to find devices / interfaces
+   * from the first topology in the second one.
+   * The first topology can be taken as a reference topology. The second topology is joined to the first one (similar to LEFT JOIN in databases)
+   */
+  topologyOverlay: TopologyOverlayDeviceConnection;
+};
+
+
+export type TopologyDiscoveryQueryCommonNodesArgs = {
+  dbName?: InputMaybe<Scalars['String']['input']>;
+  selectedNodes: Array<Scalars['String']['input']>;
+  topologyType?: InputMaybe<TopologyType>;
+};
+
+
+export type TopologyDiscoveryQueryDeviceMetadataArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<DeviceMetadataFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryQueryMplsDevicesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<MplsDeviceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryQueryMplsLspCountArgs = {
+  deviceId: Scalars['ID']['input'];
+};
+
+
+export type TopologyDiscoveryQueryMplsLspPathArgs = {
+  deviceId: Scalars['ID']['input'];
+  lspId: Scalars['ID']['input'];
+};
+
+
+export type TopologyDiscoveryQueryNeighborsArgs = {
+  deviceName: Scalars['String']['input'];
+  topologyType: TopologyType;
+};
+
+
+export type TopologyDiscoveryQueryNetDevicesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<NetDeviceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryQueryNetRoutingPathsArgs = {
+  deviceFrom: Scalars['ID']['input'];
+  deviceTo: Scalars['ID']['input'];
+  outputCollection?: InputMaybe<NetRoutingPathOutputCollections>;
+};
+
+
+export type TopologyDiscoveryQueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type TopologyDiscoveryQueryPhyDevicesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<PhyDeviceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryQueryProviderArgs = {
+  topologyType: TopologyType;
+};
+
+
+export type TopologyDiscoveryQueryPtpDevicesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<PtpDeviceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryQueryPtpDiffSynceArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<PtpDeviceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryQueryPtpPathToGmClockArgs = {
+  deviceFrom: Scalars['ID']['input'];
+  outputCollection?: InputMaybe<PtpPathOutputCollections>;
+};
+
+
+export type TopologyDiscoveryQuerySynceDevicesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<SynceDeviceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type TopologyDiscoveryQuerySyncePathToGmArgs = {
+  deviceFrom: Scalars['ID']['input'];
+  outputCollection?: InputMaybe<SyncePathOutputCollections>;
+};
+
+
+export type TopologyDiscoveryQueryTopologiesArgs = {
+  deviceName: Scalars['String']['input'];
+};
+
+
+export type TopologyDiscoveryQueryTopologyDiffArgs = {
+  collectionType: TopologyType;
+  newDb: Scalars['String']['input'];
+  oldDb: Scalars['String']['input'];
+};
+
+
+export type TopologyDiscoveryQueryTopologyOverlayArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<TopologyOverlayDeviceFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  firstTopology: TopologyType;
+  secondTopology: TopologyType;
+};
+
 export type UploadFileMutationVariables = Exact<{
   input: CsvImportInput;
 }>;
@@ -4246,7 +5885,7 @@ export type DeviceNameQueryVariables = Exact<{
 }>;
 
 
-export type DeviceNameQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'PropertyType' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Stream' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
+export type DeviceNameQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', node: { __typename?: 'AllocationStrategy' } | { __typename?: 'Blueprint' } | { __typename?: 'Country' } | { __typename?: 'Device', id: string, name: string } | { __typename?: 'DeviceMetadata' } | { __typename?: 'EventHandler' } | { __typename?: 'Label' } | { __typename?: 'Location' } | { __typename?: 'MplsDevice' } | { __typename?: 'MplsInterface' } | { __typename?: 'NetDevice' } | { __typename?: 'NetInterface' } | { __typename?: 'NetNetwork' } | { __typename?: 'PhyDevice' } | { __typename?: 'PhyInterface' } | { __typename?: 'PropertyType' } | { __typename?: 'PtpDevice' } | { __typename?: 'PtpDiffSynce' } | { __typename?: 'PtpInterface' } | { __typename?: 'Resource' } | { __typename?: 'ResourcePool' } | { __typename?: 'ResourceType' } | { __typename?: 'Stream' } | { __typename?: 'SynceDevice' } | { __typename?: 'SynceInterface' } | { __typename?: 'Tag' } | { __typename?: 'TaskDefinition' } | { __typename?: 'Workflow' } | { __typename?: 'WorkflowDefinition' } | { __typename?: 'WorkflowTask' } | { __typename?: 'Zone' } | null } };
 
 export type DataStoreQueryVariables = Exact<{
   deviceId: Scalars['String']['input'];
@@ -4348,6 +5987,14 @@ export type DevicesQueryVariables = Exact<{
 
 export type DevicesQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string, address: string | null, createdAt: string, discoveredAt: string | null, isInstalled: boolean, serviceState: DeviceServiceState, version: string | null, model: string | null, software: string | null, mountParameters: string | null, zone: { __typename?: 'Zone', id: string, name: string }, location: { __typename?: 'Location', name: string, latitude: number | null, longitude: number | null } | null } }>, pageInfo: { __typename?: 'PageInfo', startCursor: string | null, endCursor: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } } };
 
+export type UpdateDeviceMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+  input: UpdateDeviceInput;
+}>;
+
+
+export type UpdateDeviceMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateDevice: { __typename?: 'UpdateDevicePayload', device: { __typename?: 'Device', id: string, name: string, model: string | null, vendor: string | null, address: string | null, isInstalled: boolean, zone: { __typename?: 'Zone', id: string, name: string } } | null } } };
+
 export type InstallDeviceMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
@@ -4429,7 +6076,7 @@ export type BlueprintQueryVariables = Exact<{
 }>;
 
 
-export type BlueprintQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', blueprint: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', name: string, template: string, id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
+export type BlueprintQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', blueprint: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', name: string, template: string, id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'DeviceMetadata', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'MplsDevice', id: string } | { __typename?: 'MplsInterface', id: string } | { __typename?: 'NetDevice', id: string } | { __typename?: 'NetInterface', id: string } | { __typename?: 'NetNetwork', id: string } | { __typename?: 'PhyDevice', id: string } | { __typename?: 'PhyInterface', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'PtpDevice', id: string } | { __typename?: 'PtpDiffSynce', id: string } | { __typename?: 'PtpInterface', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'SynceDevice', id: string } | { __typename?: 'SynceInterface', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
 
 export type UpdateBlueprintMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -4444,22 +6091,14 @@ export type DeviceQueryVariables = Exact<{
 }>;
 
 
-export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', device: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', name: string, serviceState: DeviceServiceState, model: string | null, vendor: string | null, address: string | null, deviceSize: DeviceSize, mountParameters: string | null, id: string, location: { __typename?: 'Location', id: string } | null, zone: { __typename?: 'Zone', id: string, name: string }, labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
-
-export type UpdateDeviceMutationVariables = Exact<{
-  id: Scalars['String']['input'];
-  input: UpdateDeviceInput;
-}>;
-
-
-export type UpdateDeviceMutation = { __typename?: 'Mutation', deviceInventory: { __typename?: 'deviceInventoryMutation', updateDevice: { __typename?: 'UpdateDevicePayload', device: { __typename?: 'Device', id: string, name: string, model: string | null, vendor: string | null, address: string | null, isInstalled: boolean, zone: { __typename?: 'Zone', id: string, name: string } } | null } } };
+export type DeviceQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', device: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', name: string, serviceState: DeviceServiceState, model: string | null, vendor: string | null, address: string | null, deviceSize: DeviceSize, mountParameters: string | null, id: string, location: { __typename?: 'Location', id: string } | null, zone: { __typename?: 'Zone', id: string, name: string }, labels: { __typename?: 'LabelConnection', edges: Array<{ __typename?: 'LabelEdge', node: { __typename?: 'Label', id: string, name: string } }> } } | { __typename?: 'DeviceMetadata', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'MplsDevice', id: string } | { __typename?: 'MplsInterface', id: string } | { __typename?: 'NetDevice', id: string } | { __typename?: 'NetInterface', id: string } | { __typename?: 'NetNetwork', id: string } | { __typename?: 'PhyDevice', id: string } | { __typename?: 'PhyInterface', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'PtpDevice', id: string } | { __typename?: 'PtpDiffSynce', id: string } | { __typename?: 'PtpInterface', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', id: string } | { __typename?: 'SynceDevice', id: string } | { __typename?: 'SynceInterface', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null } };
 
 export type StreamQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type StreamQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', stream: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', streamName: string, deviceName: string, streamParameters: string | null, id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null, streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } }> }, devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string } }> }, blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } } };
+export type StreamQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', stream: { __typename?: 'AllocationStrategy', id: string } | { __typename?: 'Blueprint', id: string } | { __typename?: 'Country', id: string } | { __typename?: 'Device', id: string } | { __typename?: 'DeviceMetadata', id: string } | { __typename?: 'EventHandler', id: string } | { __typename?: 'Label', id: string } | { __typename?: 'Location', id: string } | { __typename?: 'MplsDevice', id: string } | { __typename?: 'MplsInterface', id: string } | { __typename?: 'NetDevice', id: string } | { __typename?: 'NetInterface', id: string } | { __typename?: 'NetNetwork', id: string } | { __typename?: 'PhyDevice', id: string } | { __typename?: 'PhyInterface', id: string } | { __typename?: 'PropertyType', id: string } | { __typename?: 'PtpDevice', id: string } | { __typename?: 'PtpDiffSynce', id: string } | { __typename?: 'PtpInterface', id: string } | { __typename?: 'Resource', id: string } | { __typename?: 'ResourcePool', id: string } | { __typename?: 'ResourceType', id: string } | { __typename?: 'Stream', streamName: string, deviceName: string, streamParameters: string | null, id: string } | { __typename?: 'SynceDevice', id: string } | { __typename?: 'SynceInterface', id: string } | { __typename?: 'Tag', id: string } | { __typename?: 'TaskDefinition', id: string } | { __typename?: 'Workflow', id: string } | { __typename?: 'WorkflowDefinition', id: string } | { __typename?: 'WorkflowTask', id: string } | { __typename?: 'Zone', id: string } | null, streams: { __typename?: 'StreamConnection', edges: Array<{ __typename?: 'StreamEdge', node: { __typename?: 'Stream', id: string, deviceName: string, streamName: string } }> }, devices: { __typename?: 'DeviceConnection', edges: Array<{ __typename?: 'DeviceEdge', node: { __typename?: 'Device', id: string, name: string } }> }, blueprints: { __typename?: 'BlueprintConnection', edges: Array<{ __typename?: 'BlueprintEdge', node: { __typename?: 'Blueprint', id: string, name: string, template: string } }> } } };
 
 export type UpdateStreamMutationVariables = Exact<{
   id: Scalars['String']['input'];
