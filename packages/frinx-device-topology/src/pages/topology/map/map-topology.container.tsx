@@ -123,14 +123,14 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
       {deviceData && (
         <MarkerClusterGroup chunkedLoading maxClusterRadius={30}>
           {deviceData?.map((node) => {
-            if (node?.geolocation?.latitude && node?.geolocation?.longitude) {
+            if (node?.geolocation?.latitude && node?.geolocation?.longitude && node.id !== selectedDeviceData?.id) {
               const lat = node.geolocation.latitude;
               const lon = node.geolocation.longitude;
               return (
                 <Marker
                   position={[node.geolocation.latitude, node.geolocation.longitude]}
                   key={node.id}
-                  icon={node.id === selectedDeviceData?.id ? RED_DEFAULT_ICON : DEFAULT_ICON}
+                  icon={DEFAULT_ICON}
                   eventHandlers={{
                     click: handleMarkerClick(node.deviceName || ''),
                   }}
@@ -179,6 +179,13 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
             return undefined;
           })}
         </MarkerClusterGroup>
+      )}
+      {selectedDeviceData && selectedDeviceData.geolocation?.latitude && selectedDeviceData.geolocation?.longitude && (
+        <Marker
+          position={[selectedDeviceData.geolocation.latitude, selectedDeviceData.geolocation.longitude]}
+          key={selectedDeviceData.id}
+          icon={RED_DEFAULT_ICON}
+        />
       )}
       {selectedDeviceData && (
         <Card zIndex={500} minWidth={150} position="absolute" right={2} bottom={6}>

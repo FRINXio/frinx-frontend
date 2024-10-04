@@ -5,7 +5,6 @@ import Dashboard from './components/dashboard/dashboard';
 import FeedbackWidget from './components/feedback-widget/feedback-widget';
 import Header from './components/header/header';
 import DeviceTopologyApp from './device-topology-app';
-import GammaApp from './gamma-app';
 import InventoryApp from './inventory-app';
 import ResourceManagerApp from './resource-manager-app';
 import UniflowApp from './uniflow-app';
@@ -22,7 +21,6 @@ const App: FC<Props> = ({ basename, isAuthEnabled }) => {
       <Box paddingY={10} overflow="hidden">
         <Routes>
           <Route path="/workflow-manager/*" element={<UniflowApp />} />
-          <Route path="/gamma/*" element={<GammaApp />} />
           <Route path="/inventory/*" element={<InventoryApp />} />
           <Route path="/resource-manager/*" element={<ResourceManagerApp />} />
           <Route path="/device-topology/*" element={<DeviceTopologyApp />} />
