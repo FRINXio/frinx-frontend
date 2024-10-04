@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, VoidFunctionComponent, useState } from 'react';
-import { MapContainer, Marker, TileLayer, useMap, Polyline } from 'react-leaflet';
+import { MapContainer, Marker, TileLayer, useMap, Polyline, Popup } from 'react-leaflet';
 import { useClient } from 'urql';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { Box, Card, CardBody, CloseButton, Heading } from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, CloseButton, Heading } from '@chakra-ui/react';
 import L, { LatLngBoundsLiteral, LatLngTuple } from 'leaflet';
-import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL } from '../../../helpers/topology-helpers';
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM_LEVEL, fetchOsmData, OSMData } from '../../../helpers/topology-helpers';
 import { DEFAULT_ICON, RED_DEFAULT_ICON } from '../../../helpers/map-marker-helper';
 import { useStateContext } from '../../../state.provider';
 import { getDeviceMetadata, getMapDeviceNeighbors, setSelectedMapDeviceName } from '../../../state.actions';
@@ -30,6 +30,8 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
   const markerRefs = useRef<Map<string, L.Marker>>(new Map());
 
   const [markersReady, setMarkersReady] = useState(false);
+  const [osmData, setOsmData] = useState<OSMData | null>(null);
+  const [showLocationInfo, setShowLocationInfo] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(getDeviceMetadata(client, { topologyType: mapTopologyType, deviceName: mapTopologyDeviceSearch }));
@@ -70,6 +72,16 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
     }
   }, [deviceData, selectedMapDeviceName, map, markersReady]);
 
+  const handleLocationInfoClick = async (lat: number, lon: number) => {
+    setOsmData(null);
+    setShowLocationInfo((prev) => !prev);
+
+    if (!showLocationInfo) {
+      const fetchedOsmData = await fetchOsmData(lat, lon);
+      setOsmData(fetchedOsmData);
+    }
+  };
+
   const handleMarkerClick = (deviceName: string) => () => {
     dispatch(setSelectedMapDeviceName(deviceName));
   };
@@ -96,6 +108,7 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
 
   const handlePopupClose = () => {
     dispatch(setSelectedMapDeviceName(null));
+    setShowLocationInfo(false);
   };
 
   return (
@@ -111,6 +124,8 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
         <MarkerClusterGroup chunkedLoading maxClusterRadius={30}>
           {deviceData?.map((node) => {
             if (node?.geolocation?.latitude && node?.geolocation?.longitude && node.id !== selectedDeviceData?.id) {
+              const lat = node.geolocation.latitude;
+              const lon = node.geolocation.longitude;
               return (
                 <Marker
                   position={[node.geolocation.latitude, node.geolocation.longitude]}
@@ -124,7 +139,40 @@ const MapTopologyContainerDescendant: VoidFunctionComponent = () => {
                       markerRefs.current.set(node.deviceName, ref);
                     }
                   }}
-                />
+                >
+                  <Popup>
+                    <Box mt={2}>
+                      <Heading as="h3" fontSize="xs" color="blue.700">
+                        {node?.deviceName ?? '-'}
+                      </Heading>
+                    </Box>
+                    <Box mt={2}>
+                      <Heading as="h4" fontSize="xs">
+                        Latitude
+                      </Heading>
+                      {lat}
+                    </Box>
+                    <Box mt={2}>
+                      <Heading as="h4" fontSize="xs">
+                        Longitude
+                      </Heading>
+                      {lon}
+                    </Box>
+                    <Box mt={2}>
+                      <Button colorScheme="blue" size="xs" onClick={() => handleLocationInfoClick(lat, lon)}>
+                        {showLocationInfo ? 'Hide Location Info' : 'Show Location Info'}
+                      </Button>
+                    </Box>
+                    {showLocationInfo && osmData && (
+                      <Box mt={2}>
+                        <Heading as="h4" fontSize="xs">
+                          Location Info
+                        </Heading>
+                        {osmData.displayName || 'No data available'}
+                      </Box>
+                    )}
+                  </Popup>
+                </Marker>
               );
             }
 

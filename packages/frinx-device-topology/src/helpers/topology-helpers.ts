@@ -17,6 +17,16 @@ import { NetNode, PtpDeviceDetails, SynceDeviceDetails } from '../__generated__/
 export const DEFAULT_MAP_CENTER: LatLngTuple = [48.15247287355192, 17.12495675052697]; // Bratislava
 export const DEFAULT_MAP_ZOOM_LEVEL = 10;
 
+const defaultOsmData: OSMData = {
+  placeId: '',
+  lat: '',
+  lon: '',
+  displayName: '',
+  type: '',
+  importance: 0,
+  address: {},
+};
+
 export type Change = 'ADDED' | 'DELETED' | 'UPDATED' | 'NONE';
 
 export type GraphNodeWithDiff = GraphNode & {
@@ -41,6 +51,22 @@ export type NetGraphNodeWithDiff = NetNode & {
 
 export type GraphEdgeWithDiff = GraphEdge & {
   change: Change;
+};
+
+export type OSMData = {
+  placeId: string;
+  lat: string;
+  lon: string;
+  displayName: string;
+  type: string;
+  importance: number;
+  address: {
+    road?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    postcode?: string;
+  };
 };
 
 export function getNodesWithDiff(nodes: GraphNode[], backupGraphNodes: BackupGraphNode[]): GraphNodeWithDiff[] {
@@ -492,6 +518,33 @@ export function getPtpProfile(ptpNodes: PtpGraphNode[]): string | null {
   return ptpNodes.at(0)?.details.ptpProfile ?? null;
 }
 
+export const fetchOsmData = async (lat: number, lon: number): Promise<OSMData> => {
+  try {
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from OpenStreetMap');
+    }
+    const data = await response.json();
+
+    const formattedData: OSMData = {
+      placeId: data.place_id,
+      lat: data.lat,
+      lon: data.lon,
+      displayName: data.display_name,
+      type: data.type,
+      importance: data.importance,
+      address: data.address || {},
+    };
+
+    if (data.error === 'Unable to geocode') {
+      return { ...formattedData, displayName: 'No information available for this location.' };
+    }
+
+    return formattedData;
+  } catch (error) {
+    return { ...defaultOsmData, displayName: 'Error fetching location data.' };
+  }
+};
 // returns pointer X constrained to SVG vieport
 // if SVG viewport is null, constrained only to 0
 export function getConstrainedPointerX(newX: number, viewPort: SVGElement | null): number {
