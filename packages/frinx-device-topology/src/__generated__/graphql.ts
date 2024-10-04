@@ -3619,7 +3619,6 @@ export type DeviceInventoryQueryMplsTopologyVersionDataArgs = {
   version: Scalars['String']['input'];
 };
 
-
 export type DeviceInventoryQueryNetTopologyVersionDataArgs = {
   version: Scalars['String']['input'];
 };
