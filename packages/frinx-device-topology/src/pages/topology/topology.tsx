@@ -42,13 +42,13 @@ const Topology: VoidFunctionComponent = () => {
   const client = useClient();
   const { state, dispatch } = useStateContext();
   const { mode, topologyLayer, isSynceDiffVisible } = state;
-  const [topology, setTopologyType] = useState<TopologyType | null>('PHYSICAL_TOPOLOGY');
+  const [topologyType, setTopologyType] = useState<TopologyType | null>('PHYSICAL_TOPOLOGY');
 
   const handleRefreshCoordinates = async () => {
-    if (topology === null) {
+    if (topologyType === null) {
       return;
     }
-    dispatch(refreshCoordinates(client, topologyLayer, topology));
+    dispatch(refreshCoordinates(client, topologyLayer, topologyType));
   };
 
   return (
@@ -123,7 +123,7 @@ const Topology: VoidFunctionComponent = () => {
         {topologyLayer === 'MPLS' && <MplsTopologyContainer />}
         {topologyLayer === 'Map' && <MapTopologyContainer />}
       </Box>
-      {topology !== null && (
+      {topologyType !== null && (
         <Flex justifyContent="flex-end" mt={4}>
           <Button
             onClick={handleRefreshCoordinates}
