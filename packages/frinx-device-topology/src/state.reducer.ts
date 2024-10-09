@@ -265,6 +265,7 @@ export function stateReducer(state: State, action: StateAction): State {
       case 'SET_TOPOLOGIES_OF_DEVICE': {
         acc.topologiesOfDevice = action.topologies;
         return acc;
+      }
       case 'REFRESH_COORDINATES': {
         const layer: TopologyLayer = action.payload.topologyLayer;
         if (layer === 'LLDP') {
