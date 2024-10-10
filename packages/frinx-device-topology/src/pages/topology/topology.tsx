@@ -58,7 +58,7 @@ const Topology: VoidFunctionComponent = () => {
           Device topology
         </Heading>
       </Flex>
-      <Flex gridGap={4}>
+      <Flex direction={topologyLayer === 'Map' ? 'column' : 'row'} gridGap={4}>
         <FormControl width="sm" paddingBottom="24px">
           <FormLabel marginBottom={4}>Select layer:</FormLabel>
           <Select
@@ -83,12 +83,10 @@ const Topology: VoidFunctionComponent = () => {
           </Box>
         )}
         {topologyLayer === 'Map' && (
-          <>
-            <Box flex={1}>
-              <TopologyTypeSelect />
-            </Box>
+          <Flex justify="space-between" gap={4} flex={1}>
+            <TopologyTypeSelect />
             <DeviceSearch />
-          </>
+          </Flex>
         )}
         {topologyLayer === 'LLDP' && (
           <Box flex={1}>

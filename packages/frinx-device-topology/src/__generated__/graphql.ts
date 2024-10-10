@@ -3249,6 +3249,11 @@ export type TimeoutPolicy =
   | 'ALERT_ONLY'
   | 'TIME_OUT_WF';
 
+export type Topologies = {
+  __typename?: 'Topologies';
+  topologies: Maybe<Array<Maybe<TopologyOfDevice>>>;
+};
+
 export type Topology = {
   __typename?: 'Topology';
   edges: Array<GraphEdge>;
@@ -3283,6 +3288,12 @@ export type TopologyLayer =
   | 'MPLS_TOPOLOGY'
   | 'PHYSICAL_TOPOLOGY'
   | 'PTP_TOPOLOGY';
+
+export type TopologyOfDevice = {
+  __typename?: 'TopologyOfDevice';
+  deviceId: Scalars['String']['output'];
+  topologyId: Scalars['String']['output'];
+};
 
 export type TopologyOverlayDevice = {
   __typename?: 'TopologyOverlayDevice';
@@ -4829,6 +4840,7 @@ export type DeviceInventoryQuery = {
   deviceMetadata: Maybe<DeviceMetadata>;
   deviceNeighbor: Maybe<DeviceNeighbors>;
   devices: DeviceConnection;
+  devicesTopology: Maybe<Topologies>;
   kafkaHealthCheck: Maybe<IsOkResponse>;
   labels: LabelConnection;
   locations: LocationConnection;
@@ -4903,6 +4915,11 @@ export type DeviceInventoryQueryDevicesArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<DeviceOrderByInput>;
+};
+
+
+export type DeviceInventoryQueryDevicesTopologyArgs = {
+  deviceName: Scalars['String']['input'];
 };
 
 
@@ -5959,6 +5976,12 @@ export type NeighboursQueryVariables = Exact<{
 
 export type NeighboursQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', deviceNeighbor: { __typename?: 'DeviceNeighbors', neighbors: Array<{ __typename?: 'Neighbor', deviceName: string, deviceId: string } | null> | null } | null } };
 
+export type DevicesTopologyQueryVariables = Exact<{
+  deviceName: Scalars['String']['input'];
+}>;
+
+
+export type DevicesTopologyQuery = { __typename?: 'Query', deviceInventory: { __typename?: 'deviceInventoryQuery', devicesTopology: { __typename?: 'Topologies', topologies: Array<{ __typename?: 'TopologyOfDevice', deviceId: string, topologyId: string } | null> | null } | null } };
 export type RefreshCoordinatesMutationVariables = Exact<{
   topologyType?: InputMaybe<TopologyType>;
 }>;
