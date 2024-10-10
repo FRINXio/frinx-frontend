@@ -6,11 +6,11 @@ on:
       keep_fm:
         description: 'Keep Frinx-machine instance'
         required: true
-        default: 'false' 
+        default: 'false'
         type: choice
         options:
-        - true
-        - false
+          - true
+          - false
       fm_branch:
         description: 'frinx-machine helm-chart branch'
         required: true
@@ -58,7 +58,6 @@ jobs:
             frinx/frinx-frontend:${{ env.TAG }}
           build-args: |
             COMMIT_HASH=${{ github.sha }}
-            PRIVATE_GH_TOKEN=${{ secrets.PACKAGE_TOKEN }}
             PRIVATE_NPM_TOKEN=${{ secrets.PUBLISH_TOKEN }}
 
       - name: Invoke argo-event hook
