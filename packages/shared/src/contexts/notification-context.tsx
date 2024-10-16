@@ -53,6 +53,7 @@ export const CustomToastProvider: FC = ({ children }) => {
           isVisible={visibleToasts.has(t.id)}
           title={t.title}
           type={t.type}
+          timeout={t.timeout}
           onClose={() => {
             setVisibleToasts((prevSet) => {
               const nextSet = new Set(prevSet);
