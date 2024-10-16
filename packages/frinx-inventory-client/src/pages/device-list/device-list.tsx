@@ -543,7 +543,7 @@ const DeviceList: VoidFunctionComponent = () => {
         addToastNotification({
           type: 'error',
           title: 'Error',
-          timeout: 10000,
+          timeout: 30000,
           content: `Uninstallation failed:\n\n
             ${e}`,
         });
@@ -629,7 +629,7 @@ const DeviceList: VoidFunctionComponent = () => {
         addToastNotification({
           type: 'error',
           title: 'Error',
-          timeout: 10,
+          timeout: 30000,
           content: `Installation failed
           ${e}
           `,
@@ -682,7 +682,7 @@ const DeviceList: VoidFunctionComponent = () => {
         addToastNotification({
           type: 'error',
           title: 'Error',
-          timeout: 10,
+          timeout: 30000,
           content: `Bulk installation of devices has failed
           ${e.message}`,
         });
