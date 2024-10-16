@@ -34,7 +34,7 @@
     "minisearch": "^6.0.0",
     "react-flow-renderer": "10.3.17",
     "urql": "4.0.5",
-    "yup": "0.32.11"
+    "yup": "1.4.0"
   },
   "devDependencies": {
     "@chakra-ui/react": "2.8.1",
