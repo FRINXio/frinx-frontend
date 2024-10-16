@@ -19,7 +19,7 @@ import React, { VoidFunctionComponent } from 'react';
 import { getLocalDateFromUTC } from '@frinx/shared';
 import { Link } from 'react-router-dom';
 import { StreamsQuery } from '../../__generated__/graphql';
-import InstallButton from '../device-list/install-button';
+import ActivateButton from './activate-button';
 
 type SortedBy = 'streamName' | 'deviceName' | 'createdAt';
 type Direction = 'ASC' | 'DESC';
@@ -95,7 +95,7 @@ const StreamTable: VoidFunctionComponent<Props> = ({
               cursor="pointer"
               onClick={() => onSort('createdAt')}
             >
-              <Text>Created</Text>
+              <Text>Activated</Text>
               {orderBy?.sortKey === 'createdAt' && (
                 <Icon as={FeatherIcon} size={40} icon={orderBy?.direction === 'ASC' ? 'chevron-down' : 'chevron-up'} />
               )}
@@ -162,14 +162,14 @@ const StreamTable: VoidFunctionComponent<Props> = ({
                 </Text>
               </Td>
               <Td minWidth={200}>
-                <InstallButton
-                  deviceName={stream.streamName}
+                <ActivateButton
+                  streamName={stream.streamName}
                   isInstalled={isActive}
                   isLoading={isLoading}
-                  onInstalClick={() => {
+                  onActivateClick={() => {
                     onInstallButtonClick(stream.id);
                   }}
-                  onUninstallClick={() => {
+                  onDeactivateClick={() => {
                     onUninstallButtonClick(stream.id);
                   }}
                 />
