@@ -963,7 +963,6 @@ export function getSynceNodesAndEdges(client: Client): ReturnType<ThunkAction<St
           const nodeInterfaces = n.interfaces.map((i) => ({
             ...i,
             details: {
-              ...i.details,
               qualifiedForUse: i.details?.qualifiedForUse ?? null,
               rxQualityLevel: i.details?.rxQualityLevel ?? null,
               isSynceEnabled: i.details?.synceEnabled ?? false,
